@@ -19,7 +19,7 @@ namespace Honeybee.UI
 
                 Padding = new Padding(5);
                 Resizable = true;
-                Title = "Room Energy Properties - Honeybee Rhino PlugIn";
+                Title = "Room Energy Properties - Honeybee";
                 WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(450, 620);
                 this.Icon = DialogHelper.HoneybeeIcon;

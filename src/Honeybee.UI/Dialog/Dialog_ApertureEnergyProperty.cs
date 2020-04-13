@@ -19,7 +19,7 @@ namespace Honeybee.UI
 
                 Padding = new Padding(5);
                 Resizable = true;
-                Title = "Aperture Energy Properties - Honeybee Rhino PlugIn";
+                Title = "Aperture Energy Properties - Honeybee";
                 WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(450, 200);
                 this.Icon = DialogHelper.HoneybeeIcon;
