@@ -14,7 +14,7 @@ namespace Honeybee.UI
            
                 Padding = new Padding(5);
                 Resizable = true;
-                Title = "Energy Boundary Condition - Honeybee Rhino PlugIn";
+                Title = "Energy Boundary Condition - Honeybee";
                 WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(450, 300);
                 this.Icon = DialogHelper.HoneybeeIcon;
@@ -65,7 +65,7 @@ namespace Honeybee.UI
 
                 Padding = new Padding(5);
                 Resizable = true;
-                Title = "Energy Boundary Condition - Honeybee Rhino PlugIn";
+                Title = "Energy Boundary Condition - Honeybee";
                 WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(450, 500);
                 this.Icon = DialogHelper.HoneybeeIcon;

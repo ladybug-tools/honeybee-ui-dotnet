@@ -17,7 +17,7 @@ namespace Honeybee.UI
 
                 Padding = new Padding(5);
                 Resizable = true;
-                Title = "Shade Energy Properties - Honeybee Rhino PlugIn";
+                Title = "Shade Energy Properties - Honeybee";
                 WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(450, 200);
                 this.Icon = DialogHelper.HoneybeeIcon;

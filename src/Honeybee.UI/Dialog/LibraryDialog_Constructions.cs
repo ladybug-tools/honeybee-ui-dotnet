@@ -17,7 +17,7 @@ namespace Honeybee.UI
 
                 Padding = new Padding(5);
                 Resizable = true;
-                Title = "Construction Library - Honeybee Rhino PlugIn";
+                Title = "Construction Library - Honeybee";
                 WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(450, 200);
 
