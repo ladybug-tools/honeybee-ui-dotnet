@@ -1,0 +1,55 @@
+name: CD
+
+on: 
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    name: "Build and release the Rhino Plugin"
+    runs-on: windows-latest
+
+    steps:
+      - name: "Checkout Master Branch"
+        uses: actions/checkout@v2
+        
+      - name: Setup MSbuild
+        uses: microsoft/setup-msbuild@v1.0.0
+        
+      - name: Setup Nuget.exe
+        uses: nuget/setup-nuget@v1
+        
+      - name: Setup npm
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.7'
+
+      - name: Nuget Restore
+        run: nuget restore 
+
+      - name: MSBuild Grasshopper 
+        working-directory: src/Honeybee.UI
+        run: |
+          msbuild /p:Configuration=Release
+          msbuild /p:Configuration=Release_Rhino
+
+      - name: Zip Build Artifact
+        run: |
+          Compress-Archive -U -Path src\Honeybee.UI\bin\Release\* -DestinationPath Honeybee.UI
+          Compress-Archive -U -Path src\Honeybee.UI\bin\Release_Rhino\* -DestinationPath Honeybee.UI.Rhino
+
+      - name: Deploy to Nuget
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          python deploy.py
+
+      - run: npx semantic-release
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+     
