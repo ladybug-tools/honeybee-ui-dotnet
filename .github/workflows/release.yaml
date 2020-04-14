@@ -32,7 +32,7 @@ jobs:
       - name: Nuget Restore
         run: nuget restore 
 
-      - name: MSBuild Grasshopper 
+      - name: MSBuild  
         working-directory: src/Honeybee.UI
         run: |
           msbuild /p:Configuration=Release
