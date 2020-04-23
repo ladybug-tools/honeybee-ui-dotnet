@@ -85,6 +85,9 @@
     <Compile Include="Layout\Door.cs" />
     <Compile Include="Layout\Face.cs" />
     <Compile Include="Layout\Room.cs" />
+    <Compile Include="ViewModel\ShadeViewModel.cs" />
+    <Compile Include="ViewModel\DoorViewModel.cs" />
+    <Compile Include="ViewModel\ApertureViewModel.cs" />
     <Compile Include="ViewModel\FaceViewModel.cs" />
     <Compile Include="ViewModel\RoomViewModel.cs" />
     <Compile Include="Layout\Shade.cs" />
