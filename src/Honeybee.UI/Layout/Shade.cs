@@ -6,6 +6,7 @@ namespace Honeybee.UI
 {
     public static partial class PanelHelper
     {
+        
         /// <summary>
         /// Create Eto panel based on Honeybee geomerty. 
         /// If input HoneybeeObj is a duplicated object, geometryReset action must be provided, 
@@ -22,6 +23,7 @@ namespace Honeybee.UI
             geometryReset = geometryReset ?? delegate (string m) { }; //Do nothing if geometryReset is null
 
             var layout = new DynamicLayout { };
+            layout.MinimumSize = new Size(100, 200);
             layout.Spacing = new Size(5, 5);
             layout.Padding = new Padding(10);
             layout.DefaultSpacing = new Size(2, 2);
@@ -77,6 +79,8 @@ namespace Honeybee.UI
 
             
         }
+
+
 
 
     }
