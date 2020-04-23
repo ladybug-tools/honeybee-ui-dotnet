@@ -41,7 +41,7 @@ namespace Honeybee.UI
 
             
             layout.AddSeparateRow(new Label { Text = "Face Type:" });
-            var faceTypeDP = new EnumDropDown<Face.FaceTypeEnum>();
+            var faceTypeDP = new EnumDropDown<Face.FaceTypeEnum?>();
             faceTypeDP.SelectedValueBinding.Bind(Binding.Delegate(() => face.FaceType, v => face.FaceType = v));
             faceTypeDP.LostFocus += (s, e) => { geometryReset($"Set Face Type: {face.FaceType}"); };
             layout.AddSeparateRow(faceTypeDP);
@@ -198,7 +198,7 @@ namespace Honeybee.UI
 
 
             layout.AddSeparateRow(new Label { Text = "Face Type:" });
-            var faceTypeDP = new EnumDropDown<Face.FaceTypeEnum>();
+            var faceTypeDP = new EnumDropDown<Face.FaceTypeEnum?>();
             //faceTypeDP.BindDataContext(c=>c.DataStore, (FaceViewModel m) => Enum.GetNames( typeof(Face.FaceTypeEnum)));
             //faceTypeDP.SelectedValueBinding.BindDataContext(Binding.Delegate<FaceViewModel, Face.FaceTypeEnum>((m) => m.HoneybeeObject.FaceType, (m, v) => m.HoneybeeObject.FaceType = v));
             faceTypeDP.SelectedValueBinding.BindDataContext((FaceViewModel m) => m.HoneybeeObject.FaceType);

@@ -69,8 +69,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Reference Include="HoneybeeSchema, Version=1.21.4.2750, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\HoneybeeSchema.1.21.4.2750\lib\net45\HoneybeeSchema.dll</HintPath>
+    <Reference Include="HoneybeeSchema, Version=1.26.0.10848, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\HoneybeeSchema.1.26.0.10848\lib\net45\HoneybeeSchema.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
