@@ -38,11 +38,11 @@ namespace Honeybee.UI
             return _etoicon;
         }
 
-        public static DropDown MakeDropDown<T>(T currentValue, Action<T> setAction, IEnumerable<T> valueLibrary, string defaultItemName = default) where T : HoneybeeSchema.IIdentified
+        public static DropDown MakeDropDown<T>(T currentValue, Action<T> setAction, IEnumerable<T> valueLibrary, string defaultItemName = default) where T : HoneybeeSchema.IIDdBase
         {
             return MakeDropDown(currentValue?.Identifier, setAction, valueLibrary, defaultItemName);
         }
-        public static DropDown MakeDropDown<T>(string currentObjName, Action<T> setAction, IEnumerable<T> valueLibrary, string defaultItemName = default) where T : HoneybeeSchema.IIdentified
+        public static DropDown MakeDropDown<T>(string currentObjName, Action<T> setAction, IEnumerable<T> valueLibrary, string defaultItemName = default) where T : HoneybeeSchema.IIDdBase
         {
             var items = valueLibrary.ToList();
             var dropdownItems = items.Select(_ => new ListItem() { Text = _.Identifier, Tag = _ }).ToList();
