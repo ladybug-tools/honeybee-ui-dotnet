@@ -131,6 +131,121 @@ namespace Honeybee.UI
           
         }
 
+        private static Panel _doorPanel;
+        public static Panel UpdateDoorPanel(Door HoneybeeObj, System.Action<string> geometryReset = default)
+        {
+            var vm = DoorViewModel.Instance;
+            vm.Update(HoneybeeObj, geometryReset);
+            if (_doorPanel == null)
+                _doorPanel = GenDoorPanel();
+            return _doorPanel;
+        }
+
+        private static Panel GenDoorPanel()
+        {
+            var vm = DoorViewModel.Instance;
+
+            var layout = new DynamicLayout { DataContext = vm };
+            layout.MinimumSize = new Size(100, 200);
+            layout.Spacing = new Size(5, 5);
+            layout.Padding = new Padding(10);
+            layout.DefaultSpacing = new Size(2, 2);
+
+            var id = new Label();
+            id.TextBinding.BindDataContext((DoorViewModel m) => m.HoneybeeObject.Identifier);
+            layout.AddSeparateRow(new Label { Text = "ID: " }, id);
+
+
+            layout.AddSeparateRow(new Label { Text = "Name:" });
+            var nameTB = new TextBox() { };
+            nameTB.TextBinding.BindDataContext((DoorViewModel m) => m.HoneybeeObject.DisplayName);
+            nameTB.LostFocus += (s, e) => { vm.ActionWhenChanged($"Set Room Name {vm.HoneybeeObject.DisplayName}"); };
+            layout.AddSeparateRow(nameTB);
+
+
+            //layout.AddSeparateRow(new Label { Text = "Glass:" });
+            var isGlassCBox = new CheckBox();
+            isGlassCBox.CheckedBinding.BindDataContext((DoorViewModel m) => m.HoneybeeObject.IsGlass);
+            isGlassCBox.CheckedChanged += (s, e) => { vm.ActionWhenChanged($"Set Glass Door: {vm.HoneybeeObject.IsGlass}"); };
+            layout.AddSeparateRow(new Label { Text = "Glass:" }, isGlassCBox);
+
+
+            layout.AddSeparateRow(new Label { Text = "Properties:" });
+            var faceRadPropBtn = new Button { Text = "Radiance Properties (WIP)" };
+            faceRadPropBtn.Click += (s, e) => MessageBox.Show("Work in progress", "Honeybee");
+            layout.AddSeparateRow(faceRadPropBtn);
+            var faceEngPropBtn = new Button { Text = "Energy Properties" };
+            faceEngPropBtn.Click += (s, e) =>
+            {
+                var energyProp = vm.HoneybeeObject.Properties.Energy ?? new DoorEnergyPropertiesAbridged();
+                energyProp = DoorEnergyPropertiesAbridged.FromJson(energyProp.ToJson());
+                var dialog = new Dialog_DoorEnergyProperty(energyProp);
+                var dialog_rc = dialog.ShowModal();
+                if (dialog_rc != null)
+                {
+                    vm.HoneybeeObject.Properties.Energy = dialog_rc;
+                    vm.ActionWhenChanged($"Set Door Energy Properties");
+                }
+
+            };
+            layout.AddSeparateRow(faceEngPropBtn);
+
+
+            layout.AddSeparateRow(new Label { Text = "Boundary Condition:" });
+            var bcDP = new DropDown();
+            bcDP.BindDataContext(c => c.DataStore, (DoorViewModel m) => m.Bcs);
+            bcDP.ItemTextBinding = Binding.Delegate<AnyOf, string>(m => m.Obj.GetType().Name);
+            bcDP.SelectedIndexBinding.BindDataContext((DoorViewModel m) => m.SelectedIndex);
+            layout.AddSeparateRow(bcDP);
+
+            var bcBtn = new Button { Text = "Edit Boundary Condition" };
+            bcBtn.BindDataContext(c => c.Enabled, (DoorViewModel m) => m.IsOutdoor, DualBindingMode.OneWay);
+            bcBtn.Click += (s, e) =>
+            {
+                if (vm.HoneybeeObject.BoundaryCondition.Obj is Outdoors outdoors)
+                {
+                    var od = Outdoors.FromJson(outdoors.ToJson());
+                    var dialog = new UI.Dialog_BoundaryCondition_Outdoors(od);
+                    var dialog_rc = dialog.ShowModal();
+                    if (dialog_rc != null)
+                    {
+                        vm.HoneybeeObject.BoundaryCondition = dialog_rc;
+                        vm.ActionWhenChanged($"Set Aperture Boundary Condition");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Only Outdoors type has additional properties to edit!");
+                }
+            };
+            layout.AddSeparateRow(bcBtn);
+
+
+            layout.AddSeparateRow(new Label { Text = "IndoorShades:" });
+            var inShadesListBox = new ListBox();
+            inShadesListBox.BindDataContext(c => c.DataStore, (DoorViewModel m) => m.HoneybeeObject.IndoorShades);
+            inShadesListBox.ItemTextBinding = Binding.Delegate<Shade, string>(m => m.DisplayName ?? m.Identifier);
+            inShadesListBox.Height = 50;
+            layout.AddSeparateRow(inShadesListBox);
+
+
+            layout.AddSeparateRow(new Label { Text = "OutdoorShades:" });
+            var outShadesListBox = new ListBox();
+            outShadesListBox.Height = 50;
+            outShadesListBox.BindDataContext(c => c.DataStore, (DoorViewModel m) => m.HoneybeeObject.OutdoorShades);
+            outShadesListBox.ItemTextBinding = Binding.Delegate<Shade, string>(m => m.DisplayName ?? m.Identifier);
+            layout.AddSeparateRow(outShadesListBox);
+
+
+            layout.Add(null);
+            var data_button = new Button { Text = "Honeybee Data" };
+            data_button.Click += (sender, e) => MessageBox.Show(vm.HoneybeeObject.ToJson(), "Honeybee Data");
+            layout.AddSeparateRow(data_button, null);
+
+            return layout;
+
+        }
+
 
 
     }

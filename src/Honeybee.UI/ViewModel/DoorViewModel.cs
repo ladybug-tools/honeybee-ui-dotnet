@@ -7,10 +7,10 @@ using System.Runtime.CompilerServices;
 
 namespace Honeybee.UI
 {
-    public class FaceViewModel : INotifyPropertyChanged
+    public class DoorViewModel : INotifyPropertyChanged
     {
-        private Face _hbObj;
-        public Face HoneybeeObject
+        private Door _hbObj;
+        public Door HoneybeeObject
         {
             get { return _hbObj; }
             private set
@@ -23,26 +23,11 @@ namespace Honeybee.UI
             }
         }
 
-        private string _apertureCount;
-        public string ApertureCount
-        {
-            get { return _apertureCount.ToString(); }
-            private set
+        public List<AnyOf<Outdoors, Surface>> Bcs =>
+            new List<AnyOf<Outdoors, Surface>>()
             {
-                if (_apertureCount != value)
-                {
-                    _apertureCount = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public List<AnyOf<Ground, Outdoors, Adiabatic, Surface>> Bcs =>
-            new List<AnyOf<Ground, Outdoors, Adiabatic, Surface>>()
-            {
-                new Ground(), new Outdoors(), new Adiabatic(), new Surface(new List<string>())
+                new Outdoors(), new Surface(new List<string>())
             };
-
 
         private int _selectedIndex;
         public int SelectedIndex
@@ -84,19 +69,18 @@ namespace Honeybee.UI
 
         }
 
-        private static FaceViewModel _instance;
-        public static FaceViewModel Instance
+        private static DoorViewModel _instance;
+        public static DoorViewModel Instance
         {
             get
             {
                 if (_instance == null)
                 {
-                    _instance = new FaceViewModel();
+                    _instance = new DoorViewModel();
                 }
                 return _instance;
             }
         }
-
         public static Action<string> _action;
         public Action<string> ActionWhenChanged
         {
@@ -110,18 +94,16 @@ namespace Honeybee.UI
                 }
             }
         }
-        private FaceViewModel()
+
+        private DoorViewModel()
         {
         }
 
-        public void Update(Face honeybeeObj, Action<string> actionWhenChanged)
+        public void Update(Door honeybeeObj, Action<string> actionWhenChanged)
         {
             HoneybeeObject = honeybeeObj;
             //HoneybeeObject.DisplayName = honeybeeObj.DisplayName ?? string.Empty;
-            ApertureCount = honeybeeObj.Apertures.Count.ToString();
             IsOutdoor = honeybeeObj.BoundaryCondition.Obj is Outdoors;
-            //BC = new Outdoors();
-            //BC = honeybeeObj.BoundaryCondition.Obj.GetType().Name;
             SelectedIndex = Bcs.FindIndex(_ => _.Obj.GetType().Name == this.HoneybeeObject.BoundaryCondition.Obj.GetType().Name);
             ActionWhenChanged = actionWhenChanged ?? delegate (string m) { };
         }
