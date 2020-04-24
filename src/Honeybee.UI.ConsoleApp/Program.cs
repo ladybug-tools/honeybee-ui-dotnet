@@ -35,7 +35,17 @@ namespace Honeybee.UI.ConsoleApp
                         Console.WriteLine(dialog_rc.ToJson());
                     }
                 };
+
+                var Messagebtn = new Button() { Text = "message text" };
+                Messagebtn.Click += (s, e) =>
+                {
+                    var energyProp = new HoneybeeSchema.RoomEnergyPropertiesAbridged();
+                    Dialog_Message.Show(energyProp.ToJson());
+                    
+                };
+
                 panel.AddSeparateRow(btn);
+                panel.AddSeparateRow(Messagebtn);
                 panel.AddSeparateRow(null);
                 Content = panel;
             }
