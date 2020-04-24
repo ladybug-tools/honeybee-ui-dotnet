@@ -2,9 +2,7 @@
 using Eto.Forms;
 using System.Linq;
 using HoneybeeSchema;
-using System.Collections.Generic;
 using System;
-using System.Threading;
 
 namespace Honeybee.UI
 {
@@ -172,6 +170,26 @@ namespace Honeybee.UI
             facesListBox.Height = 120;
             facesListBox.BindDataContext(c => c.DataStore, (RoomViewModel m) => m.HoneybeeObject.Faces);
             facesListBox.ItemTextBinding = Binding.Delegate<Face, string>(m => m.DisplayName ?? m.Identifier);
+            facesListBox.MouseDoubleClick += (s, e) =>
+            {
+                var sel = facesListBox.SelectedValue as Face;
+                if (sel == null)
+                    return;
+
+                var dialog = new Dialog_Face(sel);
+                var dialog_rc = dialog.ShowModal(Helper.Owner);
+                if (dialog_rc != null)
+                {
+                    //MessageBox.Show(dialog_rc.ToJson());
+                    var faces = vm.HoneybeeObject.Faces;
+                    var index = faces.FindIndex(_ => _.Identifier == dialog_rc.Identifier);
+                    vm.HoneybeeObject.Faces[index] = dialog_rc;
+
+                    vm.ActionWhenChanged($"Set {dialog_rc.Identifier} Properties");
+                }
+                //MessageBox.Show(sel.ToJson());
+
+            };
             layout.AddSeparateRow(facesListBox);
 
 

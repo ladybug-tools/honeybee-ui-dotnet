@@ -17,7 +17,7 @@ namespace Honeybee.UI
             {
                 if (_hbObj != value)
                 {
-                    MessageBox.Show(value.DisplayName);
+                    //MessageBox.Show(value.DisplayName);
                     _hbObj = value;
                     OnPropertyChanged();
                 }

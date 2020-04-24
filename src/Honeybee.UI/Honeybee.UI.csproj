@@ -81,6 +81,7 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dialog\Dialog_Face.cs" />
     <Compile Include="Layout\Aperture.cs" />
     <Compile Include="Layout\Door.cs" />
     <Compile Include="Layout\Face.cs" />
