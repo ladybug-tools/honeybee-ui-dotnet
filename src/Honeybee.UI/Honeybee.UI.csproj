@@ -82,11 +82,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dialog\Dialog_Face.cs" />
+    <Compile Include="Dialog\Dialog_Message.cs" />
     <Compile Include="Layout\Aperture.cs" />
     <Compile Include="Layout\Door.cs" />
+    <Compile Include="Layout\Message.cs" />
     <Compile Include="Layout\Face.cs" />
     <Compile Include="Honeybee.UI.cs" />
     <Compile Include="Layout\Room.cs" />
+    <Compile Include="ViewModel\MessageViewModel.cs" />
     <Compile Include="ViewModel\ShadeViewModel.cs" />
     <Compile Include="ViewModel\DoorViewModel.cs" />
     <Compile Include="ViewModel\ApertureViewModel.cs" />

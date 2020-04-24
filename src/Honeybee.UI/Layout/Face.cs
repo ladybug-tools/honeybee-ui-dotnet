@@ -293,7 +293,7 @@ namespace Honeybee.UI
 
             layout.Add(null);
             var data_button = new Button { Text = "Honeybee Data" };
-            data_button.Click += (sender, e) => MessageBox.Show(Helper.Owner, vm.HoneybeeObject.ToJson(), "Honeybee Data");
+            data_button.Click += (sender, e) => Dialog_Message.Show(Helper.Owner, vm.HoneybeeObject.ToJson(), "Honeybee Data");
             layout.AddSeparateRow(data_button, null);
 
             return layout;
