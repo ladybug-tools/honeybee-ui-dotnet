@@ -149,13 +149,12 @@ namespace Honeybee.UI
 
             layout.AddSeparateRow(new Label { Text = "Properties:" });
             var rmPropBtn = new Button { Text = "Room Energy Properties" };
-            //rmPropBtn.Click += (s, e) => MessageBox.Show(vm.HoneybeeObject.Identifier);
             rmPropBtn.Click += (s, e) =>
             {
                 var energyProp = vm.HoneybeeObject.Properties.Energy ?? new RoomEnergyPropertiesAbridged();
                 energyProp = RoomEnergyPropertiesAbridged.FromJson(energyProp.ToJson());
                 var dialog = new Dialog_RoomEnergyProperty(energyProp);
-                var dialog_rc = dialog.ShowModal();
+                var dialog_rc = dialog.ShowModal(Helper.Owner);
                 if (dialog_rc != null)
                 {
                     vm.HoneybeeObject.Properties.Energy = dialog_rc;
@@ -202,7 +201,7 @@ namespace Honeybee.UI
 
             layout.Add(null);
             var data_button = new Button { Text = "Honeybee Data" };
-            data_button.Click += (sender, e) => MessageBox.Show(vm.HoneybeeObject.ToJson(), "Honeybee Data");
+            data_button.Click += (sender, e) => MessageBox.Show(Helper.Owner, vm.HoneybeeObject.ToJson(), "Honeybee Data");
             layout.AddSeparateRow(data_button, null);
 
             return layout;

@@ -9,6 +9,7 @@ namespace Honeybee.UI
 {
     public static partial class PanelHelper
     {
+        
         /// <summary>
         /// Create Eto panel based on Honeybee geomerty. 
         /// If input HoneybeeObj is a duplicated object, geometryReset action must be provided, 
@@ -208,7 +209,7 @@ namespace Honeybee.UI
 
             layout.AddSeparateRow(new Label { Text = "Properties:" });
             var faceRadPropBtn = new Button { Text = "Radiance Properties (WIP)" };
-            faceRadPropBtn.Click += (s, e) => MessageBox.Show("Work in progress", "Honeybee");
+            faceRadPropBtn.Click += (s, e) => MessageBox.Show(Helper.Owner, "Work in progress", "Honeybee");
             layout.AddSeparateRow(faceRadPropBtn);
             var faceEngPropBtn = new Button { Text = "Energy Properties" };
             faceEngPropBtn.Click += (s, e) =>
@@ -216,7 +217,7 @@ namespace Honeybee.UI
                 var energyProp = vm.HoneybeeObject.Properties.Energy ?? new FaceEnergyPropertiesAbridged();
                 energyProp = FaceEnergyPropertiesAbridged.FromJson(energyProp.ToJson());
                 var dialog = new Dialog_FaceEnergyProperty(energyProp);
-                var dialog_rc = dialog.ShowModal();
+                var dialog_rc = dialog.ShowModal(Helper.Owner);
                 if (dialog_rc != null)
                 {
                     vm.HoneybeeObject.Properties.Energy = dialog_rc;
@@ -241,7 +242,7 @@ namespace Honeybee.UI
                 {
                     var od = Outdoors.FromJson(outdoors.ToJson());
                     var dialog = new UI.Dialog_BoundaryCondition_Outdoors(od);
-                    var dialog_rc = dialog.ShowModal();
+                    var dialog_rc = dialog.ShowModal(Helper.Owner);
                     if (dialog_rc != null)
                     {
                         vm.HoneybeeObject.BoundaryCondition = dialog_rc;
@@ -250,7 +251,7 @@ namespace Honeybee.UI
                 }
                 else
                 {
-                    MessageBox.Show("Only Outdoors type has additional properties to edit!");
+                    MessageBox.Show(Helper.Owner, "Only Outdoors type has additional properties to edit!");
                 }
             };
             layout.AddSeparateRow(bcBtn);
@@ -292,7 +293,7 @@ namespace Honeybee.UI
 
             layout.Add(null);
             var data_button = new Button { Text = "Honeybee Data" };
-            data_button.Click += (sender, e) => MessageBox.Show(vm.HoneybeeObject.ToJson(), "Honeybee Data");
+            data_button.Click += (sender, e) => MessageBox.Show(Helper.Owner, vm.HoneybeeObject.ToJson(), "Honeybee Data");
             layout.AddSeparateRow(data_button, null);
 
             return layout;
