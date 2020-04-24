@@ -9,9 +9,11 @@ using HB = HoneybeeSchema;
 
 namespace Honeybee.UI
 {
-    public static partial class LayoutHelper
+    public static partial class PanelHelper
     {
         public static DynamicLayout EmptyLayout { get; set; } = new DynamicLayout();
+
+        
         //public DynamicLayout AdiabaticLayout { get; set; }
         //public DynamicLayout OutdoorLayout { get; set; } = new DynamicLayout();
         //public DynamicLayout SurfaceLayout { get; set; } = new DynamicLayout();

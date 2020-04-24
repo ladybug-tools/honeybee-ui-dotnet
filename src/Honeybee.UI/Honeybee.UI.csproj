@@ -84,6 +84,7 @@
     <Compile Include="Layout\Aperture.cs" />
     <Compile Include="Layout\Door.cs" />
     <Compile Include="Layout\Face.cs" />
+    <Compile Include="Honeybee.UI.cs" />
     <Compile Include="Layout\Room.cs" />
     <Compile Include="ViewModel\ShadeViewModel.cs" />
     <Compile Include="ViewModel\DoorViewModel.cs" />
@@ -101,7 +102,7 @@
     <Compile Include="Dialog\Dialog_RoomEnergyProperty.cs" />
     <Compile Include="Dialog\Dialog_ShadeEnergyProperty.cs" />
     <Compile Include="Dialog\Dialog_SimulationParameter.cs" />
-    <Compile Include="Layout\LayoutHelper.cs" />
+    <Compile Include="Layout\PanelHelper.cs" />
     <Compile Include="Dialog\LibraryDialog_Constructions.cs" />
   </ItemGroup>
   <ItemGroup>

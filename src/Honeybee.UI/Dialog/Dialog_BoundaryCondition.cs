@@ -22,7 +22,7 @@ namespace Honeybee.UI
                 var layout = new DynamicLayout() { Padding = new Padding(15) };
 
                 
-                var bcLayout = LayoutHelper.CreateOutdoorLayout(boundaryCondition);
+                var bcLayout = PanelHelper.CreateOutdoorLayout(boundaryCondition);
                 layout.AddRow(bcLayout);
 
                 DefaultButton = new Button { Text = "OK" };
