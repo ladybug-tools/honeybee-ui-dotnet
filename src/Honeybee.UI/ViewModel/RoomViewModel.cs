@@ -66,16 +66,31 @@ namespace Honeybee.UI
                 }
             }
         }
+
+        public static Action<string> _redraw;
+        public Action<string> Redraw
+        {
+            get { return _redraw; }
+            private set
+            {
+                if (_redraw != value)
+                {
+                    _redraw = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
         private RoomViewModel()
         {
         }
 
-        public void Update(Room honeybeeRoom, Action<string> actionWhenChanged)
+        public void Update(Room honeybeeRoom, Action<string> actionWhenChanged, Action<string> redrawDisplay)
         {
             HoneybeeObject = honeybeeRoom;
             //HoneybeeObject.DisplayName = honeybeeRoom.DisplayName ?? string.Empty;
             FaceCount = honeybeeRoom.Faces.Count().ToString();
             ActionWhenChanged = actionWhenChanged ?? delegate (string m) { };
+            Redraw = redrawDisplay ?? delegate (string m) { };
         }
 
         void OnPropertyChanged([CallerMemberName] string memberName = null)
