@@ -8,7 +8,7 @@ namespace Honeybee.UI
 {
     public static partial class PanelHelper
     {
-
+        
         /// <summary>
         /// Create Eto panel based on Honeybee geomerty. 
         /// If input HoneybeeObj is a duplicated object, geometryReset action must be provided, 
@@ -110,11 +110,12 @@ namespace Honeybee.UI
 
         }
 
+        
         private static Panel _roomPanel;
-        public static Panel UpdateRoomPanel(Room HoneybeeObj, Action<string> geometryReset = default)
+        public static Panel UpdateRoomPanel(Room HoneybeeObj, Action<string> geometryReset = default, Action<string> redrawDisplay = default)
         {
             var vm = RoomViewModel.Instance;
-            vm.Update(HoneybeeObj, geometryReset);
+            vm.Update(HoneybeeObj, geometryReset, redrawDisplay);
             if (_roomPanel == null)
             {
                 _roomPanel = GenRoomPanel();
@@ -170,6 +171,17 @@ namespace Honeybee.UI
             facesListBox.Height = 120;
             facesListBox.BindDataContext(c => c.DataStore, (RoomViewModel m) => m.HoneybeeObject.Faces);
             facesListBox.ItemTextBinding = Binding.Delegate<Face, string>(m => m.DisplayName ?? m.Identifier);
+            facesListBox.SelectedIndexChanged += (s, e) =>
+            {
+                var sel = facesListBox.SelectedValue as Face;
+                if (sel != null)
+                    vm.Redraw(sel.Identifier);
+            };
+            facesListBox.LostFocus += (s, e) =>
+            {
+                vm.Redraw(null);
+            };
+
             facesListBox.MouseDoubleClick += (s, e) =>
             {
                 var sel = facesListBox.SelectedValue as Face;
