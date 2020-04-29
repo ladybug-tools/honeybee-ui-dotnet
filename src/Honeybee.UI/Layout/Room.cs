@@ -170,7 +170,7 @@ namespace Honeybee.UI
             var facesListBox = new ListBox();
             facesListBox.Height = 120;
             facesListBox.BindDataContext(c => c.DataStore, (RoomViewModel m) => m.HoneybeeObject.Faces);
-            facesListBox.ItemTextBinding = Binding.Delegate<Face, string>(m => m.DisplayName ?? m.Identifier);
+            facesListBox.ItemTextBinding = Binding.Delegate<Face, string>(m => { return String.Format("{0,-30} {1}", m.DisplayName ?? m.Identifier, $"{m.FaceType}::{m.BoundaryCondition.Obj.GetType().Name}");});
             facesListBox.SelectedIndexChanged += (s, e) =>
             {
                 var sel = facesListBox.SelectedValue as Face;
