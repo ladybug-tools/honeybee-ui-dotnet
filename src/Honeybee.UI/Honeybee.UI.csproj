@@ -116,6 +116,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if $(ConfigurationName) == Release_Rhino Copy "$(TargetPath)" "D:\\Dev\honeybee-rhino-plugin\\lib\\$(ProjectName).dll"</PostBuildEvent>
+    <PostBuildEvent>if $(ConfigurationName) == Debug_Rhino Copy "$(TargetPath)" "D:\\Dev\honeybee-rhino-plugin\\lib\\$(ProjectName).dll"</PostBuildEvent>
   </PropertyGroup>
 </Project>
