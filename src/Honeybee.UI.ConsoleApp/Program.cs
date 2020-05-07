@@ -44,8 +44,18 @@ namespace Honeybee.UI.ConsoleApp
                     
                 };
 
+                var cSetbtn = new Button() { Text = "message text" };
+                cSetbtn.Click += (s, e) =>
+                {
+                    var cSet = new HoneybeeSchema.ConstructionSetAbridged(identifier: Guid.NewGuid().ToString());
+                    var dialog = new Honeybee.UI.Dialog_ConstructionSet(cSet);
+                    dialog.ShowModal();
+
+                };
+
                 panel.AddSeparateRow(btn);
                 panel.AddSeparateRow(Messagebtn);
+                panel.AddSeparateRow(cSetbtn);
                 panel.AddSeparateRow(null);
                 Content = panel;
             }
