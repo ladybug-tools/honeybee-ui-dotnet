@@ -42,7 +42,7 @@ namespace Honeybee.UI
 
             
             layout.AddSeparateRow(new Label { Text = "Face Type:" });
-            var faceTypeDP = new EnumDropDown<Face.FaceTypeEnum?>();
+            var faceTypeDP = new EnumDropDown<Face.FaceTypeEnum>();
             faceTypeDP.SelectedValueBinding.Bind(Binding.Delegate(() => face.FaceType, v => face.FaceType = v));
             faceTypeDP.LostFocus += (s, e) => { geometryReset($"Set Face Type: {face.FaceType}"); };
             layout.AddSeparateRow(faceTypeDP);
