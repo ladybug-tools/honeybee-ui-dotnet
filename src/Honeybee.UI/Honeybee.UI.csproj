@@ -84,6 +84,7 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dialog\Dialog_ProgramType.cs" />
     <Compile Include="Dialog\Dialog_Face.cs" />
     <Compile Include="Dialog\Dialog_ConstructionSet.cs" />
     <Compile Include="Dialog\Dialog_Message.cs" />
@@ -93,6 +94,8 @@
     <Compile Include="Layout\Face.cs" />
     <Compile Include="Honeybee.UI.cs" />
     <Compile Include="Layout\Room.cs" />
+    <Compile Include="ViewModel\ViewModelBase.cs" />
+    <Compile Include="ViewModel\ProgramTypeViewModel.cs" />
     <Compile Include="ViewModel\MessageViewModel.cs" />
     <Compile Include="ViewModel\ShadeViewModel.cs" />
     <Compile Include="ViewModel\DoorViewModel.cs" />
