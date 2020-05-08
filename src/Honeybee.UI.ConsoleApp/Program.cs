@@ -44,7 +44,7 @@ namespace Honeybee.UI.ConsoleApp
                     
                 };
 
-                var cSetbtn = new Button() { Text = "message text" };
+                var cSetbtn = new Button() { Text = "ConstructionSet" };
                 cSetbtn.Click += (s, e) =>
                 {
                     var cSet = new HoneybeeSchema.ConstructionSetAbridged(identifier: Guid.NewGuid().ToString());
@@ -53,9 +53,19 @@ namespace Honeybee.UI.ConsoleApp
 
                 };
 
+                var pTypebtn = new Button() { Text = "ProgramType" };
+                pTypebtn.Click += (s, e) =>
+                {
+                    var pType = new HoneybeeSchema.ProgramTypeAbridged(identifier: Guid.NewGuid().ToString());
+                    var dialog = new Honeybee.UI.Dialog_ProgramType(pType);
+                    dialog.ShowModal();
+
+                };
+
                 panel.AddSeparateRow(btn);
                 panel.AddSeparateRow(Messagebtn);
                 panel.AddSeparateRow(cSetbtn);
+                panel.AddSeparateRow(pTypebtn);
                 panel.AddSeparateRow(null);
                 Content = panel;
             }
