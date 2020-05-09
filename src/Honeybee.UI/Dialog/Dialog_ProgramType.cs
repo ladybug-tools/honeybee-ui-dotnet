@@ -139,73 +139,68 @@ namespace Honeybee.UI
 
                 var defaultByProgramType = "By Room Program Type";
                 //Get people
-                vm.hbObj.People = vm.hbObj.People ?? new PeopleAbridged(Guid.NewGuid().ToString(), 0, "", "", "", 0.3, new Autocalculate());
-                ////vm.PeopleArea = 0.1;
-                //var num_NS = new NumericStepper();
-                //num_NS.ValueBinding.BindDataContext((ProgramTypeViewModel m) => m.PeoplePerArea);
+                vm.hbObj.People = vm.hbObj.People ?? new PeopleAbridged(Guid.NewGuid().ToString(), 0, "", "");
+                vm.hbObj.People.LatentFraction = new Autocalculate();
+                var ppl = new List<Control>() { };
+                ppl.Add(GenInputControl("People/Area", (ProgramTypeViewModel m) => m.PPL_PeoplePerArea));
+                ppl.Add(GenInputControl("Occupancy Schedule", (ProgramTypeViewModel m) => m.PPL_OccupancySchedule, getSelectedSche));
+                ppl.Add(GenInputControl("Activity Schedule", (ProgramTypeViewModel m) => m.PPL_ActivitySchedule, getSelectedSche));
+                ppl.Add(GenInputControl("Radiant Fraction", (ProgramTypeViewModel m) => m.PPL_RadiantFraction));
+                ppl.Add(GenInputControl("Latent Fraction", typeof(Autocalculate), (ProgramTypeViewModel m) => m.PPL_IsLatentFractionAutocalculate, (ProgramTypeViewModel m) => m.PPL_LatentFraction));
+                var peopleGroup = GenGroup("People", ppl);
 
-                var peopleParamInputs = new List<Control>() { };
-           
-                peopleParamInputs.Add(GenInputControl("People/Area", (ProgramTypeViewModel m) => m.PeoplePerArea));
-                peopleParamInputs.Add(GenInputControl("Occupancy Schedule", (ProgramTypeViewModel m) => m.OccupancySchedule, getSelectedSche));
-                peopleParamInputs.Add(GenInputControl("Activity Schedule", (ProgramTypeViewModel m) => m.ActivitySchedule, getSelectedSche));
-                peopleParamInputs.Add(GenInputControl("Radiant Fraction", (ProgramTypeViewModel m) => m.RadiantFraction));
+                vm.hbObj.Lighting = vm.hbObj.Lighting ?? new LightingAbridged(Guid.NewGuid().ToString(), 0, "");
+                var lpd = new List<Control>() { };
+                lpd.Add(GenInputControl("Watts/Area", (ProgramTypeViewModel m) => m.LPD_WattsPerArea));
+                lpd.Add(GenInputControl("Schedule", (ProgramTypeViewModel m) => m.LPD_Schedule, getSelectedSche));
+                lpd.Add(GenInputControl("Visible Schedule", (ProgramTypeViewModel m) => m.LPD_VisibleFraction));
+                lpd.Add(GenInputControl("Radiant Fraction", (ProgramTypeViewModel m) => m.LPD_RadiantFraction));
+                lpd.Add(GenInputControl("Return Air Fraction", (ProgramTypeViewModel m) => m.LPD_ReturnAirFraction));
+                var lightingGroup = GenGroup("Lighting", lpd);
 
-                peopleParamInputs.Add(GenInputControl("Latent Fraction", typeof(Autocalculate), (ProgramTypeViewModel m) => m.IsLatentFractionAutocalculate, (ProgramTypeViewModel m) => m.LatentFraction));
+                vm.hbObj.ElectricEquipment = vm.hbObj.ElectricEquipment ?? new ElectricEquipmentAbridged(Guid.NewGuid().ToString(), 0, "");
+                var eqp = new List<Control>() { };
+                eqp.Add(GenInputControl("Watts/Area", (ProgramTypeViewModel m) => m.EQP_WattsPerArea));
+                eqp.Add(GenInputControl("Schedule", (ProgramTypeViewModel m) => m.EQP_Schedule, getSelectedSche));
+                eqp.Add(GenInputControl("Radiant Schedule", (ProgramTypeViewModel m) => m.EQP_RadiantFraction));
+                eqp.Add(GenInputControl("Latent Fraction", (ProgramTypeViewModel m) => m.EQP_LatentFraction));
+                eqp.Add(GenInputControl("Lost Fraction", (ProgramTypeViewModel m) => m.EQP_LostFraction));
+                var equipmentGroup = GenGroup("Electric Equipment", eqp);
 
-                //var numInput = new NumericMaskedTextBox<double>();
-         
-                //numInput.ValueBinding.BindDataContext((ProgramTypeViewModel m) => m.LatentFraction);
+                vm.hbObj.GasEquipment = vm.hbObj.GasEquipment ?? new GasEquipmentAbridged(Guid.NewGuid().ToString(), 0, "");
+                var gas = new List<Control>() { };
+                gas.Add(GenInputControl("Watts/Area", (ProgramTypeViewModel m) => m.GAS_WattsPerArea));
+                gas.Add(GenInputControl("Schedule", (ProgramTypeViewModel m) => m.GAS_Schedule, getSelectedSche));
+                gas.Add(GenInputControl("Radiant Schedule", (ProgramTypeViewModel m) => m.GAS_RadiantFraction));
+                gas.Add(GenInputControl("Latent Fraction", (ProgramTypeViewModel m) => m.GAS_LatentFraction));
+                gas.Add(GenInputControl("Lost Fraction", (ProgramTypeViewModel m) => m.GAS_LostFraction));
+                var gasEqpGroup = GenGroup("Gas Equipment", gas);
 
-                //var altNum_CBox = new CheckBox() { Text = nameof(Autocalculate) };
-                //altNum_CBox.CheckedBinding.BindDataContext((ProgramTypeViewModel m) => m.IsLatentFractionAutocalculate);
-                //altNum_CBox.CheckedChanged += (s, e) => {
-                //    numInput.Enabled = !altNum_CBox.Checked.Value;
-                //    if (numInput.Enabled)
-                //    {
-                //        var v = numInput.Value;
-                //        numInput.Value = -9.9;
-                //        numInput.Value = v;
-                //        //numInput.Value = numInput.Value - 0.1;
-                //        //vm.LatentFraction = numInput.Value;
-                //    }
+                vm.hbObj.Infiltration = vm.hbObj.Infiltration ?? new InfiltrationAbridged(Guid.NewGuid().ToString(), 0, "");
+                var inf = new List<Control>() { };
+                inf.Add(GenInputControl("Flow/FacadeArea", (ProgramTypeViewModel m) => m.INF_FlowPerExteriorArea));
+                inf.Add(GenInputControl("Schedule", (ProgramTypeViewModel m) => m.INF_Schedule, getSelectedSche));
+                inf.Add(GenInputControl("Velocity Coefficient", (ProgramTypeViewModel m) => m.INF_VelocityCoefficient));
+                inf.Add(GenInputControl("Temperature Coefficient", (ProgramTypeViewModel m) => m.INF_TemperatureCoefficient));
+                inf.Add(GenInputControl("Constant Coefficient", (ProgramTypeViewModel m) => m.INF_ConstantCoefficient));
+                var infiltrationGroup = GenGroup("Infiltration", inf);
 
-                //};
+                vm.hbObj.Ventilation = vm.hbObj.Ventilation ?? new VentilationAbridged(Guid.NewGuid().ToString());
+                var vnt = new List<Control>() { };
+                vnt.Add(GenInputControl("Flow/Area", (ProgramTypeViewModel m) => m.VNT_FlowPerArea));
+                vnt.Add(GenInputControl("Schedule", (ProgramTypeViewModel m) => m.INF_Schedule, getSelectedSche));
+                vnt.Add(GenInputControl("Flow/Person", (ProgramTypeViewModel m) => m.VNT_FlowPerPerson));
+                vnt.Add(GenInputControl("Flow/Zone", (ProgramTypeViewModel m) => m.VNT_FlowPerZone));
+                vnt.Add(GenInputControl("AirChanges/Hour", (ProgramTypeViewModel m) => m.VNT_AirChangesPerHour));
+                var ventilationGroup = GenGroup("Ventilation", vnt);
 
-                //peopleParamInputs.Add(altNum_CBox);
-                //peopleParamInputs.Add(numInput);
-
-                var peopleGroup = GenGroup("People", peopleParamInputs);
-           
-
-
-                //var peopleDP = DialogHelper.MakeDropDown(EnergyProp.People, (v) => EnergyProp.People = v,
-                //    EnergyLibrary.DefaultPeopleLoads, defaultByProgramType);
-
-                ////Get lighting
-                //var lightingDP = DialogHelper.MakeDropDown(EnergyProp.Lighting, (v) => EnergyProp.Lighting = v,
-                //    EnergyLibrary.DefaultLightingLoads, defaultByProgramType);
-
-                ////Get ElecEqp
-                //var elecEqpDP = DialogHelper.MakeDropDown(EnergyProp.ElectricEquipment, (v) => EnergyProp.ElectricEquipment = v,
-                //    EnergyLibrary.DefaultElectricEquipmentLoads, defaultByProgramType);
-
-                ////Get gasEqp
-                //var gasEqpDP = DialogHelper.MakeDropDown(EnergyProp.GasEquipment, (v) => EnergyProp.GasEquipment = v,
-                //    EnergyLibrary.GasEquipmentLoads, defaultByProgramType);
-
-                ////Get infiltration
-                //var infilDP = DialogHelper.MakeDropDown(EnergyProp.Infiltration, (v) => EnergyProp.Infiltration = v,
-                //    EnergyLibrary.DefaultInfiltrationLoads, defaultByProgramType);
-
-
-                ////Get ventilation
-                //var ventDP = DialogHelper.MakeDropDown(EnergyProp.Ventilation, (v) => EnergyProp.Ventilation = v,
-                //    EnergyLibrary.DefaultVentilationLoads, defaultByProgramType);
-
-                ////Get setpoint
-                //var setPtDP = DialogHelper.MakeDropDown(EnergyProp.Setpoint, (v) => EnergyProp.Setpoint = v,
-                //    EnergyLibrary.DefaultSetpoints, defaultByProgramType);
+                vm.hbObj.Setpoint = vm.hbObj.Setpoint ?? new SetpointAbridged(Guid.NewGuid().ToString(), "cooling sch", "heating sch");
+                var spt = new List<Control>() { };
+                spt.Add(GenInputControl("Cooling Schedule", (ProgramTypeViewModel m) => m.SPT_CoolingSchedule, getSelectedSche));
+                spt.Add(GenInputControl("Heating Schedule", (ProgramTypeViewModel m) => m.SPT_HeatingSchedule, getSelectedSche));
+                spt.Add(GenInputControl("Humidifying Schedule", (ProgramTypeViewModel m) => m.SPT_HumidifyingSchedule, getSelectedSche));
+                spt.Add(GenInputControl("Dehumidifying Schedule", (ProgramTypeViewModel m) => m.SPT_DehumidifyingSchedule, getSelectedSche));
+                var setpoinGroup = GenGroup("Setpoint", spt);
 
 
                 //Left panel
@@ -222,13 +217,13 @@ namespace Honeybee.UI
                 panelNames.AddRow(new Label() { Text = "Name:", Width = 75 }, nameTbx);
                 panelLeft.AddRow(panelNames);
                 panelLeft.AddRow(peopleGroup);
+                panelLeft.AddRow(lightingGroup);
+                panelLeft.AddRow(equipmentGroup);
+                panelLeft.AddRow(gasEqpGroup);
+                panelLeft.AddRow(infiltrationGroup);
+                panelLeft.AddRow(ventilationGroup);
+                panelLeft.AddRow(setpoinGroup);
                 panelLeft.AddRow(null);
-                //panelLeft.AddRow(floorGroup);
-                //panelLeft.AddRow(roofCeilingGroup);
-                //panelLeft.AddRow(apertureGroup);
-                //panelLeft.AddRow(doorGroup);
-                //panelLeft.AddRow(shadeGroup);
-                //panelLeft.AddRow(airBdGroup);
 
 
                 var borrowBtn = new Button() { Text = "Borrow" };
