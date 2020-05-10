@@ -27,7 +27,8 @@ namespace Honeybee.UI
                 Resizable = true;
                 Title = "Construction Set - Honeybee";
                 WindowStyle = WindowStyle.Default;
-                MinimumSize = new Size(450, 200);
+                MinimumSize = new Size(450, 500);
+                //Height = 800;
                 this.Icon = DialogHelper.HoneybeeIcon;
                 
 
@@ -118,43 +119,81 @@ namespace Honeybee.UI
                 spt.AddRange(GenInputControl("Dehumidifying Schedule", (ProgramTypeViewModel m) => m.SPT_DehumidifyingSchedule, getSelectedSche));
                 var setpoinGroup = GenGroup("Setpoint", spt, isSptNull, () => _vm.Setpoint = null);
 
+                // Json Data
+                var hbData = new Button { Text = "HBData" };
+                hbData.Click += (sender, e) => Dialog_Message.Show(Helper.Owner, _vm.hbObj.ToJson(), "Honeybee Data");
 
                 //Left panel
+                //var panelLeft = new TableLayout() { DataContext = _vm };
+
                 var panelLeft = new DynamicLayout() { DataContext = _vm };
-                var panelNames = new DynamicLayout();
-                panelNames.Padding = new Padding(10, 5, 15, 5);
-                panelNames.Spacing = new Size(5, 5);
-                panelLeft.BeginScrollable(BorderType.None);
-                panelLeft.Height = 600;
+                //panelLeft.Height = 600;
+                panelLeft.Padding = new Padding(5);
+                panelLeft.Spacing = new Size(5, 5);
+          
                 var nameTbx = new TextBox();
                 _vm.hbObj.DisplayName = _vm.hbObj.DisplayName ?? $"New ProgramType {_vm.hbObj.Identifier.Substring(0, 5)}";
                 nameTbx.TextBinding.Bind(_vm.hbObj, c => c.DisplayName);
-
-                panelLeft.AddSeparateRow(new Label() { Text = "ID: ", Width = 75 }, new Label() { Text = _vm.hbObj.Identifier, Enabled = false });
-                panelLeft.AddSeparateRow(new Label() { Text = "Name:"});
+                //panelLeft.BeginScrollable(BorderType.None);
+                //panelLeft.Height = 600;
+                //panelLeft.Width = 400;
+                panelLeft.AddSeparateRow(new Label() { Text = "ID: " }, new Label() { Text = _vm.hbObj.Identifier, Enabled = false });
+                panelLeft.AddSeparateRow(new Label() { Text = "Name:" });
                 panelLeft.AddSeparateRow(nameTbx);
-                panelLeft.AddSeparateRow(panelNames);
-                panelLeft.AddSeparateRow(peopleGroup);
-                panelLeft.AddSeparateRow(lightingGroup);
-                panelLeft.AddSeparateRow(equipmentGroup);
-                panelLeft.AddSeparateRow(gasEqpGroup);
-                panelLeft.AddSeparateRow(infiltrationGroup);
-                panelLeft.AddSeparateRow(ventilationGroup);
-                panelLeft.AddSeparateRow(setpoinGroup);
-                panelLeft.AddSeparateRow(null);
 
+                var loadsPanel = new DynamicLayout();
+                loadsPanel.Padding = new Padding(0, 0, 0, 15);
+                //loadsPanel.Spacing = new Size(5, 5);
+                loadsPanel.Height = 600;
+                loadsPanel.Width = 340;
+                //panelLeft.BeginVertical();
+                loadsPanel.BeginScrollable(BorderType.None);
+                loadsPanel.AddSeparateRow(peopleGroup);
+                loadsPanel.AddSeparateRow(lightingGroup);
+                loadsPanel.AddSeparateRow(equipmentGroup);
+                loadsPanel.AddSeparateRow(gasEqpGroup);
+                loadsPanel.AddSeparateRow(infiltrationGroup);
+                loadsPanel.AddSeparateRow(ventilationGroup);
+                loadsPanel.AddSeparateRow(setpoinGroup);
+                loadsPanel.AddSeparateRow(null);
+                loadsPanel.EndScrollable();
+                //panelLeft.EndVertical();
+
+
+                panelLeft.AddSeparateRow(loadsPanel);
+                panelLeft.AddSeparateRow(hbData);
+                panelLeft.AddSeparateRow(null);
+                //panelLeft.EndScrollable();
+
+                //panelLeft.Rows.Add(new Label() { Text = $"ID: {_vm.hbObj.Identifier}", Enabled = false });
+                //panelLeft.Rows.Add(new Label() { Text = "Name:" });
+                //panelLeft.Rows.Add(nameTbx);
+                //panelLeft.Rows.Add(peopleGroup);
+                //panelLeft.Rows.Add(lightingGroup);
+                //panelLeft.Rows.Add(equipmentGroup);
+                //panelLeft.Rows.Add(gasEqpGroup);
+                //panelLeft.Rows.Add(infiltrationGroup);
+                //panelLeft.Rows.Add(ventilationGroup);
+                //panelLeft.Rows.Add(setpoinGroup);
+                //panelLeft.Rows.Add(hbData);
+                //panelLeft.Rows.Add(null);
+
+                //var scro = new Eto.Forms.Scrollable();
+                //scro.Size = new Size(400, 500);
+                //scro.Content = panelLeft;
 
                 var controls = GenLibraryPanel();
                 var libControls = controls.allControls;
                 var libraryLBox = controls.libraryLBox;
+
                 // Add to program
                 var borrowBtn = new Button() { Text = "Set to program" };
                 borrowBtn.Click += (s, e) =>
                 {
-                    if (libraryLBox.SelectedIndex == -1)
+                    var selected = libraryLBox.SelectedItem;
+                    if (selected == null)
                         return;
 
-                    var selected = (libraryLBox.Items[libraryLBox.SelectedIndex] as ListItem).Tag;
                     if (selected is PeopleAbridged pp)
                     {
                         _vm.People = pp;
@@ -195,16 +234,18 @@ namespace Honeybee.UI
 
 
                 var panelRight = new DynamicLayout();
+                panelRight.BackgroundColor = Color.FromArgb(100, 100, 100);
                 panelRight.Padding = new Padding(5);
                 foreach (var item in libControls)
                 {
                     panelRight.AddRow(item);
                 }
                 panelRight.AddRow(borrowBtn);
-            
+                panelRight.AddRow(null);
 
-                var panelAll = new DynamicLayout() { };
-                panelAll.AddRow(panelLeft, panelRight);
+
+                //var panelAll = new DynamicLayout() { };
+                //panelAll.AddRow(panelLeft, panelRight);
 
                 DefaultButton = new Button { Text = "OK" };
                 DefaultButton.Click += (sender, e) => Close(_vm.hbObj);
@@ -212,16 +253,14 @@ namespace Honeybee.UI
                 AbortButton = new Button { Text = "Cancel" };
                 AbortButton.Click += (sender, e) => Close();
 
-                var hbData = new Button { Text = "HBData" };
-                hbData.Click += (sender, e) => Dialog_Message.Show(Helper.Owner, _vm.hbObj.ToJson(), "Honeybee Data");
 
                 var buttons = new TableLayout
                 {
                     Padding = new Padding(5, 10, 5, 5),
                     Spacing = new Size(10, 10),
-                    Rows = { new TableRow(null, this.DefaultButton, this.AbortButton, null, hbData) }
+                    Rows = { new TableRow(null, this.DefaultButton, this.AbortButton) }
                 };
-
+                panelLeft.AddSeparateRow(buttons);
 
                 //Create layout
                 Content = new TableLayout()
@@ -230,9 +269,7 @@ namespace Honeybee.UI
                     Spacing = new Size(5, 5),
                     Rows =
                 {
-                    panelAll,
-                    new TableRow(buttons),
-                    null
+                    new TableRow(panelLeft, panelRight)
                 }
                 };
 
@@ -246,7 +283,7 @@ namespace Honeybee.UI
 
         }
 
-        private static (List<Control> allControls, ListBox libraryLBox) GenLibraryPanel()
+        private static (List<Control> allControls, GridView libraryLBox) GenLibraryPanel()
         {
             var hbLoads = new List<HB.Energy.IIDdEnergyBaseModel>();
             hbLoads.AddRange(EnergyLibrary.DefaultPeopleLoads);
@@ -261,33 +298,53 @@ namespace Honeybee.UI
             var itemsToShow = hbLoads;
 
             // Library List
-            var libraryLBox = new ListBox();
-            libraryLBox.Height = 450;
-            libraryLBox.Width = 300;
+            var library_GV = new GridView();
+            library_GV.Height = 450;
+            library_GV.Width = 400;
+            //library_GV.GridLines = GridLines.Horizontal;
+            library_GV.ShowHeader = false;
+            library_GV.AllowMultipleSelection = false;
 
             // Preview 
-            var previewLBox = new ListBox();
-            previewLBox.Height = 150;
-            previewLBox.Items.Add(new ListItem() { Text = "Construction Details" });
+            var preview_GV = new GridView() {};
+            preview_GV.Height = 150;
+            preview_GV.ShowHeader = false;
+            //preview_GV.GridLines = GridLines.Horizontal;
+            var nameCol = new GridColumn() { DataCell = new TextBoxCell(0) };
+            var valueCol = new GridColumn() { DataCell = new TextBoxCell(1) };
+            preview_GV.Columns.Add(nameCol);
+            preview_GV.Columns.Add(valueCol);
 
             // Library items
-            var allItems = itemsToShow.Select(_ => new ListItem() { Text = $"{_.GetType().Name.Replace("Abridged", "")}: {_.DisplayName??_.Identifier}" , Tag = _ });
-            libraryLBox.Items.AddRange(allItems);
+            //var allItems = itemsToShow.Select(_ => new ListItem() { Text = $"{_.GetType().Name.Replace("Abridged", "")}: {_.DisplayName??_.Identifier}" , Tag = _ });
+            library_GV.DataStore = itemsToShow;
 
-            libraryLBox.SelectedKeyChanged += (s, e) =>
+            var typeCell = new TextBoxCell
             {
-                if (libraryLBox.SelectedIndex == -1)
-                {
-                    previewLBox.Items.Clear();
-                    //previewLBox.Items.Add(new ListItem() { Text = "Construction Details" });
-                    return;
-                }
+                Binding = Binding.Delegate<HB.Energy.IIDdEnergyBaseModel, string>( r => $"{r.GetType().Name.Replace("Abridged", "").Replace("Equipment", "Equip")}")
+            };
+            var idCell = new TextBoxCell
+            {
+                Binding = Binding.Delegate<HB.Energy.IIDdEnergyBaseModel, string>( r => r.DisplayName?? r.Identifier)
+            };
+            
+            library_GV.Columns.Add(new GridColumn() { DataCell = typeCell});
+            library_GV.Columns.Add(new GridColumn() { DataCell = idCell});
 
-                var selectedObj = (libraryLBox.Items[libraryLBox.SelectedIndex] as ListItem).Tag;
+
+            library_GV.SelectedItemsChanged += (s, e) =>
+            {
+                //Clear preview first
+                preview_GV.DataStore = new List<string>();
+
+                //Check current selected item from library
+                var selItem = library_GV.SelectedItem;
+                if (selItem == null)
+                    return;
+
                 //Update Preview
-                var previewData = UpdatePreview(selectedObj).Select(_ => new ListItem() { Text = _ });
-                previewLBox.Items.Clear();
-                previewLBox.Items.AddRange(previewData);
+                preview_GV.DataStore = GetPreviewData(selItem);
+
             };
 
             // Search box
@@ -295,16 +352,16 @@ namespace Honeybee.UI
             searchTBox.TextChanged += (sender, e) =>
             {
                 var input = searchTBox.Text;
-                libraryLBox.Items.Clear();
+                //library_GV.Items.Clear();
                 if (string.IsNullOrWhiteSpace(input))
                 {
-                    libraryLBox.Items.AddRange(allItems);
+                    library_GV.DataStore = itemsToShow;
                     return;
                 }
                 var regexPatten = ".*" + input.Replace(" ", "(.*)") + ".*";
-                var filtered = hbLoads.Where(_ => Regex.IsMatch(_.Identifier, regexPatten, RegexOptions.IgnoreCase) || (_.DisplayName != null ? Regex.IsMatch(_.DisplayName, regexPatten, RegexOptions.IgnoreCase) : false));
-                var filteredItems = filtered.Select(_ => new ListItem() { Text = _.Identifier, Key = _.Identifier, Tag = _ });
-                libraryLBox.Items.AddRange(filteredItems);
+                var filtered = itemsToShow.Where(_ => Regex.IsMatch(_.Identifier, regexPatten, RegexOptions.IgnoreCase) || (_.DisplayName != null ? Regex.IsMatch(_.DisplayName, regexPatten, RegexOptions.IgnoreCase) : false));
+                //var filteredItems = filtered.Select(_ => new ListItem() { Text = _.Identifier, Key = _.Identifier, Tag = _ });
+                library_GV.DataStore = filtered;
 
             };
 
@@ -327,32 +384,41 @@ namespace Honeybee.UI
                 }
 
                 searchTBox.Text = null;
-                libraryLBox.Items.Clear();
+                //library_GV.Items.Clear();
 
-                var filteredItems = itemsToShow.Select(_ => new ListItem() { Text = $"{_.GetType().Name.Replace("Abridged","")}: {_.DisplayName ?? _.Identifier}", Tag = _ });
-                libraryLBox.Items.AddRange(filteredItems);
+                //var filteredItems = itemsToShow.Select(_ => new ListItem() { Text = $"{_.GetType().Name.Replace("Abridged","")}: {_.DisplayName ?? _.Identifier}", Tag = _ });
+                library_GV.DataStore = itemsToShow;
 
             };
 
             var controls = new List<Control>() {
+                "Library",
                 libraryType_DD,
                 searchTBox,
-                libraryLBox,
-                previewLBox
+                library_GV,
+                preview_GV
             };
           
-            return (controls, libraryLBox);
+            return (controls, library_GV);
 
             
         }
-        private static List<string> UpdatePreview(object selectedItem )
+        private static List<object> GetPreviewData(object selectedItem )
         {
-           
-            var layers = new List<string>();
+            var layers = new List<object>();
             if (selectedItem is HB.HoneybeeObject obj)
             {
-                var str = obj.ToString(false);
-                layers.Add(str);
+                var detailedString = obj.ToString(detailed: true);
+                var str = detailedString.Split(new[] { "\n" }, StringSplitOptions.None).Skip(1);
+                foreach (var item in str)
+                {
+                    var values = item.Trim().Split(new[] { ':' }, 2).ToList();
+                    if (values.Count==2)
+                    {
+                        layers.Add(values);
+                    }
+                    
+                }
             }
            
             return layers;
