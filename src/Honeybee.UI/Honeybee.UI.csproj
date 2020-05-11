@@ -83,6 +83,7 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dialog\Dialog_Schedule.cs" />
     <Compile Include="Dialog\Dialog_ProgramTypeManager.cs" />
     <Compile Include="Dialog\Dialog_ProgramType.cs" />
     <Compile Include="Dialog\Dialog_Face.cs" />

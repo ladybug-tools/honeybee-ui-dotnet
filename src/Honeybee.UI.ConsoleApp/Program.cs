@@ -41,7 +41,7 @@ namespace Honeybee.UI.ConsoleApp
                 Messagebtn.Click += (s, e) =>
                 {
                     var energyProp = new HoneybeeSchema.RoomEnergyPropertiesAbridged();
-                    Dialog_Message.Show(energyProp.ToJson());
+                    Dialog_Message.Show(this, energyProp.ToJson());
                     
                 };
 
@@ -50,7 +50,7 @@ namespace Honeybee.UI.ConsoleApp
                 {
                     var cSet = new HoneybeeSchema.ConstructionSetAbridged(identifier: Guid.NewGuid().ToString());
                     var dialog = new Honeybee.UI.Dialog_ConstructionSet(cSet);
-                    dialog.ShowModal();
+                    dialog.ShowModal(this);
 
                 };
 
@@ -59,7 +59,7 @@ namespace Honeybee.UI.ConsoleApp
                 {
                     var pType = new HoneybeeSchema.ProgramTypeAbridged(identifier: Guid.NewGuid().ToString());
                     var dialog = new Honeybee.UI.Dialog_ProgramType(pType);
-                    dialog.ShowModal();
+                    dialog.ShowModal(this);
 
                 };
 
@@ -72,11 +72,20 @@ namespace Honeybee.UI.ConsoleApp
 
                 };
 
+                var schbtn = new Button() { Text = "Schedule" };
+                schbtn.Click += (s, e) =>
+                {
+                    var dialog = new Honeybee.UI.Dialog_Schedule();
+                    dialog.ShowModal(this);
+
+                };
+
                 panel.AddSeparateRow(btn);
                 panel.AddSeparateRow(Messagebtn);
                 panel.AddSeparateRow(cSetbtn);
                 panel.AddSeparateRow(pTypebtn);
                 panel.AddSeparateRow(pTypeMngbtn);
+                panel.AddSeparateRow(schbtn);
                 panel.AddSeparateRow(null);
                 Content = panel;
             }
