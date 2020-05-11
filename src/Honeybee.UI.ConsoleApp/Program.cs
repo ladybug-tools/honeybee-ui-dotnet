@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Eto.Forms;
+using HoneybeeSchema;
 
 namespace Honeybee.UI.ConsoleApp
 {
@@ -62,10 +63,20 @@ namespace Honeybee.UI.ConsoleApp
 
                 };
 
+                var pTypeMngbtn = new Button() { Text = "ProgramTypeManager" };
+                pTypeMngbtn.Click += (s, e) =>
+                {
+                    var md = new Model("", new ModelProperties(ModelEnergyProperties.Default));
+                    var dialog = new Honeybee.UI.Dialog_ProgramTypeManager(md);
+                    dialog.ShowModal(this);
+
+                };
+
                 panel.AddSeparateRow(btn);
                 panel.AddSeparateRow(Messagebtn);
                 panel.AddSeparateRow(cSetbtn);
                 panel.AddSeparateRow(pTypebtn);
+                panel.AddSeparateRow(pTypeMngbtn);
                 panel.AddSeparateRow(null);
                 Content = panel;
             }
