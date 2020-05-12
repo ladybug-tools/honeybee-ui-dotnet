@@ -92,11 +92,6 @@ namespace Honeybee.UI
             };
             drawable.MouseUp += (s, e) =>
             {
-                //if (mouseHoveredRangesForDragging.Any())
-                //{
-
-
-                //}
                 if (startDragging)
                 {
                     mouseHoveredRangesForDragging.Clear();
@@ -104,8 +99,19 @@ namespace Honeybee.UI
                     drawable.Update(drawable.Bounds);
                 }
 
+            };
+
+            drawable.LostFocus += (s, e) =>
+            {
+                if (startDragging)
+                {
+                    mouseHoveredRangesForDragging.Clear();
+                    startDragging = false;
+                    drawable.Update(drawable.Bounds);
+                }
 
             };
+
             // mouse move for dragging
             drawable.MouseMove += (s, e) =>
             {
@@ -117,14 +123,56 @@ namespace Honeybee.UI
                 {
                     var hovered = mouseHoveredRangesForDragging.First();
                     var valueIndex = hovered.valueIndex;
-                    //TODO: need to do conversion based on schedule's max and min. For now, it just calculated %.
-                    //var mappedValue = (canvas.Height - (mouseLoc - canvas.Location).Y) / canvas.Height;
-                    var mappedValue = (canvas.Bottom - mouseLoc.Y) / canvas.Height;
-                    var pecent = Math.Round(mappedValue, 3);
 
-                    //label.Text = $"{canvas.Bottom} - {mouseLoc.Y} / {canvas.Height} = {pecent}";
-                    dayValues[valueIndex] = pecent;
-                    drawable.Update(drawable.Bounds);
+                    if (hovered.isVertical)
+                    {
+                        var mappedTime = (mouseLoc.X - canvas.Left) / canvas.Width*24;
+                        var mappedHour = Math.Floor(mappedTime);
+                        var mappedMinute = Math.Abs(mappedTime - mappedHour) * 60;
+                        label.Text = $"{mouseLoc.X} - {canvas.Left} / {canvas.Width} * 24 = {mappedHour}:{mappedMinute}";
+
+                        // get minimum movable left bound; 
+                        var beforeTime = (0, 0);
+                        var beforeIndex = hovered.valueIndex - 1;
+                        if (beforeIndex >= 0)
+                        {
+                            beforeTime = dayTimes[beforeIndex];
+                        }
+                        var beforeTime2 = beforeTime.Item1 + beforeTime.Item2 / 60;
+                        // get maximum movable right bound; 
+                        var nextTime = (24, 0);
+                        var nextIndex = hovered.valueIndex + 1;
+                        if (nextIndex < dayTimes.Count)
+                        {
+                            nextTime = dayTimes[nextIndex];
+                        }
+                        var nextTime2 = nextTime.Item1 + nextTime.Item2 / 60;
+
+                        var timeNormalized = NormalizeHourMinute(mappedTime);
+                        var newHour = timeNormalized.hour;
+                        var newMinute = timeNormalized.minute;
+                        var newTime = newHour + newMinute / 60;
+                        if (newTime < nextTime2 && newTime > beforeTime2)
+                        {
+                            dayTimes[hovered.valueIndex] = (newHour, newMinute);
+                            drawable.Update(drawable.Bounds);
+                        }
+
+
+                    }
+                    else
+                    {
+                        //TODO: need to do conversion based on schedule's max and min. For now, it just calculated %.
+                        //var mappedValue = (canvas.Height - (mouseLoc - canvas.Location).Y) / canvas.Height;
+                        var mappedValue = (canvas.Bottom - mouseLoc.Y) / canvas.Height;
+                        var pecent = Math.Round(mappedValue, 3);
+
+                        //label.Text = $"{canvas.Bottom} - {mouseLoc.Y} / {canvas.Height} = {pecent}";
+                        dayValues[valueIndex] = pecent;
+                        drawable.Update(drawable.Bounds);
+                    }
+                    
+                   
                 }
                 else
                 {
@@ -155,14 +203,12 @@ namespace Honeybee.UI
                     var mouseLoc = e.Location;
                     //TODO: need to do conversion based on schedule's max and min. For now, it just calculated %.
                     var mappedTimeRaw = (mouseLoc.X - canvas.Left) / canvas.Width * 24;
-                    var mappedHour = (int)mappedTimeRaw;
-                    var mappedMinute = (int)NormalizeMinute((int)(Math.Abs(mappedTimeRaw - mappedHour) * 60));
-                    if (mappedMinute == 60)
-                    {
-                        mappedHour++;
-                        mappedMinute = 0;
-                    }
-                    var mappedTimeNormalized = mappedHour + (double)(mappedMinute / 60.0);
+                
+                    var timeNormalized = NormalizeHourMinute(mappedTimeRaw);
+                    var hour = timeNormalized.hour;
+                    var minute = timeNormalized.minute;
+                    var mappedTimeNormalized = hour + (double)(minute / 60.0);
+
 
                     var newDateTimes = dayTimes.Select(_ => _.hour + (double)(_.minute / 60.0)).ToList();
                     if (!newDateTimes.Contains(mappedTimeNormalized))
@@ -173,7 +219,7 @@ namespace Honeybee.UI
                     var foundIndex = newDateTimes.IndexOf(mappedTimeNormalized);
 
                     var insertIndex = Math.Max(0, foundIndex - 1);
-                    dayTimes.Insert(foundIndex, (mappedHour, mappedMinute));
+                    dayTimes.Insert(foundIndex, (hour, minute));
                     var addValue = dayValues[insertIndex];
                     dayValues.Insert(insertIndex, addValue);
 
@@ -320,12 +366,39 @@ namespace Honeybee.UI
             this.AddRow(drawable);
 
         }
- 
 
+        /// <summary>
+        /// Convert 20 (minute) to 15 (minute) based on _intervalMinutes
+        /// </summary>
+        /// <param name="oldMinute"></param>
+        /// <returns></returns>
         private double NormalizeMinute(int oldMinute)
         {
             var checkedMinute = Math.Round(oldMinute / _intervalMinutes) * _intervalMinutes;
             return checkedMinute;
+        }
+
+        /// <summary>
+        /// Convert 11.20 (11:12 AM) to 11.25 (11:15 AM) based on _intervalMinutes
+        /// </summary>
+        /// <param name="oldHourMinute"></param>
+        /// <returns></returns>
+        private double NormalizeHour(double oldHourMinute)
+        {
+            var time = NormalizeHourMinute(oldHourMinute);
+            var mappedTimeNormalized = time.hour + (double)(time.minute / 60.0);
+            return mappedTimeNormalized;
+        }
+        private (int hour, int minute) NormalizeHourMinute(double oldHourMinute)
+        {
+            var hour = (int)Math.Floor(oldHourMinute);
+            var mappedMinute = (int)NormalizeMinute((int)(Math.Abs(oldHourMinute - hour) * 60));
+            if (mappedMinute == 60)
+            {
+                hour++;
+                mappedMinute = 0;
+            }
+            return (hour, mappedMinute);
         }
         private List<PointF> GenHourPts(List<double> dayValues, List<(int hour, int minute)> dayTimes, RectangleF frameBound)
         {
