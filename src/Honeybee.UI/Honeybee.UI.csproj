@@ -95,6 +95,7 @@
     <Compile Include="Layout\Face.cs" />
     <Compile Include="Honeybee.UI.cs" />
     <Compile Include="Layout\Room.cs" />
+    <Compile Include="Layout\Schedule.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />
     <Compile Include="ViewModel\ProgramTypeViewModel.cs" />
     <Compile Include="ViewModel\MessageViewModel.cs" />
