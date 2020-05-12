@@ -21,6 +21,7 @@ namespace Honeybee.UI
             //layout.AddRow(datePicker);
             //layout.AddRow(null);
 
+            (double start, double end) scheduleTypeLimits = (0, 1);
             var dayValues = new List<double>() { 0.16, 0.5, 0 };
             var dayTimes = new List<(int hour, int minute)>() { (0, 0), (6, 0), (18, 0) };
             var hours = dayTimes.Select(_ => _.hour).ToArray();
@@ -38,7 +39,7 @@ namespace Honeybee.UI
             var location = new Point(0, 0);
             var canvas = drawable.Bounds;
             canvas.BottomRight = new Point(canvas.Width - 15, canvas.Height - 15);
-            canvas.TopLeft = new Point(15, 15);
+            canvas.TopLeft = new Point(30, 15);
 
 
 
@@ -57,6 +58,7 @@ namespace Honeybee.UI
             drawable.MouseMove += (s, e) =>
             {
                 var mouseLoc = e.Location;
+                //label.Text = $"{Math.Round(mouseLoc.X)},{Math.Round(mouseLoc.Y)}";
                 //Draw mouse hover over ranges
                 var hovered = allMouseHoverRanges.Where(_ => _.rectangle.Contains(mouseLoc));
                 if (hovered.Any())
@@ -112,6 +114,7 @@ namespace Honeybee.UI
             };
 
             // mouse move for dragging
+
             drawable.MouseMove += (s, e) =>
             {
                 if (!startDragging)
@@ -126,9 +129,10 @@ namespace Honeybee.UI
                     if (hovered.isVertical)
                     {
                         var mappedTime = (mouseLoc.X - canvas.Left) / canvas.Width*24;
-                        var mappedHour = Math.Floor(mappedTime);
-                        var mappedMinute = Math.Abs(mappedTime - mappedHour) * 60;
-                        //label.Text = $"{mouseLoc.X} - {canvas.Left} / {canvas.Width} * 24 = {mappedHour}:{mappedMinute}";
+                        var timeNormalized = NormalizeHourMinute(mappedTime);
+                        var newHour = timeNormalized.hour;
+                        var newMinute = timeNormalized.minute;
+                        var newTime = newHour + newMinute / 60;
 
                         // get minimum movable left bound; 
                         var beforeTime = (0, 0);
@@ -147,10 +151,7 @@ namespace Honeybee.UI
                         }
                         var nextTime2 = nextTime.Item1 + nextTime.Item2 / 60;
 
-                        var timeNormalized = NormalizeHourMinute(mappedTime);
-                        var newHour = timeNormalized.hour;
-                        var newMinute = timeNormalized.minute;
-                        var newTime = newHour + newMinute / 60;
+                        
                         if (newTime < nextTime2 && newTime > beforeTime2)
                         {
                             dayTimes[hovered.valueIndex] = (newHour, newMinute);
@@ -186,20 +187,22 @@ namespace Honeybee.UI
 
             drawable.MouseDoubleClick += (s, e) =>
             {
-                if (mouseHoveredRanges.Any())
+                var mouseLoc = e.Location;
+                var doubleClickedRanges = allMouseHoverRanges.Where(_ => _.rectangle.Contains(mouseLoc));
+               
+                if (doubleClickedRanges.Any())
                 {
-                    var hovered = mouseHoveredRanges.First();
+                    var hovered = doubleClickedRanges.First();
                     if (hovered.isVertical)
                     {
                         dayTimes.RemoveAt(hovered.valueIndex);
                         dayValues.RemoveAt(hovered.valueIndex);
-                        mouseHoveredRanges.Clear();
                         drawable.Update(canvas);
 
                         return;
                     }
 
-                    var mouseLoc = e.Location;
+                    //var mouseLoc = e.Location;
                     //TODO: need to do conversion based on schedule's max and min. For now, it just calculated %.
                     var mappedTimeRaw = (mouseLoc.X - canvas.Left) / canvas.Width * 24;
                 
@@ -304,11 +307,11 @@ namespace Honeybee.UI
 
                 //Draw horizontal ticks
                 var markCount = 6;
-                var interval = 24 / markCount;
-                var startPoint = canvas.BottomLeft;
-                var endPoint = canvas.BottomRight;
+                var hourInterval = 24 / markCount;
+                var hourStartPt = canvas.BottomLeft;
+                var hourEdPt = canvas.BottomRight;
 
-                var widthPerInterval = startPoint.Distance(endPoint) / markCount;
+                var widthPerInterval = (hourEdPt.X- hourStartPt.X) / markCount;
                 var bottom = canvas.Bottom;
                 var left = canvas.Left;
               
@@ -321,9 +324,27 @@ namespace Honeybee.UI
                     var p2 = new PointF(left + i * widthPerInterval, bottom + tickLength);
                     graphics.DrawLine(Colors.Black, p1, p2 );
 
-                    var tickText = $"{i * interval}:00";
+                    var tickText = $"{i * hourInterval}:00";
                     var textSize = tickfont.MeasureString(tickText);
                     graphics.DrawText(tickfont, Colors.Black, p2.X - textSize.Width / 2, p2.Y - textSize.Height / 2 + 8, tickText);
+                }
+
+
+                //Draw vertical value ticks
+                var valueMarkCount = 5;
+                var valueStartPt = canvas.BottomLeft;
+                var valueEndPt = canvas.TopLeft;
+                var heightPerInterval = (valueStartPt.Y - valueEndPt.Y) / valueMarkCount;
+                var valueInterval = Math.Abs(scheduleTypeLimits.start - scheduleTypeLimits.end) / valueMarkCount;
+                for (int i = 0; i <= valueMarkCount; i++)
+                {
+                    var p1 = new PointF(left, bottom - i * heightPerInterval);
+                    var p2 = new PointF(left - tickLength, bottom - i * heightPerInterval);
+                    graphics.DrawLine(Colors.Black, p1, p2);
+
+                    var tickText = $"{scheduleTypeLimits.start + i * valueInterval}";
+                    var textSize = tickfont.MeasureString(tickText);
+                    graphics.DrawText(tickfont, Colors.Black, p2.X - textSize.Width -2, p2.Y - textSize.Height / 2, tickText);
                 }
 
             };
