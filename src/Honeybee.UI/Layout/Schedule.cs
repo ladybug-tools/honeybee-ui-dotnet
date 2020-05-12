@@ -42,8 +42,6 @@ namespace Honeybee.UI
             canvas.TopLeft = new Point(30, 15);
 
 
-
-
             //var drawableTarget = new DrawableTarget(drawable) { UseOffScreenBitmap = true };
             EventHandler<MouseEventArgs> mouseHandler = (s, e) => {
                 location = new Point(e.Location);
@@ -211,21 +209,33 @@ namespace Honeybee.UI
                     var minute = timeNormalized.minute;
                     var mappedTimeNormalized = hour + (double)(minute / 60.0);
 
+                    // get minimum movable left bound; 
+                    var beforeTime = (0, 0);
+                    var beforeIndex = hovered.valueIndex;
+                    if (beforeIndex >= 0)
+                        beforeTime = dayTimes[beforeIndex];
+                    var beforeTime2 = beforeTime.Item1 + beforeTime.Item2 / 60;
+                    // get maximum movable right bound; 
+                    var nextTime = (24, 0);
+                    var nextIndex = hovered.valueIndex + 1;
+                    if (nextIndex < dayTimes.Count)
+                        nextTime = dayTimes[nextIndex];
+                    var nextTime2 = nextTime.Item1 + nextTime.Item2 / 60;
 
-                    var newDateTimes = dayTimes.Select(_ => _.hour + (double)(_.minute / 60.0)).ToList();
-                    if (!newDateTimes.Contains(mappedTimeNormalized))
+                    //var newDateTimes = dayTimes.ToList();
+                    if (mappedTimeNormalized < nextTime2 && mappedTimeNormalized > beforeTime2)
                     {
-                        newDateTimes.Add(mappedTimeNormalized);
+                        var insertIndex = hovered.valueIndex;
+                        dayTimes.Insert(insertIndex+1, (hour, minute));
+                        var addValue = dayValues[insertIndex];
+                        dayValues.Insert(insertIndex+1, addValue);
+                        //newDateTimes.Add((hour, minute));
+                        drawable.Update(new Rectangle(hovered.rectangle));
                     }
-                    newDateTimes.Sort();
-                    var foundIndex = newDateTimes.IndexOf(mappedTimeNormalized);
 
-                    var insertIndex = Math.Max(0, foundIndex - 1);
-                    dayTimes.Insert(foundIndex, (hour, minute));
-                    var addValue = dayValues[insertIndex];
-                    dayValues.Insert(insertIndex, addValue);
+              
 
-                    drawable.Update( new Rectangle( hovered.rectangle));
+                    
                 }
 
             };
