@@ -17,10 +17,6 @@ namespace Honeybee.UI
             this.DefaultPadding = new Padding(10);
             this.DefaultSpacing = new Size(5, 5);
 
-            //var datePicker = new DateTimePicker();
-            //layout.AddRow(datePicker);
-            //layout.AddRow(null);
-
             (double start, double end) scheduleTypeLimits = (0, 1);
             var dayValues = new List<double>() { 0.16, 0.5, 0 };
             var dayTimes = new List<(int hour, int minute)>() { (0, 0), (6, 0), (18, 0) };
@@ -32,13 +28,11 @@ namespace Honeybee.UI
             this.AddSeparateRow(null, label, mouseHoverValue_TB);
 
 
-            var drawable = new Drawable(true)
-            {
-                Size = new Size(600, 400)
-            };
+            var drawable = new Drawable(true) { };
+            drawable.Size = new Size(600, 400);
             var location = new Point(0, 0);
             var canvas = drawable.Bounds;
-            canvas.BottomRight = new Point(canvas.Width - 15, canvas.Height - 15);
+            canvas.Size = canvas.Size - 30;
             canvas.TopLeft = new Point(30, 15);
 
 
@@ -243,11 +237,12 @@ namespace Honeybee.UI
             var hoveredValueIndex = 0;
             drawable.Paint += (s, e) =>
             {
-                //var path = new GraphicsPath();
-                //path.AddEllipse(25, 25, 50, 50);
-                //path.AddRectangle(125, 25, 50, 50);
-                //path.AddLines(new PointF(225, 25), new PointF(225, 75), new PointF(275, 50));
-                //path.CloseFigure();
+                //TODO: this is need when I start working on resizable charts 
+                //canvas = drawable.Bounds;
+                //canvas.Size = canvas.Size - 30;
+                //canvas.TopLeft = new Point(30, 15);
+                //canvas.Size = new Size(canvas.Width -100, 300);
+
                 var mouseLoc = location;
 
                 var graphics = e.Graphics;
@@ -291,17 +286,27 @@ namespace Honeybee.UI
                     var font = Fonts.Sans(8);
                     var textSize = font.MeasureString(valueToDisplay);
                     graphics.DrawText(font, Colors.Black, textLoc.X - textSize.Width / 2, textLoc.Y - textSize.Height / 2 - 8, valueToDisplay);
-                    hoveredValueIndex = hoveredRec.valueIndex;
-                    if (!mouseHoverValue_TB.HasFocus)
-                        mouseHoverValue_TB.Focus();
 
-                    var hoveredValue = dayValues[hoveredRec.valueIndex];
-                    if (mouseHoverValue_TB.SelectedText != hoveredValue.ToString())
+                    // Show input textBox for users to type in a new value
+                    if (hoveredRec.isVertical)
                     {
-                        mouseHoverValue_TB.Value = hoveredValue;
-                        mouseHoverValue_TB.SelectAll();
+                        mouseHoverValue_TB.Enabled = false;
                     }
+                    else
+                    {
+                        mouseHoverValue_TB.Enabled = true;
+                        hoveredValueIndex = hoveredRec.valueIndex;
+                        if (!mouseHoverValue_TB.HasFocus)
+                            mouseHoverValue_TB.Focus();
 
+                        var hoveredValue = dayValues[hoveredRec.valueIndex];
+                        if (mouseHoverValue_TB.SelectedText != hoveredValue.ToString())
+                        {
+                            mouseHoverValue_TB.Value = hoveredValue;
+                            mouseHoverValue_TB.SelectAll();
+                        }
+                    }
+                    
                 }
 
                 foreach (var pt in allPts)
@@ -359,7 +364,9 @@ namespace Honeybee.UI
 
             };
 
-            mouseHoverValue_TB.KeyDown += (s, e) => {
+
+            mouseHoverValue_TB.KeyDown += (s, e) =>
+            {
                 if (e.Key == Keys.Enter)
                 {
                     if (mouseHoveredRanges.Any())
@@ -370,24 +377,27 @@ namespace Honeybee.UI
                         var valueIndex = hoveredValueIndex;
                         var newUserInput = mouseHoverValue_TB.Value;
                         var oldValue = dayValues[valueIndex];
-
+                  
                         //preRec.Top = (float) Math.Max(newUserInput, oldValue);
                         //preRec.Bottom = (float)Math.Min(newUserInput, oldValue);
                         dayValues[valueIndex] = newUserInput;
 
                         drawable.Update(canvas);
-                        //drawable.Update(new Rectangle(preRec));
                     }
 
 
-                    //drawable.Update(drawable.Bounds);
                 }
 
             };
 
-            
-            this.AddRow(drawable);
 
+            this.AddRow(drawable);
+            var btn = new Button() { Text = "HBData" };
+            btn.Click += (s, e) =>
+            {
+                MessageBox.Show(this, string.Join<double>(", ", dayValues));
+            };
+            
         }
 
         /// <summary>

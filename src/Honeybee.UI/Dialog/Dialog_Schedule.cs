@@ -4,6 +4,7 @@ using HB = HoneybeeSchema;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.IO.Compression;
 
 namespace Honeybee.UI
 {
@@ -31,6 +32,12 @@ namespace Honeybee.UI
 
 
                 var layout = new Panel_Schedule();
+                //var layout = new DynamicLayout();
+
+                //var drawable = new Drawable();
+                //drawable.Size = new Size(600, 400);
+                //drawable.BackgroundColor = Colors.Blue;
+                //layout.AddSeparateRow(drawable);
 
                 Content = layout;
 
