@@ -33,13 +33,12 @@ namespace Honeybee.UI
 
             var drawable = new Drawable(true)
             {
-                Size = new Size(600, 400),
-                BackgroundColor = Colors.White
+                Size = new Size(600, 400)
             };
             var location = new Point(0, 0);
             var canvas = drawable.Bounds;
-            canvas.BottomRight = new Point(canvas.Width - 10, canvas.Height - 10);
-            canvas.TopLeft = new Point(10, 10);
+            canvas.BottomRight = new Point(canvas.Width - 15, canvas.Height - 15);
+            canvas.TopLeft = new Point(15, 15);
 
 
 
@@ -63,7 +62,7 @@ namespace Honeybee.UI
                 if (hovered.Any())
                 {
                     mouseHoveredRanges = hovered.ToList();
-                    drawable.Update(drawable.Bounds);
+                    drawable.Update(canvas);
                 }
                 else
                 {
@@ -96,7 +95,7 @@ namespace Honeybee.UI
                 {
                     mouseHoveredRangesForDragging.Clear();
                     startDragging = false;
-                    drawable.Update(drawable.Bounds);
+                    drawable.Update(canvas);
                 }
 
             };
@@ -107,7 +106,7 @@ namespace Honeybee.UI
                 {
                     mouseHoveredRangesForDragging.Clear();
                     startDragging = false;
-                    drawable.Update(drawable.Bounds);
+                    drawable.Update(canvas);
                 }
 
             };
@@ -129,7 +128,7 @@ namespace Honeybee.UI
                         var mappedTime = (mouseLoc.X - canvas.Left) / canvas.Width*24;
                         var mappedHour = Math.Floor(mappedTime);
                         var mappedMinute = Math.Abs(mappedTime - mappedHour) * 60;
-                        label.Text = $"{mouseLoc.X} - {canvas.Left} / {canvas.Width} * 24 = {mappedHour}:{mappedMinute}";
+                        //label.Text = $"{mouseLoc.X} - {canvas.Left} / {canvas.Width} * 24 = {mappedHour}:{mappedMinute}";
 
                         // get minimum movable left bound; 
                         var beforeTime = (0, 0);
@@ -155,7 +154,7 @@ namespace Honeybee.UI
                         if (newTime < nextTime2 && newTime > beforeTime2)
                         {
                             dayTimes[hovered.valueIndex] = (newHour, newMinute);
-                            drawable.Update(drawable.Bounds);
+                            drawable.Update(canvas);
                         }
 
 
@@ -169,7 +168,7 @@ namespace Honeybee.UI
 
                         //label.Text = $"{canvas.Bottom} - {mouseLoc.Y} / {canvas.Height} = {pecent}";
                         dayValues[valueIndex] = pecent;
-                        drawable.Update(drawable.Bounds);
+                        drawable.Update(canvas);
                     }
                     
                    
@@ -195,7 +194,7 @@ namespace Honeybee.UI
                         dayTimes.RemoveAt(hovered.valueIndex);
                         dayValues.RemoveAt(hovered.valueIndex);
                         mouseHoveredRanges.Clear();
-                        drawable.Update(drawable.Bounds);
+                        drawable.Update(canvas);
 
                         return;
                     }
@@ -223,7 +222,7 @@ namespace Honeybee.UI
                     var addValue = dayValues[insertIndex];
                     dayValues.Insert(insertIndex, addValue);
 
-                    drawable.Update(drawable.Bounds);
+                    drawable.Update( new Rectangle( hovered.rectangle));
                 }
 
             };
@@ -241,18 +240,17 @@ namespace Honeybee.UI
                 var graphics = e.Graphics;
 
                 //Draw schedule
+                graphics.FillRectangle(Colors.White, canvas);
 
                 var hourPts = GenHourPts(dayValues, dayTimes, canvas);
                 var graphElements = GenPts(hourPts, canvas);
                 var allPts = graphElements.points;
                 allMouseHoverRanges = graphElements.ranges;
 
-                //graphics(Colors.Black, canvas);
-                graphics.DrawRectangle(Colors.Black, canvas);
-
-
+                
                 //Draw mouse hover over ranges
                 //var hovered = allMouseHoverRanges.Where(_ => _.rectangle.Contains(mouseLoc));
+              
                 var hovered = mouseHoveredRanges;
                 if (hovered.Any())
                 {
@@ -265,12 +263,11 @@ namespace Honeybee.UI
                     graphics.FillRectangle(Color.FromArgb(200, 200, 200), rec);
                     //draw text
                     var textLoc = hoveredRec.rectangle.Center;
-                    var font = Fonts.Sans(10);
+                    
                     var valueToDisplay = string.Empty;
                     if (hoveredRec.isVertical)
                     {
                         var time = dayTimes[hoveredRec.valueIndex];
-
                         valueToDisplay = TimeSpan.Parse($"{time.hour}:{time.minute}").ToString(@"hh\:mm");
                         valueToDisplay = $" {valueToDisplay}";
                     }
@@ -278,7 +275,7 @@ namespace Honeybee.UI
                     {
                         valueToDisplay = dayValues[hoveredRec.valueIndex].ToString();
                     }
-
+                    var font = Fonts.Sans(8);
                     var textSize = font.MeasureString(valueToDisplay);
                     graphics.DrawText(font, Colors.Black, textLoc.X - textSize.Width / 2, textLoc.Y - textSize.Height / 2 - 8, valueToDisplay);
                     hoveredValueIndex = hoveredRec.valueIndex;
@@ -303,14 +300,32 @@ namespace Honeybee.UI
                 graphics.DrawLines(pen, allPts);
 
 
+                graphics.DrawRectangle(Colors.Black, canvas);
 
-                //graphics.FillRectangle(Colors.Black, new Rectangle((int)hourX, (int)hourY, 2, 2));
+                //Draw horizontal ticks
+                var markCount = 6;
+                var interval = 24 / markCount;
+                var startPoint = canvas.BottomLeft;
+                var endPoint = canvas.BottomRight;
 
-                //var loc = location;
-                //loc.Restrict(new Rectangle(image.Size));
+                var widthPerInterval = startPoint.Distance(endPoint) / markCount;
+                var bottom = canvas.Bottom;
+                var left = canvas.Left;
+              
+                var tickLength = 8;
+                var tickfont = Fonts.Sans(8);
+                //var font = Fonts.Sans(10);
+                for (int i = 0; i <= markCount; i++)
+                {
+                    var p1 = new PointF(left + i * widthPerInterval, bottom);
+                    var p2 = new PointF(left + i * widthPerInterval, bottom + tickLength);
+                    graphics.DrawLine(Colors.Black, p1, p2 );
 
-                //graphics.FillRectangle(Colors.Black, new Rectangle(loc.X - 50, loc.Y - 50, 100, 100));
-                //drawableTarget.EndDraw(e);
+                    var tickText = $"{i * interval}:00";
+                    var textSize = tickfont.MeasureString(tickText);
+                    graphics.DrawText(tickfont, Colors.Black, p2.X - textSize.Width / 2, p2.Y - textSize.Height / 2 + 8, tickText);
+                }
+
             };
 
             mouseHoverValue_TB.KeyDown += (s, e) => {
@@ -329,7 +344,7 @@ namespace Honeybee.UI
                         //preRec.Bottom = (float)Math.Min(newUserInput, oldValue);
                         dayValues[valueIndex] = newUserInput;
 
-                        drawable.Update(drawable.Bounds);
+                        drawable.Update(canvas);
                         //drawable.Update(new Rectangle(preRec));
                     }
 
@@ -339,30 +354,7 @@ namespace Honeybee.UI
 
             };
 
-            //drawable.Paint += (s, e) => {
-
-            //    var graphics = e.Graphics;
-
-            //    var loc = location;
-            //    //loc.Restrict(new Rectangle(image.Size));
-            //    graphics.FillRectangle(Colors.Black, new Rectangle(loc.X-50, loc.Y-50, 100, 100));
-            //    //drawableTarget.EndDraw(e);
-            //};
-
-            //control.Paint += delegate (object sender, PaintEventArgs pe) {
-            //    pe.Graphics.FillRectangle(Colors.Black, new Rectangle(150, 150, 100, 100));
-            //    var inc = 400;
-            //    for (int i = 0; i <= control.Size.Width / inc; i++)
-            //    {
-            //        var pos = i * inc;
-            //        pe.Graphics.DrawLine(Colors.White, new Point(pos, 0), new Point(pos + control.Size.Width, control.Size.Height));
-            //        pe.Graphics.DrawLine(Colors.White, new Point(pos, 0), new Point(pos - control.Size.Width, control.Size.Height));
-            //    }
-            //    var lpos = 100;
-            //    pe.Graphics.DrawLine(Colors.White, new Point(0, lpos), new Point(control.Size.Width, lpos));
-            //    pe.Graphics.DrawLine(Colors.White, new Point(lpos, 0), new Point(lpos, control.Size.Height));
-
-            //};
+            
             this.AddRow(drawable);
 
         }
