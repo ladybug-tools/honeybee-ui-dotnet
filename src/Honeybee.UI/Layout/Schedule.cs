@@ -255,10 +255,10 @@ namespace Honeybee.UI
                 var allPts = graphElements.points;
                 allMouseHoverRanges = graphElements.ranges;
 
-                
+
                 //Draw mouse hover over ranges
                 //var hovered = allMouseHoverRanges.Where(_ => _.rectangle.Contains(mouseLoc));
-              
+
                 var hovered = mouseHoveredRanges;
                 if (hovered.Any())
                 {
@@ -271,7 +271,7 @@ namespace Honeybee.UI
                     graphics.FillRectangle(Color.FromArgb(200, 200, 200), rec);
                     //draw text
                     var textLoc = hoveredRec.rectangle.Center;
-                    
+
                     var valueToDisplay = string.Empty;
                     if (hoveredRec.isVertical)
                     {
@@ -306,7 +306,7 @@ namespace Honeybee.UI
                             mouseHoverValue_TB.SelectAll();
                         }
                     }
-                    
+
                 }
 
                 foreach (var pt in allPts)
@@ -317,50 +317,10 @@ namespace Honeybee.UI
                 var pen = new Pen(Colors.Black, 2);
                 graphics.DrawLines(pen, allPts);
 
-
+                // Draw canvas border
                 graphics.DrawRectangle(Colors.Black, canvas);
-
-                //Draw horizontal ticks
-                var markCount = 6;
-                var hourInterval = 24 / markCount;
-                var hourStartPt = canvas.BottomLeft;
-                var hourEdPt = canvas.BottomRight;
-
-                var widthPerInterval = (hourEdPt.X- hourStartPt.X) / markCount;
-                var bottom = canvas.Bottom;
-                var left = canvas.Left;
-              
-                var tickLength = 8;
-                var tickfont = Fonts.Sans(8);
-                //var font = Fonts.Sans(10);
-                for (int i = 0; i <= markCount; i++)
-                {
-                    var p1 = new PointF(left + i * widthPerInterval, bottom);
-                    var p2 = new PointF(left + i * widthPerInterval, bottom + tickLength);
-                    graphics.DrawLine(Colors.Black, p1, p2 );
-
-                    var tickText = $"{i * hourInterval}:00";
-                    var textSize = tickfont.MeasureString(tickText);
-                    graphics.DrawText(tickfont, Colors.Black, p2.X - textSize.Width / 2, p2.Y - textSize.Height / 2 + 8, tickText);
-                }
-
-
-                //Draw vertical value ticks
-                var valueMarkCount = 5;
-                var valueStartPt = canvas.BottomLeft;
-                var valueEndPt = canvas.TopLeft;
-                var heightPerInterval = (valueStartPt.Y - valueEndPt.Y) / valueMarkCount;
-                var valueInterval = Math.Abs(scheduleTypeLimits.start - scheduleTypeLimits.end) / valueMarkCount;
-                for (int i = 0; i <= valueMarkCount; i++)
-                {
-                    var p1 = new PointF(left, bottom - i * heightPerInterval);
-                    var p2 = new PointF(left - tickLength, bottom - i * heightPerInterval);
-                    graphics.DrawLine(Colors.Black, p1, p2);
-
-                    var tickText = $"{scheduleTypeLimits.start + i * valueInterval}";
-                    var textSize = tickfont.MeasureString(tickText);
-                    graphics.DrawText(tickfont, Colors.Black, p2.X - textSize.Width -2, p2.Y - textSize.Height / 2, tickText);
-                }
+                // Draw chart axis ticks
+                DrawTicks(scheduleTypeLimits, canvas, graphics);
 
             };
 
@@ -392,13 +352,98 @@ namespace Honeybee.UI
 
 
             this.AddRow(drawable);
+
+            this.AddIntervalButtons();
+
+
             var btn = new Button() { Text = "HBData" };
             btn.Click += (s, e) =>
             {
-                MessageBox.Show(this, string.Join<double>(", ", dayValues));
+                //MessageBox.Show(this, string.Join<double>(", ", dayValues));
             };
-            
+            this.AddRow(btn);
+
         }
+
+        private void AddIntervalButtons()
+        {
+            var btn1 = new Button() { Text = "Hourly", Enabled = false };
+            var btn2 = new Button() { Text = "15 Minutes" };
+            var btn3 = new Button() { Text = "1 Minute" };
+
+            btn1.Click += (s, e) =>
+            {
+                _intervalMinutes = 60;
+                btn1.Enabled = false;
+                btn2.Enabled = true;
+                btn3.Enabled = true;
+            };
+            btn2.Click += (s, e) =>
+            {
+                _intervalMinutes = 15;
+                btn2.Enabled = false;
+                btn1.Enabled = true;
+                btn3.Enabled = true;
+            };
+            btn3.Click += (s, e) =>
+            {
+                _intervalMinutes = 1;
+                btn3.Enabled = false;
+                btn1.Enabled = true;
+                btn2.Enabled = true;
+            };
+            this.AddSeparateRow(null, btn1, btn2, btn3, null);
+        }
+
+
+        private static void DrawTicks((double start, double end) scheduleTypeLimits, Rectangle canvas, Graphics graphics)
+        {
+            //Draw horizontal ticks
+            var markCount = 6;
+            var hourInterval = 24 / markCount;
+            var hourStartPt = canvas.BottomLeft;
+            var hourEdPt = canvas.BottomRight;
+
+            var widthPerInterval = (hourEdPt.X - hourStartPt.X) / markCount;
+            var bottom = canvas.Bottom;
+            var left = canvas.Left;
+
+            var tickLength = 8;
+            var tickfont = Fonts.Sans(8);
+            //var font = Fonts.Sans(10);
+            for (int i = 0; i <= markCount; i++)
+            {
+                var p1 = new PointF(left + i * widthPerInterval, bottom);
+                var p2 = new PointF(left + i * widthPerInterval, bottom + tickLength);
+                graphics.DrawLine(Colors.Black, p1, p2);
+
+                var tickText = $"{i * hourInterval}:00";
+                var textSize = tickfont.MeasureString(tickText);
+                graphics.DrawText(tickfont, Colors.Black, p2.X - textSize.Width / 2, p2.Y - textSize.Height / 2 + 8, tickText);
+            }
+
+            //Draw vertical value ticks
+            var valueMarkCount = 5;
+            var valueStartPt = canvas.BottomLeft;
+            var valueEndPt = canvas.TopLeft;
+            var heightPerInterval = (valueStartPt.Y - valueEndPt.Y) / valueMarkCount;
+            var valueInterval = Math.Abs(scheduleTypeLimits.start - scheduleTypeLimits.end) / valueMarkCount;
+            for (int i = 0; i <= valueMarkCount; i++)
+            {
+                var p1 = new PointF(left, bottom - i * heightPerInterval);
+                var p2 = new PointF(left - tickLength, bottom - i * heightPerInterval);
+                graphics.DrawLine(Colors.Black, p1, p2);
+
+                var tickText = $"{scheduleTypeLimits.start + i * valueInterval}";
+                var textSize = tickfont.MeasureString(tickText);
+                graphics.DrawText(tickfont, Colors.Black, p2.X - textSize.Width - 2, p2.Y - textSize.Height / 2, tickText);
+            }
+
+        }
+
+
+
+
 
         /// <summary>
         /// Convert 20 (minute) to 15 (minute) based on _intervalMinutes
