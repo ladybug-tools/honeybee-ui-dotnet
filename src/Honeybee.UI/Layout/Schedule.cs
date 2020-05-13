@@ -1,39 +1,74 @@
 ﻿using Eto.Drawing;
 using Eto.Forms;
-using HoneybeeSchema;
+using HB = HoneybeeSchema;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Honeybee.UI
 {
-    public class Panel_Schedule: DynamicLayout
+    public class Panel_Schedule : DynamicLayout
     {
         private double _intervalMinutes = 60; // hourly = 60, 15 minutes = 15, etc
 
-        public Panel_Schedule()
+        private HB.ScheduleTypeLimit _scheduleTypeLimits = new HB.ScheduleTypeLimit(Guid.NewGuid().ToString(), null, 0, 1);
+        public (double start, double end) ScheduleTypeLimits { 
+            get 
+            {
+                var limits = (0.0, 1.0);
+                if (_scheduleTypeLimits.LowerLimit.Obj is double low)
+                    limits.Item1 = low;
+                if (_scheduleTypeLimits.UpperLimit.Obj is double up)
+                    limits.Item2 = up;
+                return limits;
+            }
+        }
+
+        private double _scheduleTypelength => Math.Abs(ScheduleTypeLimits.end - ScheduleTypeLimits.start);
+        public List<double> DayValues { get; set; }
+        public List<double> DayValuesFraction => DayValues.Select(_ => _ / _scheduleTypelength).ToList();
+
+        public List<(int hour, int minute)> DayTimes { get; set; }
+
+        public Panel_Schedule(HB.ScheduleRulesetAbridged scheduleRuleset)
         {
+            var sch = scheduleRuleset;
+            var daySchedule = sch.DaySchedules.First(_ => _.Identifier == sch.DefaultDaySchedule);
+            var values = daySchedule.Values;
+            //sch.ScheduleTypeLimit
+
+            //(double start, double end) scheduleTypeLimits = (0, 100);
+            //var scheduleTypelength = Math.Abs(scheduleTypeLimits.end - scheduleTypeLimits.start);
+            this._scheduleTypeLimits = new HB.ScheduleTypeLimit(Guid.NewGuid().ToString(), null, 0, 1);
+            this.DayValues = new List<double>() { 0, 0.5, 0.1 };
+            //var dayValueFraction = dayValues.Select(_ => _ / scheduleTypelength);
+            this.DayTimes = new List<(int hour, int minute)>() { (0, 0), (6, 0), (18, 0) };
+
+            //var DayValues = this.DayValues;
+
             //var layout = new DynamicLayout();
             this.DefaultPadding = new Padding(10);
             this.DefaultSpacing = new Size(5, 5);
 
-            (double start, double end) scheduleTypeLimits = (0, 1);
-            var dayValues = new List<double>() { 0.16, 0.5, 0 };
-            var dayTimes = new List<(int hour, int minute)>() { (0, 0), (6, 0), (18, 0) };
-            var hours = dayTimes.Select(_ => _.hour).ToArray();
+            var name_Tb = new TextBox() { Text = daySchedule.DisplayName ?? daySchedule.Identifier };
+            this.AddSeparateRow("Day Schedule Name:", name_Tb);
+            var lowerLimit_TB = new NumericMaskedTextStepper<double>() { Value = ScheduleTypeLimits.start, PlaceholderText= "0" };
+            var higherLimit_TB = new NumericMaskedTextStepper<double>() { Value = ScheduleTypeLimits.end, PlaceholderText = "0" };
+      
 
-
-            var mouseHoverValue_TB = new NumericMaskedTextBox<double>() { PlaceholderText = "Mouse over lines" };
+            var mouseHoverValue_TB = new NumericMaskedTextBox<double>() { PlaceholderText = "Mouse over lines", Height = 20, Font= Fonts.Sans(8) };
+      
             var label = new Label() { Text = "" };
-            this.AddSeparateRow(null, label, mouseHoverValue_TB);
+            
 
 
             var drawable = new Drawable(true) { };
             drawable.Size = new Size(600, 400);
+            //drawable.BackgroundColor = Colors.Blue;
             var location = new Point(0, 0);
             var canvas = drawable.Bounds;
-            canvas.Size = canvas.Size - 30;
-            canvas.TopLeft = new Point(30, 15);
+            canvas.Size = canvas.Size - 20;
+            canvas.TopLeft = new Point(50, 10);
 
 
             //var drawableTarget = new DrawableTarget(drawable) { UseOffScreenBitmap = true };
@@ -62,9 +97,10 @@ namespace Honeybee.UI
                 {
                     if (mouseHoveredRanges.Any())
                     {
-                        var preRec = mouseHoveredRanges.First().rectangle;
+                        ////var preRec = mouseHoveredRanges.First().rectangle;
                         mouseHoveredRanges.Clear();
-                        drawable.Update(new Rectangle(preRec));
+                        //drawable.Update(new Rectangle(preRec));
+                        drawable.Update(canvas);
                     }
 
                 }
@@ -103,6 +139,7 @@ namespace Honeybee.UI
                     drawable.Update(canvas);
                 }
 
+
             };
 
             // mouse move for dragging
@@ -131,22 +168,22 @@ namespace Honeybee.UI
                         var beforeIndex = hovered.valueIndex - 1;
                         if (beforeIndex >= 0)
                         {
-                            beforeTime = dayTimes[beforeIndex];
+                            beforeTime = DayTimes[beforeIndex];
                         }
                         var beforeTime2 = beforeTime.Item1 + beforeTime.Item2 / 60;
                         // get maximum movable right bound; 
                         var nextTime = (24, 0);
                         var nextIndex = hovered.valueIndex + 1;
-                        if (nextIndex < dayTimes.Count)
+                        if (nextIndex < DayTimes.Count)
                         {
-                            nextTime = dayTimes[nextIndex];
+                            nextTime = DayTimes[nextIndex];
                         }
                         var nextTime2 = nextTime.Item1 + nextTime.Item2 / 60;
 
                         
                         if (newTime < nextTime2 && newTime > beforeTime2)
                         {
-                            dayTimes[hovered.valueIndex] = (newHour, newMinute);
+                            DayTimes[hovered.valueIndex] = (newHour, newMinute);
                             drawable.Update(canvas);
                         }
 
@@ -154,13 +191,11 @@ namespace Honeybee.UI
                     }
                     else
                     {
-                        //TODO: need to do conversion based on schedule's max and min. For now, it just calculated %.
-                        //var mappedValue = (canvas.Height - (mouseLoc - canvas.Location).Y) / canvas.Height;
                         var mappedValue = (canvas.Bottom - mouseLoc.Y) / canvas.Height;
-                        var pecent = Math.Round(mappedValue, 3);
+                        var decimalPlaces = (this._scheduleTypelength/100).ToString().Split('.').Last().Length;
+                        var pecent = Math.Round(mappedValue, decimalPlaces);
 
-                        //label.Text = $"{canvas.Bottom} - {mouseLoc.Y} / {canvas.Height} = {pecent}";
-                        dayValues[valueIndex] = pecent;
+                        DayValues[valueIndex] = pecent * this._scheduleTypelength;
                         drawable.Update(canvas);
                     }
                     
@@ -187,8 +222,8 @@ namespace Honeybee.UI
                     var hovered = doubleClickedRanges.First();
                     if (hovered.isVertical)
                     {
-                        dayTimes.RemoveAt(hovered.valueIndex);
-                        dayValues.RemoveAt(hovered.valueIndex);
+                        DayTimes.RemoveAt(hovered.valueIndex);
+                        DayValues.RemoveAt(hovered.valueIndex);
                         drawable.Update(canvas);
 
                         return;
@@ -207,22 +242,22 @@ namespace Honeybee.UI
                     var beforeTime = (0, 0);
                     var beforeIndex = hovered.valueIndex;
                     if (beforeIndex >= 0)
-                        beforeTime = dayTimes[beforeIndex];
+                        beforeTime = DayTimes[beforeIndex];
                     var beforeTime2 = beforeTime.Item1 + beforeTime.Item2 / 60;
                     // get maximum movable right bound; 
                     var nextTime = (24, 0);
                     var nextIndex = hovered.valueIndex + 1;
-                    if (nextIndex < dayTimes.Count)
-                        nextTime = dayTimes[nextIndex];
+                    if (nextIndex < DayTimes.Count)
+                        nextTime = DayTimes[nextIndex];
                     var nextTime2 = nextTime.Item1 + nextTime.Item2 / 60;
 
                     //var newDateTimes = dayTimes.ToList();
                     if (mappedTimeNormalized < nextTime2 && mappedTimeNormalized > beforeTime2)
                     {
                         var insertIndex = hovered.valueIndex;
-                        dayTimes.Insert(insertIndex+1, (hour, minute));
-                        var addValue = dayValues[insertIndex];
-                        dayValues.Insert(insertIndex+1, addValue);
+                        DayTimes.Insert(insertIndex+1, (hour, minute));
+                        var addValue = DayValues[insertIndex];
+                        DayValues.Insert(insertIndex + 1, addValue);
                         //newDateTimes.Add((hour, minute));
                         drawable.Update(new Rectangle(hovered.rectangle));
                     }
@@ -250,7 +285,7 @@ namespace Honeybee.UI
                 //Draw schedule
                 graphics.FillRectangle(Colors.White, canvas);
 
-                var hourPts = GenHourPts(dayValues, dayTimes, canvas);
+                var hourPts = GenHourPts(canvas);
                 var graphElements = GenPts(hourPts, canvas);
                 var allPts = graphElements.points;
                 allMouseHoverRanges = graphElements.ranges;
@@ -275,13 +310,13 @@ namespace Honeybee.UI
                     var valueToDisplay = string.Empty;
                     if (hoveredRec.isVertical)
                     {
-                        var time = dayTimes[hoveredRec.valueIndex];
+                        var time = DayTimes[hoveredRec.valueIndex];
                         valueToDisplay = TimeSpan.Parse($"{time.hour}:{time.minute}").ToString(@"hh\:mm");
                         valueToDisplay = $" {valueToDisplay}";
                     }
                     else
                     {
-                        valueToDisplay = dayValues[hoveredRec.valueIndex].ToString();
+                        valueToDisplay = DayValues[hoveredRec.valueIndex].ToString();
                     }
                     var font = Fonts.Sans(8);
                     var textSize = font.MeasureString(valueToDisplay);
@@ -299,7 +334,7 @@ namespace Honeybee.UI
                         if (!mouseHoverValue_TB.HasFocus)
                             mouseHoverValue_TB.Focus();
 
-                        var hoveredValue = dayValues[hoveredRec.valueIndex];
+                        var hoveredValue = DayValues[hoveredRec.valueIndex];
                         if (mouseHoverValue_TB.SelectedText != hoveredValue.ToString())
                         {
                             mouseHoverValue_TB.Value = hoveredValue;
@@ -307,6 +342,15 @@ namespace Honeybee.UI
                         }
                     }
 
+                }
+                else
+                {
+                    if (!startDragging)
+                    {
+                        mouseHoverValue_TB.Value = 0;
+                        mouseHoverValue_TB.Enabled = false;
+                    }
+                    
                 }
 
                 foreach (var pt in allPts)
@@ -320,8 +364,8 @@ namespace Honeybee.UI
                 // Draw canvas border
                 graphics.DrawRectangle(Colors.Black, canvas);
                 // Draw chart axis ticks
-                DrawTicks(scheduleTypeLimits, canvas, graphics);
-
+                DrawTicks(this.ScheduleTypeLimits, canvas, graphics);
+                
             };
 
 
@@ -336,11 +380,11 @@ namespace Honeybee.UI
 
                         var valueIndex = hoveredValueIndex;
                         var newUserInput = mouseHoverValue_TB.Value;
-                        var oldValue = dayValues[valueIndex];
+                        var oldValue = DayValues[valueIndex];
                   
                         //preRec.Top = (float) Math.Max(newUserInput, oldValue);
                         //preRec.Bottom = (float)Math.Min(newUserInput, oldValue);
-                        dayValues[valueIndex] = newUserInput;
+                        DayValues[valueIndex] = newUserInput;
 
                         drawable.Update(canvas);
                     }
@@ -351,14 +395,39 @@ namespace Honeybee.UI
             };
 
 
+            lowerLimit_TB.ValueChanged += (s, e) => 
+            { 
+                this._scheduleTypeLimits.LowerLimit = lowerLimit_TB.Value;
+                drawable.Update(canvas);
+            };
+            //lowerLimit_TB.KeyDown += (s, e) =>
+            //{
+            //    if (e.Key == Keys.Enter)
+            //    {
+            //        this._scheduleTypeLimits.LowerLimit = lowerLimit_TB.Value;
+            //        drawable.Update(canvas);
+            //    }
+            //};
+            higherLimit_TB.TextChanged += (s, e) => 
+            { 
+                this._scheduleTypeLimits.UpperLimit = higherLimit_TB.Value;
+                drawable.Update(canvas);
+            };
+            //higherLimit_TB.KeyDown += (s, e) =>
+            //{
+            //    this._scheduleTypeLimits.UpperLimit = higherLimit_TB.Value;
+            //    drawable.Update(canvas);
+            //};
+            this.AddSeparateRow("Lower Limit:", lowerLimit_TB, "Upper Limit:", higherLimit_TB, null, label, mouseHoverValue_TB);
+            //this.AddSeparateRow(null, label, mouseHoverValue_TB);
             this.AddRow(drawable);
-
             this.AddIntervalButtons();
 
 
             var btn = new Button() { Text = "HBData" };
             btn.Click += (s, e) =>
             {
+                Dialog_Message.Show(this, this._scheduleTypeLimits.ToJson());
                 //MessageBox.Show(this, string.Join<double>(", ", dayValues));
             };
             this.AddRow(btn);
@@ -478,9 +547,13 @@ namespace Honeybee.UI
             }
             return (hour, mappedMinute);
         }
-        private List<PointF> GenHourPts(List<double> dayValues, List<(int hour, int minute)> dayTimes, RectangleF frameBound)
+        private List<PointF> GenHourPts(RectangleF frameBound)
         {
             var canv = frameBound;
+            var dayValues = this.DayValues;
+            var dayValuesFraction = this.DayValuesFraction;
+            var dayTimes = this.DayTimes;
+
             var widthPerHour = canv.Width / 24;
             var heightPerHour = canv.Height;
             var count = dayValues.Count();
@@ -489,9 +562,9 @@ namespace Honeybee.UI
             {
                 var checkedMinute = NormalizeMinute(dayTimes[i].minute);
                 var time = (double)dayTimes[i].hour + checkedMinute / 60;
-                var hourX = canv.Left + time * widthPerHour;
-                var hourY = (canv.Bottom - (float)dayValues[i] * heightPerHour);
-                hourPts.Add(new PointF((float)hourX, hourY));
+                float hourX = canv.Left + (float)time * widthPerHour;
+                float hourY = (canv.Bottom - (float)dayValuesFraction[i] * heightPerHour);
+                hourPts.Add(new PointF(hourX, hourY));
             }
 
             return hourPts;

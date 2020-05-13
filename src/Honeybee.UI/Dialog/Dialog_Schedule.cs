@@ -30,8 +30,10 @@ namespace Honeybee.UI
                 AbortButton = new Button { Text = "Cancel" };
                 AbortButton.Click += (sender, e) => Close();
 
+                var daySchedule = sch.DaySchedules.First(_ => _.Identifier == sch.DefaultDaySchedule);
+              
 
-                var layout = new Panel_Schedule();
+                var layout = new Panel_Schedule(sch);
                 //var layout = new DynamicLayout();
 
                 //var drawable = new Drawable();
