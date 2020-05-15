@@ -227,7 +227,11 @@ namespace Honeybee.UI
             };
             gd.Columns.Add(new GridColumn { DataCell = nameTB, HeaderText = "Name" });
 
-
+            var typeTB = new TextBoxCell
+            {
+                Binding = Binding.Delegate<HB.ScheduleRulesetAbridged, string>(r => r.ScheduleTypeLimit)
+            };
+            gd.Columns.Add(new GridColumn { DataCell = typeTB, HeaderText = "Type" });
             return gd;
         }
 
