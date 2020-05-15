@@ -33,8 +33,11 @@ namespace Honeybee.UI
 
                 var daySchedule = sch.DaySchedules.First(_ => _.Identifier == sch.DefaultDaySchedule);
 
+                var typeLimit = new HB.ScheduleTypeLimit(Guid.NewGuid().ToString(), null, 0, 1);
+                var realSch = new ScheduleRuleset(sch.Identifier, sch.DaySchedules, sch.DefaultDaySchedule, sch.DisplayName,
+                    sch.ScheduleRules, sch.HolidaySchedule, sch.SummerDesigndaySchedule, sch.WinterDesigndaySchedule, typeLimit);
 
-                Content = new Panel_Schedule(sch);
+                Content = new Panel_Schedule(realSch);
 
                 //var layout = new DynamicLayout();
                 //layout.Height = 500;

@@ -11,47 +11,56 @@ namespace Honeybee.UI
 {
     public class Panel_Schedule : DynamicLayout
     {
-        private ScheduleRulesetAbridged _scheduleRuleset;
-        private ScheduleRuleAbridged _selectedScheduleRule = new ScheduleRuleAbridged("");
-        private HB.ScheduleTypeLimit _selectedScheduleTypeLimits = new HB.ScheduleTypeLimit(Guid.NewGuid().ToString(), null, 0, 1);
+        private static ScheduleRulesetViewModel _vm = ScheduleRulesetViewModel.Instance;
+        private static ScheduleRuleViewModel _vmSelectedRule = ScheduleRuleViewModel.Instance;
+        private static ScheduleDayViewModel _vmSelectedDay = ScheduleDayViewModel.Instance;
 
-        private ScheduleDay _selectedScheduleDay;
-        private ScheduleDay _defaultScheduleDay => _scheduleRuleset.DaySchedules.First(_ => _.Identifier == _scheduleRuleset.DefaultDaySchedule);
+        //private ScheduleRulesetAbridged _scheduleRuleset =>
+        //private ScheduleRuleAbridged _vmSelectedRule = new ScheduleRuleAbridged("");
+        //private HB.ScheduleTypeLimit _selectedScheduleTypeLimits = new HB.ScheduleTypeLimit(Guid.NewGuid().ToString(), null, 0, 1);
+
+        //private ScheduleDay _selectedScheduleDay;
+        //private ScheduleDay _defaultScheduleDay => _vm.DefaultDaySchedule;
         private double _intervalMinutes = 60; // hourly = 60, 15 minutes = 15, etc
+     
+        //public (double start, double end) ScheduleTypeLimits { 
+        //    get 
+        //    {
+        //        var limits = (0.0, 1.0);
+        //        if (_selectedScheduleTypeLimits.LowerLimit.Obj is double low)
+        //            limits.Item1 = low;
+        //        if (_selectedScheduleTypeLimits.UpperLimit.Obj is double up)
+        //            limits.Item2 = up;
+        //        return limits;
+        //    }
+        //}
 
-        public (double start, double end) ScheduleTypeLimits { 
-            get 
-            {
-                var limits = (0.0, 1.0);
-                if (_selectedScheduleTypeLimits.LowerLimit.Obj is double low)
-                    limits.Item1 = low;
-                if (_selectedScheduleTypeLimits.UpperLimit.Obj is double up)
-                    limits.Item2 = up;
-                return limits;
-            }
-        }
 
+        private double _scheduleTypelength => Math.Abs(_vm.UpperLimit - _vm.LowerLimit);
+        public List<double> DayValues => _vmSelectedDay.Values;
+        public List<double> DayValuesFraction => _vmSelectedDay.Values.Select(_ => _ / _scheduleTypelength).ToList();
+        public List<(int hour, int minute)> DayTimes => _vmSelectedDay.Times.Select(_ => (_[0], _[1])).ToList();
 
-        private double _scheduleTypelength => Math.Abs(ScheduleTypeLimits.end - ScheduleTypeLimits.start);
-        public List<double> DayValues => _selectedScheduleDay.Values;
-        public List<double> DayValuesFraction => DayValues.Select(_ => _ / _scheduleTypelength).ToList();
-        public List<(int hour, int minute)> DayTimes => _selectedScheduleDay.Times.Select(_ => (_[0], _[1])).ToList();
-
+        private DynamicLayout _layoutSchRule;
         private Drawable _scheduleDaydrawable;
         private Drawable _calendarPanel;
         private Color _defaultColor = Color.FromArgb(184, 229, 255);
+        private List<(Color color, ScheduleRuleAbridged schRule)> colorsetPerRuleset = new List<(Color, ScheduleRuleAbridged)>();
 
-        public Panel_Schedule(HB.ScheduleRulesetAbridged scheduleRuleset)
+        
+        public Panel_Schedule(HB.ScheduleRuleset scheduleRuleset)
         {
-            var sch = scheduleRuleset;
-            _scheduleRuleset = sch;
-            _selectedScheduleDay = _defaultScheduleDay;
-       
+            _vm.hbObj = scheduleRuleset;
+            _vmSelectedDay.hbObj = _vm.DefaultDaySchedule;
+            
+            //_scheduleRuleset = sch;
+            //_selectedScheduleDay = _defaultScheduleDay;
+
             //sch.ScheduleTypeLimit
 
             //(double start, double end) scheduleTypeLimits = (0, 100);
             //var scheduleTypelength = Math.Abs(scheduleTypeLimits.end - scheduleTypeLimits.start);
-            this._selectedScheduleTypeLimits = new HB.ScheduleTypeLimit(Guid.NewGuid().ToString(), null, 0, 1);
+            //this._selectedScheduleTypeLimits = new HB.ScheduleTypeLimit(Guid.NewGuid().ToString(), null, 0, 1);
             //this.DayValues = new List<double>() { 0, 0.5, 0.1 };
             //var dayValueFraction = dayValues.Select(_ => _ / scheduleTypelength);
             //this.DayTimes = new List<(int hour, int minute)>() { (0, 0), (6, 0), (18, 0) };
@@ -66,8 +75,9 @@ namespace Honeybee.UI
 
             var rulesPanel = new DynamicLayout();
             rulesPanel.Width = 200;
-           
-            var rules = _scheduleRuleset.ScheduleRules;
+            rulesPanel.Height = 600;
+
+            var rules = _vm.ScheduleRules;
             var summerbtn = new Button() { Text = "Summer Design Day"};
             var winterbtn = new Button() { Text = "Winter Design Day" };
             var holidaybtn = new Button() { Text = "Holiday" };
@@ -83,33 +93,63 @@ namespace Honeybee.UI
                 rulesPanel.AddSeparateRow(topBorder);
 
                 var radColor = Color.FromArgb((int)(0xFF000000 + (random.Next(0xFFFFFF) & 0x7F7F7F)));
-                var ruleDay = sch.DaySchedules.First(_ => _.Identifier == item.ScheduleDay); 
-                var ruleBtn = GenScheduleRuleBtn(item.ScheduleDay, radColor, ()=> _selectedScheduleDay = ruleDay);
+                colorsetPerRuleset.Add((radColor, item));
+                var ruleDay = _vm.DaySchedules.First(_ => _.Identifier == item.ScheduleDay); 
+                var ruleBtn = GenScheduleRuleBtn(item.ScheduleDay, radColor, 
+                    ()=> {
+                        _vmSelectedDay.hbObj = ruleDay;
+                        _vmSelectedRule.hbObj = item;
+                        UpdateScheduleRulePanel(false);
+                        UpdateApplyDayWeekBtns();
+                    } 
+                    );
                 
                 rulesPanel.AddSeparateRow(ruleBtn);
 
             }
             var defaultBorder = new Label() { Height = 1, BackgroundColor = Colors.Black };
             rulesPanel.AddSeparateRow(defaultBorder);
-            var defaultScheduleBtn = GenScheduleRuleBtn("Default Day", _defaultColor, () => _selectedScheduleDay = _defaultScheduleDay);
+            var defaultScheduleBtn = GenScheduleRuleBtn("Default Day", _defaultColor, 
+                () => {
+                    _vmSelectedDay.hbObj = _vm.DefaultDaySchedule;
+                    UpdateScheduleRulePanel(true);
+                }
+            );
             rulesPanel.AddSeparateRow(defaultScheduleBtn);
             var bottomBorder = new Label() { Height = 1, BackgroundColor = Colors.Black };
             rulesPanel.AddSeparateRow(bottomBorder);
-            rulesPanel.AddSeparateRow(null);
+            rulesPanel.AddRow(null);
+
+            var hbData_btn = new Button() { Text = "HBData" };
+            hbData_btn.Click += (s, e) =>
+            {
+                Dialog_Message.Show(this, _vm.hbObj.ToJson());
+                //MessageBox.Show(this, string.Join<double>(", ", dayValues));
+            };
+
+            rulesPanel.AddRow(hbData_btn);
+            rulesPanel.AddRow(null);
             #endregion
 
 
 
 
-            var schName_Tb = new TextBox() { Text = _scheduleRuleset.DisplayName ?? _scheduleRuleset.Identifier };
-            var dayName_Tb = new TextBox() { Text = _selectedScheduleDay.DisplayName ?? _selectedScheduleDay.Identifier, Width = 300 };
-            var lowerLimit_TB = new NumericMaskedTextStepper<double>() { Value = ScheduleTypeLimits.start, PlaceholderText= "0" };
-            var higherLimit_TB = new NumericMaskedTextStepper<double>() { Value = ScheduleTypeLimits.end, PlaceholderText = "0" };
-      
+            var schName_Tb = new TextBox() { };
+            _vm.hbObj.DisplayName = _vm.hbObj.DisplayName ?? _vm.hbObj.Identifier;
+            schName_Tb.TextBinding.Bind(_vm, c => c.DisplayName);
+
+            var dayName_Tb = new TextBox() { Width = 300 };
+            //_vmSelectedDay.hbObj.DisplayName = _vmSelectedDay.hbObj.DisplayName ?? _vmSelectedDay.hbObj.Identifier;
+            dayName_Tb.TextBinding.Bind(_vmSelectedDay, c => c.DisplayName);
+
+            var lowerLimit_TB = new NumericMaskedTextStepper<double>() { PlaceholderText= "0" };
+            lowerLimit_TB.ValueBinding.Bind(_vm, c => c.LowerLimit);
+            var higherLimit_TB = new NumericMaskedTextStepper<double>() { PlaceholderText = "0" };
+            higherLimit_TB.ValueBinding.Bind(_vm, c => c.UpperLimit);
 
             var mouseHoverValue_TB = new NumericMaskedTextBox<double>() { PlaceholderText = "Mouse over lines", Height = 20, Font= Fonts.Sans(8) };
       
-            var label = new Label() { Text = "" };
+            //var label = new Label() { Text = "" };
 
 
             #region LeftPanel
@@ -173,7 +213,6 @@ namespace Honeybee.UI
                 }
 
             };
-
             _scheduleDaydrawable.LostFocus += (s, e) =>
             {
                 if (startDragging)
@@ -408,7 +447,7 @@ namespace Honeybee.UI
                 // Draw canvas border
                 graphics.DrawRectangle(Colors.Black, canvas);
                 // Draw chart axis ticks
-                DrawTicks(this.ScheduleTypeLimits, canvas, graphics);
+                DrawTicks(canvas, graphics);
                 
             };
 
@@ -438,57 +477,68 @@ namespace Honeybee.UI
 
             };
 
-
             lowerLimit_TB.ValueChanged += (s, e) => 
             { 
-                this._selectedScheduleTypeLimits.LowerLimit = lowerLimit_TB.Value;
+                //this._selectedScheduleTypeLimits.LowerLimit = lowerLimit_TB.Value;
                 _scheduleDaydrawable.Update(canvas);
             };
-            //lowerLimit_TB.KeyDown += (s, e) =>
-            //{
-            //    if (e.Key == Keys.Enter)
-            //    {
-            //        this._scheduleTypeLimits.LowerLimit = lowerLimit_TB.Value;
-            //        drawable.Update(canvas);
-            //    }
-            //};
+          
             higherLimit_TB.TextChanged += (s, e) => 
             { 
-                this._selectedScheduleTypeLimits.UpperLimit = higherLimit_TB.Value;
+                //_vm.ScheduleTypeLimit.UpperLimit = higherLimit_TB.Value;
                 _scheduleDaydrawable.Update(canvas);
             };
 
-            var btn = new Button() { Text = "HBData" };
-            btn.Click += (s, e) =>
-            {
-                Dialog_Message.Show(this, this._selectedScheduleTypeLimits.ToJson());
-                //MessageBox.Show(this, string.Join<double>(", ", dayValues));
-            };
+            
 
             var layoutLeft = new DynamicLayout();
             layoutLeft.DefaultPadding = new Padding(5);
-            layoutLeft.DefaultSpacing = new Size(3, 3);
-            layoutLeft.AddSeparateRow("Schedule Name:", schName_Tb);
 
-            var layoutRule = new DynamicLayout();
-            layoutRule.DefaultPadding = new Padding(25, 0, 0, 0);
-            layoutRule.DefaultSpacing = new Size(3, 3);
-            layoutRule.AddSeparateRow(new Label { Text = "Rule Name:", Width = 90 }, dayName_Tb, null);
+            var layoutLeftTop = new DynamicLayout();
+            #region Layout Left Top
+
+            layoutLeftTop.DefaultPadding = new Padding(25, 0, 10, 0);
+
+            layoutLeftTop.DefaultSpacing = new Size(3, 3);
+            layoutLeftTop.AddSeparateRow(new Label { Text = "Schedule Name:", Width = 90 }, schName_Tb);
+
+            //layoutLeft.DataContext = _vmSelectedRule;
+            layoutLeftTop.AddSeparateRow(new Label { Text = "Schedule Day:", Width = 90 }, dayName_Tb, null);
+
+
+            _layoutSchRule = new DynamicLayout();
+            _layoutSchRule.DefaultSpacing = new Size(3, 3);
+            //_layoutSchRule.DefaultPadding = new Padding(25, 0, 0, 0);
             var dateRanges = ApplyDateRangeControls().ToList();
             dateRanges.Insert(0, new Label { Text = "Date Range:", Width = 90 });
             dateRanges.Add(null);
-            layoutRule.AddSeparateRow(dateRanges.ToArray());
-            var dayOfweek = ApplyDayOfWeekControls().ToList();
+            _layoutSchRule.AddSeparateRow(dateRanges.ToArray());
+
+            _applyToDayWeekBtns = ApplyDayOfWeekControls();
+            var dayOfweek = _applyToDayWeekBtns.ToList();
             dayOfweek.Insert(0, new Label { Text = "Apply To:", Width = 90 });
             dayOfweek.Add(null);
-            layoutRule.AddSeparateRow(dayOfweek.ToArray());
+            _layoutSchRule.AddSeparateRow(dayOfweek.ToArray());
 
-            layoutLeft.AddSeparateRow(layoutRule);
-            layoutLeft.AddSeparateRow(new Label {Width = 47 }, new Label { Text = "Lower Limit:", Width = 90 }, lowerLimit_TB, "Upper Limit:", higherLimit_TB, null, label, mouseHoverValue_TB);
+            layoutLeftTop.AddSeparateRow(_layoutSchRule);
+            layoutLeftTop.AddSeparateRow(new Label { Text = "Lower Limit:", Width = 90 }, lowerLimit_TB, "Upper Limit:", higherLimit_TB, null, mouseHoverValue_TB);
+            UpdateScheduleRulePanel(true);
+            #endregion
+
             //this.AddSeparateRow(null, label, mouseHoverValue_TB);
-            layoutLeft.AddSeparateRow(_scheduleDaydrawable);
-            layoutLeft.AddSeparateRow(this.AddIntervalButtons());
-            layoutLeft.AddRow(btn);
+            var layoutDayDrawable = new DynamicLayout();
+            #region Layout Left Bottom
+            //layoutDayDrawable.DefaultPadding = new Padding(5);
+            layoutDayDrawable.DefaultSpacing = new Size(5, 5);
+            layoutDayDrawable.AddSeparateRow(_scheduleDaydrawable);
+            layoutDayDrawable.AddSeparateRow(this.AddIntervalButtons());
+            #endregion
+
+
+            layoutLeft.AddSeparateRow(layoutLeftTop);
+            layoutLeft.AddSeparateRow(layoutDayDrawable);
+            
+            layoutLeft.AddSeparateRow(null);
             #endregion
 
             #region RightPanel
@@ -533,6 +583,8 @@ namespace Honeybee.UI
             this.AddRow(rulesPanel, layoutLeft, layoutRight, null);
 
         }
+        private Control[] _applyToDayWeekBtns;
+        
         private Control[] GenScheduleRuleBtn(string btnName, Color color, Action setAction)
         {
             var left = new Label() { Width = 1, BackgroundColor= Colors.Black };
@@ -590,11 +642,8 @@ namespace Honeybee.UI
             sDate.MinDate = new DateTime(2017, 1, 1);
             sDate.MaxDate = new DateTime(2017, 12, 31);
             sDate.Value = sDate.MinDate;
-            sDate.ValueChanged += (s, e) => {
-                var selected = sDate.Value.Value;
-                _selectedScheduleRule.StartDate = new List<int> { selected.Month, selected.Day };
-                RefreshCalendar();
-            };
+            sDate.ValueBinding.Bind(_vmSelectedRule, m => m.StartDate);
+            sDate.ValueChanged += (s, e) => {  RefreshCalendar(); };
           
 
             var eDate = new DateTimePicker();
@@ -602,16 +651,15 @@ namespace Honeybee.UI
             eDate.MinDate = new DateTime(2017, 1, 1);
             eDate.MaxDate = new DateTime(2017, 12, 31);
             eDate.Value = eDate.MaxDate;
-            eDate.ValueChanged += (s, e) => {
-                var selected = eDate.Value.Value;
-                _selectedScheduleRule.EndDate = new List<int> { selected.Month, selected.Day };
-                RefreshCalendar();
-            };
+            eDate.ValueBinding.Bind(_vmSelectedRule, m => m.EndDate);
+            eDate.ValueChanged += (s, e) => { RefreshCalendar(); };
             return new Control[] {sDate, eDate };
         }
+
+        Color btnDefaultColor;
+        Color btnEnabledColor;
         private Control[] ApplyDayOfWeekControls()
         {
-            var scheduleRule = _selectedScheduleRule;
             //var nonDefaultSchedulrRulePanel = new DynamicLayout();
             var width = 30;
             var btnSU = new Button() { Text = "S", Width = width };
@@ -621,170 +669,198 @@ namespace Honeybee.UI
             var btnTH = new Button() { Text = "T", Width = width };
             var btnFI = new Button() { Text = "F", Width = width };
             var btnSA = new Button() { Text = "S", Width = width };
-            var btnEnabledColor = Color.FromArgb(191,229,249);
-            var btnDefaultColor = btnSA.BackgroundColor;
-
+            btnEnabledColor = Color.FromArgb(191,229,249);
+            btnDefaultColor = btnSA.BackgroundColor;
+           
             btnSU.Click += (s, e) => {
-                scheduleRule.ApplySunday = !scheduleRule.ApplySunday;
-                btnSU.BackgroundColor = scheduleRule.ApplySunday ? btnEnabledColor : btnDefaultColor;
+                _vmSelectedRule.ApplySunday = !_vmSelectedRule.ApplySunday;
+                btnSU.BackgroundColor = _vmSelectedRule.ApplySunday ? btnEnabledColor : btnDefaultColor;
                 RefreshCalendar();
             };
             btnMO.Click += (s, e) => {
-                scheduleRule.ApplyMonday = !scheduleRule.ApplyMonday;
-                btnMO.BackgroundColor = scheduleRule.ApplyMonday ? btnEnabledColor : btnDefaultColor;
+                _vmSelectedRule.ApplyMonday = !_vmSelectedRule.ApplyMonday;
+                btnMO.BackgroundColor = _vmSelectedRule.ApplyMonday ? btnEnabledColor : btnDefaultColor;
                 RefreshCalendar();
             };
             btnTU.Click += (s, e) => {
-                scheduleRule.ApplyTuesday = !scheduleRule.ApplyTuesday;
-                btnTU.BackgroundColor = scheduleRule.ApplyTuesday ? btnEnabledColor : btnDefaultColor;
+                _vmSelectedRule.ApplyTuesday = !_vmSelectedRule.ApplyTuesday;
+                btnTU.BackgroundColor = _vmSelectedRule.ApplyTuesday ? btnEnabledColor : btnDefaultColor;
                 RefreshCalendar();
             };
             btnWE.Click += (s, e) => {
-                scheduleRule.ApplyWednesday = !scheduleRule.ApplyWednesday;
-                btnWE.BackgroundColor = scheduleRule.ApplyWednesday ? btnEnabledColor : btnDefaultColor;
+                _vmSelectedRule.ApplyWednesday = !_vmSelectedRule.ApplyWednesday;
+                btnWE.BackgroundColor = _vmSelectedRule.ApplyWednesday ? btnEnabledColor : btnDefaultColor;
                 RefreshCalendar();
             };
             btnTH.Click += (s, e) => {
-                scheduleRule.ApplyThursday = !scheduleRule.ApplyThursday;
-                btnTH.BackgroundColor = scheduleRule.ApplyThursday ? btnEnabledColor : btnDefaultColor;
+                _vmSelectedRule.ApplyThursday = !_vmSelectedRule.ApplyThursday;
+                btnTH.BackgroundColor = _vmSelectedRule.ApplyThursday ? btnEnabledColor : btnDefaultColor;
                 RefreshCalendar();
             };
             btnFI.Click += (s, e) => {
-                scheduleRule.ApplyFriday = !scheduleRule.ApplyFriday;
-                btnFI.BackgroundColor = scheduleRule.ApplyFriday ? btnEnabledColor : btnDefaultColor;
+                _vmSelectedRule.ApplyFriday = !_vmSelectedRule.ApplyFriday;
+                btnFI.BackgroundColor = _vmSelectedRule.ApplyFriday ? btnEnabledColor : btnDefaultColor;
                 RefreshCalendar();
             };
             btnSA.Click += (s, e) => {
-                scheduleRule.ApplySaturday = !scheduleRule.ApplySaturday;
-                btnSA.BackgroundColor = scheduleRule.ApplySaturday ? btnEnabledColor : btnDefaultColor;
+                _vmSelectedRule.ApplySaturday = !_vmSelectedRule.ApplySaturday;
+                btnSA.BackgroundColor = _vmSelectedRule.ApplySaturday ? btnEnabledColor : btnDefaultColor;
                 RefreshCalendar();
             };
             //nonDefaultSchedulrRulePanel.AddRow(null, "Apply to", btnSU, btnMO, btnTU, btnWE, btnTH, btnFI, btnSA, null);
             return new Control[] {btnSU, btnMO, btnTU, btnWE, btnTH, btnFI, btnSA };
         }
-
-
-        private void DrawCalendarGrids(Graphics graphic)
+        private void UpdateApplyDayWeekBtns()
         {
-            //var graphic = e.Graphics;
-            var dayW = 25;
-            var dayH = 15;
-            var monthW = dayW * 7;
-            var monthH = dayH * 5;
-            // vertical lines
+            if (_applyToDayWeekBtns == null)
+                return;
+
+
+            var bools = new[] {
+                _vmSelectedRule.ApplySunday, _vmSelectedRule.ApplyMonday, _vmSelectedRule.ApplyTuesday, _vmSelectedRule.ApplyWednesday,
+                _vmSelectedRule.ApplyThursday,_vmSelectedRule.ApplyFriday, _vmSelectedRule.ApplySaturday};
+
+            for (int i = 0; i < 7; i++)
+            {
+                var btn = _applyToDayWeekBtns[i] as Button;
+                btn.BackgroundColor = bools[i] ? btnEnabledColor : btnDefaultColor;
+
+            }
+
+        }
+
+        private void UpdateScheduleRulePanel(bool isDefault)
+        {
+            if (isDefault)
+            {
+                _layoutSchRule.Enabled = false;
+            }
+            else
+            {
+                _layoutSchRule.Enabled = true;
+            }
+        }
+        //private void DrawCalendarGrids(Graphics graphic)
+        //{
+        //    //var graphic = e.Graphics;
+        //    var dayW = 25;
+        //    var dayH = 15;
+        //    var monthW = dayW * 7;
+        //    var monthH = dayH * 5;
+        //    // vertical lines
             
 
-            void DrawMonthGrid()
-            {
-                for (int i = 0; i <= 7; i++)
-                {
-                    var x = i * dayW;
-                    graphic.DrawLine(Colors.Black, x, 0, x, monthH);
-                }
-                // horizontal lines
-                for (int i = 0; i <= 5; i++)
-                {
-                    var y = i * dayH;
-                    graphic.DrawLine(Colors.Black, 0, y, monthW, y);
+        //    void DrawMonthGrid()
+        //    {
+        //        for (int i = 0; i <= 7; i++)
+        //        {
+        //            var x = i * dayW;
+        //            graphic.DrawLine(Colors.Black, x, 0, x, monthH);
+        //        }
+        //        // horizontal lines
+        //        for (int i = 0; i <= 5; i++)
+        //        {
+        //            var y = i * dayH;
+        //            graphic.DrawLine(Colors.Black, 0, y, monthW, y);
 
-                }
-            }
-        }
-
-
-
-        private void RedrawMonth(int startDay, Graphics graphic)
-        {
-            var daysPerMonth = new[] { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-            var weekDays = new[] { "S", "M", "T", "W", "T", "F", "S" };
-            var dayW = 25;
-            var dayH = 15;
-            var defaultColor = Colors.Aqua;
-
-            var monthRec = new Rectangle(0, 0, dayW * 7, dayH * 5);
-            //// draw grid
-            //// fill day cell color
-            //for (int j = 0; j < 35; j++)
-            //{
-
-            //}
-            var row = 0;
-            var indexInRow = 0;
-
-            var font = Fonts.Sans(8);
-            var DOY = 0;
-
-            var pt = new Point();
-            var coloum = 1;
-            var month = 0;
-
-            var setColor = defaultColor;
-
-            foreach (var days in daysPerMonth)
-            {
-                if (month > 0)
-                {
-                    pt.Y = pt.Y + dayH * 2;
-                }
-
-                var monthPt = new Point(0, pt.Y);
-                graphic.DrawText(font, Colors.Black, monthPt.X, monthPt.Y, (month + 1).ToString());
-                pt.Y = pt.Y + dayH;
-                monthPt.Y = monthPt.Y + dayH;
-                for (int i = 0; i < 7; i++)
-                {
-                    var rec = new Rectangle(i * dayW, monthPt.Y, dayW, dayH);
-
-                    var date = weekDays[i];
-                    var size = font.MeasureString(date);
+        //        }
+        //    }
+        //}
 
 
-                    graphic.DrawText(font, Colors.Black, rec.Center.X - size.Width / 2, rec.Center.Y - size.Height / 2, date);
-                    monthPt.X = monthPt.X + dayW;
-                }
+
+        //private void RedrawMonth(int startDay, Graphics graphic)
+        //{
+        //    var daysPerMonth = new[] { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+        //    var weekDays = new[] { "S", "M", "T", "W", "T", "F", "S" };
+        //    var dayW = 25;
+        //    var dayH = 15;
+        //    var defaultColor = Colors.Aqua;
+
+        //    var monthRec = new Rectangle(0, 0, dayW * 7, dayH * 5);
+        //    //// draw grid
+        //    //// fill day cell color
+        //    //for (int j = 0; j < 35; j++)
+        //    //{
+
+        //    //}
+        //    var row = 0;
+        //    var indexInRow = 0;
+
+        //    var font = Fonts.Sans(8);
+        //    var DOY = 0;
+
+        //    var pt = new Point();
+        //    var coloum = 1;
+        //    var month = 0;
+
+        //    var setColor = defaultColor;
+
+        //    foreach (var days in daysPerMonth)
+        //    {
+        //        if (month > 0)
+        //        {
+        //            pt.Y = pt.Y + dayH * 2;
+        //        }
+
+        //        var monthPt = new Point(0, pt.Y);
+        //        graphic.DrawText(font, Colors.Black, monthPt.X, monthPt.Y, (month + 1).ToString());
+        //        pt.Y = pt.Y + dayH;
+        //        monthPt.Y = monthPt.Y + dayH;
+        //        for (int i = 0; i < 7; i++)
+        //        {
+        //            var rec = new Rectangle(i * dayW, monthPt.Y, dayW, dayH);
+
+        //            var date = weekDays[i];
+        //            var size = font.MeasureString(date);
 
 
-                pt.Y = pt.Y + dayH;
-                for (int i = 0; i < days; i++)
-                {
-                    var weekOfMonth = (int)Math.Floor((double)i / 7);
-                    var dayOfWeek = (i - row * 7);
+        //            graphic.DrawText(font, Colors.Black, rec.Center.X - size.Width / 2, rec.Center.Y - size.Height / 2, date);
+        //            monthPt.X = monthPt.X + dayW;
+        //        }
+
+
+        //        pt.Y = pt.Y + dayH;
+        //        for (int i = 0; i < days; i++)
+        //        {
+        //            var weekOfMonth = (int)Math.Floor((double)i / 7);
+        //            var dayOfWeek = (i - row * 7);
                     
                     
-                    if (pt.X + dayW >= monthRec.Width * coloum)
-                    {
-                        pt.Y = pt.Y + dayH;
-                        pt.X = monthRec.Width * (coloum - 1);
-                    }
-                    else if (DOY != 0)
-                    {
-                        pt.X = pt.X + dayW;
-                    }
+        //            if (pt.X + dayW >= monthRec.Width * coloum)
+        //            {
+        //                pt.Y = pt.Y + dayH;
+        //                pt.X = monthRec.Width * (coloum - 1);
+        //            }
+        //            else if (DOY != 0)
+        //            {
+        //                pt.X = pt.X + dayW;
+        //            }
 
-                    dayOfWeek = (int)(pt.X / dayW);
-                    if (_selectedScheduleRule.ApplySaturday && dayOfWeek == 6)
-                    {
-                        setColor = Colors.Red;
-                    }
-                    else
-                    {
-                        setColor = defaultColor;
-                    }
+        //            dayOfWeek = (int)(pt.X / dayW);
+        //            if (_vmSelectedRule.ApplySaturday && dayOfWeek == 6)
+        //            {
+        //                setColor = Colors.Red;
+        //            }
+        //            else
+        //            {
+        //                setColor = defaultColor;
+        //            }
 
-                    var rec = new Rectangle(pt.X, pt.Y, dayW, dayH);
-                    graphic.FillRectangle(setColor, rec);
-                    graphic.DrawRectangle(Colors.Black, rec);
-                    var date = (i + 1).ToString();
-                    var size = font.MeasureString(date);
+        //            var rec = new Rectangle(pt.X, pt.Y, dayW, dayH);
+        //            graphic.FillRectangle(setColor, rec);
+        //            graphic.DrawRectangle(Colors.Black, rec);
+        //            var date = (i + 1).ToString();
+        //            var size = font.MeasureString(date);
 
-                    graphic.DrawText(font, Colors.Black, rec.Center.X - size.Width / 2, rec.Center.Y - size.Height / 2, date);
-                    //row = i == daysPerMonth[month]-1 ? row + 1 : row;
-                    DOY++;
-                }
+        //            graphic.DrawText(font, Colors.Black, rec.Center.X - size.Width / 2, rec.Center.Y - size.Height / 2, date);
+        //            //row = i == daysPerMonth[month]-1 ? row + 1 : row;
+        //            DOY++;
+        //        }
 
-                month++;
-            }
-        }
+        //        month++;
+        //    }
+        //}
 
 
         private Control[] AddIntervalButtons()
@@ -820,8 +896,11 @@ namespace Honeybee.UI
 
         #region Left DaySchedule Methods
 
-        private static void DrawTicks((double start, double end) scheduleTypeLimits, Rectangle canvas, Graphics graphics)
+        private static void DrawTicks(Rectangle canvas, Graphics graphics)
         {
+            double start = _vm.LowerLimit;
+            double end =  _vm.UpperLimit;
+
             //Draw horizontal ticks
             var markCount = 6;
             var hourInterval = 24 / markCount;
@@ -851,14 +930,14 @@ namespace Honeybee.UI
             var valueStartPt = canvas.BottomLeft;
             var valueEndPt = canvas.TopLeft;
             var heightPerInterval = (valueStartPt.Y - valueEndPt.Y) / valueMarkCount;
-            var valueInterval = Math.Abs(scheduleTypeLimits.start - scheduleTypeLimits.end) / valueMarkCount;
+            var valueInterval = Math.Abs(start - end) / valueMarkCount;
             for (int i = 0; i <= valueMarkCount; i++)
             {
                 var p1 = new PointF(left, bottom - i * heightPerInterval);
                 var p2 = new PointF(left - tickLength, bottom - i * heightPerInterval);
                 graphics.DrawLine(Colors.Black, p1, p2);
 
-                var tickText = $"{scheduleTypeLimits.start + i * valueInterval}";
+                var tickText = $"{start + i * valueInterval}";
                 var textSize = tickfont.MeasureString(tickText);
                 graphics.DrawText(tickfont, Colors.Black, p2.X - textSize.Width - 2, p2.Y - textSize.Height / 2, tickText);
             }
@@ -1163,36 +1242,43 @@ namespace Honeybee.UI
         {
             var graphic = e.Graphics;
 
-            var color = Colors.Blue;
-            var appliedDays = new List<DayOfWeek> { };
+            var colorSet = colorsetPerRuleset;
 
-            if (_selectedScheduleRule.ApplySunday)
-                appliedDays.Add(DayOfWeek.Sunday); 
-            if (_selectedScheduleRule.ApplyMonday)
-                appliedDays.Add(DayOfWeek.Monday);
-            if (_selectedScheduleRule.ApplyTuesday)
-                appliedDays.Add(DayOfWeek.Tuesday);
-            if (_selectedScheduleRule.ApplyWednesday)
-                appliedDays.Add(DayOfWeek.Wednesday);
-            if (_selectedScheduleRule.ApplyThursday)
-                appliedDays.Add(DayOfWeek.Thursday);
-            if (_selectedScheduleRule.ApplyFriday)
-                appliedDays.Add(DayOfWeek.Friday);
-            if (_selectedScheduleRule.ApplySaturday)
-                appliedDays.Add(DayOfWeek.Saturday);
+            foreach (var item in colorSet)
+            {
+                var rule = item.schRule;
+                //var color = Colors.Blue;
+                var appliedDays = new List<DayOfWeek> { };
 
-            var s = _selectedScheduleRule.StartDate ?? new List<int> { 1, 1 };
-            var startDate = new DateTime(2017, s[0], s[1]);
-            var startDOY = startDate.DayOfYear;
+                if (rule.ApplySunday)
+                    appliedDays.Add(DayOfWeek.Sunday);
+                if (rule.ApplyMonday)
+                    appliedDays.Add(DayOfWeek.Monday);
+                if (rule.ApplyTuesday)
+                    appliedDays.Add(DayOfWeek.Tuesday);
+                if (rule.ApplyWednesday)
+                    appliedDays.Add(DayOfWeek.Wednesday);
+                if (rule.ApplyThursday)
+                    appliedDays.Add(DayOfWeek.Thursday);
+                if (rule.ApplyFriday)
+                    appliedDays.Add(DayOfWeek.Friday);
+                if (rule.ApplySaturday)
+                    appliedDays.Add(DayOfWeek.Saturday);
 
-            var end = _selectedScheduleRule.EndDate ?? new List<int> { 12, 31 };
-            var endDate = new DateTime(2017, end[0], end[1]);
-            var endDOY = endDate.DayOfYear;
+                var startDate = new DateTime(2017, rule.StartDate[0], rule.StartDate[1]);
+                var startDOY = startDate.DayOfYear;
+
+                var endDate = new DateTime(2017, rule.EndDate[0], rule.EndDate[1]);
+                var endDOY = endDate.DayOfYear;
 
 
-            var selectedDays = DayRectangles.Skip(startDOY -1).Take(endDOY - startDOY+1).Where(_ => appliedDays.Contains(_.date.DayOfWeek));
-            var recs = selectedDays.Select(_ => _.rec);
-            graphic.FillRectangles(Colors.Red, recs);
+                var selectedDays = DayRectangles.Skip(startDOY - 1).Take(endDOY - startDOY + 1).Where(_ => appliedDays.Contains(_.date.DayOfWeek));
+                var recs = selectedDays.Select(_ => _.rec);
+                graphic.FillRectangles(item.color, recs);
+            }
+            
+            
+            
 
 
         }

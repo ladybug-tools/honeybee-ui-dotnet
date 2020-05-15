@@ -96,7 +96,9 @@
     <Compile Include="Honeybee.UI.cs" />
     <Compile Include="Layout\Room.cs" />
     <Compile Include="Layout\Schedule.cs" />
-    <Compile Include="ViewModel\ScheduleViewModel.cs" />
+    <Compile Include="ViewModel\ScheduleRuleViewModel.cs" />
+    <Compile Include="ViewModel\ScheduleDayViewModel.cs" />
+    <Compile Include="ViewModel\ScheduleRulesetViewModel.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />
     <Compile Include="ViewModel\ProgramTypeViewModel.cs" />
     <Compile Include="ViewModel\MessageViewModel.cs" />
