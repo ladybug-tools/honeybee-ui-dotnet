@@ -26,8 +26,8 @@ namespace Honeybee.UI
                 MinimumSize = new Size(650, 650);
                 this.Icon = DialogHelper.HoneybeeIcon;
 
-                DefaultButton = new Button { Text = "OK" };
-                DefaultButton.Click += (sender, e) => Close(sch);
+                var OkButton = new Button { Text = "OK" };
+                OkButton.Click += (sender, e) => Close(sch);
 
                 AbortButton = new Button { Text = "Cancel" };
                 AbortButton.Click += (sender, e) => Close();
@@ -39,7 +39,7 @@ namespace Honeybee.UI
                 //    sch.ScheduleRules, sch.HolidaySchedule, sch.SummerDesigndaySchedule, sch.WinterDesigndaySchedule, typeLimit);
 
                 var panel = new Panel_Schedule(sch);
-                panel.AddSeparateRow(null, DefaultButton, AbortButton, null);
+                panel.AddSeparateRow(null, OkButton, AbortButton, null);
                 Content = panel;
 
                 //var layout = new DynamicLayout();
