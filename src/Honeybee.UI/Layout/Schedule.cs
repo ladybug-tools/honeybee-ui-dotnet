@@ -15,7 +15,8 @@ namespace Honeybee.UI
         private ScheduleRuleAbridged _selectedScheduleRule = new ScheduleRuleAbridged("");
         private HB.ScheduleTypeLimit _selectedScheduleTypeLimits = new HB.ScheduleTypeLimit(Guid.NewGuid().ToString(), null, 0, 1);
 
-
+        private ScheduleDay _selectedScheduleDay;
+        private ScheduleDay _defaultScheduleDay => _scheduleRuleset.DaySchedules.First(_ => _.Identifier == _scheduleRuleset.DefaultDaySchedule);
         private double _intervalMinutes = 60; // hourly = 60, 15 minutes = 15, etc
 
         public (double start, double end) ScheduleTypeLimits { 
@@ -30,29 +31,30 @@ namespace Honeybee.UI
             }
         }
 
-        private double _scheduleTypelength => Math.Abs(ScheduleTypeLimits.end - ScheduleTypeLimits.start);
-        public List<double> DayValues { get; set; }
-        public List<double> DayValuesFraction => DayValues.Select(_ => _ / _scheduleTypelength).ToList();
 
-        public List<(int hour, int minute)> DayTimes { get; set; }
-        
+        private double _scheduleTypelength => Math.Abs(ScheduleTypeLimits.end - ScheduleTypeLimits.start);
+        public List<double> DayValues => _selectedScheduleDay.Values;
+        public List<double> DayValuesFraction => DayValues.Select(_ => _ / _scheduleTypelength).ToList();
+        public List<(int hour, int minute)> DayTimes => _selectedScheduleDay.Times.Select(_ => (_[0], _[1])).ToList();
+
+        private Drawable _scheduleDaydrawable;
         private Drawable _calendarPanel;
-        
+        private Color _defaultColor = Color.FromArgb(184, 229, 255);
 
         public Panel_Schedule(HB.ScheduleRulesetAbridged scheduleRuleset)
         {
             var sch = scheduleRuleset;
             _scheduleRuleset = sch;
-            var daySchedule = sch.DaySchedules.First(_ => _.Identifier == sch.DefaultDaySchedule);
-            var values = daySchedule.Values;
+            _selectedScheduleDay = _defaultScheduleDay;
+       
             //sch.ScheduleTypeLimit
 
             //(double start, double end) scheduleTypeLimits = (0, 100);
             //var scheduleTypelength = Math.Abs(scheduleTypeLimits.end - scheduleTypeLimits.start);
             this._selectedScheduleTypeLimits = new HB.ScheduleTypeLimit(Guid.NewGuid().ToString(), null, 0, 1);
-            this.DayValues = new List<double>() { 0, 0.5, 0.1 };
+            //this.DayValues = new List<double>() { 0, 0.5, 0.1 };
             //var dayValueFraction = dayValues.Select(_ => _ / scheduleTypelength);
-            this.DayTimes = new List<(int hour, int minute)>() { (0, 0), (6, 0), (18, 0) };
+            //this.DayTimes = new List<(int hour, int minute)>() { (0, 0), (6, 0), (18, 0) };
 
             //var DayValues = this.DayValues;
 
@@ -60,8 +62,47 @@ namespace Honeybee.UI
             this.DefaultPadding = new Padding(10);
             this.DefaultSpacing = new Size(5, 5);
 
+            #region Panel for Schedule RuleSet rules
+
+            var rulesPanel = new DynamicLayout();
+            rulesPanel.Width = 200;
+           
+            var rules = _scheduleRuleset.ScheduleRules;
+            var summerbtn = new Button() { Text = "Summer Design Day"};
+            var winterbtn = new Button() { Text = "Winter Design Day" };
+            var holidaybtn = new Button() { Text = "Holiday" };
+            rulesPanel.AddRow("Special Day Profiles:");
+            rulesPanel.AddRow(summerbtn);
+            rulesPanel.AddRow(winterbtn);
+            rulesPanel.AddRow(holidaybtn);
+            rulesPanel.AddRow("Day Profiles:");
+            var random = new Random();
+            foreach (var item in rules)
+            {
+                var topBorder = new Label() { Height = 1, BackgroundColor = Colors.Black };
+                rulesPanel.AddSeparateRow(topBorder);
+
+                var radColor = Color.FromArgb((int)(0xFF000000 + (random.Next(0xFFFFFF) & 0x7F7F7F)));
+                var ruleDay = sch.DaySchedules.First(_ => _.Identifier == item.ScheduleDay); 
+                var ruleBtn = GenScheduleRuleBtn(item.ScheduleDay, radColor, ()=> _selectedScheduleDay = ruleDay);
+                
+                rulesPanel.AddSeparateRow(ruleBtn);
+
+            }
+            var defaultBorder = new Label() { Height = 1, BackgroundColor = Colors.Black };
+            rulesPanel.AddSeparateRow(defaultBorder);
+            var defaultScheduleBtn = GenScheduleRuleBtn("Default Day", _defaultColor, () => _selectedScheduleDay = _defaultScheduleDay);
+            rulesPanel.AddSeparateRow(defaultScheduleBtn);
+            var bottomBorder = new Label() { Height = 1, BackgroundColor = Colors.Black };
+            rulesPanel.AddSeparateRow(bottomBorder);
+            rulesPanel.AddSeparateRow(null);
+            #endregion
+
+
+
+
             var schName_Tb = new TextBox() { Text = _scheduleRuleset.DisplayName ?? _scheduleRuleset.Identifier };
-            var dayName_Tb = new TextBox() { Text = daySchedule.DisplayName ?? daySchedule.Identifier, Width = 300 };
+            var dayName_Tb = new TextBox() { Text = _selectedScheduleDay.DisplayName ?? _selectedScheduleDay.Identifier, Width = 300 };
             var lowerLimit_TB = new NumericMaskedTextStepper<double>() { Value = ScheduleTypeLimits.start, PlaceholderText= "0" };
             var higherLimit_TB = new NumericMaskedTextStepper<double>() { Value = ScheduleTypeLimits.end, PlaceholderText = "0" };
       
@@ -73,11 +114,11 @@ namespace Honeybee.UI
 
             #region LeftPanel
 
-            var drawable = new Drawable(true) { };
-            drawable.Size = new Size(600, 400);
+            _scheduleDaydrawable = new Drawable(true) { };
+            _scheduleDaydrawable.Size = new Size(600, 400);
             //drawable.BackgroundColor = Colors.Blue;
             var location = new Point(0, 0);
-            var canvas = drawable.Bounds;
+            var canvas = _scheduleDaydrawable.Bounds;
             canvas.Size = canvas.Size - 20;
             canvas.TopLeft = new Point(50, 10);
 
@@ -85,7 +126,7 @@ namespace Honeybee.UI
             #region MouseEvent
             var allMouseHoverRanges = new List<(bool isVertical, RectangleF rectangle, int valueIndex)>();
             var mouseHoveredRanges = new List<(bool isVertical, RectangleF rectangle, int valueIndex)>();
-            drawable.MouseMove += (s, e) =>
+            _scheduleDaydrawable.MouseMove += (s, e) =>
             {
                 var mouseLoc = e.Location;
                 //label.Text = $"{Math.Round(mouseLoc.X)},{Math.Round(mouseLoc.Y)}";
@@ -94,7 +135,7 @@ namespace Honeybee.UI
                 if (hovered.Any())
                 {
                     mouseHoveredRanges = hovered.ToList();
-                    drawable.Update(canvas);
+                    _scheduleDaydrawable.Update(canvas);
                 }
                 else
                 {
@@ -103,7 +144,7 @@ namespace Honeybee.UI
                         ////var preRec = mouseHoveredRanges.First().rectangle;
                         mouseHoveredRanges.Clear();
                         //drawable.Update(new Rectangle(preRec));
-                        drawable.Update(canvas);
+                        _scheduleDaydrawable.Update(canvas);
                     }
 
                 }
@@ -112,7 +153,7 @@ namespace Honeybee.UI
 
             var startDragging = false;
             var mouseHoveredRangesForDragging = new List<(bool isVertical, RectangleF rectangle, int valueIndex)>();
-            drawable.MouseDown += (s, e) =>
+            _scheduleDaydrawable.MouseDown += (s, e) =>
             {
                 if (mouseHoveredRanges.Any())
                 {
@@ -122,31 +163,31 @@ namespace Honeybee.UI
                 }
 
             };
-            drawable.MouseUp += (s, e) =>
+            _scheduleDaydrawable.MouseUp += (s, e) =>
             {
                 if (startDragging)
                 {
                     mouseHoveredRangesForDragging.Clear();
                     startDragging = false;
-                    drawable.Update(canvas);
+                    _scheduleDaydrawable.Update(canvas);
                 }
 
             };
 
-            drawable.LostFocus += (s, e) =>
+            _scheduleDaydrawable.LostFocus += (s, e) =>
             {
                 if (startDragging)
                 {
                     mouseHoveredRangesForDragging.Clear();
                     startDragging = false;
-                    drawable.Update(canvas);
+                    _scheduleDaydrawable.Update(canvas);
                 }
 
 
             };
 
             // mouse move for dragging
-            drawable.MouseMove += (s, e) =>
+            _scheduleDaydrawable.MouseMove += (s, e) =>
             {
                 if (!startDragging)
                     return;
@@ -186,7 +227,7 @@ namespace Honeybee.UI
                         if (newTime < nextTime2 && newTime > beforeTime2)
                         {
                             DayTimes[hovered.valueIndex] = (newHour, newMinute);
-                            drawable.Update(canvas);
+                            _scheduleDaydrawable.Update(canvas);
                         }
 
 
@@ -198,7 +239,7 @@ namespace Honeybee.UI
                         var pecent = Math.Round(mappedValue, decimalPlaces);
 
                         DayValues[valueIndex] = pecent * this._scheduleTypelength;
-                        drawable.Update(canvas);
+                        _scheduleDaydrawable.Update(canvas);
                     }
                     
                    
@@ -214,7 +255,7 @@ namespace Honeybee.UI
             };
 
 
-            drawable.MouseDoubleClick += (s, e) =>
+            _scheduleDaydrawable.MouseDoubleClick += (s, e) =>
             {
                 var mouseLoc = e.Location;
                 var doubleClickedRanges = allMouseHoverRanges.Where(_ => _.rectangle.Contains(mouseLoc));
@@ -226,7 +267,7 @@ namespace Honeybee.UI
                     {
                         DayTimes.RemoveAt(hovered.valueIndex);
                         DayValues.RemoveAt(hovered.valueIndex);
-                        drawable.Update(canvas);
+                        _scheduleDaydrawable.Update(canvas);
 
                         return;
                     }
@@ -261,7 +302,7 @@ namespace Honeybee.UI
                         var addValue = DayValues[insertIndex];
                         DayValues.Insert(insertIndex + 1, addValue);
                         //newDateTimes.Add((hour, minute));
-                        drawable.Update(new Rectangle(hovered.rectangle));
+                        _scheduleDaydrawable.Update(new Rectangle(hovered.rectangle));
                     }
 
               
@@ -273,7 +314,7 @@ namespace Honeybee.UI
             #endregion
 
             var hoveredValueIndex = 0;
-            drawable.Paint += (s, e) =>
+            _scheduleDaydrawable.Paint += (s, e) =>
             {
                 //TODO: this is need when I start working on resizable charts 
                 //canvas = drawable.Bounds;
@@ -389,7 +430,7 @@ namespace Honeybee.UI
                         //preRec.Bottom = (float)Math.Min(newUserInput, oldValue);
                         DayValues[valueIndex] = newUserInput;
 
-                        drawable.Update(canvas);
+                        _scheduleDaydrawable.Update(canvas);
                     }
 
 
@@ -401,7 +442,7 @@ namespace Honeybee.UI
             lowerLimit_TB.ValueChanged += (s, e) => 
             { 
                 this._selectedScheduleTypeLimits.LowerLimit = lowerLimit_TB.Value;
-                drawable.Update(canvas);
+                _scheduleDaydrawable.Update(canvas);
             };
             //lowerLimit_TB.KeyDown += (s, e) =>
             //{
@@ -414,7 +455,7 @@ namespace Honeybee.UI
             higherLimit_TB.TextChanged += (s, e) => 
             { 
                 this._selectedScheduleTypeLimits.UpperLimit = higherLimit_TB.Value;
-                drawable.Update(canvas);
+                _scheduleDaydrawable.Update(canvas);
             };
 
             var btn = new Button() { Text = "HBData" };
@@ -445,7 +486,7 @@ namespace Honeybee.UI
             layoutLeft.AddSeparateRow(layoutRule);
             layoutLeft.AddSeparateRow(new Label {Width = 47 }, new Label { Text = "Lower Limit:", Width = 90 }, lowerLimit_TB, "Upper Limit:", higherLimit_TB, null, label, mouseHoverValue_TB);
             //this.AddSeparateRow(null, label, mouseHoverValue_TB);
-            layoutLeft.AddSeparateRow(drawable);
+            layoutLeft.AddSeparateRow(_scheduleDaydrawable);
             layoutLeft.AddSeparateRow(this.AddIntervalButtons());
             layoutLeft.AddRow(btn);
             #endregion
@@ -489,9 +530,58 @@ namespace Honeybee.UI
             #endregion
 
 
-            this.AddRow(layoutLeft, layoutRight, null);
+            this.AddRow(rulesPanel, layoutLeft, layoutRight, null);
 
         }
+        private Control[] GenScheduleRuleBtn(string btnName, Color color, Action setAction)
+        {
+            var left = new Label() { Width = 1, BackgroundColor= Colors.Black };
+            var middle = new Label() { Width = 1, BackgroundColor = Colors.Black };
+            var right = new Label() { Width = 1, BackgroundColor = Colors.Black };
+
+            var labelColor = new Label() { Width = 10 };
+            labelColor.BackgroundColor = color;
+
+
+            var defaultDaybtn = new Label() { Text = btnName, Height = 25 };
+            defaultDaybtn.TextAlignment = TextAlignment.Left;
+            defaultDaybtn.Wrap = WrapMode.None;
+
+            var defaultBackgroundColor = Color.FromArgb(235, 235, 235);
+            var pressColor = Color.FromArgb(200, 200, 200);
+            defaultDaybtn.BackgroundColor = defaultBackgroundColor;
+            defaultDaybtn.MouseMove += (s, e) =>
+            {
+                defaultDaybtn.BackgroundColor = pressColor;
+            };
+            defaultDaybtn.MouseLeave += (s, e) =>
+            {
+                defaultDaybtn.BackgroundColor = defaultBackgroundColor;
+            };
+          
+            defaultDaybtn.MouseDown += (s, e) =>
+            {
+                defaultDaybtn.BackgroundColor = pressColor;
+                //var rad = new Random();
+                //var dayValues = new List<double>() { 0, rad.NextDouble(), rad.NextDouble() };
+                //var dayTimes = new List<List<int>>() { new List<int> { 0, 0 }, new List<int> { 6, 0 }, new List<int> { 18, 0 } };
+                //var newday = new ScheduleDay("ddd", dayValues, null, dayTimes) { };
+
+                ////this.DayValues = new List<double>() { 0, 0.5, 0.1 };
+                ////var dayValueFraction = dayValues.Select(_ => _ / scheduleTypelength);
+                ////this.DayTimes = new List<(int hour, int minute)>() { (0, 0), (6, 0), (18, 0) };
+                //this._selectedScheduleDay = newday;
+                setAction();
+                _scheduleDaydrawable.Update(new Rectangle(new Size(600,400)));
+
+
+            };
+
+            return new Control[] { left, labelColor, middle, defaultDaybtn };
+
+
+        }
+
 
         private Control[] ApplyDateRangeControls()
         {
@@ -1059,7 +1149,7 @@ namespace Honeybee.UI
         {
             var graphic = e.Graphics;
 
-            var color = Color.FromArgb(184, 229, 255);
+            var color = _defaultColor;
             var monthlyBounds = this.MonthlyBounds;
             graphic.FillRectangles(color, monthlyBounds);
 
