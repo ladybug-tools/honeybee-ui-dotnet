@@ -40,7 +40,7 @@ namespace Honeybee.UI
         public List<List<int>> Times
         {
             get => _hbObj.Times;
-            set => Set(() => _hbObj.Times = value, nameof(Times));
+            set => Set(() => hbObj.Times = value, nameof(Times));
         }
 
         private static ScheduleDayViewModel _instance;
