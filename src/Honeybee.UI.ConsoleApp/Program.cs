@@ -72,13 +72,15 @@ namespace Honeybee.UI.ConsoleApp
 
                 };
 
-                var schbtn = new Button() { Text = "Schedule" };
+                var schbtn = new Button() { Text = "ScheduleRulesetManager" };
                 schbtn.Click += (s, e) =>
                 {
-                    var dialog = new Honeybee.UI.Dialog_Schedule();
+                    var md = new Model("", new ModelProperties(ModelEnergyProperties.Default));
+                    var dialog = new Honeybee.UI.Dialog_ScheduleRulesetManager(md);
                     dialog.ShowModal(this);
 
                 };
+
 
                 panel.AddSeparateRow(btn);
                 panel.AddSeparateRow(Messagebtn);
