@@ -37,27 +37,36 @@ namespace Honeybee.UI
         {
             get
             {
-                if (_hbObj.ScheduleTypeLimit.LowerLimit.Obj is double low)
+                if (ScheduleTypeLimit.LowerLimit.Obj is double low)
                 {
                     return low;
                 }
-                return 0;
+                else
+                {
+                    // no limit
+                    return DaySchedules.SelectMany(_ => _.Values).Min();
+                }
 
             } 
-            set => Set(() => _hbObj.ScheduleTypeLimit.LowerLimit = value, nameof(LowerLimit));
+            set => Set(() => ScheduleTypeLimit.LowerLimit = value, nameof(LowerLimit));
         }
         public double UpperLimit
         {
             get
             {
-                if (_hbObj.ScheduleTypeLimit.UpperLimit.Obj is double low)
+                if (ScheduleTypeLimit.UpperLimit.Obj is double low)
                 {
                     return low;
                 }
-                return 1;
+                else
+                {
+                    // no limit
+                    return DaySchedules.SelectMany(_ => _.Values).Max();
+                }
+             
 
             }
-            set => Set(() => _hbObj.ScheduleTypeLimit.UpperLimit = value, nameof(UpperLimit));
+            set => Set(() => ScheduleTypeLimit.UpperLimit = value, nameof(UpperLimit));
         }
        
 
