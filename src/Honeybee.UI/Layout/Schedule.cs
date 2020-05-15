@@ -77,7 +77,7 @@ namespace Honeybee.UI
             rulesPanel.Width = 200;
             rulesPanel.Height = 600;
 
-            var rules = _vm.ScheduleRules;
+           
             var summerbtn = new Button() { Text = "Summer Design Day"};
             var winterbtn = new Button() { Text = "Winter Design Day" };
             var holidaybtn = new Button() { Text = "Holiday" };
@@ -87,8 +87,13 @@ namespace Honeybee.UI
             rulesPanel.AddRow(holidaybtn);
             rulesPanel.AddRow("Day Profiles:");
             var random = new Random();
+
+            var rules = _vm.ScheduleRules ?? new List<ScheduleRuleAbridged>();
             foreach (var item in rules)
             {
+                if (string.IsNullOrEmpty(item.ScheduleDay))
+                    continue;
+
                 var topBorder = new Label() { Height = 1, BackgroundColor = Colors.Black };
                 rulesPanel.AddSeparateRow(topBorder);
 
