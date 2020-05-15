@@ -46,8 +46,8 @@ namespace Honeybee.UI
         private Drawable _calendarPanel;
         private Color _defaultColor = Color.FromArgb(184, 229, 255);
         private List<(Color color, ScheduleRuleAbridged schRule)> colorsetPerRuleset = new List<(Color, ScheduleRuleAbridged)>();
+        private Size _calendarSize = new Size(200, 1550);
 
-        
         public Panel_Schedule(HB.ScheduleRuleset scheduleRuleset)
         {
             _vm.hbObj = scheduleRuleset;
@@ -555,16 +555,15 @@ namespace Honeybee.UI
             #endregion
 
             #region RightPanel
-            var calendarSize = new Size(200, 1550);
-      
+            
             //Background color
             var calendarBackground = new Drawable(true);
-            calendarBackground.Size = calendarSize;
+            calendarBackground.Size = _calendarSize;
             calendarBackground.Paint += Drawable_FillBackground;
 
             //Middle layer
             _calendarPanel = new Drawable(true);
-            _calendarPanel.Size = calendarSize;
+            _calendarPanel.Size = _calendarSize;
 
             //_calendarPanel.Paint += Drawable_FillBackground;
             _calendarPanel.Paint += Drawable_FillForeground;
@@ -573,7 +572,7 @@ namespace Honeybee.UI
 
             //Foreground text/grids
             var calendarForeground = new Drawable(true);
-            calendarForeground.Size = calendarSize;
+            calendarForeground.Size = _calendarSize;
             calendarForeground.Paint += Drawable_Grid;
             calendarForeground.Paint += Drawable_Label;
 
@@ -1223,7 +1222,7 @@ namespace Honeybee.UI
 
         private void RefreshCalendar()
         {
-            _calendarPanel.Update(new Rectangle(new Size(200, 1500)));
+            _calendarPanel.Update(new Rectangle(_calendarSize));
         }
 
         private void Drawable_Grid(object sender, PaintEventArgs e)
@@ -1256,9 +1255,10 @@ namespace Honeybee.UI
             var graphic = e.Graphics;
 
             var colorSet = colorsetPerRuleset;
-
-            foreach (var item in colorSet)
+            var total = colorSet.Count;
+            for (int i = 0; i < total; i++)
             {
+                var item = colorSet[total - 1 - i];
                 var rule = item.schRule;
                 //var color = Colors.Blue;
                 var appliedDays = new List<DayOfWeek> { };
@@ -1289,10 +1289,7 @@ namespace Honeybee.UI
                 var recs = selectedDays.Select(_ => _.rec);
                 graphic.FillRectangles(item.color, recs);
             }
-            
-            
-            
-
+       
 
         }
 
