@@ -9,15 +9,16 @@ using HoneybeeSchema;
 
 namespace Honeybee.UI
 {
-    public class Dialog_Schedule : Dialog
+    public class Dialog_Schedule : Dialog<ScheduleRuleset>
     {
         
-        public Dialog_Schedule()
+        public Dialog_Schedule(ScheduleRuleset scheduleRuleset)
         {
             try
             {
-                var sch = HB.ModelEnergyProperties.Default.Schedules.First(_=>_.Obj is HB.ScheduleRulesetAbridged).Obj as HB.ScheduleRulesetAbridged;
-                
+                //var sch = HB.ModelEnergyProperties.Default.Schedules.First(_=>_.Obj is HB.ScheduleRulesetAbridged).Obj as HB.ScheduleRulesetAbridged;
+                var sch = scheduleRuleset;
+
                 Padding = new Padding(5);
                 Resizable = true;
                 Title = "Schedule - Honeybee";
@@ -26,18 +27,20 @@ namespace Honeybee.UI
                 this.Icon = DialogHelper.HoneybeeIcon;
 
                 DefaultButton = new Button { Text = "OK" };
-                DefaultButton.Click += (sender, e) => Close();
+                DefaultButton.Click += (sender, e) => Close(sch);
 
                 AbortButton = new Button { Text = "Cancel" };
                 AbortButton.Click += (sender, e) => Close();
 
-                var daySchedule = sch.DaySchedules.First(_ => _.Identifier == sch.DefaultDaySchedule);
+                //var daySchedule = sch.DaySchedules.First(_ => _.Identifier == sch.DefaultDaySchedule);
 
-                var typeLimit = new HB.ScheduleTypeLimit(Guid.NewGuid().ToString(), null, 0, 1);
-                var realSch = new ScheduleRuleset(sch.Identifier, sch.DaySchedules, sch.DefaultDaySchedule, sch.DisplayName,
-                    sch.ScheduleRules, sch.HolidaySchedule, sch.SummerDesigndaySchedule, sch.WinterDesigndaySchedule, typeLimit);
+                //var typeLimit = new HB.ScheduleTypeLimit(Guid.NewGuid().ToString(), null, 0, 1);
+                //var realSch = new ScheduleRuleset(sch.Identifier, sch.DaySchedules, sch.DefaultDaySchedule, sch.DisplayName,
+                //    sch.ScheduleRules, sch.HolidaySchedule, sch.SummerDesigndaySchedule, sch.WinterDesigndaySchedule, typeLimit);
 
-                Content = new Panel_Schedule(realSch);
+                var panel = new Panel_Schedule(sch);
+                panel.AddSeparateRow(null, DefaultButton, AbortButton, null);
+                Content = panel;
 
                 //var layout = new DynamicLayout();
                 //layout.Height = 500;
