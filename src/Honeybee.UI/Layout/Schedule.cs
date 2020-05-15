@@ -38,7 +38,7 @@ namespace Honeybee.UI
 
         private double _scheduleTypelength => Math.Abs(_vm.UpperLimit - _vm.LowerLimit);
         //public List<double> DayValues => _vmSelectedDay.Values;
-        public List<double> DayValuesFraction => _vmSelectedDay.Values.Select(_ => _ / _scheduleTypelength).ToList();
+        public List<double> DayValuesFraction => _vmSelectedDay.Values.Select(_ => Math.Abs(_ - _vm.LowerLimit) / _scheduleTypelength).ToList();
         //public List<List<int>> DayTimes => _vmSelectedDay.Times;
 
         private DynamicLayout _layoutSchRule;
@@ -147,14 +147,15 @@ namespace Honeybee.UI
             //_vmSelectedDay.hbObj.DisplayName = _vmSelectedDay.hbObj.DisplayName ?? _vmSelectedDay.hbObj.Identifier;
             dayName_Tb.TextBinding.Bind(_vmSelectedDay, c => c.DisplayName);
 
-            var lowerLimit_TB = new NumericMaskedTextStepper<double>() { PlaceholderText= "0" };
+            var lowerLimit_TB = new NumericStepper() { };
             lowerLimit_TB.ValueBinding.Bind(_vm, c => c.LowerLimit);
-            var higherLimit_TB = new NumericMaskedTextStepper<double>() { PlaceholderText = "0" };
+            var higherLimit_TB = new NumericStepper() { };
             higherLimit_TB.ValueBinding.Bind(_vm, c => c.UpperLimit);
 
-            var mouseHoverValue_TB = new NumericMaskedTextBox<double>() { PlaceholderText = "Mouse over lines", Height = 20, Font= Fonts.Sans(8) };
-      
-            //var label = new Label() { Text = "" };
+            //var label = new Label() { Text = "Mouse over lines" };
+            var mouseHoverValue_TB = new NumericMaskedTextStepper<double>() { Height = 20, Font= Fonts.Sans(8) };
+            mouseHoverValue_TB.ShowStepper = false;
+            mouseHoverValue_TB.PlaceholderText = "Mouse over lines";
 
 
             #region LeftPanel
@@ -165,7 +166,7 @@ namespace Honeybee.UI
             var location = new Point(0, 0);
             var canvas = _scheduleDaydrawable.Bounds;
             canvas.Size = canvas.Size - 20;
-            canvas.TopLeft = new Point(50, 10);
+            canvas.TopLeft = new Point(50, 15);
 
 
             #region MouseEvent
@@ -283,11 +284,13 @@ namespace Honeybee.UI
                     }
                     else
                     {
-                        var mappedValue = (canvas.Bottom - mouseLoc.Y) / canvas.Height;
-                        var decimalPlaces = (this._scheduleTypelength/100).ToString().Split('.').Last().Length;
-                        var pecent = Math.Round(mappedValue, decimalPlaces);
+                        var mappedPercent = (canvas.Bottom - mouseLoc.Y) / canvas.Height;
+                        mappedPercent = Math.Min(1, mappedPercent);
+                        mappedPercent = Math.Max(0, mappedPercent);
 
-                        _vmSelectedDay.Values[valueIndex] = pecent * this._scheduleTypelength;
+                        var decimalPlaces = (this._scheduleTypelength / 100).ToString().Split('.').Last().Length;
+                        var checkedValue = mappedPercent * this._scheduleTypelength + _vm.LowerLimit;
+                        _vmSelectedDay.Values[valueIndex] = Math.Round(checkedValue, decimalPlaces);
                         _scheduleDaydrawable.Update(canvas);
                     }
                     
@@ -438,7 +441,7 @@ namespace Honeybee.UI
                         var hoveredValue = _vmSelectedDay.Values[hoveredRec.valueIndex];
                         if (mouseHoverValue_TB.SelectedText != hoveredValue.ToString())
                         {
-                            mouseHoverValue_TB.Value = hoveredValue;
+                            mouseHoverValue_TB.Text = hoveredValue.ToString();
                             mouseHoverValue_TB.SelectAll();
                         }
                     }
@@ -448,7 +451,7 @@ namespace Honeybee.UI
                 {
                     if (!startDragging)
                     {
-                        mouseHoverValue_TB.Value = 0;
+                        mouseHoverValue_TB.Text = null;
                         mouseHoverValue_TB.Enabled = false;
                     }
                     
@@ -501,7 +504,7 @@ namespace Honeybee.UI
                 _scheduleDaydrawable.Update(canvas);
             };
           
-            higherLimit_TB.TextChanged += (s, e) => 
+            higherLimit_TB.ValueChanged += (s, e) => 
             { 
                 //_vm.ScheduleTypeLimit.UpperLimit = higherLimit_TB.Value;
                 _scheduleDaydrawable.Update(canvas);

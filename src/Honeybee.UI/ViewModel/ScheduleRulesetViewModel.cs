@@ -44,7 +44,9 @@ namespace Honeybee.UI
                 else
                 {
                     // no limit
-                    return DaySchedules.SelectMany(_ => _.Values).Min();
+                    var min = DaySchedules.SelectMany(_ => _.Values).Min();
+                    _hbObj.ScheduleTypeLimit.LowerLimit = min;
+                    return min;
                 }
 
             } 
@@ -61,7 +63,9 @@ namespace Honeybee.UI
                 else
                 {
                     // no limit
-                    return DaySchedules.SelectMany(_ => _.Values).Max();
+                    var max = DaySchedules.SelectMany(_ => _.Values).Max();
+                    _hbObj.ScheduleTypeLimit.UpperLimit = max;
+                    return max;
                 }
              
 
