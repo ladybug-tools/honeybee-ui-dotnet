@@ -81,6 +81,14 @@ namespace Honeybee.UI.ConsoleApp
 
                 };
 
+                var conbtn = new Button() { Text = "Construction" };
+                conbtn.Click += (s, e) =>
+                {
+                    //var md = new Model("", new ModelProperties(ModelEnergyProperties.Default));
+                    var dialog = new Honeybee.UI.Dialog_Construction();
+                    dialog.ShowModal(this);
+
+                };
 
                 panel.AddSeparateRow(btn);
                 panel.AddSeparateRow(Messagebtn);
@@ -88,6 +96,7 @@ namespace Honeybee.UI.ConsoleApp
                 panel.AddSeparateRow(pTypebtn);
                 panel.AddSeparateRow(pTypeMngbtn);
                 panel.AddSeparateRow(schbtn);
+                panel.AddSeparateRow(conbtn);
                 panel.AddSeparateRow(null);
                 Content = panel;
             }
