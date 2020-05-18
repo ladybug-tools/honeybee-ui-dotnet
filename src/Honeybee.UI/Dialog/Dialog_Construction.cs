@@ -7,9 +7,11 @@ using System.Collections.Generic;
 using System.IO.Compression;
 using HoneybeeSchema;
 using Newtonsoft.Json.Converters;
+using System.Text.RegularExpressions;
 
 namespace Honeybee.UI
 {
+
     public class Dialog_Construction : Dialog
     {
         //private List<string> _layers = new List<string>();
@@ -23,6 +25,32 @@ namespace Honeybee.UI
             set { _hbObj.Layers = value; }
         }
 
+        private static IEnumerable<HB.Energy.IMaterial> _opaqueMaterials;
+
+        public IEnumerable<HB.Energy.IMaterial> OpaqueMaterials
+        {
+            get {
+                if (_opaqueMaterials == null)
+                {
+                    _opaqueMaterials = HB.Helper.EnergyLibrary.StandardsOpaqueMaterials;
+                }
+                return _opaqueMaterials; 
+            }
+        }
+
+        private static IEnumerable<HB.Energy.IMaterial> _windowMaterials;
+        public IEnumerable<HB.Energy.IMaterial> WindowMaterials
+        {
+            get
+            {
+                if (_windowMaterials == null)
+                {
+                    _windowMaterials = HB.Helper.EnergyLibrary.StandardsWindowMaterials;
+                }
+                return _windowMaterials;
+            }
+        }
+
         public Dialog_Construction()
         {
             try
@@ -32,7 +60,7 @@ namespace Honeybee.UI
 
                 Padding = new Padding(5);
                 Resizable = true;
-                Title = "Schedule - Honeybee";
+                Title = "Construction - Honeybee";
                 WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(650, 650);
                 this.Icon = DialogHelper.HoneybeeIcon;
@@ -97,62 +125,81 @@ namespace Honeybee.UI
                 var buttonSource = new Button { Text = "HBData" };
                 buttonSource.Click += (s, e) =>
                 {
-                    //var c = construction;
-                    //c.Layers = _layers;
                     Dialog_Message.Show(this, _hbObj.ToJson());
-
                 };
-                buttonSource.Click += (s, e) =>
-                {
-                    ////var newgroupPanel = GenMaterialLayersPanel(actionWhenItemChanged);
-                    //var ctrl = groupPanel.Controls.First();
-                    //////groupPanel.RemoveAll();
-                    //groupPanel.Clear();
-                    ////groupPanel.Create();
-                    //groupPanel.AddRow(ctrl);
-                    ////var newCtrl = GenDropInArea(1, "ddddd", null, null);
-                    ////foreach (var item in newgroupPanel.Controls)
-                    ////{
-                     
-                    ////    groupPanel.AddRow(item);
-                    ////}
-                    
-                   
-                    //groupPanel.Create();
+              
 
-                };
-
-                //buttonSource.MouseDown += (sender, e) =>
-                //{
-                //    if (e.Buttons != MouseButtons.None)
-                //    {
-                //        var selected = "dddddd";
-                //        var data = new DataObject();
-                //        data.SetString(selected, "Material");
-                //        buttonSource.DoDragDrop(data, DragEffects.Move);
-                //        e.Handled = true;
-                //    }
-                //};
-                //buttonSource.Click += (s, e) => 
-                //{
-                //    var box = new TextBox();
-                //    leftLayout.AddRow(box);
-                //    leftLayout.Create();
-                //};
-                //buttonSource.Click += (s, e) =>
-                //{
-                //    //var box = new TextBox();
-                //    //leftLayout.AddRow(box);
-                //    //leftLayout.Create();
-                //};
+                leftLayout.AddRow(null);
+                leftLayout.AddRow(buttonSource);
                 leftLayout.AddRow(null);
 
+
+
+
+                //Right panel
+                var rightGroup = new GroupBox();
+                rightGroup.Text = "Library";
+                var groupPanel = new DynamicLayout();
+
+
+                var materialType = new DropDown();
+                materialType.Items.Add(new ListItem() { Key = "Opaque", Text = "Opaque Material" });
+                materialType.Items.Add(new ListItem() { Key = "Window", Text = "Window Material" });
+                //constructionTypes.Items.Add(new ListItem() { Key = "Shade Material" });
+                //constructionTypes.Items.Add(new ListItem() { Key = "AirBoundary Material" });
+                materialType.SelectedIndex = 0;
+                groupPanel.AddRow(materialType);
+
+                //Search tbox
+                var searchTBox = new TextBox() { PlaceholderText = "Search" };
+                groupPanel.AddRow(searchTBox);
+
+                // Library
                 var lib = new ListBox();
                 lib.Height = 200;
-                var materialLibrary = HB.Helper.EnergyLibrary.StandardsOpaqueMaterials;
-                var materialItems = materialLibrary.Select(_ => new ListItem() { Text = _.DisplayName??_.Identifier });
-                lib.Items.AddRange(materialItems);
-                var bound = lib.Bounds;
+                groupPanel.AddRow(lib);
+                var allMaterials = OpaqueMaterials;
+
+                // material details
+                var detailPanel = new DynamicLayout();
+                var materialDetail = new ListBox();
+                materialDetail.Height = 150;
+                materialDetail.Items.Add(new ListItem() { Text = "Material Details" });
+                //groupPanel.AddRow(materialDetail);
+
+                var rightSplit = new Splitter();
+                rightSplit.Panel1 = groupPanel;
+                rightSplit.Panel2 = materialDetail;
+                rightSplit.Panel1MinimumSize = 300;
+                rightSplit.Orientation = Orientation.Vertical;
+
+                rightGroup.Content = rightSplit;
+
+
+                materialType.SelectedIndexChanged += (sender, e) =>
+                {
+                    var selectedType = materialType.SelectedKey;
+
+                    if (selectedType == "Window")
+                    {
+                        allMaterials = this.WindowMaterials;
+                    }
+                    else
+                    {
+                        allMaterials = this.OpaqueMaterials;
+                    }
+                    searchTBox.Text = null;
+                    lib.Items.Clear();
+
+                    var filteredItems = allMaterials.Select(_ => new ListItem() { Text = _.Identifier, Key = _.Identifier, Tag = _ });
+                    lib.Items.AddRange(filteredItems);
+
+                };
+
+
+                
+                var allMaterialItems = allMaterials.Select(_ => new ListItem() { Text = _.DisplayName??_.Identifier, Key = _.DisplayName ?? _.Identifier, Tag = _ });
+                lib.Items.AddRange(allMaterialItems);
                 lib.MouseMove += (sender, e) =>
                 {
                     var dragableArea = lib.Bounds;
@@ -173,15 +220,59 @@ namespace Honeybee.UI
                     }
                 };
 
-                leftLayout.AddRow(buttonSource);
-                leftLayout.AddRow(null);
-                var layout = new DynamicLayout();
-                layout.AddRow(leftLayout, lib);
+                lib.SelectedIndexChanged += (s, e) => 
+                {
+                    if (lib.SelectedIndex == -1)
+                    {
+                        materialDetail.Items.Clear();
+                        return;
+                    }
+
+                    var selectedItem = (lib.Items[lib.SelectedIndex] as ListItem).Tag as HB.HoneybeeObject;
+                    var layers = new List<string>();
+                    
+                    var layersItems = selectedItem.ToString(true).Split('\n').Select(_ => new ListItem() { Text = _ });
+                    materialDetail.Items.Clear();
+                    materialDetail.Items.AddRange(layersItems);
+
+
+
+                };
+
+               
+                searchTBox.TextChanged += (sender, e) =>
+                {
+                    var input = searchTBox.Text;
+                    materialDetail.Items.Clear();
+                    lib.Items.Clear();
+                    if (string.IsNullOrWhiteSpace(input))
+                    {
+                        lib.Items.AddRange(allMaterialItems);
+                        return;
+                    }
+                    var regexPatten = ".*" + input.Replace(" ", "(.*)") + ".*";
+                    var filtered = allMaterials.Where(_ => Regex.IsMatch(_.Identifier, regexPatten, RegexOptions.IgnoreCase) || (_.DisplayName != null ? Regex.IsMatch(_.DisplayName, regexPatten, RegexOptions.IgnoreCase) : false));
+                    var filteredItems = filtered.Select(_ => new ListItem() { Text = _.DisplayName ?? _.Identifier, Key = _.DisplayName ?? _.Identifier, Tag = _ });
+                    lib.Items.AddRange(filteredItems);
+
+                };
+
+               
+
+
+
+                var split = new Splitter();
+                split.Orientation = Orientation.Horizontal;
+                split.Panel1 = leftLayout;
+                split.Panel2 = rightGroup;
+
+                //var layout = new DynamicLayout();
+                //layout.AddRow(leftLayout, lib);
            
                 
 
                 //Create layout
-                Content = layout;
+                Content = split;
 
             }
             catch (Exception e)
