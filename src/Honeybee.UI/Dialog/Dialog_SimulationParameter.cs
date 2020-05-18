@@ -45,6 +45,16 @@ namespace Honeybee.UI
                     Rows = { new TableRow(null, this.DefaultButton, this.AbortButton, null) }
                 };
 
+                //NorthAngle
+                var northNum = new NumericMaskedTextBox<double>() { };
+                northNum.ValueBinding.Bind( Binding.Delegate(() => param.NorthAngle, v => param.NorthAngle = v));
+                layout.AddRow(northNum);
+
+                //TerrainType
+                var terrainTypeDP = new EnumDropDown<HB.TerrianTypes>();
+                terrainTypeDP.SelectedValueBinding.Bind(Binding.Delegate(() => param.TerrainType.Value, v => param.TerrainType = v));
+                layout.AddRow(terrainTypeDP);
+
                 // RunPeriod
                 var year = 2017;
                 var runP = param.RunPeriod ?? new HB.RunPeriod() { StartDate = new List<int>() { 1, 1 }, EndDate = new List<int>() { 12, 31 } };
@@ -128,11 +138,11 @@ namespace Honeybee.UI
                     );
 
                 //shadowCal.SolarDistribution
-                var solarDist_DP = new EnumDropDown<HB.ShadowCalculation.SolarDistributionEnum>();
+                var solarDist_DP = new EnumDropDown<HB.SolarDistribution>();
                 solarDist_DP.SelectedValueBinding.Bind(() => shadowCal.SolarDistribution.Value, v => shadowCal.SolarDistribution = v);
 
                 //shadowCal.CalculationMethodEnum
-                var CalMethod_DP = new EnumDropDown<HB.ShadowCalculation.CalculationMethodEnum>();
+                var CalMethod_DP = new EnumDropDown<HB.CalculationMethod>();
                 CalMethod_DP.SelectedValueBinding.Bind(() => shadowCal.CalculationMethod.Value, v => shadowCal.CalculationMethod = v);
 
                 // MaximumFigures
