@@ -84,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dialog\Dialog_Construction.cs" />
+    <Compile Include="Dialog\Dialog_ModelManager.cs" />
     <Compile Include="Dialog\Dialog_ScheduleRulesetManager.cs" />
     <Compile Include="Dialog\Dialog_Schedule.cs" />
     <Compile Include="Dialog\Dialog_ProgramTypeManager.cs" />
@@ -92,7 +93,7 @@
     <Compile Include="Dialog\Dialog_ConstructionSet.cs" />
     <Compile Include="Dialog\Dialog_Message.cs" />
     <Compile Include="Layout\Aperture.cs" />
-    <Compile Include="Layout\Model.cs" />
+    <Compile Include="Layout\ModelManager.cs" />
     <Compile Include="Layout\Door.cs" />
     <Compile Include="Layout\Message.cs" />
     <Compile Include="Layout\Face.cs" />
