@@ -81,11 +81,11 @@ namespace Honeybee.UI.ConsoleApp
 
                 };
 
-                var conbtn = new Button() { Text = "Construction" };
+                var conbtn = new Button() { Text = "ConstructionManager" };
                 conbtn.Click += (s, e) =>
                 {
-                    //var md = new Model("", new ModelProperties(ModelEnergyProperties.Default));
-                    var dialog = new Honeybee.UI.Dialog_Construction();
+                    var md = new Model("", new ModelProperties(ModelEnergyProperties.Default));
+                    var dialog = new Honeybee.UI.Dialog_ConstructionManager(md);
                     dialog.ShowModal(this);
 
                 };

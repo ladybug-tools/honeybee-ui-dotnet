@@ -122,7 +122,7 @@
     <Compile Include="Dialog\Dialog_ShadeEnergyProperty.cs" />
     <Compile Include="Dialog\Dialog_SimulationParameter.cs" />
     <Compile Include="Layout\PanelHelper.cs" />
-    <Compile Include="Dialog\LibraryDialog_Constructions.cs" />
+    <Compile Include="Dialog\Dialog_ConstructionManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="EmbeddedResources\honeybee.ico" />
