@@ -69,7 +69,7 @@
   </Choose>
   <ItemGroup>
     <PackageReference Include="HoneybeeSchema">
-      <Version>1.27.5.36614</Version>
+      <Version>1.30.2.29202</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>12.0.1</Version>
@@ -92,6 +92,7 @@
     <Compile Include="Dialog\Dialog_ConstructionSet.cs" />
     <Compile Include="Dialog\Dialog_Message.cs" />
     <Compile Include="Layout\Aperture.cs" />
+    <Compile Include="Layout\Model.cs" />
     <Compile Include="Layout\Door.cs" />
     <Compile Include="Layout\Message.cs" />
     <Compile Include="Layout\Face.cs" />
