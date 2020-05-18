@@ -17,15 +17,15 @@ namespace Honeybee.UI
 
                 var param = simulationParameter;
                 var layout = new DynamicLayout();
-                layout.Spacing = new Size(8, 8);
-                layout.Padding = new Padding(15);
+                //layout.DefaultSpacing = new Size(3, 15);
+                layout.DefaultPadding = new Padding(10);
                 //layout.BeginScrollable();
-                
+
 
                 Padding = new Padding(5);
                 Resizable = true;
                 Title = "Simulation Parameter - Honeybee";
-                WindowStyle = WindowStyle.Default;
+                //WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(450, 620);
                 this.Icon = DialogHelper.HoneybeeIcon;
                 
@@ -38,22 +38,17 @@ namespace Honeybee.UI
                 AbortButton.Click += (sender, e) => Close();
 
 
-                var buttons = new TableLayout
-                {
-                    Padding = new Padding(5, 10, 5, 5),
-                    Spacing = new Size(10, 10),
-                    Rows = { new TableRow(null, this.DefaultButton, this.AbortButton, null) }
-                };
+            
 
                 //NorthAngle
-                var northNum = new NumericMaskedTextBox<double>() { };
+                var northNum = new NumericStepper() { };
                 northNum.ValueBinding.Bind( Binding.Delegate(() => param.NorthAngle, v => param.NorthAngle = v));
-                layout.AddRow(northNum);
+                
 
                 //TerrainType
                 var terrainTypeDP = new EnumDropDown<HB.TerrianTypes>();
                 terrainTypeDP.SelectedValueBinding.Bind(Binding.Delegate(() => param.TerrainType.Value, v => param.TerrainType = v));
-                layout.AddRow(terrainTypeDP);
+                
 
                 // RunPeriod
                 var year = 2017;
@@ -72,12 +67,12 @@ namespace Honeybee.UI
 
                 param.RunPeriod = runP;
 
-                var runPeriod = new TableLayout
-                {
-                    Spacing = new Size(5, 5),
-                    Rows = { new TableRow(new Label() { Text = "Run Period:", Width = 150 }, d1, new Label() { Text = "To:" }, d2, null) }
-                };
-                layout.AddRow(runPeriod);
+                //var runPeriod = new TableLayout
+                //{
+                //    Spacing = new Size(5, 5),
+                //    Rows = { new TableRow(new Label() { Text = "Run Period:", Width = 150 }, d1, new Label() { Text = "To:" }, d2, null) }
+                //};
+               
 
 
 
@@ -113,15 +108,20 @@ namespace Honeybee.UI
 
                 //var sizingParam_GB = new GroupBox();
                 //sizingParam_GB.Text = "Sizing Parameter";
-                //var sizingParamLayout = new DynamicLayout();
-                //sizingParamLayout.Spacing = new Size(5, 5);
-                var subLayout = new DynamicLayout();
-                subLayout.Spacing = new Size(5, 5);
-                subLayout.AddRow(new Label() { Text = "Timesteps per Hour:", Width = 150 }, timeSteps_NS);
-                subLayout.AddRow("Cooling Sizing Factor:", cooling_NS);
-                subLayout.AddRow("Heating Sizing Factor:", heating_NS);
+                var topPanel = new DynamicLayout();
+                topPanel.DefaultSpacing = new Size(5, 5);
+                //topPanel.DefaultPadding = new Padding(5);
+                //var subLayout = new DynamicLayout();
+                //subLayout.Spacing = new Size(5, 5);
+                topPanel.AddSeparateRow(new Label() { Text = "North:", Width = 150 }, northNum);
+                topPanel.AddSeparateRow(new Label() { Text = "Terrain Type:", Width = 150 }, terrainTypeDP);
+                topPanel.AddSeparateRow(new Label() { Text = "Run Period:", Width = 150 }, d1, new Label() { Text = "To:" }, d2, null);
+                topPanel.AddSeparateRow(new Label() { Text = "Timesteps per Hour:", Width = 150 }, timeSteps_NS);
+                topPanel.AddSeparateRow(new Label() { Text = "Cooling Sizing Factor:", Width = 150 }, cooling_NS);
+                topPanel.AddSeparateRow(new Label() { Text = "Heating Sizing Factor:", Width = 150 }, heating_NS);
+                layout.AddSeparateRow(topPanel);
                 //sizingParam_GB.Content = sizingParamLayout;
-                layout.AddRow(subLayout);
+                //layout.AddRow(subLayout);
 
 
                 // ShadowCalculation
@@ -156,7 +156,9 @@ namespace Honeybee.UI
 
                 param.ShadowCalculation = shadowCal;
 
+               
                 var shadowCal_GB = new GroupBox();
+                shadowCal_GB.Font = new Font(shadowCal_GB.Font.Family, shadowCal_GB.Font.Size, FontStyle.Bold);
                 shadowCal_GB.Text = "Shadow Calculation";
                 var shadowCalLayout = new DynamicLayout();
                 shadowCalLayout.Spacing = new Size(5, 5);
@@ -165,7 +167,7 @@ namespace Honeybee.UI
                 shadowCalLayout.AddRow("Solar Distribution: ", solarDist_DP);
                 shadowCalLayout.AddRow("Calculation Method: ", CalMethod_DP);
                 shadowCal_GB.Content = shadowCalLayout;
-                layout.AddRow(shadowCal_GB);
+                layout.AddSeparateRow(shadowCal_GB);
 
 
 
@@ -199,6 +201,7 @@ namespace Honeybee.UI
                 //var modelNameTextBox = new TextBox() { };
                 //modelNameTextBox.TextBinding.Bind(hbModel, m => m.DisplayName);
                 var simulationControl_GB = new GroupBox();
+                simulationControl_GB.Font = new Font(simulationControl_GB.Font.Family, simulationControl_GB.Font.Size, FontStyle.Bold);
                 simulationControl_GB.Text = "Simulation Control";
                 var simCtrlLayout = new DynamicLayout();
                 simCtrlLayout.Spacing = new Size(5, 5);
@@ -208,7 +211,7 @@ namespace Honeybee.UI
                 simCtrlLayout.AddRow(runPeriods_CB);
                 simCtrlLayout.AddRow(runForSizing_CB);
                 simulationControl_GB.Content = simCtrlLayout;
-                layout.AddRow(simulationControl_GB);
+                layout.AddSeparateRow(simulationControl_GB);
 
 
                 // SimulationOutput
@@ -222,6 +225,7 @@ namespace Honeybee.UI
 
 
                 var simOutput_GB = new GroupBox();
+                simOutput_GB.Font = new Font(simOutput_GB.Font.Family, simOutput_GB.Font.Size, FontStyle.Bold);
                 simOutput_GB.Text = "Simulation Output";
                 var simuOutputLayout = new DynamicLayout();
                 simuOutputLayout.Spacing = new Size(5, 5);
@@ -240,9 +244,10 @@ namespace Honeybee.UI
                 //simuOutputLayout.AddRow("EnergyPlus Summary Report:");
                 //simuOutputLayout.AddRow(sumReportsListBox);
                 simOutput_GB.Content = simuOutputLayout;
-                layout.AddRow(simOutput_GB);
+                layout.AddSeparateRow(simOutput_GB);
 
-                layout.AddRow(buttons);
+
+                layout.AddSeparateRow(null, this.DefaultButton, this.AbortButton, null);
                 layout.AddRow(null);
                 //layout.EndScrollable();
          
