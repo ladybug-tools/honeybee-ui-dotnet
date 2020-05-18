@@ -12,17 +12,39 @@ using System.Text.RegularExpressions;
 namespace Honeybee.UI
 {
 
-    public class Dialog_Construction : Dialog
+    public class Dialog_Construction : Dialog<HB.Energy.IConstruction>
     {
         //private List<string> _layers = new List<string>();
-        private OpaqueConstructionAbridged _hbObj;
+        private HB.Energy.IConstruction _hbObj;
         private DynamicLayout _layersPanel;
   
 
         public List<string> _layers
         {
-            get { return _hbObj.Layers; }
-            set { _hbObj.Layers = value; }
+            get {
+                if (_hbObj is HB.OpaqueConstructionAbridged obj)
+                {
+                    return obj.Layers;
+                }
+                else if (_hbObj is HB.WindowConstructionAbridged win)
+                {
+                    return win.Layers;
+                }
+                return new List<string>();
+              
+            }
+            set 
+            {
+                if (_hbObj is HB.OpaqueConstructionAbridged obj)
+                {
+                    obj.Layers = value;
+                }
+                else if (_hbObj is HB.WindowConstructionAbridged win)
+                {
+                    win.Layers = value;
+                }
+                
+            }
         }
 
         private static IEnumerable<HB.Energy.IMaterial> _opaqueMaterials;
@@ -51,12 +73,12 @@ namespace Honeybee.UI
             }
         }
 
-        public Dialog_Construction()
+        public Dialog_Construction(HB.Energy.IConstruction construction)
         {
             try
             {
-                _hbObj = HB.ModelEnergyProperties.Default.Constructions.First(_ => _.Obj is HB.OpaqueConstructionAbridged).Obj as HB.OpaqueConstructionAbridged;
-
+                //_hbObj = HB.ModelEnergyProperties.Default.Constructions.First(_ => _.Obj is HB.OpaqueConstructionAbridged).Obj as HB.OpaqueConstructionAbridged;
+                _hbObj = construction;
 
                 Padding = new Padding(5);
                 Resizable = true;
@@ -66,7 +88,7 @@ namespace Honeybee.UI
                 this.Icon = DialogHelper.HoneybeeIcon;
 
                 var OkButton = new Button { Text = "OK" };
-                OkButton.Click += (sender, e) => Close();
+                OkButton.Click += (sender, e) => Close(_hbObj);
 
                 AbortButton = new Button { Text = "Cancel" };
                 AbortButton.Click += (sender, e) => Close();
@@ -125,7 +147,16 @@ namespace Honeybee.UI
                 var buttonSource = new Button { Text = "HBData" };
                 buttonSource.Click += (s, e) =>
                 {
-                    Dialog_Message.Show(this, _hbObj.ToJson());
+                    var json = string.Empty;
+                    if (_hbObj is HB.OpaqueConstructionAbridged obj)
+                    {
+                        json =  obj.ToJson();
+                    }
+                    else if (_hbObj is HB.WindowConstructionAbridged win)
+                    {
+                        json = win.ToJson();
+                    }
+                    Dialog_Message.Show(this, json);
                 };
               
 
@@ -156,7 +187,7 @@ namespace Honeybee.UI
 
                 // Library
                 var lib = new ListBox();
-                lib.Height = 200;
+                lib.Height = 300;
                 groupPanel.AddRow(lib);
                 var allMaterials = OpaqueMaterials;
 
@@ -261,18 +292,18 @@ namespace Honeybee.UI
 
 
 
-                var split = new Splitter();
-                split.Orientation = Orientation.Horizontal;
-                split.Panel1 = leftLayout;
-                split.Panel2 = rightGroup;
+                //var split = new Splitter();
+                //split.Orientation = Orientation.Horizontal;
+                //split.Panel1 = leftLayout;
+                //split.Panel2 = rightGroup;
 
-                //var layout = new DynamicLayout();
-                //layout.AddRow(leftLayout, lib);
-           
-                
+                var layout = new DynamicLayout();
+                layout.AddRow(leftLayout, rightGroup);
+                layout.AddSeparateRow(null, OkButton, AbortButton, null);
+                layout.AddRow(null);
 
                 //Create layout
-                Content = split;
+                Content = layout;
 
             }
             catch (Exception e)
@@ -477,23 +508,7 @@ namespace Honeybee.UI
             return layerPanel;
         }
 
-        private GridView GenGridView(IEnumerable<object> items)
-        {
-            var gd = new GridView() { DataStore = items };
-            gd.Height = 250;
-            var nameTB = new TextBoxCell
-            {
-                Binding = Binding.Delegate<HB.ScheduleRulesetAbridged, string>(r => r.DisplayName ?? r.Identifier)
-            };
-            gd.Columns.Add(new GridColumn { DataCell = nameTB, HeaderText = "Name" });
-
-            var typeTB = new TextBoxCell
-            {
-                Binding = Binding.Delegate<HB.ScheduleRulesetAbridged, string>(r => r.ScheduleTypeLimit)
-            };
-            gd.Columns.Add(new GridColumn { DataCell = typeTB, HeaderText = "Type" });
-            return gd;
-        }
+       
 
     }
 }
