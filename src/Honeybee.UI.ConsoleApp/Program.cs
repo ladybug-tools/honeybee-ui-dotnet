@@ -89,6 +89,24 @@ namespace Honeybee.UI.ConsoleApp
                     dialog.ShowModal(this);
 
                 };
+                
+                var simuParam = new Button() { Text = "Simulation Parameter" };
+                simuParam.Click += (s, e) =>
+                {
+                    var sP = new SimulationParameter();
+                    var dialog = new Honeybee.UI.Dialog_SimulationParameter(sP);
+                    dialog.ShowModal(this);
+
+                };
+
+                var modelManager = new Button() { Text = "Model Manager" };
+                modelManager.Click += (s, e) =>
+                {
+                    var md = new Model("", new ModelProperties(ModelEnergyProperties.Default));
+                    var dialog = new Honeybee.UI.Dialog_ModelManager(md, new SimulationParameter());
+                    dialog.ShowModal(this);
+
+                };
 
                 panel.AddSeparateRow(btn);
                 panel.AddSeparateRow(Messagebtn);
@@ -97,6 +115,8 @@ namespace Honeybee.UI.ConsoleApp
                 panel.AddSeparateRow(pTypeMngbtn);
                 panel.AddSeparateRow(schbtn);
                 panel.AddSeparateRow(conbtn);
+                panel.AddSeparateRow(simuParam);
+                panel.AddSeparateRow(modelManager);
                 panel.AddSeparateRow(null);
                 Content = panel;
             }
