@@ -5,12 +5,12 @@ using System;
 
 namespace Honeybee.UI
 {
-    public class Dialog_ModelManager : Dialog
+    public class Dialog_ModelResources : Dialog
     {
         //public EventHandler<EventArgs> ModelPropertyButtonClicked;
         //public EventHandler<EventArgs> RoomsButtonClicked;
         //public EventHandler<EventArgs> RunSimulationButtonClicked;
-        public Dialog_ModelManager(HB.Model honeybeeObj)
+        public Dialog_ModelResources(HB.Model honeybeeObj)
         {
             try
             {
