@@ -84,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dialog\Dialog_Construction.cs" />
+    <Compile Include="Dialog\Dialog_ConstructionSetManager.cs" />
     <Compile Include="Dialog\Dialog_ModelResources.cs" />
     <Compile Include="Dialog\Dialog_ScheduleRulesetManager.cs" />
     <Compile Include="Dialog\Dialog_Schedule.cs" />
