@@ -89,7 +89,16 @@ namespace Honeybee.UI.ConsoleApp
                     dialog.ShowModal(this);
 
                 };
-                
+
+                var cSetManager = new Button() { Text = "ConstructionSet Manager" };
+                cSetManager.Click += (s, e) =>
+                {
+                    var md = new Model("", new ModelProperties(ModelEnergyProperties.Default));
+                    var dialog = new Honeybee.UI.Dialog_ConstructionSetManager(md);
+                    dialog.ShowModal(this);
+
+                };
+
                 var simuParam = new Button() { Text = "Simulation Parameter" };
                 simuParam.Click += (s, e) =>
                 {
@@ -99,11 +108,11 @@ namespace Honeybee.UI.ConsoleApp
 
                 };
 
-                var modelManager = new Button() { Text = "Model Manager" };
+                var modelManager = new Button() { Text = "Model Resource" };
                 modelManager.Click += (s, e) =>
                 {
                     var md = new Model("", new ModelProperties(ModelEnergyProperties.Default));
-                    var dialog = new Honeybee.UI.Dialog_ModelManager(md, new SimulationParameter());
+                    var dialog = new Honeybee.UI.Dialog_ModelResources(md);
                     dialog.ShowModal(this);
 
                 };
@@ -115,6 +124,7 @@ namespace Honeybee.UI.ConsoleApp
                 panel.AddSeparateRow(pTypeMngbtn);
                 panel.AddSeparateRow(schbtn);
                 panel.AddSeparateRow(conbtn);
+                panel.AddSeparateRow(cSetManager);
                 panel.AddSeparateRow(simuParam);
                 panel.AddSeparateRow(modelManager);
                 panel.AddSeparateRow(null);
