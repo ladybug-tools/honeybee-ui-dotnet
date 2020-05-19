@@ -122,7 +122,7 @@ namespace Honeybee.UI
                 };
                 remove.Click += (s, e) =>
                 {
-                    var selected = gd.SelectedItem as HB.Energy.IConstruction;
+                    var selected = gd.SelectedItem as HB.Energy.IBuildingConstructionset;
                     if (selected == null)
                     {
                         MessageBox.Show(this, "Nothing is selected to edit!");
