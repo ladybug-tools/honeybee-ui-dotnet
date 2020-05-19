@@ -7,10 +7,10 @@ namespace Honeybee.UI
 {
     public class Dialog_ModelManager : Dialog
     {
-        public EventHandler<EventArgs> ModelPropertyButtonClicked;
-        public EventHandler<EventArgs> RoomsButtonClicked;
-        public EventHandler<EventArgs> RunSimulationButtonClicked;
-        public Dialog_ModelManager(HB.Model honeybeeObj, HB.SimulationParameter simuParam)
+        //public EventHandler<EventArgs> ModelPropertyButtonClicked;
+        //public EventHandler<EventArgs> RoomsButtonClicked;
+        //public EventHandler<EventArgs> RunSimulationButtonClicked;
+        public Dialog_ModelManager(HB.Model honeybeeObj)
         {
             try
             {
@@ -19,7 +19,7 @@ namespace Honeybee.UI
 
                 Padding = new Padding(5);
                 Resizable = true;
-                Title = "Model Properties - Honeybee";
+                Title = "Model Resources - Honeybee";
                 WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(450, 650);
                 this.Icon = DialogHelper.HoneybeeIcon;
@@ -36,10 +36,10 @@ namespace Honeybee.UI
 
 
                 //Create layout
-                var panel = new Panel_Model(honeybeeObj, simuParam);
-                panel.ModelPropertyBtn.Click += (s, e) => ModelPropertyButtonClicked.Invoke(s, e);
-                panel.RoomsBtn.Click += (s, e) => RoomsButtonClicked.Invoke(s, e);
-                panel.RunSimulationBtn.Click += (s, e) => RunSimulationButtonClicked.Invoke(s, e);
+                var panel = new Panel_Model(honeybeeObj);
+                //panel.ModelPropertyBtn.Click += (s, e) => ModelPropertyButtonClicked.Invoke(s, e);
+                //panel.RoomsBtn.Click += (s, e) => RoomsButtonClicked.Invoke(s, e);
+                //panel.RunSimulationBtn.Click += (s, e) => RunSimulationButtonClicked.Invoke(s, e);
 
                 panel.AddSeparateRow(null, this.DefaultButton, this.AbortButton, null);
                 panel.AddSeparateRow(null);
