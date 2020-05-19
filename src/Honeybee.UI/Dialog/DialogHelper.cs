@@ -77,7 +77,7 @@ namespace Honeybee.UI
 
         }
 
-        public static DropDown MakeDropDownForAnyOf<T>(string currentValueName, Action<T> setAction, IEnumerable<T> valueLibrary) where T : HoneybeeSchema.AnyOf
+        public static DropDown MakeDropDownForAnyOfType<T>(string currentValueName, Action<T> setAction, IEnumerable<T> valueLibrary) where T : HoneybeeSchema.AnyOf
         {
             var items = valueLibrary.ToList();
             var dropdownItems = items.Select(_ => new ListItem() { Text = _.Obj.GetType().Name, Tag = _ }).ToList();
@@ -87,6 +87,29 @@ namespace Honeybee.UI
             //dp.SelectedIndex = items.FindIndex(_ => _.Obj.GetType().Name == currentValueName);
             dp.SelectedIndexBinding.Bind(
                 () => items.FindIndex(_ => _.Obj.GetType().Name == currentValueName),
+                (int i) => setAction(items[i])
+                );
+
+            return dp;
+
+        }
+        public static DropDown MakeDropDownForAnyOfValue<T>(string currentIdentifier, Action<T> setAction, IEnumerable<T> valueLibrary) where T : HoneybeeSchema.AnyOf
+        {
+            var items = valueLibrary.ToList();
+            var dropdownItems = items.Select(_ => {
+                var hbObj = _.Obj as HoneybeeSchema.IIDdBase;
+                return new ListItem() { Text = hbObj.DisplayName ?? hbObj.Identifier, Tag = _ };
+            }).ToList();
+            var dp = new DropDown();
+
+            dp.Items.AddRange(dropdownItems);
+            //dp.SelectedIndex = items.FindIndex(_ => _.Obj.GetType().Name == currentValueName);
+            dp.SelectedIndexBinding.Bind(
+                () => items.FindIndex(_ => 
+                {
+                    var hbObj = _.Obj as HoneybeeSchema.IIDdBase;
+                    return hbObj.Identifier == currentIdentifier;
+                }),
                 (int i) => setAction(items[i])
                 );
 

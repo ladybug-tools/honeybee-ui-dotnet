@@ -89,7 +89,7 @@ namespace Honeybee.UI
             };
 
             var bcs = new List<AnyOf<Outdoors, Surface>>() { new Outdoors(), new Surface(new List<string>()) };
-            var bcDP = DialogHelper.MakeDropDownForAnyOf(apt.BoundaryCondition.Obj.GetType().Name, v => apt.BoundaryCondition = v, bcs);
+            var bcDP = DialogHelper.MakeDropDownForAnyOfType(apt.BoundaryCondition.Obj.GetType().Name, v => apt.BoundaryCondition = v, bcs);
             bcDP.SelectedIndexChanged += (s, e) =>
             {
                 bcBtn.Enabled = false;
