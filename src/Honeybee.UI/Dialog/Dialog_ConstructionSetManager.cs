@@ -9,25 +9,24 @@ using HoneybeeSchema;
 
 namespace Honeybee.UI
 {
-    public class Dialog_ConstructionSetManager : Dialog<HB.ConstructionSetAbridged>
+    public class Dialog_ConstructionSetManager : Dialog<List<HB.Energy.IBuildingConstructionset>>
     {
      
-        public Dialog_ConstructionSetManager(HB.Model model)
+        public Dialog_ConstructionSetManager(List<HB.Energy.IBuildingConstructionset> constructionsets, Func<string, bool> checkIfGlobalConstructionSet)
         {
             try
             {
-                var md = model;
-                var constrcutionSetsInModel = md.Properties.Energy.ConstructionSets.Where(_ => _.Obj is ConstructionSetAbridged);
-
+                //var md = model;
+               
 
                 Padding = new Padding(5);
                 Resizable = true;
-                Title = "ConstructionSets - Honeybee";
+                Title = "ConstructionSet Manager - Honeybee";
                 WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(650, 300);
                 this.Icon = DialogHelper.HoneybeeIcon;
 
-                var constrSets = constrcutionSetsInModel.Select(_=>_.Obj);
+                var constrSets = constructionsets;
 
 
                 var layout = new DynamicLayout();
@@ -47,7 +46,12 @@ namespace Honeybee.UI
                 
 
                 DefaultButton = new Button { Text = "OK" };
-                DefaultButton.Click += (sender, e) => Close();
+                DefaultButton.Click += (sender, e) => 
+                {
+                    var d = gd.DataStore.Select(_ => _ as HB.Energy.IBuildingConstructionset).ToList();
+                    Close(d);
+                    
+                };
 
                 AbortButton = new Button { Text = "Cancel" };
                 AbortButton.Click += (sender, e) => Close();
@@ -126,7 +130,7 @@ namespace Honeybee.UI
                     }
 
                     var index = gd.SelectedRow;
-                    if (selected.Identifier == md.Properties.Energy.GlobalConstructionSet)
+                    if ( checkIfGlobalConstructionSet(selected.Identifier))
                     {
                         MessageBox.Show(this, $"{selected.DisplayName ?? selected.Identifier } cannot be removed, because it is set to default global construction set.");
                         return;

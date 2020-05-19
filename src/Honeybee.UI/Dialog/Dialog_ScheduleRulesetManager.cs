@@ -8,7 +8,7 @@ using HoneybeeSchema;
 
 namespace Honeybee.UI
 {
-    public class Dialog_ScheduleRulesetManager : Dialog<HB.ScheduleRulesetAbridged>
+    public class Dialog_ScheduleRulesetManager : Dialog<(List< HB.ScheduleRulesetAbridged> scheduleRulesets, List<HB.ScheduleTypeLimit> scheduleTypeLimits)>
     {
         private List<ScheduleTypeLimit> _typeLimits;
         private ScheduleRuleset AbridgedToReal (ScheduleRulesetAbridged obj)
@@ -19,12 +19,16 @@ namespace Honeybee.UI
 
             return realObj;
         }
-        private ScheduleRulesetAbridged ToAbridged(HB.Model model, ScheduleRuleset obj)
+        private ScheduleRulesetAbridged ToAbridged(ScheduleRuleset obj)
         {
-            var ifTypeLimitExist = model.Properties.Energy.ScheduleTypeLimits.Any(_ => _.Identifier == obj.ScheduleTypeLimit.Identifier);
+            var ifTypeLimitExist = _typeLimits.Any(_ => _.Equals(obj.ScheduleTypeLimit));
             if (!ifTypeLimitExist)
             {
-                model.Properties.Energy.ScheduleTypeLimits.Add(obj.ScheduleTypeLimit);
+                var typeLimit = obj.ScheduleTypeLimit;
+                var id = Guid.NewGuid().ToString();
+                typeLimit.Identifier = id;
+                typeLimit.DisplayName = typeLimit.DisplayName ?? $"Schedule Type Limit{id.Substring(0, 5)}";
+                _typeLimits.Add(typeLimit);
             }
             var abridged = new ScheduleRulesetAbridged(obj.Identifier, obj.DaySchedules, obj.DefaultDaySchedule, obj.DisplayName,
                obj.ScheduleRules, obj.HolidaySchedule, obj.SummerDesigndaySchedule, obj.WinterDesigndaySchedule, obj.ScheduleTypeLimit.Identifier);
@@ -32,13 +36,13 @@ namespace Honeybee.UI
             return abridged;
         }
 
-        public Dialog_ScheduleRulesetManager(HB.Model model)
+        public Dialog_ScheduleRulesetManager(List<HB.ScheduleRulesetAbridged> scheduleRulesets, List<HB.ScheduleTypeLimit> scheduleTypeLimits)
         {
             try
             {
-                var md = model;
-                var allSches = md.Properties.Energy.Schedules.Where(_ => _.Obj is HB.ScheduleRulesetAbridged).Select(_ => _.Obj as HB.ScheduleRulesetAbridged);
-                _typeLimits = md.Properties.Energy.ScheduleTypeLimits;
+                //var md = model;
+                var allSches = scheduleRulesets;
+                _typeLimits = scheduleTypeLimits;
                 
                 //var convertedReal = schAbridgeds.Select(_ => AbridgedToReal(_));
                 //var sches = md.Properties.Energy.Schedules.Where(_=> _.Obj is HB.ScheduleRuleset).Select(_=>_.Obj as HB.ScheduleRuleset);
@@ -89,7 +93,7 @@ namespace Honeybee.UI
                     if (dialog_rc != null)
                     {
                         var d = gd.DataStore.Select(_ => _ as HB.ScheduleRulesetAbridged).ToList();
-                        d.Add(ToAbridged(model, dialog_rc));
+                        d.Add(ToAbridged(dialog_rc));
                         gd.DataStore = d;
 
 
@@ -120,7 +124,7 @@ namespace Honeybee.UI
                     if (dialog_rc != null)
                     {
                         var d = gd.DataStore.Select(_=>_ as ScheduleRulesetAbridged).ToList();
-                        d.Add(ToAbridged(model, dialog_rc));
+                        d.Add(ToAbridged(dialog_rc));
                         gd.DataStore = d;
 
                     }
@@ -142,7 +146,7 @@ namespace Honeybee.UI
                         var index = gd.SelectedRow;
                         var newDataStore = gd.DataStore.Select(_ => _ as ScheduleRulesetAbridged).ToList();
                         newDataStore.RemoveAt(index);
-                        newDataStore.Insert(index, ToAbridged(model, dialog_rc));
+                        newDataStore.Insert(index, ToAbridged(dialog_rc));
           
                         gd.DataStore = newDataStore;
 
@@ -185,7 +189,7 @@ namespace Honeybee.UI
                             var index = gd.SelectedRow;
                             var newDataStore = gd.DataStore.Select(_ => _ as ScheduleRulesetAbridged).ToList();
                             newDataStore.RemoveAt(index);
-                            newDataStore.Insert(index, ToAbridged(model, dialog_rc));
+                            newDataStore.Insert(index, ToAbridged(dialog_rc));
                             gd.DataStore = newDataStore;
 
 
@@ -195,7 +199,11 @@ namespace Honeybee.UI
                 };
 
                 DefaultButton = new Button { Text = "OK" };
-                DefaultButton.Click += (sender, e) => Close(gd.SelectedItem as HB.ScheduleRulesetAbridged);
+                DefaultButton.Click += (sender, e) => 
+                {
+                    var d = gd.DataStore.OfType<ScheduleRulesetAbridged>().ToList();
+                    Close((d, _typeLimits));
+                };
 
                 AbortButton = new Button { Text = "Cancel" };
                 AbortButton.Click += (sender, e) => Close();

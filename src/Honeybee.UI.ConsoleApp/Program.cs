@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Eto.Forms;
-using HoneybeeSchema;
+using HB = HoneybeeSchema;
 
 namespace Honeybee.UI.ConsoleApp
 {
@@ -66,17 +66,29 @@ namespace Honeybee.UI.ConsoleApp
                 var pTypeMngbtn = new Button() { Text = "ProgramTypeManager" };
                 pTypeMngbtn.Click += (s, e) =>
                 {
-                    var md = new Model("", new ModelProperties(ModelEnergyProperties.Default));
-                    var dialog = new Honeybee.UI.Dialog_ProgramTypeManager(md);
-                    dialog.ShowModal(this);
+                    var md = new HB.Model("", new HB.ModelProperties(HB.ModelEnergyProperties.Default));
+                    var pTypeInModel = md.Properties.Energy.ProgramTypes
+                        .Where(_ => _.Obj is HB.ProgramTypeAbridged)
+                        .Select(_ => _.Obj as HB.ProgramTypeAbridged)
+                        .ToList();
 
+                    var dialog = new Honeybee.UI.Dialog_ProgramTypeManager(pTypeInModel);
+                    var dialog_rc =dialog.ShowModal(this);
+                  
                 };
 
                 var schbtn = new Button() { Text = "ScheduleRulesetManager" };
                 schbtn.Click += (s, e) =>
                 {
-                    var md = new Model("", new ModelProperties(ModelEnergyProperties.Default));
-                    var dialog = new Honeybee.UI.Dialog_ScheduleRulesetManager(md);
+                    var md = new HB.Model("", new HB.ModelProperties(HB.ModelEnergyProperties.Default));
+
+                    var allSches = md.Properties.Energy.Schedules
+                       .Where(_ => _.Obj is HB.ScheduleRulesetAbridged)
+                       .Select(_ => _.Obj as HB.ScheduleRulesetAbridged)
+                       .ToList();
+                    var schTypes = md.Properties.Energy.ScheduleTypeLimits.Select(_ => _).ToList();
+
+                    var dialog = new Honeybee.UI.Dialog_ScheduleRulesetManager(allSches, schTypes);
                     dialog.ShowModal(this);
 
                 };
@@ -84,8 +96,14 @@ namespace Honeybee.UI.ConsoleApp
                 var conbtn = new Button() { Text = "ConstructionManager" };
                 conbtn.Click += (s, e) =>
                 {
-                    var md = new Model("", new ModelProperties(ModelEnergyProperties.Default));
-                    var dialog = new Honeybee.UI.Dialog_ConstructionManager(md);
+                 
+
+                    var md = new HB.Model("", new HB.ModelProperties(HB.ModelEnergyProperties.Default));
+                    var constrcutionsInModel = md.Properties.Energy.Constructions
+                        .Where(_ => _.Obj.GetType().Name.Contains("Abridged"))
+                        .Select(_ => _.Obj as HB.Energy.IConstruction)
+                        .ToList();
+                    var dialog = new Honeybee.UI.Dialog_ConstructionManager(constrcutionsInModel);
                     dialog.ShowModal(this);
 
                 };
@@ -93,8 +111,15 @@ namespace Honeybee.UI.ConsoleApp
                 var cSetManager = new Button() { Text = "ConstructionSet Manager" };
                 cSetManager.Click += (s, e) =>
                 {
-                    var md = new Model("", new ModelProperties(ModelEnergyProperties.Default));
-                    var dialog = new Honeybee.UI.Dialog_ConstructionSetManager(md);
+                    var md = new HB.Model("", new HB.ModelProperties(HB.ModelEnergyProperties.Default));
+                    var cSets = md.Properties.Energy.ConstructionSets;
+                    var constrcutionSetsInModel = md.Properties.Energy.ConstructionSets
+                      .Where(_ => _.Obj is HB.ConstructionSetAbridged)
+                      .Select(_ => _.Obj as HB.Energy.IBuildingConstructionset)
+                      .ToList();
+                    var globalCSet = md.Properties.Energy.GlobalConstructionSet;
+
+                    var dialog = new Dialog_ConstructionSetManager(constrcutionSetsInModel, (id) => id == globalCSet);
                     dialog.ShowModal(this);
 
                 };
@@ -102,7 +127,7 @@ namespace Honeybee.UI.ConsoleApp
                 var simuParam = new Button() { Text = "Simulation Parameter" };
                 simuParam.Click += (s, e) =>
                 {
-                    var sP = new SimulationParameter();
+                    var sP = new HB.SimulationParameter();
                     var dialog = new Honeybee.UI.Dialog_SimulationParameter(sP);
                     dialog.ShowModal(this);
 
@@ -111,7 +136,7 @@ namespace Honeybee.UI.ConsoleApp
                 var modelManager = new Button() { Text = "Model Resource" };
                 modelManager.Click += (s, e) =>
                 {
-                    var md = new Model("", new ModelProperties(ModelEnergyProperties.Default));
+                    var md = new HB.Model("", new HB.ModelProperties(HB.ModelEnergyProperties.Default));
                     var dialog = new Honeybee.UI.Dialog_ModelResources(md);
                     dialog.ShowModal(this);
 
@@ -120,7 +145,7 @@ namespace Honeybee.UI.ConsoleApp
                 var materialBtn = new Button() { Text = "Material Manager" };
                 materialBtn.Click += (s, e) =>
                 {
-                    var md = new Model("", new ModelProperties(ModelEnergyProperties.Default));
+                    var md = new HB.Model("", new HB.ModelProperties(HB.ModelEnergyProperties.Default));
                     //var obj = ModelEnergyProperties.Default.Materials.First(_ => _.Obj is EnergyMaterial).Obj as EnergyMaterial;
                     var dialog = new Honeybee.UI.Dialog_MaterialManager(md);
                     dialog.ShowModal(this);

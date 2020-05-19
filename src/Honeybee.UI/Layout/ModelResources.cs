@@ -1,7 +1,7 @@
 ﻿using Eto.Drawing;
 using Eto.Forms;
 using System.Linq;
-using HoneybeeSchema;
+using HB = HoneybeeSchema;
 using System.Collections.Generic;
 using System.Drawing.Drawing2D;
 
@@ -28,10 +28,10 @@ namespace Honeybee.UI
         //public Button RoomsBtn { get; set; }
         //public Button RunSimulationBtn { get; set; }
 
-        private static Model _model;
+        private static HB.Model _model;
         //private static SimulationParameter _simulationParameter;
 
-        public Panel_Model(Model model)
+        public Panel_Model(HB.Model model)
         {
             _model = model;
             //_simulationParameter = simulationParameter ?? new SimulationParameter();
@@ -116,8 +116,18 @@ namespace Honeybee.UI
                     MessageBox.Show(this, "Invalid model");
                     return;
                 }
-                var dialog = new Dialog_ConstructionManager(_model);
+                var constrcutionsInModel = _model.Properties.Energy.Constructions
+                .Where(_ => _.Obj.GetType().Name.Contains("Abridged"))
+                .Select(_ => _.Obj as HB.Energy.IConstruction)
+                .ToList();
+
+                var dialog = new Dialog_ConstructionManager(constrcutionsInModel);
                 var dialog_rc = dialog.ShowModal(this);
+                if (dialog_rc != null)
+                {
+                    _model.Properties.Energy.Constructions.Clear();
+                    _model.AddConstructions(dialog_rc);
+                }
                
             };
             constrSetbtn.Click += (s, e) =>
@@ -127,8 +137,18 @@ namespace Honeybee.UI
                     MessageBox.Show(this, "Invalid model");
                     return;
                 }
-                var dialog = new Dialog_ConstructionSetManager(_model);
+                var constrcutionSetsInModel = _model.Properties.Energy.ConstructionSets
+                .Where(_ => _.Obj is HB.ConstructionSetAbridged)
+                .Select(_ => _.Obj as HB.Energy.IBuildingConstructionset)
+                .ToList();
+                var globalCSet = _model.Properties.Energy.GlobalConstructionSet;
+                var dialog = new Dialog_ConstructionSetManager(constrcutionSetsInModel, (id)=> id == globalCSet);
                 var dialog_rc = dialog.ShowModal(this);
+                if (dialog_rc != null)
+                {
+                    _model.Properties.Energy.ConstructionSets.Clear();
+                    _model.AddConstructionSets(dialog_rc);
+                }
                 //MessageBox.Show(this, "Working in progress");
             };
             scheduleBtn.Click += (s, e) =>
@@ -138,8 +158,23 @@ namespace Honeybee.UI
                     MessageBox.Show(this, "Invalid model");
                     return;
                 }
-                var dialog = new Dialog_ScheduleRulesetManager(_model);
+                var allSches = _model.Properties.Energy.Schedules
+                .Where(_ => _.Obj is HB.ScheduleRulesetAbridged)
+                .Select(_ => _.Obj as HB.ScheduleRulesetAbridged)
+                .ToList();
+
+                var schTypes = _model.Properties.Energy.ScheduleTypeLimits.Select(_=>_).ToList();
+              
+                var dialog = new Dialog_ScheduleRulesetManager(allSches, schTypes);
                 var dialog_rc = dialog.ShowModal(this);
+                if (dialog_rc.scheduleRulesets != null)
+                {
+                    var schs = dialog_rc.scheduleRulesets.OfType<HB.IDdEnergyBaseModel>().ToList();
+                    _model.Properties.Energy.Schedules.Clear();
+                    _model.AddSchedules(schs);
+                    _model.Properties.Energy.ScheduleTypeLimits.Clear();
+                    _model.AddScheduleTypeLimits(dialog_rc.scheduleTypeLimits);
+                }
                 //MessageBox.Show(this, "Working in progress");
             };
             programTypeBtn.Click += (s, e) =>
@@ -149,8 +184,20 @@ namespace Honeybee.UI
                     MessageBox.Show(this, "Invalid model");
                     return;
                 }
-                var dialog = new Dialog_ProgramTypeManager(_model);
+
+                var pTypeInModel = _model.Properties.Energy.ProgramTypes
+                .Where(_ => _.Obj is HB.ProgramTypeAbridged)
+                .Select(_ => _.Obj as HB.ProgramTypeAbridged)
+                .ToList();
+
+
+                var dialog = new Dialog_ProgramTypeManager(pTypeInModel);
                 var dialog_rc = dialog.ShowModal(this);
+                if (dialog_rc != null)
+                {
+                    _model.Properties.Energy.ProgramTypes.Clear();
+                    _model.AddProgramTypes(dialog_rc);
+                }
                 //MessageBox.Show(this, "Working in progress");
             };
 
@@ -163,117 +210,7 @@ namespace Honeybee.UI
            
         }
 
-        //public static void UpdatePanel()
-        //{
-           
-        //}
-      
-
-        private static Panel GenDoorPanel()
-        {
-            var vm = DoorViewModel.Instance;
-
-            var layout = new DynamicLayout { DataContext = vm};
-            layout.MinimumSize = new Size(100, 200);
-            layout.Spacing = new Size(5, 5);
-            layout.Padding = new Padding(10);
-            layout.DefaultSpacing = new Size(2, 2);
-
-            var id = new Label();
-            id.TextBinding.BindDataContext((DoorViewModel m) => m.HoneybeeObject.Identifier);
-            layout.AddSeparateRow(new Label { Text = "ID: " }, id);
-
-
-            layout.AddSeparateRow(new Label { Text = "Name:" });
-            var nameTB = new TextBox() { };
-            nameTB.TextBinding.BindDataContext((DoorViewModel m) => m.HoneybeeObject.DisplayName);
-            nameTB.LostFocus += (s, e) => { vm.ActionWhenChanged($"Set Room Name {vm.HoneybeeObject.DisplayName}"); };
-            layout.AddSeparateRow(nameTB);
-
-
-            //layout.AddSeparateRow(new Label { Text = "Glass:" });
-            var isGlassCBox = new CheckBox();
-            isGlassCBox.CheckedBinding.BindDataContext((DoorViewModel m) => m.HoneybeeObject.IsGlass);
-            isGlassCBox.CheckedChanged += (s, e) => { vm.ActionWhenChanged($"Set Glass Door: {vm.HoneybeeObject.IsGlass}"); };
-            layout.AddSeparateRow(new Label { Text = "Glass:" }, isGlassCBox);
-
-
-            layout.AddSeparateRow(new Label { Text = "Properties:" });
-            var faceRadPropBtn = new Button { Text = "Radiance Properties (WIP)" };
-            faceRadPropBtn.Click += (s, e) => MessageBox.Show(Helper.Owner, "Work in progress", "Honeybee");
-            layout.AddSeparateRow(faceRadPropBtn);
-            var faceEngPropBtn = new Button { Text = "Energy Properties" };
-            faceEngPropBtn.Click += (s, e) =>
-            {
-                var energyProp = vm.HoneybeeObject.Properties.Energy ?? new DoorEnergyPropertiesAbridged();
-                energyProp = DoorEnergyPropertiesAbridged.FromJson(energyProp.ToJson());
-                var dialog = new Dialog_DoorEnergyProperty(energyProp);
-                var dialog_rc = dialog.ShowModal(Helper.Owner);
-                if (dialog_rc != null)
-                {
-                    vm.HoneybeeObject.Properties.Energy = dialog_rc;
-                    vm.ActionWhenChanged($"Set Door Energy Properties");
-                }
-
-            };
-            layout.AddSeparateRow(faceEngPropBtn);
-
-
-            layout.AddSeparateRow(new Label { Text = "Boundary Condition:" });
-            var bcDP = new DropDown();
-            bcDP.BindDataContext(c => c.DataStore, (DoorViewModel m) => m.Bcs);
-            bcDP.ItemTextBinding = Binding.Delegate<AnyOf, string>(m => m.Obj.GetType().Name);
-            bcDP.SelectedIndexBinding.BindDataContext((DoorViewModel m) => m.SelectedIndex);
-            layout.AddSeparateRow(bcDP);
-
-            var bcBtn = new Button { Text = "Edit Boundary Condition" };
-            bcBtn.BindDataContext(c => c.Enabled, (DoorViewModel m) => m.IsOutdoor, DualBindingMode.OneWay);
-            bcBtn.Click += (s, e) =>
-            {
-                if (vm.HoneybeeObject.BoundaryCondition.Obj is Outdoors outdoors)
-                {
-                    var od = Outdoors.FromJson(outdoors.ToJson());
-                    var dialog = new UI.Dialog_BoundaryCondition_Outdoors(od);
-                    var dialog_rc = dialog.ShowModal(Helper.Owner);
-                    if (dialog_rc != null)
-                    {
-                        vm.HoneybeeObject.BoundaryCondition = dialog_rc;
-                        vm.ActionWhenChanged($"Set Aperture Boundary Condition");
-                    }
-                }
-                else
-                {
-                    MessageBox.Show(Helper.Owner, "Only Outdoors type has additional properties to edit!");
-                }
-            };
-            layout.AddSeparateRow(bcBtn);
-
-
-            layout.AddSeparateRow(new Label { Text = "IndoorShades:" });
-            var inShadesListBox = new ListBox();
-            inShadesListBox.BindDataContext(c => c.DataStore, (DoorViewModel m) => m.HoneybeeObject.IndoorShades);
-            inShadesListBox.ItemTextBinding = Binding.Delegate<Shade, string>(m => m.DisplayName ?? m.Identifier);
-            inShadesListBox.Height = 50;
-            layout.AddSeparateRow(inShadesListBox);
-
-
-            layout.AddSeparateRow(new Label { Text = "OutdoorShades:" });
-            var outShadesListBox = new ListBox();
-            outShadesListBox.Height = 50;
-            outShadesListBox.BindDataContext(c => c.DataStore, (DoorViewModel m) => m.HoneybeeObject.OutdoorShades);
-            outShadesListBox.ItemTextBinding = Binding.Delegate<Shade, string>(m => m.DisplayName ?? m.Identifier);
-            layout.AddSeparateRow(outShadesListBox);
-
-
-            layout.Add(null);
-            var data_button = new Button { Text = "Honeybee Data" };
-            data_button.Click += (sender, e) => Dialog_Message.Show(Helper.Owner, vm.HoneybeeObject.ToJson(), "Honeybee Data");
-            layout.AddSeparateRow(data_button, null);
-
-            return layout;
-
-        }
-
+       
 
 
     }

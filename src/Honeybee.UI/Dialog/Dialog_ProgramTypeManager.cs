@@ -8,19 +8,20 @@ using HoneybeeSchema;
 
 namespace Honeybee.UI
 {
-    public class Dialog_ProgramTypeManager : Dialog<HB.ProgramTypeAbridged>
+    public class Dialog_ProgramTypeManager : Dialog<List<HB.Energy.IProgramtype>>
     {
      
-        public Dialog_ProgramTypeManager(HB.Model model)
+        public Dialog_ProgramTypeManager(List<HB.ProgramTypeAbridged> programTypes)
         {
             try
             {
-                var md = model;
-                var pTypeInModel = md.Properties.Energy.ProgramTypes.Where(_=>_.Obj is HB.ProgramTypeAbridged).Select(_=>_.Obj as HB.ProgramTypeAbridged);
+                //var md = model;
+                var pTypes = programTypes;
+
 
                 Padding = new Padding(5);
                 Resizable = true;
-                Title = "ProgramType Manager - Honeybee";
+                Title = "Program Type Manager - Honeybee";
                 WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(900, 400);
                 this.Icon = DialogHelper.HoneybeeIcon;
@@ -36,7 +37,7 @@ namespace Honeybee.UI
 
 
                 layout.AddSeparateRow("Program Types:", null, addNew, duplicate, edit, remove);
-                var gd = GenProgramType_GV(pTypeInModel);
+                var gd = GenProgramType_GV(pTypes);
                 layout.AddSeparateRow(gd);
 
                 addNew.Click += (s, e) =>
@@ -142,7 +143,11 @@ namespace Honeybee.UI
                 };
 
                 DefaultButton = new Button { Text = "OK" };
-                DefaultButton.Click += (sender, e) => Close(gd.SelectedItem as HB.ProgramTypeAbridged);
+                DefaultButton.Click += (sender, e) => 
+                {
+                    var d = gd.DataStore.OfType<HB.Energy.IProgramtype>().ToList();
+                    Close(d);
+                };
 
                 AbortButton = new Button { Text = "Cancel" };
                 AbortButton.Click += (sender, e) => Close();

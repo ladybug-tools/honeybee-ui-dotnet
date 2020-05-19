@@ -9,25 +9,26 @@ using HoneybeeSchema;
 
 namespace Honeybee.UI
 {
-    public class Dialog_ConstructionManager : Dialog<HB.Energy.IConstruction>
+    public class Dialog_ConstructionManager : Dialog<List<HB.Energy.IConstruction>>
     {
      
-        public Dialog_ConstructionManager(HB.Model model)
+
+        public Dialog_ConstructionManager(List<HB.Energy.IConstruction> constructions)
         {
             try
             {
-                var md = model;
-                var constrcutionsInModel = md.Properties.Energy.Constructions.Where(_ => _.Obj.GetType().Name.Contains("Abridged")).Select(_ => _.Obj as HB.Energy.IConstruction);
+                //var md = model;
+                var constrcutionsInModel = constructions;
 
 
                 Padding = new Padding(5);
                 Resizable = true;
-                Title = "Construction Library - Honeybee";
+                Title = "Construction Manager - Honeybee";
                 WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(650, 300);
                 this.Icon = DialogHelper.HoneybeeIcon;
 
-                var constrs = constrcutionsInModel;
+                //var constrs = constrcutionsInModel;
 
 
                 var layout = new DynamicLayout();
@@ -41,17 +42,12 @@ namespace Honeybee.UI
 
                 layout.AddSeparateRow("Constructions:", null, addNew, duplicate, edit, remove);
 
-                var gd = GenGridView(constrs);
+                var gd = GenGridView(constrcutionsInModel);
                 gd.Height = 250;
                 layout.AddRow(gd);
 
 
-                DefaultButton = new Button { Text = "OK" };
-                DefaultButton.Click += (sender, e) => Close();
-
-                AbortButton = new Button { Text = "Cancel" };
-                AbortButton.Click += (sender, e) => Close();
-                layout.AddSeparateRow(null, DefaultButton, AbortButton, null);
+            
 
 
                 addNew.Click += (s, e) =>
@@ -158,6 +154,16 @@ namespace Honeybee.UI
                     }
 
                 };
+
+                DefaultButton = new Button { Text = "OK" };
+                DefaultButton.Click += (sender, e) => {
+                    var d = gd.DataStore.Select(_ => _ as HB.Energy.IConstruction).ToList();
+                    Close(d);
+                };
+
+                AbortButton = new Button { Text = "Cancel" };
+                AbortButton.Click += (sender, e) => Close();
+                layout.AddSeparateRow(null, DefaultButton, AbortButton, null);
 
                 //Create layout
                 Content = layout;
