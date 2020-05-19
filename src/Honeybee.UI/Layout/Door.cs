@@ -86,7 +86,7 @@ namespace Honeybee.UI
             };
 
             var bcs = new List<AnyOf<Outdoors, Surface>>() { new Outdoors(), new Surface(new List<string>()) };
-            var bcDP = DialogHelper.MakeDropDownForAnyOf(door.BoundaryCondition.Obj.GetType().Name, v => door.BoundaryCondition = v, bcs);
+            var bcDP = DialogHelper.MakeDropDownForAnyOfType(door.BoundaryCondition.Obj.GetType().Name, v => door.BoundaryCondition = v, bcs);
             bcDP.SelectedIndexChanged += (s, e) =>
             {
                 bcBtn.Enabled = false;
