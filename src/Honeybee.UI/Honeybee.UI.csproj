@@ -83,7 +83,9 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dialog\Dialog_Material.cs" />
     <Compile Include="Dialog\Dialog_Construction.cs" />
+    <Compile Include="Dialog\Dialog_MaterialManager.cs" />
     <Compile Include="Dialog\Dialog_ConstructionSetManager.cs" />
     <Compile Include="Dialog\Dialog_ModelResources.cs" />
     <Compile Include="Dialog\Dialog_ScheduleRulesetManager.cs" />
