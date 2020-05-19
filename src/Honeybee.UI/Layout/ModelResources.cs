@@ -24,78 +24,80 @@ namespace Honeybee.UI
         //    }
         //    set { _instance = value; }
         //}
-        public Button ModelPropertyBtn { get; set; }
-        public Button RoomsBtn { get; set; }
-        public Button RunSimulationBtn { get; set; }
+        //public Button ModelPropertyBtn { get; set; }
+        //public Button RoomsBtn { get; set; }
+        //public Button RunSimulationBtn { get; set; }
 
         private static Model _model;
-        private static SimulationParameter _simulationParameter;
+        //private static SimulationParameter _simulationParameter;
 
-        public Panel_Model(Model model, SimulationParameter simulationParameter = default)
+        public Panel_Model(Model model)
         {
             _model = model;
-            _simulationParameter = simulationParameter ?? new SimulationParameter();
+            //_simulationParameter = simulationParameter ?? new SimulationParameter();
 
-            this.DefaultPadding = new Padding(10);
-            this.DefaultSpacing = new Size(5, 5);
+            //this.DefaultPadding = new Padding(10);
+            //this.DefaultSpacing = new Size(5, 5);
 
 
-            ModelPropertyBtn = new Button();
-            ModelPropertyBtn.Text = "Model Property";
-            this.AddSeparateRow(ModelPropertyBtn);
+            //ModelPropertyBtn = new Button();
+            //ModelPropertyBtn.Text = "Model Property";
+            //this.AddSeparateRow(ModelPropertyBtn);
 
-            RoomsBtn = new Button();
-            RoomsBtn.Text = "Rooms";
-            this.AddSeparateRow(RoomsBtn);
+            //RoomsBtn = new Button();
+            //RoomsBtn.Text = "Rooms";
+            //this.AddSeparateRow(RoomsBtn);
 
 
             var resourceGroup = new GroupBox();
             resourceGroup.Text = "In-Model Resources";
             var groupPanel = new DynamicLayout();
-            groupPanel.DefaultPadding = new Padding(5);
+            //groupPanel.DefaultPadding = new Padding(5);
             groupPanel.DefaultSpacing = new Size(5, 5);
 
             var materialBtn = new Button();
             materialBtn.Text = "Materials (WIP)";
-            groupPanel.AddSeparateRow(materialBtn);
+            groupPanel.AddRow(materialBtn);
 
             var constrcutionBtn = new Button();
             constrcutionBtn.Text = "Constructions";
-            groupPanel.AddSeparateRow(constrcutionBtn);
+            groupPanel.AddRow(constrcutionBtn);
 
             var constrSetbtn = new Button();
             constrSetbtn.Text = "Construction Sets (WIP)";
-            groupPanel.AddSeparateRow(constrSetbtn);
+            groupPanel.AddRow(constrSetbtn);
 
             var scheduleBtn = new Button();
             scheduleBtn.Text = "Schedules";
-            groupPanel.AddSeparateRow(scheduleBtn);
+            groupPanel.AddRow(scheduleBtn);
 
             var programTypeBtn = new Button();
             programTypeBtn.Text = "Program Types";
-            groupPanel.AddSeparateRow(programTypeBtn);
+            groupPanel.AddRow(programTypeBtn);
             resourceGroup.Content = groupPanel;
-            this.AddSeparateRow(resourceGroup);
+
+            //this.Content = resourceGroup;
+            this.AddRow(resourceGroup);
 
 
-            var simParamBtn = new Button();
-            simParamBtn.Text = "Simulation Parameter";
-            this.AddSeparateRow(simParamBtn);
+            //var simParamBtn = new Button();
+            //simParamBtn.Text = "Simulation Parameter";
+            //this.AddSeparateRow(simParamBtn);
 
-            RunSimulationBtn = new Button();
-            RunSimulationBtn.Text = "Run Simulation";
-            this.AddSeparateRow(RunSimulationBtn);
-            this.AddSeparateRow(null);
+            //RunSimulationBtn = new Button();
+            //RunSimulationBtn.Text = "Run Simulation";
+            //this.AddSeparateRow(RunSimulationBtn);
+            //this.AddSeparateRow(null);
 
 
             //RoomsBtn.Click += (s, e) =>
             //{
             //    MessageBox.Show(this, "Working in progress");
             //};
-            ModelPropertyBtn.Click += (s, e) =>
-            {
-                MessageBox.Show(this, "Working in progress");
-            };
+            //ModelPropertyBtn.Click += (s, e) =>
+            //{
+            //    MessageBox.Show(this, "Working in progress");
+            //};
 
             constrcutionBtn.Click += (s, e) =>
             {
@@ -110,29 +112,44 @@ namespace Honeybee.UI
             };
             constrSetbtn.Click += (s, e) =>
             {
+                if (_model == null)
+                {
+                    MessageBox.Show(this, "Invalid model");
+                    return;
+                }
                 //var dialog = new Dialog_ConstructionManager(this._model);
                 //var dialog_rc = dialog.ShowModal(this);
                 MessageBox.Show(this, "Working in progress");
             };
             scheduleBtn.Click += (s, e) =>
             {
+                if (_model == null)
+                {
+                    MessageBox.Show(this, "Invalid model");
+                    return;
+                }
                 var dialog = new Dialog_ScheduleRulesetManager(_model);
                 var dialog_rc = dialog.ShowModal(this);
                 //MessageBox.Show(this, "Working in progress");
             };
             programTypeBtn.Click += (s, e) =>
             {
+                if (_model == null)
+                {
+                    MessageBox.Show(this, "Invalid model");
+                    return;
+                }
                 var dialog = new Dialog_ProgramTypeManager(_model);
                 var dialog_rc = dialog.ShowModal(this);
                 //MessageBox.Show(this, "Working in progress");
             };
 
-            simParamBtn.Click += (s, e) =>
-            {
-                var dialog = new Dialog_SimulationParameter(_simulationParameter);
-                var dialog_rc = dialog.ShowModal(this);
-                //MessageBox.Show(this, "Working in progress");
-            };
+            //simParamBtn.Click += (s, e) =>
+            //{
+            //    var dialog = new Dialog_SimulationParameter(_simulationParameter);
+            //    var dialog_rc = dialog.ShowModal(this);
+            //    //MessageBox.Show(this, "Working in progress");
+            //};
            
         }
 
