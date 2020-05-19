@@ -56,7 +56,7 @@ namespace Honeybee.UI
             groupPanel.DefaultSpacing = new Size(5, 5);
 
             var materialBtn = new Button();
-            materialBtn.Text = "Materials (WIP)";
+            materialBtn.Text = "Materials";
             groupPanel.AddRow(materialBtn);
 
             var constrcutionBtn = new Button();
@@ -64,7 +64,7 @@ namespace Honeybee.UI
             groupPanel.AddRow(constrcutionBtn);
 
             var constrSetbtn = new Button();
-            constrSetbtn.Text = "Construction Sets (WIP)";
+            constrSetbtn.Text = "Construction Sets";
             groupPanel.AddRow(constrSetbtn);
 
             var scheduleBtn = new Button();
@@ -98,7 +98,17 @@ namespace Honeybee.UI
             //{
             //    MessageBox.Show(this, "Working in progress");
             //};
+            materialBtn.Click += (s, e) =>
+            {
+                if (_model == null)
+                {
+                    MessageBox.Show(this, "Invalid model");
+                    return;
+                }
+                var dialog = new Dialog_MaterialManager(_model);
+                var dialog_rc = dialog.ShowModal(this);
 
+            };
             constrcutionBtn.Click += (s, e) =>
             {
                 if (_model == null)
@@ -117,9 +127,9 @@ namespace Honeybee.UI
                     MessageBox.Show(this, "Invalid model");
                     return;
                 }
-                //var dialog = new Dialog_ConstructionManager(this._model);
-                //var dialog_rc = dialog.ShowModal(this);
-                MessageBox.Show(this, "Working in progress");
+                var dialog = new Dialog_ConstructionSetManager(_model);
+                var dialog_rc = dialog.ShowModal(this);
+                //MessageBox.Show(this, "Working in progress");
             };
             scheduleBtn.Click += (s, e) =>
             {
