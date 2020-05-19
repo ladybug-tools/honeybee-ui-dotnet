@@ -117,6 +117,16 @@ namespace Honeybee.UI.ConsoleApp
 
                 };
 
+                var materialBtn = new Button() { Text = "Material Manager" };
+                materialBtn.Click += (s, e) =>
+                {
+                    var md = new Model("", new ModelProperties(ModelEnergyProperties.Default));
+                    //var obj = ModelEnergyProperties.Default.Materials.First(_ => _.Obj is EnergyMaterial).Obj as EnergyMaterial;
+                    var dialog = new Honeybee.UI.Dialog_MaterialManager(md);
+                    dialog.ShowModal(this);
+
+                };
+
                 panel.AddSeparateRow(btn);
                 panel.AddSeparateRow(Messagebtn);
                 panel.AddSeparateRow(cSetbtn);
@@ -127,6 +137,7 @@ namespace Honeybee.UI.ConsoleApp
                 panel.AddSeparateRow(cSetManager);
                 panel.AddSeparateRow(simuParam);
                 panel.AddSeparateRow(modelManager);
+                panel.AddSeparateRow(materialBtn);
                 panel.AddSeparateRow(null);
                 Content = panel;
             }
