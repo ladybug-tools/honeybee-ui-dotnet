@@ -38,18 +38,12 @@ jobs:
           msbuild /p:Configuration=Release
           msbuild /p:Configuration=Release_Rhino
 
-      - name: Zip Build Artifact
-        run: |
-          Compress-Archive -U -Path src\Honeybee.UI\bin\Release\* -DestinationPath Honeybee.UI
-          Compress-Archive -U -Path src\Honeybee.UI\bin\Release_Rhino\* -DestinationPath Honeybee.UI.Rhino
+      - run: npx semantic-release
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Deploy to Nuget
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
         run: |
           python deploy.py
-
-      - run: npx semantic-release
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-     
