@@ -9,25 +9,23 @@ using HoneybeeSchema;
 
 namespace Honeybee.UI
 {
-    public class Dialog_MaterialManager : Dialog<HB.Energy.IMaterial>
+    public class Dialog_MaterialManager : Dialog<List<HB.Energy.IMaterial>>
     {
-     
-        public Dialog_MaterialManager(HB.Model model)
+
+        public Dialog_MaterialManager(List<HB.Energy.IMaterial> materials)
         {
             try
             {
-                var md = model;
-                var materialsInModel = md.Properties.Energy.Materials.Select(_ => _.Obj as HB.Energy.IMaterial);
+                var materialsInModel = materials;
 
 
                 Padding = new Padding(5);
                 Resizable = true;
-                Title = "Materials Library - Honeybee";
+                Title = "Materials Manager - Honeybee";
                 WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(650, 300);
                 this.Icon = DialogHelper.HoneybeeIcon;
 
-                var materials = materialsInModel;
 
 
                 var layout = new DynamicLayout();
@@ -39,15 +37,19 @@ namespace Honeybee.UI
                 var edit = new Button { Text = "Edit" };
                 var remove = new Button { Text = "Remove" };
 
-                layout.AddSeparateRow("Constructions:", null, addNew, duplicate, edit, remove);
+                layout.AddSeparateRow("Materials:", null, addNew, duplicate, edit, remove);
 
-                var gd = GenGridView(materials);
+                var gd = GenGridView(materialsInModel);
                 gd.Height = 250;
                 layout.AddRow(gd);
 
 
                 DefaultButton = new Button { Text = "OK" };
-                DefaultButton.Click += (sender, e) => Close();
+                DefaultButton.Click += (sender, e) =>
+                {
+                    var d = gd.DataStore.OfType<HB.Energy.IMaterial>().ToList();
+                    Close(d);
+                };
 
                 AbortButton = new Button { Text = "Cancel" };
                 AbortButton.Click += (sender, e) => Close();
@@ -57,13 +59,14 @@ namespace Honeybee.UI
                 addNew.Click += (s, e) =>
                 {
                     var id = Guid.NewGuid().ToString();
-                    var newConstrucion = new OpaqueConstructionAbridged(id, new List<string>(), $"New Opaque Construction {id.Substring(0, 5)}");
-                    
-                    var dialog = new Honeybee.UI.Dialog_Construction(newConstrucion);
+                    // R10
+                    var newObj = new EnergyMaterialNoMass(id, 0.35, $"New No Mass Material {id.Substring(0, 5)}");
+
+                    var dialog = new Honeybee.UI.Dialog_Material(newObj);
                     var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
                     {
-                        var d = gd.DataStore.Select(_ => _ as HB.Energy.IConstruction).ToList();
+                        var d = gd.DataStore.Select(_ => _ as HB.Energy.IMaterial).ToList();
                         d.Add(dialog_rc);
                         gd.DataStore = d;
 
@@ -79,15 +82,15 @@ namespace Honeybee.UI
 
                     var id = Guid.NewGuid().ToString();
 
-                    var dup = DuplicateConstruction(gd.SelectedItem as HB.Energy.IConstruction);
+                    var dup = (gd.SelectedItem as HB.Energy.IMaterial).Duplicate() as HB.Energy.IMaterial;
 
                     dup.Identifier = id;
                     dup.DisplayName = string.IsNullOrEmpty(dup.DisplayName) ? $"New Duplicate {id.Substring(0, 5)}" : $"{dup.DisplayName}_dup";
-                    var dialog = new Honeybee.UI.Dialog_Construction(dup);
+                    var dialog = new Honeybee.UI.Dialog_Material(dup);
                     var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
                     {
-                        var d = gd.DataStore.Select(_ => _ as HB.Energy.IConstruction).ToList();
+                        var d = gd.DataStore.Select(_ => _ as HB.Energy.IMaterial).ToList();
                         d.Add(dialog_rc);
                         gd.DataStore = d;
 
@@ -102,14 +105,14 @@ namespace Honeybee.UI
                         return;
                     }
 
-                    var dup = DuplicateConstruction(gd.SelectedItem as HB.Energy.IConstruction);
+                    var dup = (gd.SelectedItem as HB.Energy.IMaterial).Duplicate() as HB.Energy.IMaterial;
 
-                    var dialog = new Honeybee.UI.Dialog_Construction(dup);
+                    var dialog = new Honeybee.UI.Dialog_Material(dup);
                     var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
                     {
                         var index = gd.SelectedRow;
-                        var newDataStore = gd.DataStore.Select(_ => _ as HB.Energy.IConstruction).ToList();
+                        var newDataStore = gd.DataStore.Select(_ => _ as HB.Energy.IMaterial).ToList();
                         newDataStore.RemoveAt(index);
                         newDataStore.Insert(index, dialog_rc);
                         gd.DataStore = newDataStore;
@@ -118,7 +121,7 @@ namespace Honeybee.UI
                 };
                 remove.Click += (s, e) =>
                 {
-                    var selected = gd.SelectedItem as HB.Energy.IConstruction;
+                    var selected = gd.SelectedItem as HB.Energy.IMaterial;
                     if (selected == null)
                     {
                         MessageBox.Show(this, "Nothing is selected to edit!");
@@ -167,28 +170,11 @@ namespace Honeybee.UI
                 throw new ArgumentException(e.Message);
                 //Rhino.RhinoApp.WriteLine(e.Message);
             }
-            
-            
+
+
         }
 
-        private HB.Energy.IConstruction DuplicateConstruction(HB.Energy.IConstruction obj)
-        {
-            HB.Energy.IConstruction dup = null;
-            if (obj is OpaqueConstructionAbridged opq)
-            {
-                dup = OpaqueConstructionAbridged.FromJson((obj as OpaqueConstructionAbridged).ToJson());
-            }
-            else if (obj is WindowConstructionAbridged win)
-            {
-                dup = WindowConstructionAbridged.FromJson((obj as WindowConstructionAbridged).ToJson());
-            }
-            else
-            {
-                throw new ArgumentException($"{obj.GetType().Name} cannot be duplicated yet");
-            }
 
-            return dup;
-        }
 
         private GridView GenGridView(IEnumerable<object> items)
         {
