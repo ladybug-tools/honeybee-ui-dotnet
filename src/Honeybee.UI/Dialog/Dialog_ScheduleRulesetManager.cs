@@ -24,7 +24,7 @@ namespace Honeybee.UI
             var ifTypeLimitExist = _typeLimits.Any(_ => _.Equals(obj.ScheduleTypeLimit));
             if (!ifTypeLimitExist)
             {
-                var typeLimit = obj.ScheduleTypeLimit;
+                var typeLimit = ScheduleTypeLimit.FromJson(obj.ScheduleTypeLimit.ToJson());
                 var id = Guid.NewGuid().ToString();
                 typeLimit.Identifier = id;
                 typeLimit.DisplayName = typeLimit.DisplayName ?? $"Schedule Type Limit{id.Substring(0, 5)}";
@@ -237,9 +237,14 @@ namespace Honeybee.UI
 
             var typeTB = new TextBoxCell
             {
-                Binding = Binding.Delegate<HB.ScheduleRulesetAbridged, string>(r => r.ScheduleTypeLimit)
+                Binding = Binding.Delegate<HB.ScheduleRulesetAbridged, string>(
+                    r => {
+                        var typeLimit = _typeLimits.First(_ => _.Identifier == r.ScheduleTypeLimit);
+                        return typeLimit.DisplayName ?? typeLimit.Identifier;
+                    })
             };
             gd.Columns.Add(new GridColumn { DataCell = typeTB, HeaderText = "Type" });
+
             return gd;
         }
 
