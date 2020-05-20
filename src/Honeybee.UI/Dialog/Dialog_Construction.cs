@@ -103,7 +103,8 @@ namespace Honeybee.UI
 
                 leftLayout.AddRow("Name");
                 var name = new TextBox();
-                name.Text = _hbObj.DisplayName ?? _hbObj.Identifier;
+                _hbObj.DisplayName = _hbObj.DisplayName ?? _hbObj.Identifier;
+                name.TextBinding.Bind(() => _hbObj.DisplayName, v => _hbObj.DisplayName = v);
                 leftLayout.AddRow(name);
 
                 //_layers = _hbObj.Layers;
