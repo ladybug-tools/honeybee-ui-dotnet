@@ -139,16 +139,7 @@ namespace Honeybee.UI
                 var buttonSource = new Button { Text = "HBData" };
                 buttonSource.Click += (s, e) =>
                 {
-                    var json = string.Empty;
-                    if (_hbObj is HB.EnergyMaterial obj)
-                    {
-                        json =  obj.ToJson();
-                    }
-                    else if (_hbObj is HB.WindowConstructionAbridged win)
-                    {
-                        json = win.ToJson();
-                    }
-                    Dialog_Message.Show(this, json);
+                    Dialog_Message.Show(this, _hbObj.ToJson());
                 };
               
 
