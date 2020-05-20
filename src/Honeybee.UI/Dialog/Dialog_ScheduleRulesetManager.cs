@@ -132,15 +132,17 @@ namespace Honeybee.UI
 
                     }
                 };
-                edit.Click += (s, e) =>
+
+                Action editAction = () =>
                 {
-                    if (gd.SelectedRow == -1)
+                    var selected = gd.SelectedItem as ScheduleRulesetAbridged;
+                    if (selected == null)
                     {
                         MessageBox.Show(this, "Nothing is selected to edit!");
                         return;
                     }
-                    var selected = gd.SelectedItem;
-                    var newDup = ScheduleRulesetAbridged.FromJson((selected as ScheduleRulesetAbridged).ToJson());
+                   
+                    var newDup = ScheduleRulesetAbridged.FromJson((selected).ToJson());
                     var realObj = AbridgedToReal(newDup);
                     var dialog = new Honeybee.UI.Dialog_Schedule(realObj);
                     var dialog_rc = dialog.ShowModal(this);
@@ -150,10 +152,14 @@ namespace Honeybee.UI
                         var newDataStore = gd.DataStore.Select(_ => _ as ScheduleRulesetAbridged).ToList();
                         newDataStore.RemoveAt(index);
                         newDataStore.Insert(index, ToAbridged(dialog_rc));
-          
+
                         gd.DataStore = newDataStore;
 
                     }
+                };
+                edit.Click += (s, e) =>
+                {
+                    editAction();
                 };
                 remove.Click += (s, e) =>
                 {
@@ -179,25 +185,7 @@ namespace Honeybee.UI
 
                 gd.CellDoubleClick += (s, e) =>
                 {
-                    var doubleClk = e.Item;
-                    if (doubleClk is HB.ScheduleRulesetAbridged obj)
-                    {
-                        var newDup = HB.ScheduleRulesetAbridged.FromJson(obj.ToJson());
-                        var realObj = AbridgedToReal(newDup);
-                        var dialog = new Honeybee.UI.Dialog_Schedule(realObj);
-                        var dialog_rc = dialog.ShowModal(this);
-
-                        if (dialog_rc != null)
-                        {
-                            var index = gd.SelectedRow;
-                            var newDataStore = gd.DataStore.Select(_ => _ as ScheduleRulesetAbridged).ToList();
-                            newDataStore.RemoveAt(index);
-                            newDataStore.Insert(index, ToAbridged(dialog_rc));
-                            gd.DataStore = newDataStore;
-
-
-                        }
-                    }
+                    editAction();
 
                 };
 

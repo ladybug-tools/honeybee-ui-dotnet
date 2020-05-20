@@ -77,7 +77,7 @@ namespace Honeybee.UI
 
                     }
                 };
-                edit.Click += (s, e) =>
+                Action editAction = () =>
                 {
                     var selected = gd.SelectedItem;
                     if (selected == null)
@@ -98,6 +98,10 @@ namespace Honeybee.UI
                         gd.DataStore = newDataStore;
 
                     }
+                };
+                edit.Click += (s, e) =>
+                {
+                    editAction();
                 };
                 remove.Click += (s, e) =>
                 {
@@ -121,25 +125,7 @@ namespace Honeybee.UI
 
                 gd.CellDoubleClick += (s, e) =>
                 {
-                    var doubleClk = e.Item;
-                    if (doubleClk is HB.ProgramTypeAbridged selectedPType)
-                    {
-                        var newPType = HB.ProgramTypeAbridged.FromJson(selectedPType.ToJson());
-                        var dialog = new Honeybee.UI.Dialog_ProgramType(newPType);
-                        var dialog_rc = dialog.ShowModal(this);
-
-                        if (dialog_rc != null)
-                        {
-                            var index = gd.SelectedRow;
-                            var newDataStore = gd.DataStore.Select(_ => _ as ProgramTypeAbridged).ToList();
-                            newDataStore.RemoveAt(index);
-                            newDataStore.Insert(index, dialog_rc);
-                            gd.DataStore = newDataStore;
-
-
-                        }
-                    }
-
+                    editAction();
                 };
 
                 DefaultButton = new Button { Text = "OK" };

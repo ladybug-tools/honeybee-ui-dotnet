@@ -89,16 +89,16 @@ namespace Honeybee.UI
 
                     }
                 };
-                edit.Click += (s, e) =>
-                {
-                    var selected = gd.SelectedItem;
+
+                Action editAction = () =>{
+                    var selected = gd.SelectedItem as HB.Energy.IConstruction;
                     if (selected == null)
                     {
                         MessageBox.Show(this, "Nothing is selected to edit!");
                         return;
                     }
 
-                    var dup = DuplicateConstruction(gd.SelectedItem as HB.Energy.IConstruction);
+                    var dup = DuplicateConstruction(selected);
 
                     var dialog = new Honeybee.UI.Dialog_Construction(dup);
                     var dialog_rc = dialog.ShowModal(this);
@@ -111,6 +111,10 @@ namespace Honeybee.UI
                         gd.DataStore = newDataStore;
 
                     }
+                };
+                edit.Click += (s, e) =>
+                {
+                    editAction();
                 };
                 remove.Click += (s, e) =>
                 {
@@ -134,24 +138,7 @@ namespace Honeybee.UI
 
                 gd.CellDoubleClick += (s, e) =>
                 {
-                    var doubleClk = e.Item;
-                    if (doubleClk is HB.Energy.IConstruction selectedPType)
-                    {
-                        var dup = DuplicateConstruction(selectedPType);
-                        var dialog = new Honeybee.UI.Dialog_Construction(dup);
-                        var dialog_rc = dialog.ShowModal(this);
-
-                        if (dialog_rc != null)
-                        {
-                            var index = gd.SelectedRow;
-                            var newDataStore = gd.DataStore.Select(_ => _ as HB.Energy.IConstruction).ToList();
-                            newDataStore.RemoveAt(index);
-                            newDataStore.Insert(index, dialog_rc);
-                            gd.DataStore = newDataStore;
-
-
-                        }
-                    }
+                    editAction();
 
                 };
 
