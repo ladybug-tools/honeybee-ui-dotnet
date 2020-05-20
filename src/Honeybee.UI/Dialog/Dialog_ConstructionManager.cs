@@ -67,15 +67,15 @@ namespace Honeybee.UI
                 };
                 duplicate.Click += (s, e) =>
                 {
-                    if (gd.SelectedItem == null)
+                    var selected = gd.SelectedItem as HB.Energy.IConstruction;
+                    if (selected == null)
                     {
                         MessageBox.Show(this, "Nothing is selected to duplicate!");
                         return;
                     }
 
                     var id = Guid.NewGuid().ToString();
-
-                    var dup = DuplicateConstruction(gd.SelectedItem as HB.Energy.IConstruction);
+                    var dup = selected.Duplicate() as HB.Energy.IConstruction;
 
                     dup.Identifier = id;
                     dup.DisplayName = string.IsNullOrEmpty(dup.DisplayName) ? $"New Duplicate {id.Substring(0, 5)}" : $"{dup.DisplayName}_dup";
@@ -98,7 +98,7 @@ namespace Honeybee.UI
                         return;
                     }
 
-                    var dup = DuplicateConstruction(selected);
+                    var dup = selected.Duplicate() as HB.Energy.IConstruction;
 
                     var dialog = new Honeybee.UI.Dialog_Construction(dup);
                     var dialog_rc = dialog.ShowModal(this);
@@ -164,24 +164,7 @@ namespace Honeybee.UI
             
         }
 
-        private HB.Energy.IConstruction DuplicateConstruction(HB.Energy.IConstruction obj)
-        {
-            HB.Energy.IConstruction dup = null;
-            if (obj is OpaqueConstructionAbridged opq)
-            {
-                dup = OpaqueConstructionAbridged.FromJson((obj as OpaqueConstructionAbridged).ToJson());
-            }
-            else if (obj is WindowConstructionAbridged win)
-            {
-                dup = WindowConstructionAbridged.FromJson((obj as WindowConstructionAbridged).ToJson());
-            }
-            else
-            {
-                throw new ArgumentException($"{obj.GetType().Name} cannot be duplicated yet");
-            }
-
-            return dup;
-        }
+   
 
         private GridView GenGridView(IEnumerable<object> items)
         {

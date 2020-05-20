@@ -83,7 +83,7 @@ namespace Honeybee.UI
 
                     var id = Guid.NewGuid().ToString();
 
-                    var dup = DuplicateConstructionSet(gd.SelectedItem as HB.ConstructionSetAbridged);
+                    var dup = (gd.SelectedItem as HB.ConstructionSetAbridged).DuplicateConstructionSetAbridged();
 
                     dup.Identifier = id;
                     dup.DisplayName = string.IsNullOrEmpty(dup.DisplayName) ? $"New Duplicate {id.Substring(0, 5)}" : $"{dup.DisplayName}_dup";
@@ -106,7 +106,7 @@ namespace Honeybee.UI
                         return;
                     }
 
-                    var dup = DuplicateConstructionSet(selected);
+                    var dup = (gd.SelectedItem as HB.ConstructionSetAbridged).DuplicateConstructionSetAbridged();
 
                     var dialog = new Honeybee.UI.Dialog_ConstructionSet(dup);
                     var dialog_rc = dialog.ShowModal(this);
@@ -167,10 +167,6 @@ namespace Honeybee.UI
             
         }
 
-        private HB.ConstructionSetAbridged DuplicateConstructionSet(HB.ConstructionSetAbridged obj)
-        {
-            return ConstructionSetAbridged.FromJson((obj as ConstructionSetAbridged).ToJson());
-        }
 
         private GridView GenGridView(IEnumerable<object> items)
         {
