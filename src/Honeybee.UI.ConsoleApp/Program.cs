@@ -146,8 +146,9 @@ namespace Honeybee.UI.ConsoleApp
                 materialBtn.Click += (s, e) =>
                 {
                     var md = new HB.Model("", new HB.ModelProperties(HB.ModelEnergyProperties.Default));
-                    //var obj = ModelEnergyProperties.Default.Materials.First(_ => _.Obj is EnergyMaterial).Obj as EnergyMaterial;
-                    var dialog = new Honeybee.UI.Dialog_MaterialManager(md);
+                    var materialsInModel = md.Properties.Energy.Materials.Select(_ => _.Obj as HB.Energy.IMaterial).ToList();
+
+                    var dialog = new Honeybee.UI.Dialog_MaterialManager(materialsInModel);
                     dialog.ShowModal(this);
 
                 };

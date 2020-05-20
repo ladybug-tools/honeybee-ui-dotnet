@@ -97,16 +97,16 @@ namespace Honeybee.UI
 
                     }
                 };
-                edit.Click += (s, e) =>
-                {
-                    var selected = gd.SelectedItem;
+
+                Action editAction = () => {
+                    var selected = gd.SelectedItem as HB.ConstructionSetAbridged;
                     if (selected == null)
                     {
                         MessageBox.Show(this, "Nothing is selected to edit!");
                         return;
                     }
 
-                    var dup = DuplicateConstructionSet(gd.SelectedItem as HB.ConstructionSetAbridged);
+                    var dup = DuplicateConstructionSet(selected);
 
                     var dialog = new Honeybee.UI.Dialog_ConstructionSet(dup);
                     var dialog_rc = dialog.ShowModal(this);
@@ -119,6 +119,10 @@ namespace Honeybee.UI
                         gd.DataStore = newDataStore;
 
                     }
+                };
+                edit.Click += (s, e) =>
+                {
+                    editAction();
                 };
                 remove.Click += (s, e) =>
                 {
@@ -148,25 +152,7 @@ namespace Honeybee.UI
 
                 gd.CellDoubleClick += (s, e) =>
                 {
-                    var doubleClk = e.Item;
-                    if (doubleClk is HB.ConstructionSetAbridged selectedObj)
-                    {
-                        var dup = DuplicateConstructionSet(selectedObj);
-                        var dialog = new Honeybee.UI.Dialog_ConstructionSet(dup);
-                        var dialog_rc = dialog.ShowModal(this);
-
-                        if (dialog_rc != null)
-                        {
-                            var index = gd.SelectedRow;
-                            var newDataStore = gd.DataStore.OfType<ConstructionSetAbridged>().ToList();
-                            newDataStore.RemoveAt(index);
-                            newDataStore.Insert(index, dialog_rc);
-                            gd.DataStore = newDataStore;
-
-
-                        }
-                    }
-
+                    editAction();
                 };
 
                 //Create layout
