@@ -13,6 +13,9 @@ namespace Honeybee.UI
             get => _hbObj;
             set {
                 _hbObj = value;
+                //reset lower/upper limit based on ScheduleTypeLimit
+                _lowerLimit = -999;
+                _upperLimit = 999;
                 var props = this.GetType().GetProperties().Select(_ => _.Name);
                 this.RefreshControls(props);
             }
@@ -28,49 +31,74 @@ namespace Honeybee.UI
             set => Set(() => _hbObj.DisplayName = value, nameof(DisplayName));
         }
 
-        public ScheduleTypeLimit ScheduleTypeLimit
-        {
-            get => _hbObj.ScheduleTypeLimit;
-            set => Set(() => _hbObj.ScheduleTypeLimit = value, nameof(ScheduleTypeLimit));
-        }
+        private ScheduleTypeLimit ScheduleTypeLimit => _hbObj.ScheduleTypeLimit;
+
+        private double _lowerLimit = -999;
         public double LowerLimit
         {
             get
             {
+                if (_lowerLimit != -999)
+                    return _lowerLimit;
+
+                // Find the lower value
+                var lowValue = 0.0;
+
                 if (ScheduleTypeLimit.LowerLimit.Obj is double low)
                 {
-                    return low;
+                    lowValue = low;
                 }
                 else
                 {
                     // no limit
                     var min = DaySchedules.SelectMany(_ => _.Values).Min();
-                    _hbObj.ScheduleTypeLimit.LowerLimit = min;
-                    return min;
+                    // Do not change schedule type limit, NEVER! ScheduleTypeLimits should only be readable
+                    //_hbObj.ScheduleTypeLimit.LowerLimit = min;
+                    lowValue = min;
                 }
 
-            } 
-            set => Set(() => ScheduleTypeLimit.LowerLimit = value, nameof(LowerLimit));
+
+                //Only for temperature -273.15, reset to 0
+                if (ScheduleTypeLimit.UnitType == ScheduleUnitType.Temperature && lowValue == -273.15)
+                {
+                    lowValue = 0;
+                }
+
+                _lowerLimit = lowValue;
+                return lowValue;
+
+            }
+            set => Set(() => _lowerLimit = value, nameof(LowerLimit));
         }
+
+        private double _upperLimit = 999;
         public double UpperLimit
         {
             get
             {
-                if (ScheduleTypeLimit.UpperLimit.Obj is double low)
+                if (_upperLimit != 999)
+                    return _upperLimit;
+
+                // Find the lower value
+                var upperLimit = 0.0;
+                if (ScheduleTypeLimit.UpperLimit.Obj is double v)
                 {
-                    return low;
+                    upperLimit = v;
                 }
                 else
                 {
                     // no limit
                     var max = DaySchedules.SelectMany(_ => _.Values).Max();
-                    _hbObj.ScheduleTypeLimit.UpperLimit = max;
-                    return max;
+                    // Do not change schedule type limit, NEVER! ScheduleTypeLimits should only be readable
+                    //_hbObj.ScheduleTypeLimit.UpperLimit = max;
+                    upperLimit =  max;
                 }
-             
+
+                _upperLimit = upperLimit;
+                return upperLimit;
 
             }
-            set => Set(() => ScheduleTypeLimit.UpperLimit = value, nameof(UpperLimit));
+            set => Set(() => _upperLimit = value, nameof(UpperLimit));
         }
        
 

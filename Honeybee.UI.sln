@@ -25,7 +25,6 @@ Global
 		{DFC2C235-FDC0-482B-B9C7-B22E97AC927F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DFC2C235-FDC0-482B-B9C7-B22E97AC927F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DFC2C235-FDC0-482B-B9C7-B22E97AC927F}.Release_Rhino|Any CPU.ActiveCfg = Release|Any CPU
-		{DFC2C235-FDC0-482B-B9C7-B22E97AC927F}.Release_Rhino|Any CPU.Build.0 = Release|Any CPU
 		{DFC2C235-FDC0-482B-B9C7-B22E97AC927F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DFC2C235-FDC0-482B-B9C7-B22E97AC927F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
