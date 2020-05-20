@@ -21,11 +21,11 @@ namespace Honeybee.UI
                 //_hbObj = HB.ModelEnergyProperties.Default.Materials.First(_ => _.Obj is HB.EnergyWindowMaterialGas).Obj as HB.EnergyWindowMaterialGas;
                 _hbObj = material;
 
-                Padding = new Padding(5);
+                Padding = new Padding(10);
                 Resizable = true;
                 Title = "Material - Honeybee";
                 WindowStyle = WindowStyle.Default;
-                MinimumSize = new Size(650, 650);
+                MinimumSize = new Size(450, 250);
                 this.Icon = DialogHelper.HoneybeeIcon;
 
                 var OkButton = new Button { Text = "OK" };
@@ -282,6 +282,7 @@ namespace Honeybee.UI
                 //split.Panel2 = rightGroup;
 
                 var layout = new DynamicLayout();
+                layout.DefaultPadding = new Padding(5);
                 layout.AddRow(leftLayout);
                 layout.AddSeparateRow(null, OkButton, AbortButton, null);
                 layout.AddRow(null);
