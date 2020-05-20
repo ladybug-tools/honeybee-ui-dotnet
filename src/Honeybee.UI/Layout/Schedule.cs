@@ -147,10 +147,16 @@ namespace Honeybee.UI
             //_vmSelectedDay.hbObj.DisplayName = _vmSelectedDay.hbObj.DisplayName ?? _vmSelectedDay.hbObj.Identifier;
             dayName_Tb.TextBinding.Bind(_vmSelectedDay, c => c.DisplayName);
 
-            var lowerLimit_TB = new NumericStepper() { };
-            lowerLimit_TB.ValueBinding.Bind(_vm, c => c.LowerLimit);
-            var higherLimit_TB = new NumericStepper() { };
-            higherLimit_TB.ValueBinding.Bind(_vm, c => c.UpperLimit);
+            
+            var lowerLimit_TB = new MaskedTextBox() { };
+            var lowNumMask = new NumericMaskedTextProvider() { AllowDecimal = true, AllowSign = true };
+            lowerLimit_TB.Provider = lowNumMask;
+            lowerLimit_TB.TextBinding.Bind(() => _vm.LowerLimit.ToString(), v => _vm.LowerLimit = double.Parse(v));
+
+            var higherLimit_TB = new MaskedTextBox() { };
+            var highNumMask = new NumericMaskedTextProvider() { AllowDecimal = true, AllowSign = true };
+            higherLimit_TB.Provider = highNumMask;
+            higherLimit_TB.TextBinding.Bind(() => _vm.UpperLimit.ToString(), v => _vm.UpperLimit = double.Parse(v));
 
             //var label = new Label() { Text = "Mouse over lines" };
             var mouseHoverValue_TB = new NumericMaskedTextStepper<double>() { Height = 20, Font= Fonts.Sans(8) };
@@ -498,13 +504,13 @@ namespace Honeybee.UI
 
             };
 
-            lowerLimit_TB.ValueChanged += (s, e) => 
+            lowerLimit_TB.TextChanged += (s, e) => 
             { 
                 //this._selectedScheduleTypeLimits.LowerLimit = lowerLimit_TB.Value;
                 _scheduleDaydrawable.Update(canvas);
             };
           
-            higherLimit_TB.ValueChanged += (s, e) => 
+            higherLimit_TB.TextChanged += (s, e) => 
             { 
                 //_vm.ScheduleTypeLimit.UpperLimit = higherLimit_TB.Value;
                 _scheduleDaydrawable.Update(canvas);

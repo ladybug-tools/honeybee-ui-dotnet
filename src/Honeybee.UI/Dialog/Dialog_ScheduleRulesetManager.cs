@@ -14,6 +14,7 @@ namespace Honeybee.UI
         private ScheduleRuleset AbridgedToReal (ScheduleRulesetAbridged obj)
         {
             var typeLimit = _typeLimits.First(_ => _.Identifier == obj.ScheduleTypeLimit);
+            
             var realObj = new ScheduleRuleset(obj.Identifier, obj.DaySchedules, obj.DefaultDaySchedule, obj.DisplayName,
                obj.ScheduleRules, obj.HolidaySchedule, obj.SummerDesigndaySchedule, obj.WinterDesigndaySchedule, typeLimit);
 
@@ -21,15 +22,16 @@ namespace Honeybee.UI
         }
         private ScheduleRulesetAbridged ToAbridged(ScheduleRuleset obj)
         {
-            var ifTypeLimitExist = _typeLimits.Any(_ => _.Equals(obj.ScheduleTypeLimit));
-            if (!ifTypeLimitExist)
-            {
-                var typeLimit = ScheduleTypeLimit.FromJson(obj.ScheduleTypeLimit.ToJson());
-                var id = Guid.NewGuid().ToString();
-                typeLimit.Identifier = id;
-                typeLimit.DisplayName = typeLimit.DisplayName ?? $"Schedule Type Limit{id.Substring(0, 5)}";
-                _typeLimits.Add(typeLimit);
-            }
+            //var ifTypeLimitExist = _typeLimits.Any(_ => _.ToJson() == obj.ScheduleTypeLimit.ToJson());
+            //var typeLimit = obj.ScheduleTypeLimit;
+            //if (!ifTypeLimitExist)
+            //{
+            //    typeLimit = ScheduleTypeLimit.FromJson(obj.ScheduleTypeLimit.ToJson());
+            //    var id = Guid.NewGuid().ToString();
+            //    typeLimit.Identifier = id;
+            //    typeLimit.DisplayName = typeLimit.DisplayName ?? $"TypeLimit {id.Substring(0, 5)} [{typeLimit.LowerLimit},{typeLimit.UpperLimit}]";
+            //    _typeLimits.Add(typeLimit);
+            //}
             var abridged = new ScheduleRulesetAbridged(obj.Identifier, obj.DaySchedules, obj.DefaultDaySchedule, obj.DisplayName,
                obj.ScheduleRules, obj.HolidaySchedule, obj.SummerDesigndaySchedule, obj.WinterDesigndaySchedule, obj.ScheduleTypeLimit.Identifier);
 
