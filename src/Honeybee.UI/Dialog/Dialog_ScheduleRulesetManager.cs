@@ -76,21 +76,22 @@ namespace Honeybee.UI
                     var dayId = Guid.NewGuid().ToString();
                     var dayName = $"New Schedule Day {dayId.Substring(0, 5)}";
                     var newDay = new ScheduleDay(
-                        dayId, 
+                        dayId,
                         new List<double> { 0.3 },
-                        dayName, 
+                        dayName,
                         new List<List<int>>() { new List<int> { 0, 0 } }
                         );
 
                     var id = Guid.NewGuid().ToString();
-                    var newPType = new ScheduleRuleset(
-                        id, 
-                        new List<ScheduleDay> { newDay},
-                        dayName,
+                    var newSch = new ScheduleRuleset(
+                        id,
+                        new List<ScheduleDay> { newDay },
+                        dayId,
                         $"New Schedule Ruleset {id.Substring(0, 5)}"
                         );
-
-                    var dialog = new Honeybee.UI.Dialog_Schedule(newPType);
+                    //TODO: needs to create type limit library.
+                    newSch.ScheduleTypeLimit = new ScheduleTypeLimit("Fractional", "", 0, 1);
+                    var dialog = new Honeybee.UI.Dialog_Schedule(newSch);
                     var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
                     {
