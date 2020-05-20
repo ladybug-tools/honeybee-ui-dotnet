@@ -526,7 +526,11 @@ namespace Honeybee.UI
             //var panel = new DynamicLayout();
             var inputLabel = new Label() { Text = inputName, Width = 150 };
             // user input integer
-            var num_NS = new NumericMaskedTextBox<int>();
+            var num_NS = new MaskedTextBox<int>();
+            num_NS.ShowPlaceholderWhenEmpty = true;
+            num_NS.PlaceholderText = "0";
+            num_NS.Provider = new NumericMaskedTextProvider<int>() { AllowDecimal = false, AllowSign = true };
+
             num_NS.Width = _inputControlWidth;
             num_NS.Height = 25;
             num_NS.ValueBinding.BindDataContext(propertyExpression);
@@ -544,7 +548,10 @@ namespace Honeybee.UI
             //var panel = new DynamicLayout();
             var inputLabel = new Label() { Text = inputName, Width = 150 };
             // user input number
-            var num_NS = new NumericMaskedTextBox<double>();
+            var num_NS = new MaskedTextBox<double>();
+            num_NS.ShowPlaceholderWhenEmpty = true;
+            num_NS.PlaceholderText = "0";
+            num_NS.Provider = new NumericMaskedTextProvider<double>() { AllowDecimal = true, AllowSign = true };
             num_NS.Width = _inputControlWidth;
             num_NS.Height = 25;
             num_NS.ValueBinding.BindDataContext(propertyExpression);
