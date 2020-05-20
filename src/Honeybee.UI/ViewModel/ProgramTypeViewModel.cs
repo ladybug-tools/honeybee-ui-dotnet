@@ -39,7 +39,7 @@ namespace Honeybee.UI
         }
         public string PPL_DisplayName
         {
-            get => People.DisplayName;
+            get => People.DisplayName ?? People.Identifier;
             set => Set(() => _hbObj.People.DisplayName = value, nameof(PPL_DisplayName));
         }
 
@@ -116,7 +116,7 @@ namespace Honeybee.UI
 
         public string LPD_DisplayName
         {
-            get => Lighting.DisplayName;
+            get => Lighting.DisplayName ?? Lighting.Identifier;
             set => Set(() => _hbObj.Lighting.DisplayName = value, nameof(LPD_DisplayName));
         }
 
@@ -168,7 +168,7 @@ namespace Honeybee.UI
         }
         public string EQP_DisplayName
         {
-            get => ElectricEquipment.DisplayName;
+            get => ElectricEquipment.DisplayName ?? ElectricEquipment.Identifier;
             set => Set(() => _hbObj.ElectricEquipment.DisplayName = value, nameof(EQP_DisplayName));
         }
         public double EQP_WattsPerArea
@@ -219,7 +219,7 @@ namespace Honeybee.UI
         }
         public string GAS_DisplayName
         {
-            get => GasEquipment.DisplayName;
+            get => GasEquipment.DisplayName ?? GasEquipment.Identifier;
             set => Set(() => _hbObj.GasEquipment.DisplayName = value, nameof(GAS_DisplayName));
         }
         public double GAS_WattsPerArea
@@ -270,7 +270,7 @@ namespace Honeybee.UI
         }
         public string INF_DisplayName
         {
-            get => Infiltration.DisplayName;
+            get => Infiltration.DisplayName ?? Infiltration.Identifier;
             set => Set(() => _hbObj.Infiltration.DisplayName = value, nameof(INF_DisplayName));
         }
         public double INF_FlowPerExteriorArea
@@ -321,7 +321,7 @@ namespace Honeybee.UI
         }
         public string VNT_DisplayName
         {
-            get => Ventilation.DisplayName;
+            get => Ventilation.DisplayName ?? Ventilation.Identifier;
             set => Set(() => _hbObj.Ventilation.DisplayName = value, nameof(VNT_DisplayName));
         }
         public double VNT_AirChangesPerHour
@@ -372,7 +372,7 @@ namespace Honeybee.UI
         }
         public string SPT_DisplayName
         {
-            get => Setpoint.DisplayName;
+            get => Setpoint.DisplayName ?? Setpoint.Identifier;
             set => Set(() => _hbObj.Setpoint.DisplayName = value, nameof(SPT_DisplayName));
         }
         public string SPT_CoolingSchedule
