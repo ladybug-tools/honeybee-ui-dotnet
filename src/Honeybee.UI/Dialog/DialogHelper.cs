@@ -70,7 +70,7 @@ namespace Honeybee.UI
 
             dp.SelectedIndexBinding.Bind(
                 () => items.FindIndex(_ => _.Identifier == currentObjName) + 1,
-                (int i) => setAction(i == 0 ? default : items[i - 1])
+                (int i) => setAction(i <= 0 ? default : items[i - 1])
                 );
 
             return dp;

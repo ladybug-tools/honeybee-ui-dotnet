@@ -25,10 +25,11 @@ namespace Honeybee.UI.ConsoleApp
                 Title = "Eto.Forms";
 
                 var panel = new DynamicLayout();
-                var btn = new Button() { Text="Energy Property"};
+                var btn = new Button() { Text="Room Energy Property"};
                 btn.Click += (s, e) =>
                 {
                     var energyProp = new HoneybeeSchema.RoomEnergyPropertiesAbridged();
+                    //var dialog = new Honeybee.UI.Dialog_RoomEnergyProperty(energyProp, HB.ModelEnergyProperties.Default);
                     var dialog = new Honeybee.UI.Dialog_RoomEnergyProperty(energyProp);
                     var dialog_rc = dialog.ShowModal();
                     if (dialog_rc != null)
