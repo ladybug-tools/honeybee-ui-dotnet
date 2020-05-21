@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using HB = HoneybeeSchema;
 using System;
-using EnergyLibrary = HoneybeeSchema.Helper.EnergyLibrary;
 using HoneybeeSchema;
 using System.Text.RegularExpressions;
 
@@ -82,6 +81,25 @@ namespace Honeybee.UI
                 //HB.OpaqueConstructionAbridged selectedConstr = null;
                 var allItems = constrs.Select(_ => new ListItem() { Text = _.DisplayName ?? _.Identifier, Key = _.DisplayName ?? _.Identifier, Tag = _ });
                 constrLBox.Items.AddRange(allItems);
+                constrLBox.MouseMove += (sender, e) =>
+                {
+                    var dragableArea = constrLBox.Bounds;
+                    dragableArea.Width -= 20;
+                    dragableArea.Height -= 20;
+                    var iscontained = e.Location.Y < dragableArea.Height && e.Location.X < dragableArea.Width;
+                    //name.Text = $"{dragableArea.Width}x{dragableArea.Height}, {new Point(e.Location).X}:{new Point(e.Location).Y}, {dragableArea.Contains(new Point(e.Location))}";
+                    if (!iscontained)
+                        return;
+
+                    if (e.Buttons == MouseButtons.Primary && constrLBox.SelectedIndex != -1)
+                    {
+                        var selected = ((constrLBox.Items[constrLBox.SelectedIndex] as ListItem).Tag as HB.HoneybeeObject).ToJson();
+                        var data = new DataObject();
+                        data.SetObject(selected, "HBObj");
+                        constrLBox.DoDragDrop(data, DragEffects.Move);
+                        e.Handled = true;
+                    }
+                };
                 constrLBox.SelectedKeyChanged += (s, e) => 
                 {
                     if (constrLBox.SelectedIndex == -1)
@@ -302,6 +320,78 @@ namespace Honeybee.UI
 
         }
 
+
+        Control GenDropInArea(string currentValue, Action<HB.Energy.IConstruction> setAction, Type setType)
+        {
+            //var width = 300;
+            //var height = 60;
+
+            var layerPanel = new PixelLayout();
+            var dropInValue = new TextBox() { PlaceholderText = "Drag from library" };
+            dropInValue.Width = 300;
+            dropInValue.Enabled = false;
+            dropInValue.Text = currentValue;
+
+          
+            var backGround = Color.FromArgb(230, 230, 230);
+            //dropInValue.BackgroundColor = backGround;
+
+            var dropIn = new Drawable();
+            dropIn.AllowDrop = true;
+            dropIn.Width = dropInValue.Width;
+            dropIn.Height = 25;
+            dropIn.BackgroundColor = Colors.Transparent;
+
+            var deleteBtn = new Button();
+            deleteBtn.Text = "✕";
+            deleteBtn.Width = 24;
+            deleteBtn.Height = 24;
+            deleteBtn.Visible = !string.IsNullOrEmpty(currentValue);
+            deleteBtn.Click += (s, e) => 
+            {
+                dropInValue.Text = null;
+                deleteBtn.Visible = false;
+                setAction(null);
+                
+            };
+
+            dropIn.DragLeave += (sender, e) =>
+            {
+                dropInValue.BackgroundColor = Colors.White;
+            };
+            dropIn.DragOver += (sender, e) =>
+            {
+                e.Effects = DragEffects.Move;
+                dropInValue.BackgroundColor = Colors.Yellow;
+            };
+            dropIn.DragDrop += (sender, e) =>
+            {
+                // Get drop-in object
+                var value = e.Data.GetObject("HBObj");
+                var newValue = setType.GetMethod("FromJson").Invoke(null, new object[] { value }) as HB.Energy.IConstruction;
+
+
+                if (newValue == null)
+                {
+                    MessageBox.Show(this, $"{setType.Name.Replace("Abridged", "")} is required!");
+                    return;
+                }
+
+
+                deleteBtn.Visible = true;
+                dropInValue.Text = newValue.DisplayName?? newValue.Identifier;
+                setAction(newValue);
+
+            };
+
+       
+            layerPanel.Add(dropInValue, 0, 0);
+            layerPanel.Add(dropIn, 0, 0);
+            layerPanel.Add(deleteBtn, dropInValue.Width-24, 0);
+            return layerPanel;
+        }
+
+
         DynamicLayout GenTextBoxWithBtn(string currentValue, Func<HB.Energy.IConstruction> getSelected, Action<HB.Energy.IConstruction> setAction, Type setType)
         {
             var panel = new DynamicLayout();
@@ -357,8 +447,8 @@ namespace Honeybee.UI
 
             foreach (var item in setActions)
             {
-                var inWall = GenTextBoxWithBtn(item.currentValue, getSelected, item.setAction, item.setType);
-                wallLayout.AddRow(new Label() { Text = item.label, Width = 75 }, inWall, null);
+                var inWall = GenDropInArea(item.currentValue, item.setAction, item.setType);
+                wallLayout.AddRow(new Label() { Text = item.label, Width = 75 }, inWall);
             }
            
             //var exWall = GenTextBoxWithBtn(getSelected, (cons) => c.ExteriorConstruction = cons.Identifier);
@@ -372,62 +462,6 @@ namespace Honeybee.UI
         }
 
         
-
-        private GroupBox GenPanelFloorSet()
-        {
-            //Wall Construction Set
-            var wallGroup = new GroupBox() { Text = "Floor Construction Set" };
-            var wallLayout = new DynamicLayout() { Spacing = new Size(3, 3), Padding = new Padding(5) };
-            var inWall = new TextBox() { PlaceholderText = "By Global" };
-            inWall.Width = 300;
-            var inWallBtn = new Button() { Text = "+", Width = 30 };
-            inWallBtn.Click += (sender, e) =>
-            {
-                var txt = inWallBtn.Text;
-                inWall.Text = txt == "+" ? "A New Construction" : null;
-                inWallBtn.Text = txt == "+" ? "-" : "+";
-            };
-
-            var exWall = new TextBox() { PlaceholderText = "By Global" };
-            var exWallBtn = new Button() { Text = "+", Width = 30 };
-            exWallBtn.Click += (sender, e) =>
-            {
-                var txt = exWallBtn.Text;
-                exWall.Text = txt == "+" ? "A New Construction" : null;
-                exWallBtn.Text = txt == "+" ? "-" : "+";
-            };
-
-            var gWall = new TextBox() { PlaceholderText = "By Global" };
-            var gWallBtn = new Button() { Text = "+", Width = 30 };
-            gWallBtn.Click += (sender, e) =>
-            {
-                var txt = gWallBtn.Text;
-                gWall.Text = txt == "+" ? "A New Construction" : null;
-                gWallBtn.Text = txt == "+" ? "-" : "+";
-            };
-
-            wallLayout.AddRow(new Label() { Text = "Interior", Width = 50 }, inWall, inWallBtn, null);
-            wallLayout.AddRow(new Label() { Text = "Exterior", Width = 50 }, exWall, exWallBtn, null);
-            wallLayout.AddRow(new Label() { Text = "Ground", Width = 50 }, gWall, gWallBtn, null);
-            wallGroup.Content = wallLayout;
-            return wallGroup;
-
-        }
-
-        //private GroupBox GenPanelAirBoundary(string groupName, ListBox tbox)
-        //{
-        //    //Wall Construction Set
-        //    var wallGroup = new GroupBox() { Text = groupName };
-        //    var wallLayout = new DynamicLayout() { Spacing = new Size(3, 3), Padding = new Padding(5) };
-        //    var texBox = GenTextBoxWithBtn(tbox);
-
-        //    wallLayout.AddRow(new Label() { Text = "AirBoundary", Width = 75 }, texBox, null);
-        //    wallGroup.Content = wallLayout;
-        //    return wallGroup;
-
-        //}
-
-
 
     }
 }
