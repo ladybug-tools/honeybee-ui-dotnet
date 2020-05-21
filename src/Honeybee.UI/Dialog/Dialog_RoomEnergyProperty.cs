@@ -16,8 +16,9 @@ namespace Honeybee.UI
             try
             {
                 var EnergyProp = roomEnergyProperties ?? new HB.RoomEnergyPropertiesAbridged();
+                //var modelProp = modelEnergyProperties ?? HB.ModelEnergyProperties.Default;
 
-                Padding = new Padding(5);
+                Padding = new Padding(15);
                 Resizable = true;
                 Title = "Room Energy Properties - Honeybee";
                 WindowStyle = WindowStyle.Default;
@@ -25,17 +26,102 @@ namespace Honeybee.UI
                 this.Icon = DialogHelper.HoneybeeIcon;
 
                 //Get constructions
+                var cSets = EnergyLibrary.DefaultConstructionSets.ToList();
+                //if (modelProp.ConstructionSets != null)
+                //{
+                //    var inModelObjs = modelProp.ConstructionSets.Where(_ => _.Obj is HB.ConstructionSetAbridged).Select(_ => _.Obj as HB.ConstructionSetAbridged);
+                //    cSets = inModelObjs.ToList();
+                //}
                 var constructionSetDP = DialogHelper.MakeDropDown(EnergyProp.ConstructionSet, (v) => EnergyProp.ConstructionSet = v?.Identifier,
-                    EnergyLibrary.DefaultConstructionSets, "By Global Model ConstructionSet");
+                    cSets, "By Global Model ConstructionSet");
 
+                //var cSetBtn = new Button();
+                //cSetBtn.Text = "+";
+                //cSetBtn.Width = 20;
+                //cSetBtn.Height = 20;
+                //cSetBtn.Click += (s, e) => 
+                //{
+                   
+                //    var constrcutionSetsInModel = modelProp.ConstructionSets
+                //    .Where(_ => _.Obj is HB.ConstructionSetAbridged)
+                //    .Select(_ => _.Obj as HB.Energy.IBuildingConstructionset)
+                //    .ToList();
+
+                //    var globalCSet = modelProp.GlobalConstructionSet;
+                //    var dialog = new Dialog_ConstructionSetManager(constrcutionSetsInModel, (id) => id == globalCSet);
+                //    var dialog_rc = dialog.ShowModal(this);
+                //    if (dialog_rc != null)
+                //    {
+                //        var newCSets = dialog_rc.OfType<HB.ConstructionSetAbridged>();
+                //        modelProp.ConstructionSets.Clear();
+
+                //        var dpItems = constructionSetDP.Items.Take(1).ToList();
+                //        constructionSetDP.Items.Clear();
+                //        foreach (var item in newCSets)
+                //        {
+                //            modelProp.ConstructionSets.Add(item);
+                //            var name = item.DisplayName ?? item.Identifier;
+                //            dpItems.Add(new ListItem() { Text = name, Key = name });
+                //        }
+                //        constructionSetDP.Items.AddRange(dpItems);
+                //        constructionSetDP.SelectedIndex = 0;
+
+                //    }
+                //};
 
                 //Get programs
+                var pTypes = EnergyLibrary.DefaultProgramTypes.ToList();
+                //if (modelProp.ProgramTypes != null)
+                //{
+                //    var inModelObjs = modelProp.ProgramTypes.Where(_ => _.Obj is HB.ProgramTypeAbridged).Select(_ => _.Obj as HB.ProgramTypeAbridged);
+                //    pTypes = inModelObjs.ToList();
+                //}
                 var programTypesDP = DialogHelper.MakeDropDown(EnergyProp.ProgramType, (v) => EnergyProp.ProgramType = v?.Identifier,
-                   EnergyLibrary.DefaultProgramTypes, "Unoccupied, NoLoads");
+                   pTypes, "Unoccupied, NoLoads");
+
+                //var pTypeBtn = new Button();
+                //pTypeBtn.Text = "+";
+                //pTypeBtn.Width = 20;
+                //pTypeBtn.Height = 20;
+                //pTypeBtn.Click += (s, e) =>
+                //{
+
+                //    var pTypeInModel = modelProp.ProgramTypes
+                //   .Where(_ => _.Obj is HB.ProgramTypeAbridged)
+                //   .Select(_ => _.Obj as HB.ProgramTypeAbridged)
+                //   .ToList();
+
+
+                //    var dialog = new Dialog_ProgramTypeManager(pTypeInModel);
+                //    var dialog_rc = dialog.ShowModal(this);
+                //    if (dialog_rc != null)
+                //    {
+                //        modelProp.ProgramTypes.Clear();
+
+                //        var newPTypes = dialog_rc.OfType<HB.ProgramTypeAbridged>();
+                //        var dpItems = programTypesDP.Items.Take(1).ToList();
+                //        programTypesDP.Items.Clear();
+                //        foreach (var item in newPTypes)
+                //        {
+                //            modelProp.ProgramTypes.Add(item);
+                //            var name = item.DisplayName ?? item.Identifier;
+                //            dpItems.Add(new ListItem() { Text = name, Key = name });
+                //        }
+                //        programTypesDP.Items.AddRange(dpItems);
+                //        programTypesDP.SelectedIndex = 0;
+                //    }
+                //};
+
 
                 //Get HVACs
+                var hvacs = EnergyLibrary.DefaultHVACs.ToList();
+                //if (modelProp.Hvacs != null)
+                //{
+                //    var inModelObjs = modelProp.Hvacs;
+                //    hvacs.AddRange(inModelObjs);
+                //}
                 var hvacDP = DialogHelper.MakeDropDown(EnergyProp.Hvac, (v) => EnergyProp.Hvac = v?.Identifier,
-                   EnergyLibrary.DefaultHVACs, "Unconditioned");
+                   hvacs, "Unconditioned");
 
 
                 var defaultByProgramType = "By Room Program Type";
@@ -83,28 +169,35 @@ namespace Honeybee.UI
                 };
 
 
+                var layout = new DynamicLayout();
+                //layout.DefaultPadding = new Padding(10);
+                layout.DefaultSpacing = new Size(5, 5);
+
+                layout.AddSeparateRow("Room ConstructionSet:");
+                layout.AddSeparateRow(constructionSetDP);
+                layout.AddSeparateRow("Room Program Type:");
+                layout.AddSeparateRow(programTypesDP);
+                layout.AddSeparateRow("Room HVAC:");
+                layout.AddSeparateRow(hvacDP);
+                layout.AddSeparateRow("");
+                layout.AddSeparateRow("People [ppl/m2]:");
+                layout.AddSeparateRow(peopleDP);
+                layout.AddSeparateRow("Lighting [W/m2]:");
+                layout.AddSeparateRow(lightingDP);
+                layout.AddSeparateRow("Electric Equipment [W/m2]:");
+                layout.AddSeparateRow(elecEqpDP);
+                layout.AddSeparateRow("Gas Equipment [W/m2]:");
+                layout.AddSeparateRow(gasEqpDP);
+                layout.AddSeparateRow("Infiltration [m3/s per m2 facade @4Pa]:");
+                layout.AddSeparateRow(infilDP);
+                layout.AddSeparateRow("Ventilation [m3/s.m2]:");
+                layout.AddSeparateRow(ventDP);
+                layout.AddSeparateRow("Setpoint [C]:");
+                layout.AddSeparateRow(setPtDP);
+                layout.AddSeparateRow(buttons);
+                layout.AddSeparateRow(null);
                 //Create layout
-                Content = new TableLayout()
-                {
-                    Padding = new Padding(10),
-                    Spacing = new Size(5, 5),
-                    Rows =
-                    {
-                    new Label() { Text = "Room ConstructionSet:" }, constructionSetDP,
-                        new Label() { Text = "Room Program Type:" }, programTypesDP,
-                        new Label() { Text = "Room HVAC:" }, hvacDP,
-                        new Label() { Text = " " },
-                        new Label() { Text = "People [ppl/m2]:", }, peopleDP,
-                        new Label() { Text = "Lighting [W/m2]:" }, lightingDP,
-                        new Label() { Text = "Electric Equipment [W/m2]:" }, elecEqpDP,
-                        new Label() { Text = "Gas Equipment [W/m2]:" }, gasEqpDP,
-                        new Label() { Text = "Infiltration [m3/s per m2 facade @4Pa]:" }, infilDP,
-                        new Label() { Text = "Ventilation [m3/s.m2]:" }, ventDP,
-                        new Label() { Text = "Setpoint [C]:" }, setPtDP,
-                        new TableRow(buttons),
-                        null
-                    }
-                };
+                Content = layout;
             }
             catch (Exception e)
             {
