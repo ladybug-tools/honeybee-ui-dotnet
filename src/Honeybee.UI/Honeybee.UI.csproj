@@ -69,7 +69,7 @@
   </Choose>
   <ItemGroup>
     <PackageReference Include="HoneybeeSchema">
-      <Version>1.31.0.34201</Version>
+      <Version>1.31.0.41538</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>12.0.1</Version>
