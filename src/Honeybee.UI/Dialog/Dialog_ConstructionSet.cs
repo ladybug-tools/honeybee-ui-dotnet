@@ -80,7 +80,7 @@ namespace Honeybee.UI
                 constructionLayersLBox.Items.Add(new ListItem() { Text = "Construction Details" });
 
                 //HB.OpaqueConstructionAbridged selectedConstr = null;
-                var allItems = constrs.Select(_ => new ListItem() { Text = _.Identifier, Key = _.Identifier, Tag = _ });
+                var allItems = constrs.Select(_ => new ListItem() { Text = _.DisplayName ?? _.Identifier, Key = _.DisplayName ?? _.Identifier, Tag = _ });
                 constrLBox.Items.AddRange(allItems);
                 constrLBox.SelectedKeyChanged += (s, e) => 
                 {
