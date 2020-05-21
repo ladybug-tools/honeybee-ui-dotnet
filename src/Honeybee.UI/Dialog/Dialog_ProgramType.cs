@@ -25,6 +25,47 @@ namespace Honeybee.UI
         private static Panel _ventilationGroup;
         private static Panel _setpoinGroup;
 
+        private static IEnumerable<HB.Energy.ILoad> _loads;
+
+        public static IEnumerable<HB.Energy.ILoad> Loads
+        {
+            get
+            {
+                if (_loads == null)
+                {
+                    var libObjs = new List<HB.Energy.ILoad>();
+                    libObjs.AddRange(EnergyLibrary.DefaultPeopleLoads);
+                    libObjs.AddRange(EnergyLibrary.DefaultLightingLoads);
+                    libObjs.AddRange(EnergyLibrary.DefaultElectricEquipmentLoads);
+                    libObjs.AddRange(EnergyLibrary.GasEquipmentLoads);
+                    libObjs.AddRange(EnergyLibrary.DefaultInfiltrationLoads);
+                    libObjs.AddRange(EnergyLibrary.DefaultVentilationLoads);
+                    libObjs.AddRange(EnergyLibrary.DefaultSetpoints);
+                    _loads = libObjs;
+                }
+            
+
+                return _loads;
+            }
+        }
+
+        private static IEnumerable<HB.IDdEnergyBaseModel> _schedules;
+
+        public static IEnumerable<HB.IDdEnergyBaseModel> Schedules
+        {
+            get
+            {
+                var libObjs = HB.Helper.EnergyLibrary.StandardsSchedules.ToList<HB.IDdEnergyBaseModel>();
+                var inModelObjs = HB.Helper.EnergyLibrary.InModelEnergyProperties.Schedules
+                    .Select(_ => _.Obj as HB.IDdEnergyBaseModel);
+
+                libObjs.AddRange(inModelObjs);
+                _schedules = libObjs;
+
+                return _schedules;
+            }
+        }
+
         public Dialog_ProgramType(HB.ProgramTypeAbridged ProgramType)
         {
             try
@@ -302,17 +343,9 @@ namespace Honeybee.UI
 
         private static (List<Control> allControls, GridView libraryLBox) GenLibraryPanel()
         {
-            var hbLoads = new List<HB.Energy.IIDdEnergyBaseModel>();
-            hbLoads.AddRange(EnergyLibrary.DefaultPeopleLoads);
-            hbLoads.AddRange(EnergyLibrary.DefaultLightingLoads);
-            hbLoads.AddRange(EnergyLibrary.DefaultElectricEquipmentLoads);
-            hbLoads.AddRange(EnergyLibrary.GasEquipmentLoads);
-            hbLoads.AddRange(EnergyLibrary.DefaultInfiltrationLoads);
-            hbLoads.AddRange(EnergyLibrary.DefaultVentilationLoads);
-            hbLoads.AddRange(EnergyLibrary.DefaultSetpoints);
-            hbLoads.Add(new PeopleAbridged("5662244", 1.555, "AlwayOn", "Typical setting", null, 0.6, 0.95));
+            //IEnumerable<HB.Energy.IIDdEnergyBaseModel> hbLoads = Loads;
 
-            var itemsToShow = hbLoads;
+            IEnumerable<HB.Energy.IIDdEnergyBaseModel> itemsToShow = Schedules;
 
             // Library List
             var library_GV = new GridView();
@@ -393,11 +426,11 @@ namespace Honeybee.UI
                 if (selectedType == "Schedule")
                 {
                     //itemsToShow.Clear();
-                    itemsToShow = EnergyLibrary.StandardsSchedules.ToList<HB.Energy.IIDdEnergyBaseModel>();
+                    itemsToShow = Schedules;
                 }
                 else
                 {
-                    itemsToShow = hbLoads;
+                    itemsToShow = Loads;
                 }
 
                 searchTBox.Text = null;

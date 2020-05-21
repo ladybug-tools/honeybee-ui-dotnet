@@ -7,7 +7,7 @@ using System.Drawing.Drawing2D;
 
 namespace Honeybee.UI
 {
-    public class Panel_Model: DynamicLayout
+    public class Panel_ModelResources: DynamicLayout
     {
 
         //private static Panel_Model _instance;
@@ -31,9 +31,12 @@ namespace Honeybee.UI
         private static HB.Model _model;
         //private static SimulationParameter _simulationParameter;
 
-        public Panel_Model(HB.Model model)
+        public Panel_ModelResources(HB.Model model)
         {
             _model = model;
+            // Sync to a temporary location for other places where has no access to model.
+            HB.Helper.EnergyLibrary.InModelEnergyProperties = _model.Properties.Energy;
+
             //_simulationParameter = simulationParameter ?? new SimulationParameter();
 
             //this.DefaultPadding = new Padding(10);
@@ -113,6 +116,9 @@ namespace Honeybee.UI
                 {
                     _model.Properties.Energy.Materials.Clear();
                     _model.AddMaterials(dialog_rc);
+
+                    // Sync to a temporary location for other places where has no access to model.
+                    HB.Helper.EnergyLibrary.InModelEnergyProperties = _model.Properties.Energy;
                 }
 
             };
@@ -134,6 +140,9 @@ namespace Honeybee.UI
                 {
                     _model.Properties.Energy.Constructions.Clear();
                     _model.AddConstructions(dialog_rc);
+
+                    // Sync to a temporary location for other places where has no access to model.
+                    HB.Helper.EnergyLibrary.InModelEnergyProperties = _model.Properties.Energy;
                 }
                
             };
@@ -155,6 +164,9 @@ namespace Honeybee.UI
                 {
                     _model.Properties.Energy.ConstructionSets.Clear();
                     _model.AddConstructionSets(dialog_rc);
+
+                    // Sync to a temporary location for other places where has no access to model.
+                    HB.Helper.EnergyLibrary.InModelEnergyProperties = _model.Properties.Energy;
                 }
                 //MessageBox.Show(this, "Working in progress");
             };
@@ -181,6 +193,9 @@ namespace Honeybee.UI
                     _model.AddSchedules(schs);
                     _model.Properties.Energy.ScheduleTypeLimits.Clear();
                     _model.AddScheduleTypeLimits(dialog_rc.scheduleTypeLimits);
+
+                    // Sync to a temporary location for other places where has no access to model.
+                    HB.Helper.EnergyLibrary.InModelEnergyProperties = _model.Properties.Energy;
                 }
                 //MessageBox.Show(this, "Working in progress");
             };
@@ -204,6 +219,9 @@ namespace Honeybee.UI
                 {
                     _model.Properties.Energy.ProgramTypes.Clear();
                     _model.AddProgramTypes(dialog_rc);
+
+                    // Sync to a temporary location for other places where has no access to model.
+                    HB.Helper.EnergyLibrary.InModelEnergyProperties = _model.Properties.Energy;
                 }
                 //MessageBox.Show(this, "Working in progress");
             };
