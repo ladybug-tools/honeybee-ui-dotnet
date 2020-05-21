@@ -17,8 +17,41 @@ namespace Honeybee.UI
     public class Dialog_ConstructionSet: Dialog<HB.ConstructionSetAbridged>
     {
 
-        //private HB.ConstructionSetAbridged _constructionSet { get; set; }
+        private static IEnumerable<HB.Energy.IConstruction> _opaqueConstructions;
 
+        public IEnumerable<HB.Energy.IConstruction> OpaqueConstructions
+        {
+            get
+            {
+                var libObjs = HB.Helper.EnergyLibrary.StandardsOpaqueConstructions.ToList();
+                var inModelObjs = HB.Helper.EnergyLibrary.InModelEnergyProperties.Constructions
+                    .Where(_ => _.Obj is HB.OpaqueConstructionAbridged)
+                    .Select(_ => _.Obj as HB.OpaqueConstructionAbridged);
+
+                libObjs.AddRange(inModelObjs);
+                _opaqueConstructions = libObjs;
+
+                return _opaqueConstructions;
+            }
+        }
+
+        private static IEnumerable<HB.Energy.IConstruction> _windowConstructions;
+
+        public IEnumerable<HB.Energy.IConstruction> WindowConstructions
+        {
+            get
+            {
+                var libObjs = HB.Helper.EnergyLibrary.StandardsWindowConstructions.ToList();
+                var inModelObjs = HB.Helper.EnergyLibrary.InModelEnergyProperties.Constructions
+                    .Where(_ => _.Obj is HB.WindowConstructionAbridged)
+                    .Select(_ => _.Obj as HB.WindowConstructionAbridged);
+
+                libObjs.AddRange(inModelObjs);
+                _windowConstructions = libObjs;
+
+                return _windowConstructions;
+            }
+        }
         public Dialog_ConstructionSet(HB.ConstructionSetAbridged constructionSet)
         {
             try
@@ -34,7 +67,7 @@ namespace Honeybee.UI
                 MinimumSize = new Size(450, 200);
                 this.Icon = DialogHelper.HoneybeeIcon;
 
-                IEnumerable<HB.Energy.IConstruction> constrs = EnergyLibrary.StandardsOpaqueConstructions;
+                IEnumerable<HB.Energy.IConstruction> constrs = OpaqueConstructions;
 
                 // Construction List
                 var constrLBox = new ListBox();
@@ -121,11 +154,11 @@ namespace Honeybee.UI
 
                     if (selectedType == "Window")
                     {
-                        constrs = EnergyLibrary.StandardsWindowConstructions;
+                        constrs = WindowConstructions;
                     }
                     else
                     {
-                        constrs = EnergyLibrary.StandardsOpaqueConstructions;
+                        constrs = OpaqueConstructions;
                     }
                     searchTBox.Text = null;
                     constrLBox.Items.Clear();

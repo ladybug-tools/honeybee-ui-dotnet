@@ -36,7 +36,7 @@ namespace Honeybee.UI
 
 
                 //Create layout
-                var panel = new Panel_Model(honeybeeObj);
+                var panel = new Panel_ModelResources(honeybeeObj);
                 //panel.ModelPropertyBtn.Click += (s, e) => ModelPropertyButtonClicked.Invoke(s, e);
                 //panel.RoomsBtn.Click += (s, e) => RoomsButtonClicked.Invoke(s, e);
                 //panel.RunSimulationBtn.Click += (s, e) => RunSimulationButtonClicked.Invoke(s, e);
