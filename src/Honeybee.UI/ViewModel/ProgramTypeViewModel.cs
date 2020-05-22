@@ -1,5 +1,6 @@
 ﻿using Eto.Forms;
 using HoneybeeSchema;
+using HoneybeeSchema.Energy;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,6 +12,22 @@ namespace Honeybee.UI
 
     public class ProgramTypeViewModel : ViewModelBase
     {
+        //private static IEnumerable<IDdEnergyBaseModel> _schedules;
+        //public static IEnumerable<IDdEnergyBaseModel> Schedules
+        //{
+        //    get
+        //    {
+        //        var libObjs = HoneybeeSchema.Helper.EnergyLibrary.StandardsSchedules.ToList<IDdEnergyBaseModel>();
+        //        var inModelObjs = HoneybeeSchema.Helper.EnergyLibrary.InModelEnergyProperties.Schedules
+        //            .Select(_ => _.Obj as IDdEnergyBaseModel);
+
+        //        libObjs.AddRange(inModelObjs);
+        //        _schedules = libObjs;
+
+        //        return _schedules;
+        //    }
+        //}
+
         private ProgramTypeAbridged _hbObj;
         public ProgramTypeAbridged hbObj
         {
@@ -53,11 +70,21 @@ namespace Honeybee.UI
             get => People.OccupancySchedule;
             set => Set(() => _hbObj.People.OccupancySchedule = value, nameof(PPL_OccupancySchedule));
         }
+        //public IDdEnergyBaseModel PPL_OccupancySchedule
+        //{
+        //    get => Schedules.First(_=>_.Identifier == People.OccupancySchedule);
+        //    set => Set(() => _hbObj.People.OccupancySchedule = value.Identifier, nameof(PPL_OccupancySchedule));
+        //}
         public string PPL_ActivitySchedule
         {
             get => People.ActivitySchedule;
             set => Set(() => _hbObj.People.ActivitySchedule = value, nameof(PPL_ActivitySchedule));
         }
+        //public IDdEnergyBaseModel PPL_ActivitySchedule
+        //{
+        //    get => Schedules.First(_ => _.Identifier == People.ActivitySchedule);
+        //    set => Set(() => _hbObj.People.ActivitySchedule = value.Identifier, nameof(PPL_ActivitySchedule));
+        //}
         public double PPL_RadiantFraction
         {
             get => People.RadiantFraction;

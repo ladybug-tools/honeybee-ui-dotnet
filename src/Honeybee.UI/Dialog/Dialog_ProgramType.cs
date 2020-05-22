@@ -86,18 +86,18 @@ namespace Honeybee.UI
                 var libControls = controls.allControls;
                 var libraryLBox = controls.libraryLBox;
 
-                Func<HB.Energy.IIDdEnergyBaseModel> getSelectedSche = () =>
-                {
-                    if (libraryLBox.SelectedItem == null)
-                    {
-                        MessageBox.Show(this, "Nothing is selected from library");
-                        return null;
-                    }
-                    return libraryLBox.SelectedItem as HB.Energy.IIDdEnergyBaseModel;
-                };
+                //Func<HB.Energy.IIDdEnergyBaseModel> getSelectedSche = () =>
+                //{
+                //    if (libraryLBox.SelectedItem == null)
+                //    {
+                //        MessageBox.Show(this, "Nothing is selected from library");
+                //        return null;
+                //    }
+                //    return libraryLBox.SelectedItem as HB.Energy.IIDdEnergyBaseModel;
+                //};
 
                 //Generate ProgramType Panel
-                var pTypePanel = GenProgramTypePanel(getSelectedSche);
+                var pTypePanel = GenProgramTypePanel();
 
                 DefaultButton = new Button { Text = "OK" };
                 DefaultButton.Click += (sender, e) => Close(_vm.hbObj);
@@ -120,59 +120,59 @@ namespace Honeybee.UI
 
                
 
-                // Add to program
-                var borrowBtn = new Button() { Text = "Add to program" };
-                borrowBtn.Click += (s, e) =>
-                {
-                    var selected = libraryLBox.SelectedItem;
-                    if (selected == null)
-                    {
-                        MessageBox.Show(this, "Nothing is selected from library");
-                        return;
-                    }
+                //// Add to program
+                //var borrowBtn = new Button() { Text = "Add to program" };
+                //borrowBtn.Click += (s, e) =>
+                //{
+                //    var selected = libraryLBox.SelectedItem;
+                //    if (selected == null)
+                //    {
+                //        MessageBox.Show(this, "Nothing is selected from library");
+                //        return;
+                //    }
                         
 
-                    if (selected is PeopleAbridged pp)
-                    {
-                        _vm.People = pp;
-                        _peopleGroup.Content.Visible = true;
-                    }
-                    else if (selected is LightingAbridged lt)
-                    {
-                        _vm.Lighting = lt;
-                        _lightingGroup.Content.Visible = true;
-                    }
-                    else if (selected is ElectricEquipmentAbridged eq)
-                    {
-                        _vm.ElectricEquipment = eq;
-                        _equipmentGroup.Content.Visible = true;
-                    }
-                    else if (selected is GasEquipmentAbridged gs)
-                    {
-                        _vm.GasEquipment = gs;
-                        _gasEqpGroup.Content.Visible = true;
-                    }
-                    else if (selected is InfiltrationAbridged nf)
-                    {
-                        _vm.Infiltration = nf;
-                        _infiltrationGroup.Content.Visible = true;
-                    }
-                    else if (selected is VentilationAbridged vn)
-                    {
-                        _vm.Ventilation = vn;
-                        _ventilationGroup.Content.Visible = true;
-                    }
-                    else if (selected is SetpointAbridged sp)
-                    {
-                        _vm.Setpoint = sp;
-                        _setpoinGroup.Content.Visible = true;
-                    }
-                    else
-                    {
-                        MessageBox.Show(this, $"{selected.GetType().Name.Replace("Abridged", "")} cannot be added to program type directly!");
-                    }
+                //    if (selected is PeopleAbridged pp)
+                //    {
+                //        _vm.People = pp;
+                //        _peopleGroup.Content.Visible = true;
+                //    }
+                //    else if (selected is LightingAbridged lt)
+                //    {
+                //        _vm.Lighting = lt;
+                //        _lightingGroup.Content.Visible = true;
+                //    }
+                //    else if (selected is ElectricEquipmentAbridged eq)
+                //    {
+                //        _vm.ElectricEquipment = eq;
+                //        _equipmentGroup.Content.Visible = true;
+                //    }
+                //    else if (selected is GasEquipmentAbridged gs)
+                //    {
+                //        _vm.GasEquipment = gs;
+                //        _gasEqpGroup.Content.Visible = true;
+                //    }
+                //    else if (selected is InfiltrationAbridged nf)
+                //    {
+                //        _vm.Infiltration = nf;
+                //        _infiltrationGroup.Content.Visible = true;
+                //    }
+                //    else if (selected is VentilationAbridged vn)
+                //    {
+                //        _vm.Ventilation = vn;
+                //        _ventilationGroup.Content.Visible = true;
+                //    }
+                //    else if (selected is SetpointAbridged sp)
+                //    {
+                //        _vm.Setpoint = sp;
+                //        _setpoinGroup.Content.Visible = true;
+                //    }
+                //    else
+                //    {
+                //        MessageBox.Show(this, $"{selected.GetType().Name.Replace("Abridged", "")} cannot be added to program type directly!");
+                //    }
 
-                };
+                //};
 
                 //var panelMiddle = new DynamicLayout();
                 //panelMiddle.BackgroundColor = Color.FromArgb(150, 150, 150);
@@ -187,7 +187,7 @@ namespace Honeybee.UI
                 {
                     panelRight.AddRow(item);
                 }
-                panelRight.AddRow(borrowBtn);
+                //panelRight.AddRow(borrowBtn);
                 panelRight.AddRow(null);
 
                 var rightTab = new TabControl();
@@ -219,86 +219,25 @@ namespace Honeybee.UI
 
         }
 
-        private DynamicLayout GenProgramTypePanel(Func<object> getSelectedFromLib)
+
+
+
+
+        private DynamicLayout GenProgramTypePanel()
         {
-            var getSelectedSche = getSelectedFromLib;
-            //Get people
-            var isPplNull = _vm.hbObj.People == null;
-            //_vm.hbObj.People = _vm.hbObj.People ?? new PeopleAbridged(Guid.NewGuid().ToString(), 0, "", "");
-            //_vm.hbObj.People.LatentFraction = new Autocalculate();
-            var ppl = new List<List<Control>>() { };
-            ppl.AddRange(GenInputControl("Name", (ProgramTypeViewModel m) => m.PPL_DisplayName));
-            ppl.AddRange(GenInputControl("People/Area", (ProgramTypeViewModel m) => m.PPL_PeoplePerArea));
-            ppl.AddRange(GenInputControl("Occupancy Schedule", (ProgramTypeViewModel m) => m.PPL_OccupancySchedule, getSelectedSche, typeof(ISchedule)));
-            ppl.AddRange(GenInputControl("Activity Schedule", (ProgramTypeViewModel m) => m.PPL_ActivitySchedule, getSelectedSche, typeof(ISchedule)));
-            ppl.AddRange(GenInputControl("Radiant Fraction", (ProgramTypeViewModel m) => m.PPL_RadiantFraction));
-            ppl.AddRange(GenInputControl("Latent Fraction", typeof(Autocalculate), (ProgramTypeViewModel m) => m.PPL_IsLatentFractionAutocalculate, (ProgramTypeViewModel m) => m.PPL_LatentFraction));
-            _peopleGroup = GenGroup("People", ppl, isPplNull, () => _vm.People = null);
+            _peopleGroup = GenPeoplePanel();
 
-            //_vm.hbObj.Lighting = _vm.hbObj.Lighting ?? new LightingAbridged(Guid.NewGuid().ToString(), 0, "");
-            var isLpdNull = _vm.hbObj.Lighting == null;
-            var lpd = new List<List<Control>>() { };
-            lpd.AddRange(GenInputControl("Name", (ProgramTypeViewModel m) => m.LPD_DisplayName));
-            lpd.AddRange(GenInputControl("Watts/Area", (ProgramTypeViewModel m) => m.LPD_WattsPerArea));
-            lpd.AddRange(GenInputControl("Schedule", (ProgramTypeViewModel m) => m.LPD_Schedule, getSelectedSche, typeof(ISchedule)));
-            lpd.AddRange(GenInputControl("Visible Schedule", (ProgramTypeViewModel m) => m.LPD_VisibleFraction));
-            lpd.AddRange(GenInputControl("Radiant Fraction", (ProgramTypeViewModel m) => m.LPD_RadiantFraction));
-            lpd.AddRange(GenInputControl("Return Air Fraction", (ProgramTypeViewModel m) => m.LPD_ReturnAirFraction));
-            _lightingGroup = GenGroup("Lighting", lpd, isLpdNull, () => _vm.Lighting = null);
+            _lightingGroup = GenLightingPanel();
 
-            //_vm.hbObj.ElectricEquipment = _vm.hbObj.ElectricEquipment ?? new ElectricEquipmentAbridged(Guid.NewGuid().ToString(), 0, "");
-            var isEqpNull = _vm.hbObj.ElectricEquipment == null;
-            var eqp = new List<List<Control>>() { };
-            eqp.AddRange(GenInputControl("Name", (ProgramTypeViewModel m) => m.EQP_DisplayName));
-            eqp.AddRange(GenInputControl("Watts/Area", (ProgramTypeViewModel m) => m.EQP_WattsPerArea));
-            eqp.AddRange(GenInputControl("Schedule", (ProgramTypeViewModel m) => m.EQP_Schedule, getSelectedSche, typeof(ISchedule)));
-            eqp.AddRange(GenInputControl("Radiant Schedule", (ProgramTypeViewModel m) => m.EQP_RadiantFraction));
-            eqp.AddRange(GenInputControl("Latent Fraction", (ProgramTypeViewModel m) => m.EQP_LatentFraction));
-            eqp.AddRange(GenInputControl("Lost Fraction", (ProgramTypeViewModel m) => m.EQP_LostFraction));
-            _equipmentGroup = GenGroup("Electric Equipment", eqp, isEqpNull, () => _vm.ElectricEquipment = null);
+            _equipmentGroup = GenEquipPanel();
 
-            //_vm.hbObj.GasEquipment = _vm.hbObj.GasEquipment ?? new GasEquipmentAbridged(Guid.NewGuid().ToString(), 0, "");
-            var isGasNull = _vm.hbObj.GasEquipment == null;
-            var gas = new List<List<Control>>() { };
-            gas.AddRange(GenInputControl("Name", (ProgramTypeViewModel m) => m.GAS_DisplayName));
-            gas.AddRange(GenInputControl("Watts/Area", (ProgramTypeViewModel m) => m.GAS_WattsPerArea));
-            gas.AddRange(GenInputControl("Schedule", (ProgramTypeViewModel m) => m.GAS_Schedule, getSelectedSche, typeof(ISchedule)));
-            gas.AddRange(GenInputControl("Radiant Fraction", (ProgramTypeViewModel m) => m.GAS_RadiantFraction));
-            gas.AddRange(GenInputControl("Latent Fraction", (ProgramTypeViewModel m) => m.GAS_LatentFraction));
-            gas.AddRange(GenInputControl("Lost Fraction", (ProgramTypeViewModel m) => m.GAS_LostFraction));
-            _gasEqpGroup = GenGroup("Gas Equipment", gas, isGasNull, () => _vm.GasEquipment = null);
+            _gasEqpGroup = GenGasEquipPanel();
 
-            //_vm.hbObj.Infiltration = _vm.hbObj.Infiltration ?? new InfiltrationAbridged(Guid.NewGuid().ToString(), 0, "");
-            var isInfNull = _vm.hbObj.Infiltration == null;
-            var inf = new List<List<Control>>() { };
-            inf.AddRange(GenInputControl("Name", (ProgramTypeViewModel m) => m.INF_DisplayName));
-            inf.AddRange(GenInputControl("Flow/FacadeArea", (ProgramTypeViewModel m) => m.INF_FlowPerExteriorArea));
-            inf.AddRange(GenInputControl("Schedule", (ProgramTypeViewModel m) => m.INF_Schedule, getSelectedSche, typeof(ISchedule)));
-            inf.AddRange(GenInputControl("Velocity Coefficient", (ProgramTypeViewModel m) => m.INF_VelocityCoefficient));
-            inf.AddRange(GenInputControl("Temperature Coefficient", (ProgramTypeViewModel m) => m.INF_TemperatureCoefficient));
-            inf.AddRange(GenInputControl("Constant Coefficient", (ProgramTypeViewModel m) => m.INF_ConstantCoefficient));
-            _infiltrationGroup = GenGroup("Infiltration", inf, isInfNull, () => _vm.Infiltration = null);
+            _infiltrationGroup = GenInfiltrationPanel();
 
-            //_vm.hbObj.Ventilation = _vm.hbObj.Ventilation ?? new VentilationAbridged(Guid.NewGuid().ToString());
-            var isVntNull = _vm.hbObj.Ventilation == null;
-            var vnt = new List<List<Control>>() { };
-            vnt.AddRange(GenInputControl("Name", (ProgramTypeViewModel m) => m.VNT_DisplayName));
-            vnt.AddRange(GenInputControl("Flow/Area", (ProgramTypeViewModel m) => m.VNT_FlowPerArea));
-            vnt.AddRange(GenInputControl("Schedule", (ProgramTypeViewModel m) => m.VNT_Schedule, getSelectedSche, typeof(ISchedule)));
-            vnt.AddRange(GenInputControl("Flow/Person", (ProgramTypeViewModel m) => m.VNT_FlowPerPerson));
-            vnt.AddRange(GenInputControl("Flow/Zone", (ProgramTypeViewModel m) => m.VNT_FlowPerZone));
-            vnt.AddRange(GenInputControl("AirChanges/Hour", (ProgramTypeViewModel m) => m.VNT_AirChangesPerHour));
-            _ventilationGroup = GenGroup("Ventilation", vnt, isVntNull, () => _vm.Ventilation = null);
+            _ventilationGroup = GenVentilaitonPanel();
 
-            //_vm.hbObj.Setpoint = _vm.hbObj.Setpoint ?? new SetpointAbridged(Guid.NewGuid().ToString(), "cooling sch", "heating sch");
-            var isSptNull = _vm.hbObj.Setpoint == null;
-            var spt = new List<List<Control>>() { };
-            spt.AddRange(GenInputControl("Name", (ProgramTypeViewModel m) => m.SPT_DisplayName));
-            spt.AddRange(GenInputControl("Cooling Schedule", (ProgramTypeViewModel m) => m.SPT_CoolingSchedule, getSelectedSche, typeof(ISchedule)));
-            spt.AddRange(GenInputControl("Heating Schedule", (ProgramTypeViewModel m) => m.SPT_HeatingSchedule, getSelectedSche, typeof(ISchedule)));
-            spt.AddRange(GenInputControl("Humidifying Schedule", (ProgramTypeViewModel m) => m.SPT_HumidifyingSchedule, getSelectedSche, typeof(ISchedule)));
-            spt.AddRange(GenInputControl("Dehumidifying Schedule", (ProgramTypeViewModel m) => m.SPT_DehumidifyingSchedule, getSelectedSche, typeof(ISchedule)));
-            _setpoinGroup = GenGroup("Setpoint", spt, isSptNull, () => _vm.Setpoint = null);
+            _setpoinGroup = GenSetpointPanel();
 
             // Json Data
             var hbData = new Button { Text = "HBData" };
@@ -324,15 +263,13 @@ namespace Honeybee.UI
 
 
             pTypePanel.AddSeparateRow(_peopleGroup);
-            //var separater = new DynamicLayout() { Height = 1, DefaultPadding = new Padding(10), BackgroundColor = Color.FromArgb(150, 150, 150) };
-            //pTypePanel.AddSeparateRow(separater);
             pTypePanel.AddSeparateRow(_lightingGroup);
             pTypePanel.AddSeparateRow(_equipmentGroup);
             pTypePanel.AddSeparateRow(_gasEqpGroup);
             pTypePanel.AddSeparateRow(_infiltrationGroup);
             pTypePanel.AddSeparateRow(_ventilationGroup);
             pTypePanel.AddSeparateRow(_setpoinGroup);
-            //pTypePanel.AddSpace();
+            pTypePanel.AddSpace();
             pTypePanel.AddSeparateRow(hbData);
             pTypePanel.AddSeparateRow(null);
             pTypePanel.EndScrollable();
@@ -341,11 +278,112 @@ namespace Honeybee.UI
             return pTypePanel;
         }
 
+        private Panel GenSetpointPanel()
+        {
+
+            //_vm.hbObj.Setpoint = _vm.hbObj.Setpoint ?? new SetpointAbridged(Guid.NewGuid().ToString(), "cooling sch", "heating sch");
+            var isSptNull = _vm.hbObj.Setpoint == null;
+            var spt = new List<Control>() { };
+            spt.AddRange(GenInputControl("Name", (ProgramTypeViewModel m) => m.SPT_DisplayName));
+            spt.AddRange(GenDropInInputControl("Cooling Schedule", (ProgramTypeViewModel m) => m.SPT_CoolingSchedule, typeof(ScheduleRulesetAbridged)));
+            spt.AddRange(GenDropInInputControl("Heating Schedule", (ProgramTypeViewModel m) => m.SPT_HeatingSchedule, typeof(ScheduleRulesetAbridged)));
+            spt.AddRange(GenDropInInputControl("Humidifying Schedule", (ProgramTypeViewModel m) => m.SPT_HumidifyingSchedule, typeof(ScheduleRulesetAbridged)));
+            spt.AddRange(GenDropInInputControl("Dehumidifying Schedule", (ProgramTypeViewModel m) => m.SPT_DehumidifyingSchedule,  typeof(ScheduleRulesetAbridged)));
+            return GenGroup("Setpoint", spt, isSptNull, (v) => _vm.Setpoint = v as HB.SetpointAbridged, typeof(HB.SetpointAbridged));
+        }
+
+        private Panel GenVentilaitonPanel()
+        {
+            //_vm.hbObj.Ventilation = _vm.hbObj.Ventilation ?? new VentilationAbridged(Guid.NewGuid().ToString());
+            var isVntNull = _vm.hbObj.Ventilation == null;
+            var vnt = new List<Control>() { };
+            vnt.AddRange(GenInputControl("Name", (ProgramTypeViewModel m) => m.VNT_DisplayName));
+            vnt.AddRange(GenInputControl("Flow/Area", (ProgramTypeViewModel m) => m.VNT_FlowPerArea));
+            vnt.AddRange(GenDropInInputControl("Schedule", (ProgramTypeViewModel m) => m.VNT_Schedule, typeof(ScheduleRulesetAbridged)));
+            vnt.AddRange(GenInputControl("Flow/Person", (ProgramTypeViewModel m) => m.VNT_FlowPerPerson));
+            vnt.AddRange(GenInputControl("Flow/Zone", (ProgramTypeViewModel m) => m.VNT_FlowPerZone));
+            vnt.AddRange(GenInputControl("AirChanges/Hour", (ProgramTypeViewModel m) => m.VNT_AirChangesPerHour));
+            return GenGroup("Ventilation", vnt, isVntNull, (v) => _vm.Ventilation = v as HB.VentilationAbridged, typeof(HB.VentilationAbridged));
+        }
+
+        private Panel GenInfiltrationPanel()
+        {
+            //_vm.hbObj.Infiltration = _vm.hbObj.Infiltration ?? new InfiltrationAbridged(Guid.NewGuid().ToString(), 0, "");
+            var isInfNull = _vm.hbObj.Infiltration == null;
+            var inf = new List<Control>() { };
+            inf.AddRange(GenInputControl("Name", (ProgramTypeViewModel m) => m.INF_DisplayName));
+            inf.AddRange(GenInputControl("Flow/FacadeArea", (ProgramTypeViewModel m) => m.INF_FlowPerExteriorArea));
+            inf.AddRange(GenDropInInputControl("Schedule", (ProgramTypeViewModel m) => m.INF_Schedule, typeof(ScheduleRulesetAbridged)));
+            inf.AddRange(GenInputControl("Velocity Coefficient", (ProgramTypeViewModel m) => m.INF_VelocityCoefficient));
+            inf.AddRange(GenInputControl("Temperature Coefficient", (ProgramTypeViewModel m) => m.INF_TemperatureCoefficient));
+            inf.AddRange(GenInputControl("Constant Coefficient", (ProgramTypeViewModel m) => m.INF_ConstantCoefficient));
+            return GenGroup("Infiltration", inf, isInfNull, (v) => _vm.Infiltration = v as HB.InfiltrationAbridged, typeof(HB.InfiltrationAbridged));
+        }
+
+        private Panel GenGasEquipPanel()
+        {
+            //_vm.hbObj.GasEquipment = _vm.hbObj.GasEquipment ?? new GasEquipmentAbridged(Guid.NewGuid().ToString(), 0, "");
+            var isGasNull = _vm.hbObj.GasEquipment == null;
+            var gas = new List<Control>() { };
+            gas.AddRange(GenInputControl("Name", (ProgramTypeViewModel m) => m.GAS_DisplayName));
+            gas.AddRange(GenInputControl("Watts/Area", (ProgramTypeViewModel m) => m.GAS_WattsPerArea));
+            gas.AddRange(GenDropInInputControl("Schedule", (ProgramTypeViewModel m) => m.GAS_Schedule, typeof(ScheduleRulesetAbridged)));
+            gas.AddRange(GenInputControl("Radiant Fraction", (ProgramTypeViewModel m) => m.GAS_RadiantFraction));
+            gas.AddRange(GenInputControl("Latent Fraction", (ProgramTypeViewModel m) => m.GAS_LatentFraction));
+            gas.AddRange(GenInputControl("Lost Fraction", (ProgramTypeViewModel m) => m.GAS_LostFraction));
+            return GenGroup("Gas Equipment", gas, isGasNull, (v) => _vm.GasEquipment = v as HB.GasEquipmentAbridged, typeof(HB.GasEquipmentAbridged));
+        }
+
+        private Panel GenEquipPanel()
+        {
+            //_vm.hbObj.ElectricEquipment = _vm.hbObj.ElectricEquipment ?? new ElectricEquipmentAbridged(Guid.NewGuid().ToString(), 0, "");
+            var isEqpNull = _vm.hbObj.ElectricEquipment == null;
+            var eqp = new List<Control>() { };
+            eqp.AddRange(GenInputControl("Name", (ProgramTypeViewModel m) => m.EQP_DisplayName));
+            eqp.AddRange(GenInputControl("Watts/Area", (ProgramTypeViewModel m) => m.EQP_WattsPerArea));
+            eqp.AddRange(GenDropInInputControl("Schedule", (ProgramTypeViewModel m) => m.EQP_Schedule, typeof(ScheduleRulesetAbridged)));
+            eqp.AddRange(GenInputControl("Radiant Schedule", (ProgramTypeViewModel m) => m.EQP_RadiantFraction));
+            eqp.AddRange(GenInputControl("Latent Fraction", (ProgramTypeViewModel m) => m.EQP_LatentFraction));
+            eqp.AddRange(GenInputControl("Lost Fraction", (ProgramTypeViewModel m) => m.EQP_LostFraction));
+            return GenGroup("Electric Equipment", eqp, isEqpNull, (v) => _vm.ElectricEquipment = v as HB.ElectricEquipmentAbridged, typeof(HB.ElectricEquipmentAbridged));
+        }
+
+        private Panel GenLightingPanel()
+        {
+            //_vm.hbObj.Lighting = _vm.hbObj.Lighting ?? new LightingAbridged(Guid.NewGuid().ToString(), 0, "");
+            var isLpdNull = _vm.hbObj.Lighting == null;
+            var lpd = new List<Control>() { };
+            lpd.AddRange(GenInputControl("Name", (ProgramTypeViewModel m) => m.LPD_DisplayName));
+            lpd.AddRange(GenInputControl("Watts/Area", (ProgramTypeViewModel m) => m.LPD_WattsPerArea));
+            lpd.AddRange(GenDropInInputControl("Schedule", (ProgramTypeViewModel m) => m.LPD_Schedule, typeof(ScheduleRulesetAbridged)));
+            lpd.AddRange(GenInputControl("Visible Fraction", (ProgramTypeViewModel m) => m.LPD_VisibleFraction));
+            lpd.AddRange(GenInputControl("Radiant Fraction", (ProgramTypeViewModel m) => m.LPD_RadiantFraction));
+            lpd.AddRange(GenInputControl("Return Air Fraction", (ProgramTypeViewModel m) => m.LPD_ReturnAirFraction));
+            return GenGroup("Lighting", lpd, isLpdNull, (v) => _vm.Lighting = v as HB.LightingAbridged, typeof(HB.LightingAbridged));
+        }
+
+        private Panel GenPeoplePanel()
+        {
+        
+            //Get people
+            var isPplNull = _vm.hbObj.People == null;
+            //_vm.hbObj.People = _vm.hbObj.People ?? new PeopleAbridged(Guid.NewGuid().ToString(), 0, "", "");
+            //_vm.hbObj.People.LatentFraction = new Autocalculate();
+            var ppl = new List<Control>() { };
+            ppl.AddRange(GenInputControl("Name", (ProgramTypeViewModel m) => m.PPL_DisplayName));
+            ppl.AddRange(GenInputControl("People/Area", (ProgramTypeViewModel m) => m.PPL_PeoplePerArea));
+            ppl.AddRange(GenDropInInputControl("Occupancy Schedule", (ProgramTypeViewModel m) => m.PPL_OccupancySchedule, typeof(HB.ScheduleRulesetAbridged)));
+            ppl.AddRange(GenDropInInputControl("Activity Schedule", (ProgramTypeViewModel m) => m.PPL_ActivitySchedule, typeof(HB.ScheduleRulesetAbridged)));
+            ppl.AddRange(GenInputControl("Radiant Fraction", (ProgramTypeViewModel m) => m.PPL_RadiantFraction));
+            ppl.AddRange(GenInputControl("Latent Fraction", typeof(Autocalculate), (ProgramTypeViewModel m) => m.PPL_IsLatentFractionAutocalculate, (ProgramTypeViewModel m) => m.PPL_LatentFraction));
+            return GenGroup("People", ppl, isPplNull, (v) => _vm.People = v as HB.PeopleAbridged, typeof(HB.PeopleAbridged));
+        }
+
         private static (List<Control> allControls, GridView libraryLBox) GenLibraryPanel()
         {
             //IEnumerable<HB.Energy.IIDdEnergyBaseModel> hbLoads = Loads;
 
-            IEnumerable<HB.Energy.IIDdEnergyBaseModel> itemsToShow = Schedules;
+            IEnumerable<HB.Energy.IIDdEnergyBaseModel> itemsToShow = Loads;
 
             // Library List
             var library_GV = new GridView();
@@ -397,6 +435,27 @@ namespace Honeybee.UI
 
             };
 
+            library_GV.MouseMove += (sender, e) =>
+            {
+                var lib = library_GV;
+                var dragableArea = lib.Bounds;
+                dragableArea.Width -= 20;
+                dragableArea.Height -= 20;
+                var iscontained = e.Location.Y < dragableArea.Height && e.Location.X < dragableArea.Width;
+                //name.Text = $"{dragableArea.Width}x{dragableArea.Height}, {new Point(e.Location).X}:{new Point(e.Location).Y}, {dragableArea.Contains(new Point(e.Location))}";
+                if (!iscontained)
+                    return;
+
+                if (e.Buttons == MouseButtons.Primary && lib.SelectedItem != null)
+                {
+                    var selected = (lib.SelectedItem as HB.HoneybeeObject).ToJson();
+                    var data = new DataObject();
+                    data.SetObject(selected, "HBObj");
+                    lib.DoDragDrop(data, DragEffects.Move);
+                    e.Handled = true;
+                }
+            };
+
             // Search box
             var searchTBox = new TextBox() { PlaceholderText = "Search" };
             searchTBox.TextChanged += (sender, e) =>
@@ -441,6 +500,7 @@ namespace Honeybee.UI
 
             };
 
+           
             var controls = new List<Control>() {
                 libraryType_DD,
                 searchTBox,
@@ -473,90 +533,11 @@ namespace Honeybee.UI
             return layers;
           
         }
-        //DynamicLayout GenTextBoxWithBtn(object currentValue, Func<object> getSelected, Action<object> setAction, Type setType)
-        //{
-        //    var panel = new DynamicLayout();
-
-        //    CommonControl inputControl = new TextBox();
-
-        //    var width = 250;
-        //    if (currentValue is double cValue)
-        //    {
-        //        // user input number
-        //        var num_NS = new NumericStepper();
-        //        num_NS.MaximumDecimalPlaces = 2;
-        //        num_NS.MinValue = 0;
-        //        num_NS.Increment = 0.1;
-        //        num_NS.Value = cValue;
-        //        num_NS.Width = width;
-        //        num_NS.Height = 25;
-        //        inputControl = num_NS;
-
-        //        panel.AddRow(inputControl);
-        //    }
-        //    else if (setType == typeof(string))
-        //    {
-        //        // user input text
-        //        var tbx = new TextBox() {};
-        //        tbx.Width = width;
-        //        tbx.Text = currentValue?.ToString();
-        //        inputControl = tbx;
-        //        panel.AddRow(inputControl);
-        //    }
-        //    else
-        //    {
-        //        // Select from library
-        //        var tbx = new TextBox() { PlaceholderText = "By Global" };
-        //        tbx.Width = width - 25;
-        //        tbx.Enabled = false;
-        //        tbx.Text = currentValue?.ToString();
-        //        inputControl = tbx;
-
-        //        //tbx.Bindings = Binding.Delegate(() => getFunc().Identifier, (c) => setAction(c));
-        //        var inWallBtn = new Button() { Text = string.IsNullOrEmpty(currentValue?.ToString()) ? "+" : "-", Width = 25 };
-        //        inWallBtn.ToolTip = "Add from selected item of left library";
-        //        inWallBtn.Click += (sender, e) =>
-        //        {
-        //            var txt = inWallBtn.Text;
-        //            string newText = null;
-        //            if (txt == "+")
-        //            {
-        //                var selectedConstr = getSelected() as HoneybeeSchema.IIDdBase;
-        //                if (selectedConstr == null)
-        //                    return;
-
-        //                if (selectedConstr.GetType() != setType)
-        //                {
-        //                    MessageBox.Show(this, $"{selectedConstr.GetType().Name.Replace("Abridged", "")} cannot be set to where {setType.Name.Replace("Abridged", "")} is required!");
-        //                    return;
-        //                }
-        //                setAction(selectedConstr);
-        //                newText = selectedConstr.DisplayName ?? selectedConstr.Identifier;
-
-        //                txt = "-";
-        //            }
-        //            else
-        //            {
-        //                newText = null;
-        //                setAction(null);
-        //                txt = "+";
-        //            }
-
-        //            //tbx.Text = newText;
-        //            inWallBtn.Text = txt;
-        //        };
-
-        //        panel.AddRow(inputControl, inWallBtn);
-        //    }
-
-
-        //    return panel;
-        //}
+   
         private readonly int _inputControlWidth = 300;
-        List<List<Control>> GenInputControl<TObject>(string inputName, Expression<Func<TObject, int>> propertyExpression) 
+        List<Control> GenInputControl<TObject>(string inputName, Expression<Func<TObject, int>> propertyExpression) 
             where TObject : ViewModelBase
         {
-            //var panel = new DynamicLayout();
             var inputLabel = new Label() { Text = inputName, Width = 150 };
             // user input integer
             var num_NS = new MaskedTextBox<int>();
@@ -568,14 +549,14 @@ namespace Honeybee.UI
             num_NS.Height = 25;
             num_NS.ValueBinding.BindDataContext(propertyExpression);
 
-            var rows = new List<List<Control>>()
+            var rows = new List<Control>()
             {
-                new List<Control>(){ inputLabel },
-                new List<Control>(){ num_NS }
+                inputLabel,
+                num_NS
             };
             return rows;
         }
-        List<List<Control>> GenInputControl<TObject>(string inputName, Expression<Func<TObject, double>> propertyExpression) 
+        List<Control> GenInputControl<TObject>(string inputName, Expression<Func<TObject, double>> propertyExpression) 
             where TObject: ViewModelBase
         {
             //var panel = new DynamicLayout();
@@ -589,17 +570,16 @@ namespace Honeybee.UI
             num_NS.Height = 25;
             num_NS.ValueBinding.BindDataContext(propertyExpression);
 
-            var rows = new List<List<Control>>()
+            var rows = new List<Control>()
             {
-                new List<Control>(){ inputLabel },
-                new List<Control>(){ num_NS }
+                inputLabel,
+                num_NS
             };
             return rows;
         }
-        List<List<Control>> GenInputControl<TObject>(string inputName, Expression<Func<TObject, string>> propertyExpression) 
+        List<Control> GenInputControl<TObject>(string inputName, Expression<Func<TObject, string>> propertyExpression) 
             where TObject : ViewModelBase
         {
-            var panel = new DynamicLayout();
             var inputLabel = new Label() { Text = inputName, Width = 150 };
             // user input text
             var text_TB = new TextBox();
@@ -607,15 +587,15 @@ namespace Honeybee.UI
             text_TB.Height = 25;
             text_TB.TextBinding.BindDataContext(propertyExpression);
 
-            var rows = new List<List<Control>>()
+            var rows = new List<Control>()
             {
-                new List<Control>(){ inputLabel },
-                new List<Control>(){ text_TB }
+                inputLabel,
+                text_TB
             };
             return rows;
         }
 
-        List<List<Control>> GenInputControl<TObject>(string inputName, Type altNumType, Expression<Func<TObject, bool?>> ifIAltnumberExpression, Expression<Func<TObject, double>> propertyExpression)
+        List<Control> GenInputControl<TObject>(string inputName, Type altNumType, Expression<Func<TObject, bool?>> ifIAltnumberExpression, Expression<Func<TObject, double>> propertyExpression)
             where TObject : ViewModelBase
         {
             //var panel = new DynamicLayout();
@@ -641,101 +621,242 @@ namespace Honeybee.UI
 
             };
 
-            var rows = new List<List<Control>>()
+            var rows = new List<Control>()
             {
-                new List<Control>(){ inputLabel },
-                new List<Control>(){ altNum_CBox },
-                new List<Control>(){ numInput }
+                inputLabel,
+                altNum_CBox,
+                numInput
             };
             return rows;
 
         }
-
-        List<List<Control>> GenInputControl<TObject>(string inputName, Expression<Func<TObject, string>> propertyExpression, Func<object> getSelectedFromLib, Type type) where TObject : ViewModelBase
+        List<Control> GenDropInInputControl<TObject>(string inputName, Expression<Func<TObject, string>> propertyExpression, Type type)
+             where TObject : ViewModelBase
         {
-            var panel = new DynamicLayout();
-            var inputLabel = new Label() { Text = inputName, Width = 150};
-            // Select from library
-            var tbx = new TextBox() { PlaceholderText = "Add one from library" };
-            tbx.Width = _inputControlWidth - 25;
-            tbx.Enabled = false;
-            tbx.TextBinding.BindDataContext(propertyExpression);
-           
-            // Button for selecting item from library
-            var inWallBtn = new Button() { Width = 25 };
-            UpdateAddBtn(tbx.Text == null);
-           
-            inWallBtn.Click += (sender, e) =>
+            var inputLabel = new Label() { Text = inputName, Width = 150 };
+
+            var layerPanel = new PixelLayout();
+            var dropInValue = new TextBox() { PlaceholderText = "Drag from library" };
+            dropInValue.Width = 312;
+            dropInValue.Enabled = false;
+            //dropInValue.Bind(Binding.Delegate<HB.Energy.IIDdEnergyBaseModel>((r) => r.DisplayName ?? r.Identifier))
+            dropInValue.TextBinding.BindDataContext(propertyExpression);
+            
+
+
+            var dropIn = new Drawable();
+            dropIn.AllowDrop = true;
+            dropIn.Width = dropInValue.Width;
+            dropIn.Height = 25;
+            dropIn.BackgroundColor = Colors.Transparent;
+
+            var deleteBtn = new Button();
+            deleteBtn.Text = "✕";
+            deleteBtn.Width = 24;
+            deleteBtn.Height = 24;
+            
+            deleteBtn.Click += (s, e) =>
             {
-                var txt = inWallBtn.Text;
-                string newText = null;
-                if (txt == "＋")
-                {
-                    var selectedItem = getSelectedFromLib() as IIDdBase;
-                    if (selectedItem == null)
-                        return;
-
-                    if (!type.IsAssignableFrom(selectedItem.GetType()))
-                    {
-                        MessageBox.Show(this, $"Selected {selectedItem.GetType().Name.Replace("Abridged", "")} cannot be set to {type.Name.Replace("Abridged", "")}!");
-                        return;
-                    }
-                    //TODO: this will be a problem when schedule has set a display name.
-                    newText = selectedItem.DisplayName ?? selectedItem.Identifier;
-
-                }
-
-                tbx.Text = newText;
-                UpdateAddBtn(newText == null);
+                dropInValue.Text = null;
+                deleteBtn.Visible = false;
+                //setAction(null);
             };
 
-            var rows = new List<List<Control>>()
+            dropInValue.TextChanged += (s, e) =>
             {
-                new List<Control>(){ inputLabel },
-                new List<Control>(){ tbx, inWallBtn }
+                deleteBtn.Visible = !string.IsNullOrEmpty(dropInValue.Text);
             };
-            return rows;
 
-            void UpdateAddBtn(bool isAdd)
+            dropIn.DragLeave += (sender, e) =>
             {
-                if (isAdd)
+                dropInValue.BackgroundColor = Colors.White;
+            };
+            dropIn.DragOver += (sender, e) =>
+            {
+                e.Effects = DragEffects.Move;
+                dropInValue.BackgroundColor = Colors.Yellow;
+            };
+            dropIn.DragDrop += (sender, e) =>
+            {
+                // Get drop-in object
+                var value = e.Data.GetObject("HBObj");
+                var newValue = type.GetMethod("FromJson").Invoke(null, new object[] { value }) as HB.IIDdBase;
+
+                if (newValue == null)
                 {
-                    inWallBtn.Text = "＋";
-                    inWallBtn.ToolTip = "Add from library";
+                    MessageBox.Show(this, $"{type.Name.Replace("Abridged", "")} is required!");
+                    return;
                 }
-                else
-                {
-                    inWallBtn.Text = "−";
-                    inWallBtn.ToolTip = "Remove";
-                }
-            }
+
+
+                deleteBtn.Visible = true;
+                //dropInValue.Text = newValue.DisplayName ?? newValue.Identifier;
+                dropInValue.Text = newValue.Identifier;
+                //setAction(newValue.Identifier);
+
+            };
+
+
+            layerPanel.Add(dropInValue, 0, 0);
+            layerPanel.Add(dropIn, 0, 0);
+            layerPanel.Add(deleteBtn, dropInValue.Width - 24, 0);
+            return new List<Control>() { inputLabel, layerPanel };
+
+
         }
-       
-        private GroupBox GenGroup(string groupName, List<List<Control>> inputCtrlRows, bool isNull, Action removeLoadAction)
+
+
+        //List<Control> GenInputControl<TObject>(string inputName, Expression<Func<TObject, string>> propertyExpression, Func<object> getSelectedFromLib, Type type) where TObject : ViewModelBase
+        //{
+        //    var panel = new DynamicLayout();
+        //    var inputLabel = new Label() { Text = inputName, Width = 150};
+        //    // Select from library
+        //    var tbx = new TextBox() { PlaceholderText = "Add one from library" };
+        //    tbx.Width = _inputControlWidth - 25;
+        //    tbx.Enabled = false;
+        //    tbx.TextBinding.BindDataContext(propertyExpression);
+
+        //    // Button for selecting item from library
+        //    var inWallBtn = new Button() { Width = 25 };
+        //    UpdateAddBtn(tbx.Text == null);
+
+        //    inWallBtn.Click += (sender, e) =>
+        //    {
+        //        var txt = inWallBtn.Text;
+        //        string newText = null;
+        //        if (txt == "＋")
+        //        {
+        //            var selectedItem = getSelectedFromLib() as IIDdBase;
+        //            if (selectedItem == null)
+        //                return;
+
+        //            if (!type.IsAssignableFrom(selectedItem.GetType()))
+        //            {
+        //                MessageBox.Show(this, $"Selected {selectedItem.GetType().Name.Replace("Abridged", "")} cannot be set to {type.Name.Replace("Abridged", "")}!");
+        //                return;
+        //            }
+        //            //TODO: this will be a problem when schedule has set a display name.
+        //            newText = selectedItem.DisplayName ?? selectedItem.Identifier;
+
+        //        }
+
+        //        tbx.Text = newText;
+        //        UpdateAddBtn(newText == null);
+        //    };
+
+        //    var rows = new List<Control>()
+        //    {
+        //        inputLabel,tbx,inWallBtn
+        //    };
+        //    return rows;
+
+        //    void UpdateAddBtn(bool isAdd)
+        //    {
+        //        if (isAdd)
+        //        {
+        //            inWallBtn.Text = "＋";
+        //            inWallBtn.ToolTip = "Add from library";
+        //        }
+        //        else
+        //        {
+        //            inWallBtn.Text = "−";
+        //            inWallBtn.ToolTip = "Remove";
+        //        }
+        //    }
+        //}
+
+        //public delegate void SetLoadAction(ILoad load);
+        private DynamicLayout GenGroup(string groupName, List<Control> inputCtrlRows, bool isNull, Action<ILoad> setAction, Type type)
         {
-            var gp = new GroupBox() { Text = groupName};
-            //gp.TextColor = Color.FromArgb(255, 255, 255);
-            var f = gp.Font;
-            gp.Font = new Font(f.Family, f.Size, FontStyle.Bold);
-            var layout = new DynamicLayout() { Spacing = new Size(3, 3), Padding = new Padding(5) };
+            //var gp = new GroupBox() { Text = groupName};
+            var separater = new DynamicLayout() { Height = 1, DefaultPadding = new Padding(10), BackgroundColor = Color.FromArgb(150, 150, 150) };
+            var titleLabel = new Label() { Text = groupName }; 
+            var f = titleLabel.Font;
+            titleLabel.Font = new Font(f.Family, f.Size, FontStyle.Bold);
+
+
+
+            var layout = new DynamicLayout() {};
+            var layoutLoads = new DynamicLayout() { Spacing = new Size(3, 3), Padding = new Padding(5) };
+            layoutLoads.Visible = !isNull;
+            var layerDropIn = new PixelLayout();
+            layerDropIn.Visible = isNull;
+
+
             foreach (var row in inputCtrlRows)
             {
-                var rowItems = row.ToArray();
-                layout.AddSeparateRow(rowItems);
+                layoutLoads.AddSeparateRow(row);
             }
             //remove button
             var rm = new Button() { Text = $"Remove {groupName}" };
             rm.Click += (s, e) =>
             {
-                layout.Visible = false;
-                removeLoadAction();
+                layoutLoads.Visible = false;
+                layerDropIn.Visible = true;
+                setAction(null);
             };
-            layout.AddSeparateRow(rm);
+            layoutLoads.AddSeparateRow(rm);
+
+
+
             
-            layout.Visible = !isNull;
-            gp.Content = layout;
+            var dropInValue = new Label();
+            dropInValue.Text = "Drag from library";
+            //dropInValue.BackgroundColor = Colors.Transparent;
+            dropInValue.Enabled = false;
+            dropInValue.Width = _inputControlWidth;
+            //dropInValue.Height = 300;
+            dropInValue.TextAlignment = TextAlignment.Center;
+            dropInValue.VerticalAlignment = VerticalAlignment.Center;
+
+
+            // Drop in area for add a new Load
+            var dropIn = new Drawable();
+            dropIn.AllowDrop = true;
+            dropIn.Width = dropInValue.Width;
+            dropIn.Height = 35;
+            dropIn.BackgroundColor = Colors.Transparent;
+            dropIn.DragLeave += (sender, e) =>
+            {
+                layout.BackgroundColor = Colors.Transparent;
+            };
+            dropIn.DragOver += (sender, e) =>
+            {
+                e.Effects = DragEffects.Move;
+                layout.BackgroundColor = Colors.Yellow;
+            };
+            dropIn.DragDrop += (sender, e) =>
+            {
+                // Get drop-in object
+                var value = e.Data.GetObject("HBObj");
+                var newValue = type.GetMethod("FromJson").Invoke(null, new object[] { value }) as HB.Energy.ILoad;
+
+
+                if (newValue == null)
+                {
+                    MessageBox.Show(this, $"{type.Name.Replace("Abridged", "")} is required!");
+                    return;
+                }
+
+
+                layoutLoads.Visible = true;
+                layerDropIn.Visible = false;
+                setAction(newValue);
+
+            };
+
+          
+            layerDropIn.Add(dropInValue, 0, 5);
+            layerDropIn.Add(dropIn, 0, 0);
+
+            layout.AddRow(separater);
+            layout.AddRow(titleLabel);
+            layout.AddRow(layoutLoads);
+            layout.AddRow(layerDropIn);
+
+
             
-            return gp;
+            return layout;
         }
        
         //private GroupBox GenPanel(string groupName, Func<HB.Energy.IConstruction> getSelected, IEnumerable<(string label, Expression<Func<ViewModelBase, object>> propertyExpression, Type setType)> setActions)
