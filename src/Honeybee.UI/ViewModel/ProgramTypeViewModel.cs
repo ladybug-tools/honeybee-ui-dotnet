@@ -12,21 +12,40 @@ namespace Honeybee.UI
 
     public class ProgramTypeViewModel : ViewModelBase
     {
-        //private static IEnumerable<IDdEnergyBaseModel> _schedules;
-        //public static IEnumerable<IDdEnergyBaseModel> Schedules
-        //{
-        //    get
-        //    {
-        //        var libObjs = HoneybeeSchema.Helper.EnergyLibrary.StandardsSchedules.ToList<IDdEnergyBaseModel>();
-        //        var inModelObjs = HoneybeeSchema.Helper.EnergyLibrary.InModelEnergyProperties.Schedules
-        //            .Select(_ => _.Obj as IDdEnergyBaseModel);
+        private static IDdEnergyBaseModel _schAlwaysOn;
+        private static IDdEnergyBaseModel SchAlwaysOn 
+        {
+            get
+            {
+                if (_schAlwaysOn == null)
+                {
+                    _schAlwaysOn = Schedules.First(_ => _.Identifier == "Always On");
+                }
+                return _schAlwaysOn;
+            }
+        }
 
-        //        libObjs.AddRange(inModelObjs);
-        //        _schedules = libObjs;
+        private static IEnumerable<IDdEnergyBaseModel> _schedules;
+        public static IEnumerable<IDdEnergyBaseModel> Schedules
+        {
+            get
+            {
+                //var libObjs = HoneybeeSchema.Helper.EnergyLibrary.StandardsSchedules.ToList<IDdEnergyBaseModel>();
+                var inModelObjs = HoneybeeSchema.Helper.EnergyLibrary.InModelEnergyProperties.Schedules
+                    .Select(_ => _.Obj as IDdEnergyBaseModel);
 
-        //        return _schedules;
-        //    }
-        //}
+                //libObjs.AddRange(inModelObjs);
+                _schedules = inModelObjs;
+
+                return _schedules;
+            }
+        }
+        private static string GetScheduleName(string scheduleID)
+        {
+            var foundFromLib = Schedules.FirstOrDefault(_ => _.Identifier == scheduleID);
+            var name = foundFromLib == null ? null : foundFromLib.DisplayName ?? foundFromLib.Identifier;
+            return name;
+        }
 
         private ProgramTypeAbridged _hbObj;
         public ProgramTypeAbridged hbObj
@@ -68,23 +87,36 @@ namespace Honeybee.UI
         public string PPL_OccupancySchedule
         {
             get => People.OccupancySchedule;
-            set => Set(() => _hbObj.People.OccupancySchedule = value, nameof(PPL_OccupancySchedule));
+            set
+            {
+                Set(() => _hbObj.People.OccupancySchedule = value, nameof(PPL_OccupancySchedule));
+                PPL_OccupancyScheduleName = GetScheduleName(value);
+            }
         }
-        //public IDdEnergyBaseModel PPL_OccupancySchedule
-        //{
-        //    get => Schedules.First(_=>_.Identifier == People.OccupancySchedule);
-        //    set => Set(() => _hbObj.People.OccupancySchedule = value.Identifier, nameof(PPL_OccupancySchedule));
-        //}
+
+        private string _PPL_OccupancyScheduleName;
+        public string PPL_OccupancyScheduleName
+        {
+            get => _PPL_OccupancyScheduleName ?? PPL_OccupancySchedule;
+            set => Set(() => _PPL_OccupancyScheduleName = value, nameof(PPL_OccupancyScheduleName));
+        }
         public string PPL_ActivitySchedule
         {
             get => People.ActivitySchedule;
-            set => Set(() => _hbObj.People.ActivitySchedule = value, nameof(PPL_ActivitySchedule));
+            set
+            {
+                Set(() => _hbObj.People.ActivitySchedule = value, nameof(PPL_ActivitySchedule));
+                PPL_ActivityScheduleName = GetScheduleName(value);
+            }
         }
-        //public IDdEnergyBaseModel PPL_ActivitySchedule
-        //{
-        //    get => Schedules.First(_ => _.Identifier == People.ActivitySchedule);
-        //    set => Set(() => _hbObj.People.ActivitySchedule = value.Identifier, nameof(PPL_ActivitySchedule));
-        //}
+
+        private string _PPL_ActivityScheduleName;
+        public string PPL_ActivityScheduleName
+        {
+            get => _PPL_ActivityScheduleName ?? People.ActivitySchedule;
+            set => Set(() => _PPL_ActivityScheduleName = value, nameof(PPL_ActivityScheduleName));
+        }
+      
         public double PPL_RadiantFraction
         {
             get => People.RadiantFraction;
@@ -155,7 +187,18 @@ namespace Honeybee.UI
         public string LPD_Schedule
         {
             get => Lighting.Schedule;
-            set => Set(() => _hbObj.Lighting.Schedule = value, nameof(LPD_Schedule));
+            set
+            {
+                Set(() => _hbObj.Lighting.Schedule = value, nameof(LPD_Schedule));
+                LPD_ScheduleName =  GetScheduleName(value);
+            }
+        }
+
+        public string _LPD_ScheduleName;
+        public string LPD_ScheduleName
+        {
+            get => _LPD_ScheduleName ?? Lighting.Schedule;
+            set => Set(() => _LPD_ScheduleName = value, nameof(LPD_ScheduleName));
         }
         public double LPD_VisibleFraction
         {
@@ -206,7 +249,18 @@ namespace Honeybee.UI
         public string EQP_Schedule
         {
             get => ElectricEquipment.Schedule;
-            set => Set(() => _hbObj.ElectricEquipment.Schedule = value, nameof(EQP_Schedule));
+            set
+            {
+                Set(() => _hbObj.ElectricEquipment.Schedule = value, nameof(EQP_Schedule));
+                EQP_ScheduleName = GetScheduleName(value);
+            }
+
+        }
+        public string _EQP_ScheduleName;
+        public string EQP_ScheduleName
+        {
+            get => _EQP_ScheduleName?? ElectricEquipment.Schedule;
+            set => Set(() => _EQP_ScheduleName = value, nameof(EQP_ScheduleName));
         }
         public double EQP_LostFraction
         {
@@ -257,7 +311,19 @@ namespace Honeybee.UI
         public string GAS_Schedule
         {
             get => GasEquipment.Schedule;
-            set => Set(() => _hbObj.GasEquipment.Schedule = value, nameof(GAS_Schedule));
+            set
+            {
+                Set(() => _hbObj.GasEquipment.Schedule = value, nameof(GAS_Schedule));
+                GAS_ScheduleName = GetScheduleName(value);
+            }
+        }
+        // GAS_ScheduleName
+        public string _GAS_ScheduleName;
+        public string GAS_ScheduleName
+        {
+            get => _GAS_ScheduleName?? GasEquipment.Schedule;
+            set => Set(() => _GAS_ScheduleName = value, nameof(GAS_ScheduleName));
+            
         }
         public double GAS_LostFraction
         {
@@ -308,7 +374,18 @@ namespace Honeybee.UI
         public string INF_Schedule
         {
             get => Infiltration.Schedule;
-            set => Set(() => _hbObj.Infiltration.Schedule = value, nameof(INF_Schedule));
+            set 
+            {
+                Set(() => _hbObj.Infiltration.Schedule = value, nameof(INF_Schedule));
+                INF_ScheduleName = GetScheduleName(value);
+            } 
+        }
+        // INF_ScheduleName
+        public string _INF_ScheduleName;
+        public string INF_ScheduleName
+        {
+            get => _INF_ScheduleName ?? Infiltration.Schedule;
+            set => Set(() => _INF_ScheduleName = value, nameof(INF_ScheduleName));
         }
         public double INF_VelocityCoefficient
         {
@@ -359,7 +436,17 @@ namespace Honeybee.UI
         public string VNT_Schedule
         {
             get => Ventilation.Schedule;
-            set => Set(() => _hbObj.Ventilation.Schedule = value, nameof(VNT_Schedule));
+            set 
+            { 
+                Set(() => _hbObj.Ventilation.Schedule = value, nameof(VNT_Schedule));
+                VNT_ScheduleName = GetScheduleName(value);
+            }
+        }
+        public string _VNT_ScheduleName;
+        public string VNT_ScheduleName
+        {
+            get => _VNT_ScheduleName ?? Ventilation.Schedule;
+            set => Set(() => _VNT_ScheduleName = value, nameof(VNT_ScheduleName));
         }
         public double VNT_FlowPerArea
         {
@@ -405,22 +492,63 @@ namespace Honeybee.UI
         public string SPT_CoolingSchedule
         {
             get => Setpoint.CoolingSchedule;
-            set => Set(() => _hbObj.Setpoint.CoolingSchedule = value, nameof(SPT_CoolingSchedule));
+            set
+            { 
+                Set(() => _hbObj.Setpoint.CoolingSchedule = value, nameof(SPT_CoolingSchedule));
+                SPT_CoolingScheduleName = GetScheduleName(value);
+            }
+        }
+
+        public string _SPT_CoolingScheduleName;
+        public string SPT_CoolingScheduleName
+        {
+            get => _SPT_CoolingScheduleName ?? Setpoint.CoolingSchedule;
+            set => Set(() => _SPT_CoolingScheduleName = value, nameof(SPT_CoolingScheduleName));
         }
         public string SPT_HeatingSchedule
         {
             get => Setpoint.HeatingSchedule;
-            set => Set(() => _hbObj.Setpoint.HeatingSchedule = value, nameof(SPT_HeatingSchedule));
+            set
+            {
+                Set(() => _hbObj.Setpoint.HeatingSchedule = value, nameof(SPT_HeatingSchedule));
+                SPT_HeatingScheduleName = GetScheduleName(value);
+            }
+        }
+        public string _SPT_HeatingScheduleName;
+        public string SPT_HeatingScheduleName
+        {
+            get => _SPT_HeatingScheduleName ?? Setpoint.HeatingSchedule;
+            set => Set(() => _SPT_HeatingScheduleName = value, nameof(SPT_HeatingScheduleName));
         }
         public string SPT_HumidifyingSchedule
         {
             get => Setpoint.HumidifyingSchedule;
-            set => Set(() => _hbObj.Setpoint.HumidifyingSchedule = value, nameof(SPT_HumidifyingSchedule));
+            set 
+            { 
+                Set(() => _hbObj.Setpoint.HumidifyingSchedule = value, nameof(SPT_HumidifyingSchedule));
+                SPT_HumidifyingScheduleName = GetScheduleName(value);
+            }
+        }
+        public string _SPT_HumidifyingScheduleName;
+        public string SPT_HumidifyingScheduleName
+        {
+            get => _SPT_HumidifyingScheduleName ?? Setpoint.HumidifyingSchedule;
+            set => Set(() => _SPT_HumidifyingScheduleName = value, nameof(SPT_HumidifyingScheduleName));
         }
         public string SPT_DehumidifyingSchedule
         {
             get => Setpoint.DehumidifyingSchedule;
-            set => Set(() => _hbObj.Setpoint.DehumidifyingSchedule = value, nameof(SPT_DehumidifyingSchedule));
+            set
+            {
+                Set(() => _hbObj.Setpoint.DehumidifyingSchedule = value, nameof(SPT_DehumidifyingSchedule));
+                SPT_DehumidifyingScheduleName = GetScheduleName(value);
+            }
+        }
+        public string _SPT_DehumidifyingScheduleName;
+        public string SPT_DehumidifyingScheduleName
+        {
+            get => _SPT_DehumidifyingScheduleName ?? Setpoint.DehumidifyingSchedule;
+            set => Set(() => _SPT_DehumidifyingScheduleName = value, nameof(SPT_DehumidifyingScheduleName));
         }
         #endregion
 
