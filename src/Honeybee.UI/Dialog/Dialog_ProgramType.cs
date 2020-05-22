@@ -55,12 +55,12 @@ namespace Honeybee.UI
         {
             get
             {
-                var libObjs = HB.Helper.EnergyLibrary.StandardsSchedules.ToList<HB.IDdEnergyBaseModel>();
+                //var libObjs = HB.Helper.EnergyLibrary.StandardsSchedules.ToList<HB.IDdEnergyBaseModel>();
                 var inModelObjs = HB.Helper.EnergyLibrary.InModelEnergyProperties.Schedules
                     .Select(_ => _.Obj as HB.IDdEnergyBaseModel);
 
-                libObjs.AddRange(inModelObjs);
-                _schedules = libObjs;
+                //libObjs.AddRange(inModelObjs);
+                _schedules = inModelObjs;
 
                 return _schedules;
             }
@@ -285,10 +285,10 @@ namespace Honeybee.UI
             var isSptNull = _vm.hbObj.Setpoint == null;
             var spt = new List<Control>() { };
             spt.AddRange(GenInputControl("Name", (ProgramTypeViewModel m) => m.SPT_DisplayName));
-            spt.AddRange(GenDropInInputControl("Cooling Schedule", (ProgramTypeViewModel m) => m.SPT_CoolingSchedule, typeof(ScheduleRulesetAbridged)));
-            spt.AddRange(GenDropInInputControl("Heating Schedule", (ProgramTypeViewModel m) => m.SPT_HeatingSchedule, typeof(ScheduleRulesetAbridged)));
-            spt.AddRange(GenDropInInputControl("Humidifying Schedule", (ProgramTypeViewModel m) => m.SPT_HumidifyingSchedule, typeof(ScheduleRulesetAbridged)));
-            spt.AddRange(GenDropInInputControl("Dehumidifying Schedule", (ProgramTypeViewModel m) => m.SPT_DehumidifyingSchedule,  typeof(ScheduleRulesetAbridged)));
+            spt.AddRange(GenDropInInputControl("Cooling Schedule", (ProgramTypeViewModel m) => m.SPT_CoolingSchedule, (ProgramTypeViewModel m) => m.SPT_CoolingScheduleName, typeof(ScheduleRulesetAbridged)));
+            spt.AddRange(GenDropInInputControl("Heating Schedule", (ProgramTypeViewModel m) => m.SPT_HeatingSchedule, (ProgramTypeViewModel m) => m.SPT_HeatingScheduleName, typeof(ScheduleRulesetAbridged)));
+            spt.AddRange(GenDropInInputControl("Humidifying Schedule", (ProgramTypeViewModel m) => m.SPT_HumidifyingSchedule, (ProgramTypeViewModel m) => m.SPT_HumidifyingScheduleName, typeof(ScheduleRulesetAbridged)));
+            spt.AddRange(GenDropInInputControl("Dehumidifying Schedule", (ProgramTypeViewModel m) => m.SPT_DehumidifyingSchedule, (ProgramTypeViewModel m) => m.SPT_DehumidifyingScheduleName, typeof(ScheduleRulesetAbridged)));
             return GenGroup("Setpoint", spt, isSptNull, (v) => _vm.Setpoint = v as HB.SetpointAbridged, typeof(HB.SetpointAbridged));
         }
 
@@ -299,7 +299,7 @@ namespace Honeybee.UI
             var vnt = new List<Control>() { };
             vnt.AddRange(GenInputControl("Name", (ProgramTypeViewModel m) => m.VNT_DisplayName));
             vnt.AddRange(GenInputControl("Flow/Area", (ProgramTypeViewModel m) => m.VNT_FlowPerArea));
-            vnt.AddRange(GenDropInInputControl("Schedule", (ProgramTypeViewModel m) => m.VNT_Schedule, typeof(ScheduleRulesetAbridged)));
+            vnt.AddRange(GenDropInInputControl("Schedule", (ProgramTypeViewModel m) => m.VNT_Schedule, (ProgramTypeViewModel m) => m.VNT_ScheduleName, typeof(ScheduleRulesetAbridged)));
             vnt.AddRange(GenInputControl("Flow/Person", (ProgramTypeViewModel m) => m.VNT_FlowPerPerson));
             vnt.AddRange(GenInputControl("Flow/Zone", (ProgramTypeViewModel m) => m.VNT_FlowPerZone));
             vnt.AddRange(GenInputControl("AirChanges/Hour", (ProgramTypeViewModel m) => m.VNT_AirChangesPerHour));
@@ -313,7 +313,7 @@ namespace Honeybee.UI
             var inf = new List<Control>() { };
             inf.AddRange(GenInputControl("Name", (ProgramTypeViewModel m) => m.INF_DisplayName));
             inf.AddRange(GenInputControl("Flow/FacadeArea", (ProgramTypeViewModel m) => m.INF_FlowPerExteriorArea));
-            inf.AddRange(GenDropInInputControl("Schedule", (ProgramTypeViewModel m) => m.INF_Schedule, typeof(ScheduleRulesetAbridged)));
+            inf.AddRange(GenDropInInputControl("Schedule", (ProgramTypeViewModel m) => m.INF_Schedule, (ProgramTypeViewModel m) => m.INF_ScheduleName, typeof(ScheduleRulesetAbridged)));
             inf.AddRange(GenInputControl("Velocity Coefficient", (ProgramTypeViewModel m) => m.INF_VelocityCoefficient));
             inf.AddRange(GenInputControl("Temperature Coefficient", (ProgramTypeViewModel m) => m.INF_TemperatureCoefficient));
             inf.AddRange(GenInputControl("Constant Coefficient", (ProgramTypeViewModel m) => m.INF_ConstantCoefficient));
@@ -327,7 +327,7 @@ namespace Honeybee.UI
             var gas = new List<Control>() { };
             gas.AddRange(GenInputControl("Name", (ProgramTypeViewModel m) => m.GAS_DisplayName));
             gas.AddRange(GenInputControl("Watts/Area", (ProgramTypeViewModel m) => m.GAS_WattsPerArea));
-            gas.AddRange(GenDropInInputControl("Schedule", (ProgramTypeViewModel m) => m.GAS_Schedule, typeof(ScheduleRulesetAbridged)));
+            gas.AddRange(GenDropInInputControl("Schedule", (ProgramTypeViewModel m) => m.GAS_Schedule, (ProgramTypeViewModel m) => m.GAS_ScheduleName, typeof(ScheduleRulesetAbridged)));
             gas.AddRange(GenInputControl("Radiant Fraction", (ProgramTypeViewModel m) => m.GAS_RadiantFraction));
             gas.AddRange(GenInputControl("Latent Fraction", (ProgramTypeViewModel m) => m.GAS_LatentFraction));
             gas.AddRange(GenInputControl("Lost Fraction", (ProgramTypeViewModel m) => m.GAS_LostFraction));
@@ -341,7 +341,7 @@ namespace Honeybee.UI
             var eqp = new List<Control>() { };
             eqp.AddRange(GenInputControl("Name", (ProgramTypeViewModel m) => m.EQP_DisplayName));
             eqp.AddRange(GenInputControl("Watts/Area", (ProgramTypeViewModel m) => m.EQP_WattsPerArea));
-            eqp.AddRange(GenDropInInputControl("Schedule", (ProgramTypeViewModel m) => m.EQP_Schedule, typeof(ScheduleRulesetAbridged)));
+            eqp.AddRange(GenDropInInputControl("Schedule", (ProgramTypeViewModel m) => m.EQP_Schedule, (ProgramTypeViewModel m) => m.EQP_ScheduleName, typeof(ScheduleRulesetAbridged)));
             eqp.AddRange(GenInputControl("Radiant Schedule", (ProgramTypeViewModel m) => m.EQP_RadiantFraction));
             eqp.AddRange(GenInputControl("Latent Fraction", (ProgramTypeViewModel m) => m.EQP_LatentFraction));
             eqp.AddRange(GenInputControl("Lost Fraction", (ProgramTypeViewModel m) => m.EQP_LostFraction));
@@ -355,7 +355,7 @@ namespace Honeybee.UI
             var lpd = new List<Control>() { };
             lpd.AddRange(GenInputControl("Name", (ProgramTypeViewModel m) => m.LPD_DisplayName));
             lpd.AddRange(GenInputControl("Watts/Area", (ProgramTypeViewModel m) => m.LPD_WattsPerArea));
-            lpd.AddRange(GenDropInInputControl("Schedule", (ProgramTypeViewModel m) => m.LPD_Schedule, typeof(ScheduleRulesetAbridged)));
+            lpd.AddRange(GenDropInInputControl("Schedule", (ProgramTypeViewModel m) => m.LPD_Schedule, (ProgramTypeViewModel m) => m.LPD_ScheduleName, typeof(ScheduleRulesetAbridged)));
             lpd.AddRange(GenInputControl("Visible Fraction", (ProgramTypeViewModel m) => m.LPD_VisibleFraction));
             lpd.AddRange(GenInputControl("Radiant Fraction", (ProgramTypeViewModel m) => m.LPD_RadiantFraction));
             lpd.AddRange(GenInputControl("Return Air Fraction", (ProgramTypeViewModel m) => m.LPD_ReturnAirFraction));
@@ -372,8 +372,8 @@ namespace Honeybee.UI
             var ppl = new List<Control>() { };
             ppl.AddRange(GenInputControl("Name", (ProgramTypeViewModel m) => m.PPL_DisplayName));
             ppl.AddRange(GenInputControl("People/Area", (ProgramTypeViewModel m) => m.PPL_PeoplePerArea));
-            ppl.AddRange(GenDropInInputControl("Occupancy Schedule", (ProgramTypeViewModel m) => m.PPL_OccupancySchedule, typeof(HB.ScheduleRulesetAbridged)));
-            ppl.AddRange(GenDropInInputControl("Activity Schedule", (ProgramTypeViewModel m) => m.PPL_ActivitySchedule, typeof(HB.ScheduleRulesetAbridged)));
+            ppl.AddRange(GenDropInInputControl("Occupancy Schedule", (ProgramTypeViewModel m) => m.PPL_OccupancySchedule, (ProgramTypeViewModel m) => m.PPL_OccupancyScheduleName, typeof(HB.ScheduleRulesetAbridged)));
+            ppl.AddRange(GenDropInInputControl("Activity Schedule", (ProgramTypeViewModel m) => m.PPL_ActivitySchedule, (ProgramTypeViewModel m) => m.PPL_ActivityScheduleName, typeof(HB.ScheduleRulesetAbridged)));
             ppl.AddRange(GenInputControl("Radiant Fraction", (ProgramTypeViewModel m) => m.PPL_RadiantFraction));
             ppl.AddRange(GenInputControl("Latent Fraction", typeof(Autocalculate), (ProgramTypeViewModel m) => m.PPL_IsLatentFractionAutocalculate, (ProgramTypeViewModel m) => m.PPL_LatentFraction));
             return GenGroup("People", ppl, isPplNull, (v) => _vm.People = v as HB.PeopleAbridged, typeof(HB.PeopleAbridged));
@@ -630,23 +630,113 @@ namespace Honeybee.UI
             return rows;
 
         }
-        List<Control> GenDropInInputControl<TObject>(string inputName, Expression<Func<TObject, string>> propertyExpression, Type type)
-             where TObject : ViewModelBase
+        //List<Control> GenDropInInputControl<TObject>(string inputName, Expression<Func<TObject, string>> propertyExpression, Type type)
+        //     where TObject : ViewModelBase
+        //{
+        //    var inputLabel = new Label() { Text = inputName, Width = 150 };
+
+        //    var layerPanel = new PixelLayout();
+        //    var dropInValueIdentifier = new TextBox() { PlaceholderText = "Drag from library" };
+        //    dropInValueIdentifier.Width = 312;
+        //    dropInValueIdentifier.Enabled = false;
+        //    //dropInValue.TextBinding.Bind(propertyExpression)
+        //    dropInValueIdentifier.TextBinding.BindDataContext(propertyExpression);
+
+        //    // for display name
+        //    var dropInValueName = new TextBox() { };
+        //    dropInValueName.Width = 312;
+        //    dropInValueName.Enabled = false;
+        //    //dropInValue.TextBinding.Bind(propertyExpression)
+        //    dropInValueName.TextBinding.BindDataContext(propertyExpression);
+
+
+
+        //    var dropIn = new Drawable();
+        //    dropIn.AllowDrop = true;
+        //    dropIn.Width = dropInValueIdentifier.Width;
+        //    dropIn.Height = 25;
+        //    dropIn.BackgroundColor = Colors.Transparent;
+
+        //    var deleteBtn = new Button();
+        //    deleteBtn.Text = "✕";
+        //    deleteBtn.Width = 24;
+        //    deleteBtn.Height = 24;
+
+        //    deleteBtn.Click += (s, e) =>
+        //    {
+        //        dropInValueIdentifier.Text = null;
+        //        deleteBtn.Visible = false;
+        //        //setAction(null);
+        //    };
+
+        //    dropInValueIdentifier.TextChanged += (s, e) =>
+        //    {
+        //        deleteBtn.Visible = !string.IsNullOrEmpty(dropInValueIdentifier.Text);
+        //    };
+
+        //    dropIn.DragLeave += (sender, e) =>
+        //    {
+        //        dropInValueIdentifier.BackgroundColor = Colors.White;
+        //    };
+        //    dropIn.DragOver += (sender, e) =>
+        //    {
+        //        e.Effects = DragEffects.Move;
+        //        dropInValueIdentifier.BackgroundColor = Colors.Yellow;
+        //    };
+        //    dropIn.DragDrop += (sender, e) =>
+        //    {
+        //        // Get drop-in object
+        //        var value = e.Data.GetObject("HBObj");
+        //        var newValue = type.GetMethod("FromJson").Invoke(null, new object[] { value }) as HB.IIDdBase;
+
+        //        if (newValue == null)
+        //        {
+        //            MessageBox.Show(this, $"{type.Name.Replace("Abridged", "")} is required!");
+        //            return;
+        //        }
+
+
+        //        deleteBtn.Visible = true;
+        //        //dropInValue.Text = newValue.DisplayName ?? newValue.Identifier;
+        //        dropInValueIdentifier.Text = newValue.Identifier;
+        //        //dropInValueName.Text = newValue.DisplayName;
+        //        //setAction(newValue.Identifier);
+
+        //    };
+
+
+        //    layerPanel.Add(dropInValueIdentifier, 0, 0);
+        //    layerPanel.Add(dropInValueName, 20, 0);
+        //    layerPanel.Add(dropIn, 0, 0);
+        //    layerPanel.Add(deleteBtn, dropInValueIdentifier.Width - 24, 0);
+        //    return new List<Control>() { inputLabel, layerPanel };
+
+
+        //}
+        List<Control> GenDropInInputControl<TObject>(string inputName, Expression<Func<TObject, string>> propertyIdentifierExpression, Expression<Func<TObject, string>> propertyNameExpression, Type type)
+            where TObject : ViewModelBase
         {
             var inputLabel = new Label() { Text = inputName, Width = 150 };
 
             var layerPanel = new PixelLayout();
-            var dropInValue = new TextBox() { PlaceholderText = "Drag from library" };
-            dropInValue.Width = 312;
-            dropInValue.Enabled = false;
-            //dropInValue.Bind(Binding.Delegate<HB.Energy.IIDdEnergyBaseModel>((r) => r.DisplayName ?? r.Identifier))
-            dropInValue.TextBinding.BindDataContext(propertyExpression);
-            
+            var dropInValueIdentifier = new TextBox() {};
+            dropInValueIdentifier.Width = 312;
+            dropInValueIdentifier.Enabled = false;
+            //dropInValue.TextBinding.Bind(propertyExpression)
+            dropInValueIdentifier.TextBinding.BindDataContext(propertyIdentifierExpression);
+
+            // for display name
+            var dropInValueName = new TextBox() { PlaceholderText = "Drag from library" };
+            dropInValueName.Width = 312;
+            dropInValueName.Enabled = false;
+            //dropInValue.TextBinding.Bind(propertyExpression)
+            dropInValueName.TextBinding.BindDataContext(propertyNameExpression);
+
 
 
             var dropIn = new Drawable();
             dropIn.AllowDrop = true;
-            dropIn.Width = dropInValue.Width;
+            dropIn.Width = dropInValueIdentifier.Width;
             dropIn.Height = 25;
             dropIn.BackgroundColor = Colors.Transparent;
 
@@ -654,27 +744,27 @@ namespace Honeybee.UI
             deleteBtn.Text = "✕";
             deleteBtn.Width = 24;
             deleteBtn.Height = 24;
-            
+
             deleteBtn.Click += (s, e) =>
             {
-                dropInValue.Text = null;
+                dropInValueIdentifier.Text = null;
                 deleteBtn.Visible = false;
                 //setAction(null);
             };
 
-            dropInValue.TextChanged += (s, e) =>
+            dropInValueIdentifier.TextChanged += (s, e) =>
             {
-                deleteBtn.Visible = !string.IsNullOrEmpty(dropInValue.Text);
+                deleteBtn.Visible = !string.IsNullOrEmpty(dropInValueIdentifier.Text);
             };
 
             dropIn.DragLeave += (sender, e) =>
             {
-                dropInValue.BackgroundColor = Colors.White;
+                dropInValueName.BackgroundColor = Colors.White;
             };
             dropIn.DragOver += (sender, e) =>
             {
                 e.Effects = DragEffects.Move;
-                dropInValue.BackgroundColor = Colors.Yellow;
+                dropInValueName.BackgroundColor = Colors.Yellow;
             };
             dropIn.DragDrop += (sender, e) =>
             {
@@ -691,20 +781,21 @@ namespace Honeybee.UI
 
                 deleteBtn.Visible = true;
                 //dropInValue.Text = newValue.DisplayName ?? newValue.Identifier;
-                dropInValue.Text = newValue.Identifier;
+                dropInValueIdentifier.Text = newValue.Identifier;
+                //dropInValueName.Text = newValue.DisplayName;
                 //setAction(newValue.Identifier);
 
             };
 
 
-            layerPanel.Add(dropInValue, 0, 0);
+            layerPanel.Add(dropInValueIdentifier, 0, 0);
+            layerPanel.Add(dropInValueName, 0, 0);
             layerPanel.Add(dropIn, 0, 0);
-            layerPanel.Add(deleteBtn, dropInValue.Width - 24, 0);
+            layerPanel.Add(deleteBtn, dropInValueIdentifier.Width - 24, 0);
             return new List<Control>() { inputLabel, layerPanel };
 
 
         }
-
 
         //List<Control> GenInputControl<TObject>(string inputName, Expression<Func<TObject, string>> propertyExpression, Func<object> getSelectedFromLib, Type type) where TObject : ViewModelBase
         //{
