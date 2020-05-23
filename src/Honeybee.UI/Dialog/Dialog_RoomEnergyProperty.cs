@@ -5,6 +5,7 @@ using System.Linq;
 using HB = HoneybeeSchema;
 using System;
 using EnergyLibrary = HoneybeeSchema.Helper.EnergyLibrary;
+using HoneybeeSchema;
 
 namespace Honeybee.UI
 {
@@ -26,12 +27,11 @@ namespace Honeybee.UI
                 this.Icon = DialogHelper.HoneybeeIcon;
 
                 //Get constructions
-                var cSets = EnergyLibrary.DefaultConstructionSets.ToList();
-                //if (modelProp.ConstructionSets != null)
-                //{
-                //    var inModelObjs = modelProp.ConstructionSets.Where(_ => _.Obj is HB.ConstructionSetAbridged).Select(_ => _.Obj as HB.ConstructionSetAbridged);
-                //    cSets = inModelObjs.ToList();
-                //}
+                //var cSets = EnergyLibrary.DefaultConstructionSets.ToList();
+                var cSets = EnergyLibrary.InModelEnergyProperties.ConstructionSets
+                    .Where(_=>_.Obj is ConstructionSetAbridged)
+                    .Select(_ => _.Obj as ConstructionSetAbridged);
+
                 var constructionSetDP = DialogHelper.MakeDropDown(EnergyProp.ConstructionSet, (v) => EnergyProp.ConstructionSet = v?.Identifier,
                     cSets, "By Global Model ConstructionSet");
 
@@ -70,12 +70,11 @@ namespace Honeybee.UI
                 //};
 
                 //Get programs
-                var pTypes = EnergyLibrary.DefaultProgramTypes.ToList();
-                //if (modelProp.ProgramTypes != null)
-                //{
-                //    var inModelObjs = modelProp.ProgramTypes.Where(_ => _.Obj is HB.ProgramTypeAbridged).Select(_ => _.Obj as HB.ProgramTypeAbridged);
-                //    pTypes = inModelObjs.ToList();
-                //}
+                //var pTypes = EnergyLibrary.DefaultProgramTypes.ToList();
+                var pTypes = EnergyLibrary.InModelEnergyProperties.ProgramTypes
+                    .Where(_ => _.Obj is HB.ProgramTypeAbridged)
+                    .Select(_ => _.Obj as HB.ProgramTypeAbridged);
+        
                 var programTypesDP = DialogHelper.MakeDropDown(EnergyProp.ProgramType, (v) => EnergyProp.ProgramType = v?.Identifier,
                    pTypes, "Unoccupied, NoLoads");
 
@@ -156,7 +155,10 @@ namespace Honeybee.UI
 
 
                 DefaultButton = new Button { Text = "OK" };
-                DefaultButton.Click += (sender, e) => Close(EnergyProp);
+                DefaultButton.Click += (sender, e) => 
+                {
+                    Close(EnergyProp); 
+                };
 
                 AbortButton = new Button { Text = "Cancel" };
                 AbortButton.Click += (sender, e) => Close();
