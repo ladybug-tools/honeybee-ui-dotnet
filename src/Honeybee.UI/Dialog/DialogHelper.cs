@@ -45,7 +45,7 @@ namespace Honeybee.UI
         public static DropDown MakeDropDown<T>(string currentObjName, Action<T> setAction, IEnumerable<T> valueLibrary, string defaultItemName = default) where T : HoneybeeSchema.IIDdBase
         {
             var items = valueLibrary.ToList();
-            var dropdownItems = items.Select(_ => new ListItem() { Text = _.Identifier, Tag = _ }).ToList();
+            var dropdownItems = items.Select(_ => new ListItem() { Text = _.DisplayName ?? _.Identifier, Key = _.DisplayName??_.Identifier, Tag = _ }).ToList();
             var dp = new DropDown();
 
             if (!string.IsNullOrEmpty(defaultItemName))
