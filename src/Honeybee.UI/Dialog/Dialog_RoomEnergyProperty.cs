@@ -12,12 +12,27 @@ namespace Honeybee.UI
     public class Dialog_RoomEnergyProperty: Dialog<HB.RoomEnergyPropertiesAbridged>
     {
      
-        public Dialog_RoomEnergyProperty(HB.RoomEnergyPropertiesAbridged roomEnergyProperties)
+        public Dialog_RoomEnergyProperty(HB.RoomEnergyPropertiesAbridged roomEnergyProperties, bool updateChangesOnly = false)
         {
             try
             {
                 var EnergyProp = roomEnergyProperties ?? new HB.RoomEnergyPropertiesAbridged();
-                //var modelProp = modelEnergyProperties ?? HB.ModelEnergyProperties.Default;
+                var noChangeEnergyProp = new HB.RoomEnergyPropertiesAbridged(
+                    "No Changes", 
+                    "No Changes", 
+                    "No Changes", 
+                    new PeopleAbridged("No Changes",0,"",""), 
+                    new LightingAbridged("No Changes",0,""),
+                    new ElectricEquipmentAbridged("No Changes", 0,""),
+                    new GasEquipmentAbridged("No Changes", 0,""),
+                    new InfiltrationAbridged("No Changes", 0,""),
+                    new VentilationAbridged("No Changes"),
+                    new SetpointAbridged("No Changes", "","")
+                    );
+
+                if (updateChangesOnly)
+                    EnergyProp = noChangeEnergyProp;
+
 
                 Padding = new Padding(15);
                 Resizable = true;
@@ -30,7 +45,11 @@ namespace Honeybee.UI
                 //var cSets = EnergyLibrary.DefaultConstructionSets.ToList();
                 var cSets = EnergyLibrary.InModelEnergyProperties.ConstructionSets
                     .Where(_=>_.Obj is ConstructionSetAbridged)
-                    .Select(_ => _.Obj as ConstructionSetAbridged);
+                    .Select(_ => _.Obj as ConstructionSetAbridged).ToList();
+
+                if (updateChangesOnly)
+                    cSets.Insert(0, new ConstructionSetAbridged("No Changes"));
+
 
                 var constructionSetDP = DialogHelper.MakeDropDown(EnergyProp.ConstructionSet, (v) => EnergyProp.ConstructionSet = v?.Identifier,
                     cSets, "By Global Model ConstructionSet");
@@ -41,7 +60,7 @@ namespace Honeybee.UI
                 //cSetBtn.Height = 20;
                 //cSetBtn.Click += (s, e) => 
                 //{
-                   
+
                 //    var constrcutionSetsInModel = modelProp.ConstructionSets
                 //    .Where(_ => _.Obj is HB.ConstructionSetAbridged)
                 //    .Select(_ => _.Obj as HB.Energy.IBuildingConstructionset)
@@ -73,8 +92,11 @@ namespace Honeybee.UI
                 //var pTypes = EnergyLibrary.DefaultProgramTypes.ToList();
                 var pTypes = EnergyLibrary.InModelEnergyProperties.ProgramTypes
                     .Where(_ => _.Obj is HB.ProgramTypeAbridged)
-                    .Select(_ => _.Obj as HB.ProgramTypeAbridged);
-        
+                    .Select(_ => _.Obj as HB.ProgramTypeAbridged).ToList();
+
+                if (updateChangesOnly)
+                    pTypes.Insert(0, new ProgramTypeAbridged("No Changes"));
+
                 var programTypesDP = DialogHelper.MakeDropDown(EnergyProp.ProgramType, (v) => EnergyProp.ProgramType = v?.Identifier,
                    pTypes, "Unoccupied, NoLoads");
 
@@ -119,39 +141,63 @@ namespace Honeybee.UI
                 //    var inModelObjs = modelProp.Hvacs;
                 //    hvacs.AddRange(inModelObjs);
                 //}
+                if (updateChangesOnly)
+                    hvacs.Insert(0, new IdealAirSystemAbridged("No Changes"));
+
                 var hvacDP = DialogHelper.MakeDropDown(EnergyProp.Hvac, (v) => EnergyProp.Hvac = v?.Identifier,
                    hvacs, "Unconditioned");
 
 
                 var defaultByProgramType = "By Room Program Type";
                 //Get people
+                var ppls = EnergyLibrary.DefaultPeopleLoads.ToList();
+                if (updateChangesOnly)
+                    ppls.Insert(0, noChangeEnergyProp.People);
                 var peopleDP = DialogHelper.MakeDropDown(EnergyProp.People, (v) => EnergyProp.People = v,
-                    EnergyLibrary.DefaultPeopleLoads, defaultByProgramType);
+                    ppls, defaultByProgramType);
 
                 //Get lighting
+                var lpds = EnergyLibrary.DefaultLightingLoads.ToList();
+                if (updateChangesOnly)
+                    lpds.Insert(0, noChangeEnergyProp.Lighting);
                 var lightingDP = DialogHelper.MakeDropDown(EnergyProp.Lighting, (v) => EnergyProp.Lighting = v,
-                    EnergyLibrary.DefaultLightingLoads, defaultByProgramType);
+                    lpds, defaultByProgramType);
 
                 //Get ElecEqp
+                var eqps = EnergyLibrary.DefaultElectricEquipmentLoads.ToList();
+                if (updateChangesOnly)
+                    eqps.Insert(0, noChangeEnergyProp.ElectricEquipment);
                 var elecEqpDP = DialogHelper.MakeDropDown(EnergyProp.ElectricEquipment, (v) => EnergyProp.ElectricEquipment = v,
-                    EnergyLibrary.DefaultElectricEquipmentLoads, defaultByProgramType);
+                    eqps, defaultByProgramType);
 
                 //Get gasEqp
+                var gas = EnergyLibrary.GasEquipmentLoads.ToList();
+                if (updateChangesOnly)
+                    gas.Insert(0, noChangeEnergyProp.GasEquipment);
                 var gasEqpDP = DialogHelper.MakeDropDown(EnergyProp.GasEquipment, (v) => EnergyProp.GasEquipment = v,
-                    EnergyLibrary.GasEquipmentLoads, defaultByProgramType);
+                    gas, defaultByProgramType);
 
                 //Get infiltration
+                var inf = EnergyLibrary.DefaultInfiltrationLoads.ToList();
+                if (updateChangesOnly)
+                    inf.Insert(0, noChangeEnergyProp.Infiltration);
                 var infilDP = DialogHelper.MakeDropDown(EnergyProp.Infiltration, (v) => EnergyProp.Infiltration = v,
-                    EnergyLibrary.DefaultInfiltrationLoads, defaultByProgramType);
+                    inf, defaultByProgramType);
 
 
                 //Get ventilation
+                var vent = EnergyLibrary.DefaultVentilationLoads.ToList();
+                if (updateChangesOnly)
+                    vent.Insert(0, noChangeEnergyProp.Ventilation);
                 var ventDP = DialogHelper.MakeDropDown(EnergyProp.Ventilation, (v) => EnergyProp.Ventilation = v,
-                    EnergyLibrary.DefaultVentilationLoads, defaultByProgramType);
+                    vent, defaultByProgramType);
 
                 //Get setpoint
+                var spt = EnergyLibrary.DefaultSetpoints.ToList();
+                if (updateChangesOnly)
+                    spt.Insert(0, noChangeEnergyProp.Setpoint);
                 var setPtDP = DialogHelper.MakeDropDown(EnergyProp.Setpoint, (v) => EnergyProp.Setpoint = v,
-                    EnergyLibrary.DefaultSetpoints, defaultByProgramType);
+                    spt, defaultByProgramType);
 
 
                 DefaultButton = new Button { Text = "OK" };
