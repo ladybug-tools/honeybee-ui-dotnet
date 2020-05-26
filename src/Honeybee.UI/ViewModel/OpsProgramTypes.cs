@@ -10,7 +10,7 @@ namespace Honeybee.UI
     public class OpsProgramTypesViewModel : ViewModelBase
     {
         private IEnumerable<string> VintageJsonPaths => EnergyLibrary.BuildingVintages;
-        public IEnumerable<string> VintageNames => VintageJsonPaths.Select(_ => _.Split('\\').Last().Replace(".json", ""));
+        public IEnumerable<string> VintageNames => VintageJsonPaths.Select(_ => _.Split('\\').Last().Replace("_registry.json", ""));
         private string DefaultVintageName => VintageNames.First(_ => _.Contains("2013"));
         private Dictionary<string, IEnumerable<string>> DefaultBuildingTypes => EnergyLibrary.LoadBuildingVintage(VintageJsonPaths.First(_=>_.Contains(DefaultVintageName)));
         private IEnumerable<string> DefaultProgramTypes => DefaultBuildingTypes["LargeOffice"];

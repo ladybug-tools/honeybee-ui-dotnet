@@ -64,7 +64,7 @@ namespace Honeybee.UI
 
                 };
 
-                layout.AddRow("ASHRAE Standard:");
+                layout.AddRow("Vintage:");
                 layout.AddRow(year);
                 layout.AddRow("Building Type:");
                 layout.AddRow(buildingType);
