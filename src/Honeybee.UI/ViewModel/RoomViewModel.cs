@@ -40,18 +40,10 @@ namespace Honeybee.UI
         }
 
 
-        private static RoomViewModel _instance;
-        public static RoomViewModel Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new RoomViewModel();
-                }
-                return _instance;
-            }
-        }
+        private static readonly RoomViewModel _instance = new RoomViewModel();
+        public static RoomViewModel Instance => _instance;
+
+       
 
         public static Action<string> _action;
         public Action<string> ActionWhenChanged

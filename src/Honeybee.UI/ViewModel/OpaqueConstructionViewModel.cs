@@ -35,21 +35,10 @@ namespace Honeybee.UI
             set => Set(() => _hbObj.Layers = value, nameof(Layers));
         }
 
-        
 
+        private static readonly OpaqueConstructionViewModel _instance = new OpaqueConstructionViewModel();
+        public static OpaqueConstructionViewModel Instance => _instance;
 
-        private static OpaqueConstructionViewModel _instance;
-        public static OpaqueConstructionViewModel Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new OpaqueConstructionViewModel();
-                }
-                return _instance;
-            }
-        }
 
 
         private OpaqueConstructionViewModel()

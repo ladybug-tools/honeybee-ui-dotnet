@@ -20,20 +20,10 @@ namespace Honeybee.UI
             }
         }
 
+        private static readonly MessageViewModel _instance = new MessageViewModel();
+        public static MessageViewModel Instance => _instance;
 
-        private static MessageViewModel _instance;
-        public static MessageViewModel Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new MessageViewModel();
-                }
-                return _instance;
-            }
-        }
-  
+
 
         private MessageViewModel()
         {

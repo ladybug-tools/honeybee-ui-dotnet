@@ -552,18 +552,10 @@ namespace Honeybee.UI
         }
         #endregion
 
-        private static ProgramTypeViewModel _instance;
-        public static ProgramTypeViewModel Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new ProgramTypeViewModel();
-                }
-                return _instance;
-            }
-        }
+      
+
+        private static readonly ProgramTypeViewModel _instance = new ProgramTypeViewModel();
+        public static ProgramTypeViewModel Instance => _instance;
 
         //public void UpdatePeople(PeopleAbridged newObj)
         //{

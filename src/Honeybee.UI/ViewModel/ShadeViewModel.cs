@@ -23,18 +23,10 @@ namespace Honeybee.UI
             }
         }
 
-        private static ShadeViewModel _instance;
-        public static ShadeViewModel Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new ShadeViewModel();
-                }
-                return _instance;
-            }
-        }
+        private static readonly ShadeViewModel _instance = new ShadeViewModel();
+        public static ShadeViewModel Instance => _instance;
+
+
         public static Action<string> _action;
         public Action<string> ActionWhenChanged
         {

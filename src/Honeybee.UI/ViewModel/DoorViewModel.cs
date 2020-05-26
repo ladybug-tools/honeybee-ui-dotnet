@@ -69,18 +69,9 @@ namespace Honeybee.UI
 
         }
 
-        private static DoorViewModel _instance;
-        public static DoorViewModel Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new DoorViewModel();
-                }
-                return _instance;
-            }
-        }
+        private static readonly DoorViewModel _instance = new DoorViewModel();
+        public static DoorViewModel Instance => _instance;
+
         public static Action<string> _action;
         public Action<string> ActionWhenChanged
         {

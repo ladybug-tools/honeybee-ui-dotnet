@@ -84,18 +84,10 @@ namespace Honeybee.UI
 
         }
 
-        private static FaceViewModel _instance;
-        public static FaceViewModel Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new FaceViewModel();
-                }
-                return _instance;
-            }
-        }
+        private static readonly FaceViewModel _instance = new FaceViewModel();
+        public static FaceViewModel Instance => _instance;
+
+  
 
         public static Action<string> _action;
         public Action<string> ActionWhenChanged

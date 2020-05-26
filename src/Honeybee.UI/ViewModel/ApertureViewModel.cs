@@ -70,18 +70,10 @@ namespace Honeybee.UI
 
         }
 
-        private static ApertureViewModel _instance;
-        public static ApertureViewModel Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new ApertureViewModel();
-                }
-                return _instance;
-            }
-        }
+        private static readonly ApertureViewModel _instance = new ApertureViewModel();
+        public static ApertureViewModel Instance => _instance;
+
+
         public static Action<string> _action;
         public Action<string> ActionWhenChanged
         {
