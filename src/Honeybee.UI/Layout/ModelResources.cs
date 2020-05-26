@@ -166,6 +166,8 @@ namespace Honeybee.UI
                     _model.AddConstructionSets(dialog_rc);
 
                     // Sync to a temporary location for other places where has no access to model.
+                    _model.Properties.Energy.Constructions = HB.Helper.EnergyLibrary.InModelEnergyProperties.Constructions;
+                    _model.Properties.Energy.Materials = HB.Helper.EnergyLibrary.InModelEnergyProperties.Materials;
                     HB.Helper.EnergyLibrary.InModelEnergyProperties = _model.Properties.Energy;
                 }
                 //MessageBox.Show(this, "Working in progress");
