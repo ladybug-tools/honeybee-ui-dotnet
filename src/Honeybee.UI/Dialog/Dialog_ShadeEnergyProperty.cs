@@ -24,7 +24,7 @@ namespace Honeybee.UI
 
                 //Get constructions
                 var constructionSetDP = DialogHelper.MakeDropDown(EnergyProp.Construction, (v) => EnergyProp.Construction = v?.Identifier,
-                    EnergyLibrary.StandardsWindowConstructions, "By Global Construction Set ---------------------");
+                    EnergyLibrary.StandardsWindowConstructions.Values, "By Global Construction Set ---------------------");
 
                 //Placeholder 
                 var bcTBox = new TextBox() { };

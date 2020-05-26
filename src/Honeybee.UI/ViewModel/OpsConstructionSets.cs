@@ -17,7 +17,7 @@ namespace Honeybee.UI
         private string DefaultConstructionSetType => ConstructionSetTypes.First();
 
         public IEnumerable<string> ClimateZones => new List<string>() { "ClimateZone1", "ClimateZone2", "ClimateZone3", "ClimateZone4", "ClimateZone5", "ClimateZone6", "ClimateZone7", "ClimateZone8" };
-        private string DefaultClimateZone => "ClimateZone4";
+        private string DefaultClimateZone => ClimateZones.First();
 
 
 

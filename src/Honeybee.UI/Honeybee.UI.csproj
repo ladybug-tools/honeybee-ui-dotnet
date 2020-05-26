@@ -69,7 +69,7 @@
   </Choose>
   <ItemGroup>
     <PackageReference Include="HoneybeeSchema">
-      <Version>1.32.0.6103</Version>
+      <Version>1.32.0.39156</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>12.0.1</Version>
@@ -83,6 +83,7 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dialog\Dialog_OpsConstruction.cs" />
     <Compile Include="Dialog\Dialog_OpsProgramTypes.cs" />
     <Compile Include="Dialog\Dialog_Material.cs" />
     <Compile Include="Dialog\Dialog_Construction.cs" />
@@ -105,6 +106,7 @@
     <Compile Include="Layout\Room.cs" />
     <Compile Include="Layout\Schedule.cs" />
     <Compile Include="ViewModel\OpaqueConstructionViewModel.cs" />
+    <Compile Include="ViewModel\OpsConstructionSets.cs" />
     <Compile Include="ViewModel\OpsProgramTypes.cs" />
     <Compile Include="ViewModel\ScheduleRuleViewModel.cs" />
     <Compile Include="ViewModel\ScheduleDayViewModel.cs" />

@@ -53,7 +53,7 @@ namespace Honeybee.UI
         {
             get {
 
-                var libObjs = HB.Helper.EnergyLibrary.StandardsOpaqueMaterials.ToList();
+                var libObjs = HB.Helper.EnergyLibrary.StandardsOpaqueMaterials.Values.ToList();
                 var inModelObjs = HB.Helper.EnergyLibrary.InModelEnergyProperties.Materials
                     .Where(_ => !_.Obj.GetType().Name.Contains("EnergyWindow"))
                     .Select(_=>_.Obj as HB.Energy.IMaterial);
@@ -70,7 +70,7 @@ namespace Honeybee.UI
         {
             get
             {
-                var libObjs = HB.Helper.EnergyLibrary.StandardsWindowMaterials.ToList();
+                var libObjs = HB.Helper.EnergyLibrary.StandardsWindowMaterials.Values.ToList();
                 var inModelObjs = HB.Helper.EnergyLibrary.InModelEnergyProperties.Materials
                     .Where(_ => _.Obj.GetType().Name.Contains("EnergyWindow"))
                     .Select(_ => _.Obj as HB.Energy.IMaterial);
