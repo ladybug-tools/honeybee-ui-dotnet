@@ -99,12 +99,12 @@ namespace Honeybee.UI
         }
 
 
-        public string FullProgramType => $"{Vintage.Replace("_registry", "")}::{BuildingType}::{ProgramType}";
+        public string FullProgramType => $"{Vintage}::{BuildingType}::{ProgramType}";
        
 
 
-        private static OpsProgramTypesViewModel _instance;
-        public static OpsProgramTypesViewModel Instance => _instance ?? new OpsProgramTypesViewModel();
+        private static readonly OpsProgramTypesViewModel _instance = new OpsProgramTypesViewModel();
+        public static OpsProgramTypesViewModel Instance => _instance;
 
 
         private OpsProgramTypesViewModel()

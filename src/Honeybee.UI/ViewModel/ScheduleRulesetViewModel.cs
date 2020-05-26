@@ -152,18 +152,9 @@ namespace Honeybee.UI
         }
 
       
-        private static ScheduleRulesetViewModel _instance;
-        public static ScheduleRulesetViewModel Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new ScheduleRulesetViewModel();
-                }
-                return _instance;
-            }
-        }
+
+        private static readonly ScheduleRulesetViewModel _instance = new ScheduleRulesetViewModel();
+        public static ScheduleRulesetViewModel Instance => _instance;
 
 
         private ScheduleRulesetViewModel()

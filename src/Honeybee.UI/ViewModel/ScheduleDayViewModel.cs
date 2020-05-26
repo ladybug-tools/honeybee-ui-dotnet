@@ -43,18 +43,10 @@ namespace Honeybee.UI
             set => Set(() => hbObj.Times = value, nameof(Times));
         }
 
-        private static ScheduleDayViewModel _instance;
-        public static ScheduleDayViewModel Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new ScheduleDayViewModel();
-                }
-                return _instance;
-            }
-        }
+        private static readonly ScheduleDayViewModel _instance = new ScheduleDayViewModel();
+        public static ScheduleDayViewModel Instance => _instance;
+
+
 
 
         private ScheduleDayViewModel()
