@@ -59,7 +59,7 @@ namespace Honeybee.UI
                     var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
                     {
-                        Close((program, sch));
+                        Close((dialog_rc, sch));
                     }
 
                 };

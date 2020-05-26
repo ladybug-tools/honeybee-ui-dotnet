@@ -26,7 +26,7 @@ namespace Honeybee.UI
 
                 //Get constructions
                 var constructionSetDP = DialogHelper.MakeDropDown(EnergyProp.Construction, (v) => EnergyProp.Construction = v?.Identifier,
-                    EnergyLibrary.StandardsOpaqueConstructions, "By Room ConstructionSet---------------------");
+                    EnergyLibrary.StandardsOpaqueConstructions.Values, "By Room ConstructionSet---------------------");
 
 
                 DefaultButton = new Button { Text = "OK" };

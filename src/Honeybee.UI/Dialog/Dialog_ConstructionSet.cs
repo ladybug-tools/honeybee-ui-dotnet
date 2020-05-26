@@ -9,10 +9,7 @@ using System.Text.RegularExpressions;
 
 namespace Honeybee.UI
 {
-    public class dropArea: Eto.Forms.Control
-    {
-
-    }
+   
     public class Dialog_ConstructionSet: Dialog<HB.ConstructionSetAbridged>
     {
 
@@ -22,7 +19,7 @@ namespace Honeybee.UI
         {
             get
             {
-                var libObjs = HB.Helper.EnergyLibrary.StandardsOpaqueConstructions.ToList();
+                var libObjs = HB.Helper.EnergyLibrary.StandardsOpaqueConstructions.Values.ToList();
                 var inModelObjs = HB.Helper.EnergyLibrary.InModelEnergyProperties.Constructions
                     .Where(_ => _.Obj is HB.OpaqueConstructionAbridged)
                     .Select(_ => _.Obj as HB.OpaqueConstructionAbridged);
@@ -40,7 +37,7 @@ namespace Honeybee.UI
         {
             get
             {
-                var libObjs = HB.Helper.EnergyLibrary.StandardsWindowConstructions.ToList();
+                var libObjs = HB.Helper.EnergyLibrary.StandardsWindowConstructions.Values.ToList();
                 var inModelObjs = HB.Helper.EnergyLibrary.InModelEnergyProperties.Constructions
                     .Where(_ => _.Obj is HB.WindowConstructionAbridged)
                     .Select(_ => _.Obj as HB.WindowConstructionAbridged);
