@@ -154,6 +154,14 @@ namespace Honeybee.UI.ConsoleApp
 
                 };
 
+                var stndBtn = new Button() { Text = "Standards" };
+                stndBtn.Click += (s, e) =>
+                {
+                    var dialog = new Honeybee.UI.Dialog_OpsProgramTypes();
+                    dialog.ShowModal(this);
+
+                };
+
                 panel.AddSeparateRow(btn);
                 panel.AddSeparateRow(Messagebtn);
                 panel.AddSeparateRow(cSetbtn);
@@ -165,6 +173,7 @@ namespace Honeybee.UI.ConsoleApp
                 panel.AddSeparateRow(simuParam);
                 panel.AddSeparateRow(modelManager);
                 panel.AddSeparateRow(materialBtn);
+                panel.AddSeparateRow(stndBtn);
                 panel.AddSeparateRow(null);
                 Content = panel;
             }

@@ -221,7 +221,8 @@ namespace Honeybee.UI
                     _model.AddProgramTypes(dialog_rc);
 
                     // Sync to a temporary location for other places where has no access to model.
-                    HB.Helper.EnergyLibrary.InModelEnergyProperties = _model.Properties.Energy;
+                    _model.Properties.Energy.Schedules = HB.Helper.EnergyLibrary.InModelEnergyProperties.Schedules;
+                    HB.Helper.EnergyLibrary.InModelEnergyProperties.ProgramTypes = _model.Properties.Energy.ProgramTypes;
                 }
                 //MessageBox.Show(this, "Working in progress");
             };
