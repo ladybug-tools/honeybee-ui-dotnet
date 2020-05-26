@@ -18,7 +18,6 @@ namespace Honeybee.UI
                 //var md = model;
                 var pTypes = programTypes;
 
-
                 Padding = new Padding(5);
                 Resizable = true;
                 Title = "Program Type Manager - Honeybee";
@@ -31,6 +30,7 @@ namespace Honeybee.UI
                 layout.DefaultPadding = new Padding(10, 5);
 
                 var addNew = new Button { Text = "Add" };
+                //var import = new Button { Text = "Import" };
                 var duplicate = new Button { Text = "Duplicate" };
                 var edit = new Button { Text = "Edit" };
                 var remove = new Button { Text = "Remove" };
@@ -42,19 +42,33 @@ namespace Honeybee.UI
 
                 addNew.Click += (s, e) =>
                 {
-                    var id = Guid.NewGuid().ToString();
-                    var newPType = new ProgramTypeAbridged(id, $"New Program Type {id.Substring(0, 5)}");
-                    var dialog = new Honeybee.UI.Dialog_ProgramType(newPType);
+                    var dialog = new Honeybee.UI.Dialog_OpsProgramTypes();
                     var dialog_rc = dialog.ShowModal(this);
-                    if (dialog_rc != null)
+
+                    var type = dialog_rc.programType;
+                    var sches = dialog_rc.schedules;
+                    if (type != null)
                     {
+                        // add schedules
+                        var existingScheduleIds = HB.Helper.EnergyLibrary.InModelEnergyProperties.Schedules.Select(_ => (_.Obj as HB.IDdEnergyBaseModel).Identifier);
+                        foreach (var sch in sches)
+                        {
+                            if (existingScheduleIds.Any(_ => _ == sch.Identifier))
+                                continue;
+                            HB.Helper.EnergyLibrary.InModelEnergyProperties.Schedules.Add(sch);
+                        }
+
+                        // add program type
                         var d = gd.DataStore.Select(_ => _ as ProgramTypeAbridged).ToList();
-                        d.Add(dialog_rc);
+                        d.Add(type);
                         gd.DataStore = d;
 
-
                     }
+
                 };
+
+                
+
                 duplicate.Click += (s, e) =>
                 {
                     if (gd.SelectedItem == null)
