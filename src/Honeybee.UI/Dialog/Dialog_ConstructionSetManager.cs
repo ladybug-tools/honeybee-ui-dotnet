@@ -60,18 +60,33 @@ namespace Honeybee.UI
 
                 addNew.Click += (s, e) =>
                 {
-                    var id = Guid.NewGuid().ToString();
-                    var newConstrucionSet = new ConstructionSetAbridged(id, $"New ConstructionSet {id.Substring(0, 5)}");
-                    
-                    var dialog = new Honeybee.UI.Dialog_ConstructionSet(newConstrucionSet);
+                    var dialog = new Honeybee.UI.Dialog_OpsConstructionSet();
                     var dialog_rc = dialog.ShowModal(this);
-                    if (dialog_rc != null)
+
+                    var cSet = dialog_rc.constructionSet;
+                    var contrs = dialog_rc.constructions;
+                    var mats = dialog_rc.materials;
+                    if (cSet != null)
                     {
-                        var d = gd.DataStore.OfType<ConstructionSetAbridged>().ToList();
-                        d.Add(dialog_rc);
+                        
+                        var existingConstructionIds = HB.Helper.EnergyLibrary.InModelEnergyProperties.Constructions.Select(_ => (_.Obj as HB.IDdEnergyBaseModel).Identifier);
+                        var existingMaterialIds = HB.Helper.EnergyLibrary.InModelEnergyProperties.Materials.Select(_ => (_.Obj as HB.IDdEnergyBaseModel).Identifier);
+
+                        // add constructions
+                        var newConstrs = contrs.Where(_ => !existingConstructionIds.Any(c => c == _.Identifier)).ToList();
+                        HB.Helper.EnergyLibrary.InModelEnergyProperties.AddConstructions(newConstrs);
+
+                        // add materials
+                        var newMats = mats.Where(_ => !existingMaterialIds.Any(m => m == _.Identifier)).ToList();
+                        HB.Helper.EnergyLibrary.InModelEnergyProperties.AddMaterials(newMats);
+
+                        // add program type
+                        var d = gd.DataStore.Select(_ => _ as ConstructionSetAbridged).ToList();
+                        d.Add(cSet);
                         gd.DataStore = d;
 
                     }
+
                 };
                 duplicate.Click += (s, e) =>
                 {
