@@ -19,7 +19,7 @@ namespace Honeybee.UI
 
                 Padding = new Padding(5);
                 Resizable = true;
-                Title = "OpenStudio Standards - Honeybee";
+                Title = "OpenStudio Construction Set - Honeybee";
                 WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(450, 300);
                 this.Icon = DialogHelper.HoneybeeIcon;
@@ -63,9 +63,9 @@ namespace Honeybee.UI
 
                 layout.AddRow("Vintage:");
                 layout.AddRow(vintage);
-                layout.AddRow("Building Type:");
+                layout.AddRow("Climate Zone:");
                 layout.AddRow(climateZone);
-                layout.AddRow("Program Type:");
+                layout.AddRow("Construction Type:");
                 layout.AddRow(constructionType);
                 //layout.AddRow(textArea);
                 layout.AddSeparateRow(cloneBtn);
