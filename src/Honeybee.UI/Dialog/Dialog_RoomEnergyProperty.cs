@@ -135,12 +135,9 @@ namespace Honeybee.UI
 
 
                 //Get HVACs
-                var hvacs = EnergyLibrary.DefaultHVACs.ToList();
-                //if (modelProp.Hvacs != null)
-                //{
-                //    var inModelObjs = modelProp.Hvacs;
-                //    hvacs.AddRange(inModelObjs);
-                //}
+                //var hvacs = EnergyLibrary.DefaultHVACs.ToList();
+                var hvacs = EnergyLibrary.InModelEnergyProperties.Hvacs.ToList();
+
                 if (updateChangesOnly)
                     hvacs.Insert(0, new IdealAirSystemAbridged("No Changes"));
 
