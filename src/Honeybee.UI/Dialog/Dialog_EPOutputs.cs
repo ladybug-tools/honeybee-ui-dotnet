@@ -27,32 +27,46 @@ namespace Honeybee.UI
                 layout.Padding = new Padding(15);
 
                 //Outputs
-                var outputListBox = new ListBox();
-                outputListBox.Height = 200;
-                var outputs = output.Outputs;
-                if (outputs != null)
+                var outputListBox = new RichTextArea();
+                outputListBox.TextBinding.Bind(() =>
                 {
-                    var outputItems = outputs.Select(_ => new ListItem() { Text = _ });
-                    outputListBox.Items.AddRange(outputItems);
+                    output.Outputs = output.Outputs ?? new List<string>() { "Zone Electric Equipment Electric Energy", "Zone Lights Electric Energy" };
+                    var s = string.Join(Environment.NewLine, output.Outputs);
+                    return s;
+                }, 
+                v =>
+                {
+                    output.Outputs = v.Split(new[] { Environment.NewLine, "\n" },StringSplitOptions.RemoveEmptyEntries).Select(_=>_.Trim()).ToList();
                 }
+                );
+                outputListBox.Height = 200;
+                
                 layout.AddRow("EnergyPlus Output Names:");
                 layout.AddRow(outputListBox);
 
                 //SummaryReports
-                var sumReportsListBox = new ListBox();
+                var sumReportsListBox = new RichTextArea();
                 sumReportsListBox.Height = 100;
-                var sumReports = output.SummaryReports;
-                if (sumReports != null)
+                sumReportsListBox.TextBinding.Bind(
+                () =>
                 {
-                    var outputItems = sumReports.Select(_ => new ListItem() { Text = _ });
-                    sumReportsListBox.Items.AddRange(outputItems);
+                    output.SummaryReports = output.SummaryReports ?? new List<string>() { "AllSummary" };
+                    var s = string.Join(Environment.NewLine, output.SummaryReports);
+                    return s;
+                },
+                v =>
+                {
+                    output.SummaryReports = v.Split(new[] { Environment.NewLine, "\n"}, StringSplitOptions.RemoveEmptyEntries).Select(_ => _.Trim()).ToList();
                 }
+                );
                 layout.AddRow("EnergyPlus Summary Report:");
-                layout.AddRow(sumReportsListBox);
+                layout.AddSeparateRow(sumReportsListBox);
 
 
                 DefaultButton = new Button { Text = "OK" };
-                DefaultButton.Click += (sender, e) => Close(output);
+                DefaultButton.Click += (sender, e) => {
+                    Close(output);
+                };
 
                 AbortButton = new Button { Text = "Cancel" };
                 AbortButton.Click += (sender, e) => Close();
