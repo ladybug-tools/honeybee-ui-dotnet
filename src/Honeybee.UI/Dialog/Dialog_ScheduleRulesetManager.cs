@@ -13,7 +13,7 @@ namespace Honeybee.UI
         private List<ScheduleTypeLimit> _typeLimits;
         private ScheduleRuleset AbridgedToReal (ScheduleRulesetAbridged obj)
         {
-            var typeLimit = _typeLimits.First(_ => _.Identifier == obj.ScheduleTypeLimit);
+            var typeLimit = _typeLimits.FirstOrDefault(_ => _.Identifier == obj.ScheduleTypeLimit);
             
             var realObj = new ScheduleRuleset(obj.Identifier, obj.DaySchedules, obj.DefaultDaySchedule, obj.DisplayName,
                obj.ScheduleRules, obj.HolidaySchedule, obj.SummerDesigndaySchedule, obj.WinterDesigndaySchedule, typeLimit);
@@ -230,7 +230,10 @@ namespace Honeybee.UI
             {
                 Binding = Binding.Delegate<HB.ScheduleRulesetAbridged, string>(
                     r => {
-                        var typeLimit = _typeLimits.First(_ => _.Identifier == r.ScheduleTypeLimit);
+                        if (r.ScheduleTypeLimit == null)
+                            return null;
+                        
+                        var typeLimit = _typeLimits.FirstOrDefault(_ => _.Identifier == r.ScheduleTypeLimit);
                         return typeLimit.DisplayName ?? typeLimit.Identifier;
                     })
             };
