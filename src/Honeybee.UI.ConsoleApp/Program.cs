@@ -162,6 +162,15 @@ namespace Honeybee.UI.ConsoleApp
 
                 };
 
+                var outputs = new Button() { Text = "EPOutputs" };
+                outputs.Click += (s, e) =>
+                {
+                    var epoutput = new HB.SimulationOutput();
+                    var dialog = new Honeybee.UI.Dialog_EPOutputs(epoutput);
+                    dialog.ShowModal(this);
+
+                };
+
                 panel.AddSeparateRow(btn);
                 panel.AddSeparateRow(Messagebtn);
                 panel.AddSeparateRow(cSetbtn);
@@ -174,6 +183,7 @@ namespace Honeybee.UI.ConsoleApp
                 panel.AddSeparateRow(modelManager);
                 panel.AddSeparateRow(materialBtn);
                 panel.AddSeparateRow(stndBtn);
+                panel.AddSeparateRow(outputs);
                 panel.AddSeparateRow(null);
                 Content = panel;
             }
