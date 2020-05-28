@@ -78,9 +78,9 @@ namespace Honeybee.UI
             rulesPanel.Height = 600;
 
            
-            var summerbtn = new Button() { Text = "Summer Design Day"};
-            var winterbtn = new Button() { Text = "Winter Design Day" };
-            var holidaybtn = new Button() { Text = "Holiday" };
+            var summerbtn = new Button() { Text = "Summer Design Day", Enabled = false};
+            var winterbtn = new Button() { Text = "Winter Design Day", Enabled = false };
+            var holidaybtn = new Button() { Text = "Holiday", Enabled = false };
             rulesPanel.AddRow("Special Day Profiles:");
             rulesPanel.AddRow(summerbtn);
             rulesPanel.AddRow(winterbtn);
