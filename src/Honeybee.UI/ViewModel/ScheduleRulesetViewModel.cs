@@ -1,4 +1,5 @@
 ﻿using HoneybeeSchema;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -31,7 +32,7 @@ namespace Honeybee.UI
             set => Set(() => _hbObj.DisplayName = value, nameof(DisplayName));
         }
 
-        private ScheduleTypeLimit ScheduleTypeLimit => _hbObj.ScheduleTypeLimit;
+        private ScheduleTypeLimit ScheduleTypeLimit => _hbObj.ScheduleTypeLimit ?? new ScheduleTypeLimit("Fractional") { LowerLimit = 0 };
 
         private double _lowerLimit = -999;
         public double LowerLimit
@@ -44,14 +45,14 @@ namespace Honeybee.UI
                 // Find the lower value
                 var lowValue = 0.0;
 
-                if (ScheduleTypeLimit.LowerLimit.Obj is double low)
+                if (ScheduleTypeLimit.LowerLimit?.Obj is double low)
                 {
                     lowValue = low;
                 }
                 else
                 {
                     // no limit
-                    var min = DaySchedules.SelectMany(_ => _.Values).Min();
+                    var min = Math.Floor(DaySchedules.SelectMany(_ => _.Values).Min());
                     // Do not change schedule type limit, NEVER! ScheduleTypeLimits should only be readable
                     //_hbObj.ScheduleTypeLimit.LowerLimit = min;
                     lowValue = min;
@@ -81,14 +82,14 @@ namespace Honeybee.UI
 
                 // Find the lower value
                 var upperLimit = 0.0;
-                if (ScheduleTypeLimit.UpperLimit.Obj is double v)
+                if (ScheduleTypeLimit.UpperLimit?.Obj is double v)
                 {
                     upperLimit = v;
                 }
                 else
                 {
                     // no limit
-                    var max = DaySchedules.SelectMany(_ => _.Values).Max();
+                    var max = Math.Ceiling(DaySchedules.SelectMany(_ => _.Values).Max());
                     // Do not change schedule type limit, NEVER! ScheduleTypeLimits should only be readable
                     //_hbObj.ScheduleTypeLimit.UpperLimit = max;
                     upperLimit =  max;
