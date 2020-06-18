@@ -339,3 +339,6 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 /MigrationBackup/
+
+# mac
+.DS_Store
