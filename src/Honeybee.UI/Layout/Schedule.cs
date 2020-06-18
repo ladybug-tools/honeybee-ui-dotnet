@@ -592,7 +592,7 @@ namespace Honeybee.UI
 
             // combine layers
             var layoutLayers = new PixelLayout();
-            layoutLayers.Height = 600;
+            //layoutLayers.Height = 600;
             layoutLayers.Add(calendarBackground, 0, 0);
             layoutLayers.Add(_calendarPanel, 0, 0);
             layoutLayers.Add(calendarForeground, 0, 0);
@@ -602,7 +602,7 @@ namespace Honeybee.UI
             layoutRight.Height = 600;
             layoutRight.BeginScrollable();
             layoutRight.AddRow(layoutLayers);
-
+            layoutRight.EndScrollable();
             #endregion
 
 
@@ -610,7 +610,13 @@ namespace Honeybee.UI
 
         }
         private Control[] _applyToDayWeekBtns;
-        
+
+        // btn background color
+        private static Color _btnColor = new Button().BackgroundColor;
+        private static Color BtnColor => _btnColor;
+        private static Color _textColor = new Label().TextColor;
+        private static Color TextColor => _textColor;
+
         private Control[] GenScheduleRuleBtn(string btnName, Color color, Action setAction)
         {
             var left = new Label() { Width = 1, BackgroundColor= Colors.Black };
@@ -621,11 +627,11 @@ namespace Honeybee.UI
             labelColor.BackgroundColor = color;
 
 
-            var defaultDaybtn = new Label() { Text = btnName, Height = 25 };
+            var defaultDaybtn = new Label() { Text = btnName, Height = 25, TextColor = TextColor };
             defaultDaybtn.TextAlignment = TextAlignment.Left;
             defaultDaybtn.Wrap = WrapMode.None;
 
-            var defaultBackgroundColor = Color.FromArgb(235, 235, 235);
+            var defaultBackgroundColor = BtnColor;
             var pressColor = Color.FromArgb(200, 200, 200);
             defaultDaybtn.BackgroundColor = defaultBackgroundColor;
             defaultDaybtn.MouseMove += (s, e) =>
@@ -944,11 +950,11 @@ namespace Honeybee.UI
             {
                 var p1 = new PointF(left + i * widthPerInterval, bottom);
                 var p2 = new PointF(left + i * widthPerInterval, bottom + tickLength);
-                graphics.DrawLine(Colors.Black, p1, p2);
+                graphics.DrawLine(TextColor, p1, p2);
 
                 var tickText = $"{i * hourInterval}:00";
                 var textSize = tickfont.MeasureString(tickText);
-                graphics.DrawText(tickfont, Colors.Black, p2.X - textSize.Width / 2, p2.Y - textSize.Height / 2 + 8, tickText);
+                graphics.DrawText(tickfont, TextColor, p2.X - textSize.Width / 2, p2.Y - textSize.Height / 2 + 8, tickText);
             }
 
             //Draw vertical value ticks
@@ -961,11 +967,11 @@ namespace Honeybee.UI
             {
                 var p1 = new PointF(left, bottom - i * heightPerInterval);
                 var p2 = new PointF(left - tickLength, bottom - i * heightPerInterval);
-                graphics.DrawLine(Colors.Black, p1, p2);
+                graphics.DrawLine(TextColor, p1, p2);
 
                 var tickText = $"{start + i * valueInterval}";
                 var textSize = tickfont.MeasureString(tickText);
-                graphics.DrawText(tickfont, Colors.Black, p2.X - textSize.Width - 2, p2.Y - textSize.Height / 2, tickText);
+                graphics.DrawText(tickfont, TextColor, p2.X - textSize.Width - 2, p2.Y - textSize.Height / 2, tickText);
             }
 
         }
@@ -1313,7 +1319,7 @@ namespace Honeybee.UI
             var graphic = e.Graphics;
 
             var font = Fonts.Sans(8);
-            var brush = Brushes.Black;
+            var brush = Brushes.Cached(TextColor);
             var brush2 = Brushes.Gray;
             foreach (var item in DayRectangles)
             {
