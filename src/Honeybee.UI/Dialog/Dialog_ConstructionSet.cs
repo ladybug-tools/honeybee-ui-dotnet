@@ -21,8 +21,8 @@ namespace Honeybee.UI
             {
                 var libObjs = HB.Helper.EnergyLibrary.StandardsOpaqueConstructions.Values.ToList();
                 var inModelObjs = HB.Helper.EnergyLibrary.InModelEnergyProperties.Constructions
-                    .Where(_ => _.Obj is HB.OpaqueConstructionAbridged)
-                    .Select(_ => _.Obj as HB.OpaqueConstructionAbridged);
+                    .Select(_ => _.Obj)
+                    .OfType<HB.OpaqueConstructionAbridged>();
 
                 libObjs.AddRange(inModelObjs);
                 _opaqueConstructions = libObjs;
@@ -39,8 +39,8 @@ namespace Honeybee.UI
             {
                 var libObjs = HB.Helper.EnergyLibrary.StandardsWindowConstructions.Values.ToList();
                 var inModelObjs = HB.Helper.EnergyLibrary.InModelEnergyProperties.Constructions
-                    .Where(_ => _.Obj is HB.WindowConstructionAbridged)
-                    .Select(_ => _.Obj as HB.WindowConstructionAbridged);
+                    .Select(_ => _.Obj)
+                    .OfType<HB.WindowConstructionAbridged>();
 
                 libObjs.AddRange(inModelObjs);
                 _windowConstructions = libObjs;
