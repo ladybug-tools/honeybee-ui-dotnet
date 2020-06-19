@@ -63,10 +63,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Eto.Platform.Wpf">
-      <Version>2.5.0</Version>
+      <Version>2.5.2</Version>
     </PackageReference>
     <PackageReference Include="HoneybeeSchema">
-      <Version>1.32.0.39156</Version>
+      <Version>1.34.1.37007</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>12.0.1</Version>
