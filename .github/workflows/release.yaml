@@ -35,14 +35,19 @@ jobs:
       - name: MSBuild  
         working-directory: src/Honeybee.UI
         run: |
-          msbuild /p:Configuration=Release
           msbuild /p:Configuration=Release_Rhino
+          ls bin -R
 
       - name: Zip Build Artifact
         run: |
-          Compress-Archive -U -Path src\Honeybee.UI\bin\Release\* -DestinationPath HoneybeeUI
           Compress-Archive -U -Path src\Honeybee.UI\bin\Release_Rhino\* -DestinationPath HoneybeeUI_Rhino
-      
+
+      - name: Upload Mac Release Asset
+        uses: actions/upload-artifact@v1
+        with:
+          name: HoneybeeUI_Rhino.zip
+          path: HoneybeeUI_Rhino.zip
+
       - run: npx semantic-release
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
