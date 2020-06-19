@@ -228,7 +228,7 @@ namespace Honeybee.UI
                 lib.Columns.Add(new GridColumn() { DataCell = idCell });
 
 
-
+                
 
                 // material details
                 var detailPanel = new DynamicLayout();
@@ -315,7 +315,6 @@ namespace Honeybee.UI
 
                     //Update Preview
                     var layersItems = selItem.ToString(true).Split('\n').Select(_ => new ListItem() { Text = _ });
-                    materialDetail.Items.Clear();
                     materialDetail.Items.AddRange(layersItems);
 
                 };
@@ -328,7 +327,6 @@ namespace Honeybee.UI
                   
                     if (string.IsNullOrWhiteSpace(input))
                     {
-                        lib.DataStore = null;
                         lib.DataStore = allMaterials;
                         return;
                     }
