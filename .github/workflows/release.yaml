@@ -38,6 +38,11 @@ jobs:
           msbuild /p:Configuration=Release
           msbuild /p:Configuration=Release_Rhino
 
+      - name: Zip Build Artifact
+        run: |
+          Compress-Archive -U -Path src\HoneybeeRhino.PlugIn\bin\Release\* -DestinationPath HoneybeeUI
+          Compress-Archive -U -Path src\HoneybeeRhino.PlugIn\bin\Release_Rhino\* -DestinationPath HoneybeeUI_Rhino
+      
       - run: npx semantic-release
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
