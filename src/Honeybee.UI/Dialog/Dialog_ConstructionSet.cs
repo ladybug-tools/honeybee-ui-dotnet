@@ -60,27 +60,42 @@ namespace Honeybee.UI
                 Resizable = true;
                 Title = "Construction Set - Honeybee";
                 WindowStyle = WindowStyle.Default;
-                MinimumSize = new Size(450, 200);
+                MinimumSize = new Size(450, 600);
                 this.Icon = DialogHelper.HoneybeeIcon;
 
                 IEnumerable<HB.Energy.IConstruction> constrs = OpaqueConstructions;
 
                 // Construction List
-                var constrLBox = new ListBox();
-                constrLBox.Height = 450;
-                constrLBox.Width = 300;
+                var lib = new GridView();
+                lib.Height = 450;
+                lib.Width = 300;
+
+                lib.ShowHeader = false;
+                var nameCol = new GridColumn() { DataCell = new TextBoxCell(0) };
+                lib.Columns.Add(nameCol);
+
+                // Library items
+                lib.DataStore = constrs;
+
+
+                var idCell = new TextBoxCell
+                {
+                    Binding = Binding.Delegate<HB.Energy.IIDdEnergyBaseModel, string>(r => r.DisplayName ?? r.Identifier)
+                };
+                lib.Columns.Add(new GridColumn() { DataCell = idCell });
 
                 // Construction Layers
                 var constructionLayersLBox = new ListBox();
                 constructionLayersLBox.Height = 150;
                 constructionLayersLBox.Items.Add(new ListItem() { Text = "Construction Details" });
 
-                //HB.OpaqueConstructionAbridged selectedConstr = null;
-                var allItems = constrs.Select(_ => new ListItem() { Text = _.DisplayName ?? _.Identifier, Key = _.DisplayName ?? _.Identifier, Tag = _ });
-                constrLBox.Items.AddRange(allItems);
-                constrLBox.MouseMove += (sender, e) =>
+          
+                lib.MouseMove += (sender, e) =>
                 {
-                    var dragableArea = constrLBox.Bounds;
+                    if (e.Buttons != MouseButtons.Primary)
+                        return;
+
+                    var dragableArea = lib.Bounds;
                     dragableArea.Width -= 20;
                     dragableArea.Height -= 20;
                     var iscontained = e.Location.Y < dragableArea.Height && e.Location.X < dragableArea.Width;
@@ -88,26 +103,28 @@ namespace Honeybee.UI
                     if (!iscontained)
                         return;
 
-                    if (e.Buttons == MouseButtons.Primary && constrLBox.SelectedIndex != -1)
-                    {
-                        var selected = ((constrLBox.Items[constrLBox.SelectedIndex] as ListItem).Tag as HB.HoneybeeObject).ToJson();
-                        var data = new DataObject();
-                        data.SetObject(selected, "HBObj");
-                        constrLBox.DoDragDrop(data, DragEffects.Move);
-                        e.Handled = true;
-                    }
-                };
-                constrLBox.SelectedKeyChanged += (s, e) => 
-                {
-                    if (constrLBox.SelectedIndex == -1)
-                    {
-                        constructionLayersLBox.Items.Clear();
-                        constructionLayersLBox.Items.Add(new ListItem() { Text = "Construction Details" });
+                    if (lib.SelectedItem == null)
                         return;
-                    }
-                        
 
-                    var selectedConst = (constrLBox.Items[constrLBox.SelectedIndex] as ListItem).Tag;
+                    var selected = (lib.SelectedItem as HB.HoneybeeObject).ToJson();
+                    var data = new DataObject();
+                    data.SetString(selected, "HBObj");
+                    lib.DoDragDrop(data, DragEffects.Move);
+                    e.Handled = true;
+
+                };
+                lib.SelectedItemsChanged += (s, e) => 
+                {
+                    //Clear preview first
+                    constructionLayersLBox.Items.Clear();
+
+                    //Check current selected item from library
+                    var selItem = lib.SelectedItem as HB.HoneybeeObject;
+                    if (selItem == null)
+                        return;
+
+                    //Update Preview
+                    var selectedConst = selItem;
                     var layers = new List<string>();
                     if (selectedConst is HB.OpaqueConstructionAbridged opq)
                     {
@@ -144,16 +161,14 @@ namespace Honeybee.UI
                 searchTBox.TextChanged += (sender, e) =>
                 {
                     var input = searchTBox.Text;
-                    constrLBox.Items.Clear();
                     if (string.IsNullOrWhiteSpace(input))
                     {
-                        constrLBox.Items.AddRange(allItems);
+                        lib.DataStore = constrs;
                         return;
                     }
                     var regexPatten = ".*" + input.Replace(" ", "(.*)") + ".*";
                     var filtered = constrs.Where(_ => Regex.IsMatch(_.Identifier, regexPatten, RegexOptions.IgnoreCase) || (_.DisplayName != null? Regex.IsMatch(_.DisplayName, regexPatten, RegexOptions.IgnoreCase) : false));
-                    var filteredItems = filtered.Select(_ => new ListItem() { Text = _.Identifier, Key = _.Identifier, Tag = _ });
-                    constrLBox.Items.AddRange(filteredItems);
+                    lib.DataStore = filtered;
 
                 };
 
@@ -176,18 +191,17 @@ namespace Honeybee.UI
                         constrs = OpaqueConstructions;
                     }
                     searchTBox.Text = null;
-                    constrLBox.Items.Clear();
 
-                    var filteredItems = constrs.Select(_ => new ListItem() { Text = _.Identifier, Key = _.Identifier, Tag = _ });
-                    constrLBox.Items.AddRange(filteredItems);
+                    lib.DataStore = constrs;
+
 
                 };
 
                 Func<HB.Energy.IConstruction> getSelected = () => 
                 {
-                    if (constrLBox.SelectedIndex == -1)
+                    if (lib.SelectedRow == -1)
                         return null;
-                    return (constrLBox.Items[constrLBox.SelectedIndex] as ListItem).Tag as HB.Energy.IConstruction; 
+                    return lib.SelectedItem as HB.Energy.IConstruction; 
                 }; 
 
                 //WallConstructionSetAbridged
@@ -247,6 +261,7 @@ namespace Honeybee.UI
 
                 //Left panel
                 var panelLeft = new DynamicLayout();
+                panelLeft.DefaultSpacing = new Size(0, 5);
                 var panelNames = new DynamicLayout();
                 panelNames.Padding = new Padding(10, 5, 15, 5);
                 panelNames.Spacing = new Size(5, 5);
@@ -270,7 +285,7 @@ namespace Honeybee.UI
                 panelRight.Padding = new Padding(5);
                 panelRight.AddRow(constructionTypes);
                 panelRight.AddRow(searchTBox);
-                panelRight.AddRow(constrLBox);
+                panelRight.AddRow(lib);
                 panelRight.AddRow(constructionLayersLBox);
 
                 var panelAll = new DynamicLayout() { };
@@ -316,7 +331,7 @@ namespace Honeybee.UI
 
 
         }
-
+        private Color _defaultTextBackgroundColor = new TextBox().BackgroundColor;
 
         Control GenDropInArea(string currentValue, Action<HB.Energy.IConstruction> setAction, Type setType)
         {
@@ -328,7 +343,7 @@ namespace Honeybee.UI
             dropInValue.Width = 300;
             dropInValue.Enabled = false;
             dropInValue.Text = currentValue;
-
+            dropInValue.Height = 25;
           
             var backGround = Color.FromArgb(230, 230, 230);
             //dropInValue.BackgroundColor = backGround;
@@ -354,17 +369,17 @@ namespace Honeybee.UI
 
             dropIn.DragLeave += (sender, e) =>
             {
-                dropInValue.BackgroundColor = Colors.White;
+                dropInValue.BackgroundColor = _defaultTextBackgroundColor;
             };
             dropIn.DragOver += (sender, e) =>
             {
                 e.Effects = DragEffects.Move;
-                dropInValue.BackgroundColor = Colors.Yellow;
+                dropInValue.BackgroundColor = Colors.Gray;
             };
             dropIn.DragDrop += (sender, e) =>
             {
                 // Get drop-in object
-                var value = e.Data.GetObject("HBObj");
+                var value = e.Data.GetString("HBObj");
                 var newValue = setType.GetMethod("FromJson").Invoke(null, new object[] { value }) as HB.Energy.IConstruction;
 
 
