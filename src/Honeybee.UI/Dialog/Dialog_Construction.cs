@@ -46,6 +46,25 @@ namespace Honeybee.UI
             }
         }
 
+        private string MakeUserReadable(string materialId)
+        {
+            IEnumerable<HB.Energy.IMaterial> searchBase = OpaqueMaterials;
+
+            if (_hbObj is HB.OpaqueConstructionAbridged obj)
+            {
+                // do nothing..
+            }
+            else if (_hbObj is HB.WindowConstructionAbridged win)
+            {
+                searchBase = WindowMaterials;
+            }
+
+            var found = searchBase.FirstOrDefault(_ => _.Identifier == materialId);
+            if (found == null)
+                return materialId;
+            return found.DisplayName ?? found.Identifier;
+        }
+
        
         private static IEnumerable<HB.Energy.IMaterial> _opaqueMaterials;
 
@@ -422,7 +441,8 @@ namespace Honeybee.UI
 
 
             var dropInValue = new TextBox();
-            dropInValue.Text = text ?? "Drag from library";
+            var materialDisplayText = MakeUserReadable(text);
+            dropInValue.Text = materialDisplayText ?? "Drag from library";
             dropInValue.TextAlignment = TextAlignment.Center;
             dropInValue.Width = width;
             dropInValue.Height = height;
@@ -478,7 +498,7 @@ namespace Honeybee.UI
                 //e.Effects = DragEffects.All;
                 //dropIn.BackgroundColor = Colors.Red;
                 var newValue = e.Data.GetString("HBObj");
-                dropInValue.Text = newValue;
+                dropInValue.Text = MakeUserReadable(newValue); ;
                 actionAfterChanged(layerIndex, newValue);
 
             };
