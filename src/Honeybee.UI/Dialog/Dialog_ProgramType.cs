@@ -437,6 +437,9 @@ namespace Honeybee.UI
 
             library_GV.MouseMove += (sender, e) =>
             {
+                if (e.Buttons != MouseButtons.Primary)
+                    return;
+
                 var lib = library_GV;
                 var dragableArea = lib.Bounds;
                 dragableArea.Width -= 20;
@@ -446,16 +449,18 @@ namespace Honeybee.UI
                 if (!iscontained)
                     return;
 
-                if (e.Buttons == MouseButtons.Primary && lib.SelectedItem != null)
-                {
-                    var selected = (lib.SelectedItem as HB.HoneybeeObject).ToJson();
-                    var data = new DataObject();
-                    data.SetObject(selected, "HBObj");
-                    lib.DoDragDrop(data, DragEffects.Move);
-                    e.Handled = true;
-                }
-            };
+                var cell = library_GV.GetCellAt(e.Location);
+                if (cell.RowIndex == -1 || cell.ColumnIndex == -1)
+                    return;
 
+                var selected = (lib.SelectedItem as HB.HoneybeeObject).ToJson();
+                var data = new DataObject();
+                data.SetString(selected, "HBObj");
+                lib.DoDragDrop(data, DragEffects.Move);
+                e.Handled = true;
+
+            };
+        
             // Search box
             var searchTBox = new TextBox() { PlaceholderText = "Search" };
             searchTBox.TextChanged += (sender, e) =>
@@ -769,7 +774,7 @@ namespace Honeybee.UI
             dropIn.DragDrop += (sender, e) =>
             {
                 // Get drop-in object
-                var value = e.Data.GetObject("HBObj");
+                var value = e.Data.GetString("HBObj");
                 var newValue = type.GetMethod("FromJson").Invoke(null, new object[] { value }) as HB.IIDdBase;
 
                 if (newValue == null)
@@ -919,7 +924,7 @@ namespace Honeybee.UI
             dropIn.DragDrop += (sender, e) =>
             {
                 // Get drop-in object
-                var value = e.Data.GetObject("HBObj");
+                var value = e.Data.GetString("HBObj");
                 var newValue = type.GetMethod("FromJson").Invoke(null, new object[] { value }) as HB.Energy.ILoad;
 
 
