@@ -17,7 +17,6 @@ namespace Honeybee.UI
         //private List<string> _layers = new List<string>();
         private HB.Energy.IConstruction _hbObj;
         private DynamicLayout _layersPanel;
-  
 
         public List<string> _layers
         {
@@ -47,6 +46,7 @@ namespace Honeybee.UI
             }
         }
 
+       
         private static IEnumerable<HB.Energy.IMaterial> _opaqueMaterials;
 
         public IEnumerable<HB.Energy.IMaterial> OpaqueMaterials
@@ -82,6 +82,8 @@ namespace Honeybee.UI
             }
         }
 
+        //private bool _primMousePressed = false;
+
         public Dialog_Construction(HB.Energy.IConstruction construction)
         {
             try
@@ -93,7 +95,7 @@ namespace Honeybee.UI
                 Resizable = true;
                 Title = "Construction - Honeybee";
                 WindowStyle = WindowStyle.Default;
-                MinimumSize = new Size(650, 650);
+                MinimumSize = new Size(650, 500);
                 this.Icon = DialogHelper.HoneybeeIcon;
 
                 var OkButton = new Button { Text = "OK" };
@@ -167,7 +169,6 @@ namespace Honeybee.UI
 
 
 
-
                 //Right panel
                 var rightGroup = new GroupBox();
                 rightGroup.Text = "Library";
@@ -186,11 +187,29 @@ namespace Honeybee.UI
                 var searchTBox = new TextBox() { PlaceholderText = "Search" };
                 groupPanel.AddRow(searchTBox);
 
+                var allMaterials = OpaqueMaterials;
+
                 // Library
-                var lib = new ListBox();
+                var lib = new GridView();
                 lib.Height = 300;
                 groupPanel.AddRow(lib);
-                var allMaterials = OpaqueMaterials;
+
+                lib.ShowHeader = false;
+                var nameCol = new GridColumn() { DataCell = new TextBoxCell(0) };
+                lib.Columns.Add(nameCol);
+
+                // Library items
+                lib.DataStore = allMaterials;
+
+               
+                var idCell = new TextBoxCell
+                {
+                    Binding = Binding.Delegate<HB.Energy.IIDdEnergyBaseModel, string>(r => r.DisplayName ?? r.Identifier)
+                };
+                lib.Columns.Add(new GridColumn() { DataCell = idCell });
+
+
+
 
                 // material details
                 var detailPanel = new DynamicLayout();
@@ -221,53 +240,64 @@ namespace Honeybee.UI
                         allMaterials = this.OpaqueMaterials;
                     }
                     searchTBox.Text = null;
-                    lib.Items.Clear();
+                    //lib.Items.Clear();
 
-                    var filteredItems = allMaterials.Select(_ => new ListItem() { Text = _.Identifier, Key = _.Identifier, Tag = _ });
-                    lib.Items.AddRange(filteredItems);
+                    lib.DataStore = allMaterials;
+                    //var filteredItems = allMaterials.Select(_ => new ListItem() { Text = _.Identifier, Key = _.Identifier, Tag = _ });
+                    //lib.Items.AddRange(filteredItems);
 
                 };
 
 
+
+                //// need this to make drag drop work on Mac
+                //lib.MouseDown += (sender, e) => {
+                //    _primMousePressed = e.Buttons == MouseButtons.Primary;
+                //};
+                //lib.MouseUp += (sender, e) => {
+                //    _primMousePressed = false;
+
+                //};
                 
-                var allMaterialItems = allMaterials.Select(_ => new ListItem() { Text = _.DisplayName??_.Identifier, Key = _.DisplayName ?? _.Identifier, Tag = _ });
-                lib.Items.AddRange(allMaterialItems);
                 lib.MouseMove += (sender, e) =>
                 {
+                    if (e.Buttons != MouseButtons.Primary)
+                        return;
+
                     var dragableArea = lib.Bounds;
                     dragableArea.Width -= 20;
                     dragableArea.Height -= 20;
                     var iscontained = e.Location.Y < dragableArea.Height  && e.Location.X < dragableArea.Width;
                     //name.Text = $"{dragableArea.Width}x{dragableArea.Height}, {new Point(e.Location).X}:{new Point(e.Location).Y}, {dragableArea.Contains(new Point(e.Location))}";
                     if (!iscontained)
-                        return; 
+                        return;
 
-                    if (e.Buttons == MouseButtons.Primary && lib.SelectedIndex != -1)
-                    {
-                        var selected = lib.SelectedKey;
-                        var data = new DataObject();
-                        data.SetString(selected, "Material");
-                        lib.DoDragDrop(data, DragEffects.Move);
-                        e.Handled = true;
-                    }
+
+                    var cell = lib.GetCellAt(e.Location);
+                    if (cell.RowIndex == -1 || cell.ColumnIndex == -1)
+                        return;
+
+                    var selected = (lib.SelectedItem as HB.Energy.IMaterial).Identifier;
+                    var data = new DataObject();
+                    data.SetString(selected, "HBObj");
+                    lib.DoDragDrop(data, DragEffects.Move);
+                    e.Handled = true;
                 };
 
-                lib.SelectedIndexChanged += (s, e) => 
+                lib.SelectedItemsChanged += (s, e) => 
                 {
-                    if (lib.SelectedIndex == -1)
-                    {
-                        materialDetail.Items.Clear();
-                        return;
-                    }
+                    //Clear preview first
+                    materialDetail.Items.Clear();
 
-                    var selectedItem = (lib.Items[lib.SelectedIndex] as ListItem).Tag as HB.HoneybeeObject;
-                    var layers = new List<string>();
-                    
-                    var layersItems = selectedItem.ToString(true).Split('\n').Select(_ => new ListItem() { Text = _ });
+                    //Check current selected item from library
+                    var selItem = lib.SelectedItem as HB.HoneybeeObject;
+                    if (selItem == null)
+                        return;
+
+                    //Update Preview
+                    var layersItems = selItem.ToString(true).Split('\n').Select(_ => new ListItem() { Text = _ });
                     materialDetail.Items.Clear();
                     materialDetail.Items.AddRange(layersItems);
-
-
 
                 };
 
@@ -276,16 +306,17 @@ namespace Honeybee.UI
                 {
                     var input = searchTBox.Text;
                     materialDetail.Items.Clear();
-                    lib.Items.Clear();
+                  
                     if (string.IsNullOrWhiteSpace(input))
                     {
-                        lib.Items.AddRange(allMaterialItems);
+                        lib.DataStore = null;
+                        lib.DataStore = allMaterials;
                         return;
                     }
                     var regexPatten = ".*" + input.Replace(" ", "(.*)") + ".*";
                     var filtered = allMaterials.Where(_ => Regex.IsMatch(_.Identifier, regexPatten, RegexOptions.IgnoreCase) || (_.DisplayName != null ? Regex.IsMatch(_.DisplayName, regexPatten, RegexOptions.IgnoreCase) : false));
-                    var filteredItems = filtered.Select(_ => new ListItem() { Text = _.DisplayName ?? _.Identifier, Key = _.DisplayName ?? _.Identifier, Tag = _ });
-                    lib.Items.AddRange(filteredItems);
+               
+                    lib.DataStore = filtered;
 
                 };
 
@@ -299,7 +330,8 @@ namespace Honeybee.UI
                 //split.Panel2 = rightGroup;
 
                 var layout = new DynamicLayout();
-                layout.AddRow(leftLayout, rightGroup);
+                layout.DefaultPadding = new Padding(5);
+                layout.AddSeparateRow(leftLayout, rightGroup);
                 layout.AddSeparateRow(null, OkButton, AbortButton, null);
                 layout.AddRow(null);
 
@@ -378,32 +410,25 @@ namespace Honeybee.UI
         
             //ctrls.EndGroup();
         }
+
+        private Color TextBackgroundColor = (new TextBox()).BackgroundColor;
+        private int _leftControlsWith = 300;
         private Control GenDropInArea(int layerIndex, string text, Action<int, string> actionAfterChanged, Action<int> deleteAction)
         {
-            var width = 300;
+            var width = _leftControlsWith;
             var height = 36;
 
             var layerPanel = new PixelLayout();
 
-            var backgroundLayer = new Label();
-            backgroundLayer.Width = width;
-            backgroundLayer.Height = height;
-            backgroundLayer.BackgroundColor = Colors.White;
 
-
-            var dropInValue = new Label();
+            var dropInValue = new TextBox();
             dropInValue.Text = text ?? "Drag from library";
             dropInValue.TextAlignment = TextAlignment.Center;
-            dropInValue.VerticalAlignment = VerticalAlignment.Center;
-
-            dropInValue.Width = width-50;
+            dropInValue.Width = width;
             dropInValue.Height = height;
-            var backGround = string.IsNullOrEmpty(text) ? Color.FromArgb(230, 230, 230) : Colors.White;
-            dropInValue.BackgroundColor = Colors.Transparent;
+            dropInValue.Enabled = false;
 
-            
-
-
+   
 
             var dropIn = new Drawable();
             dropIn.AllowDrop = true;
@@ -438,12 +463,12 @@ namespace Honeybee.UI
             //};
             dropIn.DragLeave += (sender, e) =>
             {
-                backgroundLayer.BackgroundColor = Colors.White;
+                dropInValue.BackgroundColor = TextBackgroundColor;
             };
             dropIn.DragOver += (sender, e) =>
             {
                 e.Effects = DragEffects.Move;
-                backgroundLayer.BackgroundColor = Color.FromArgb(230, 230, 230);
+                dropInValue.BackgroundColor = Color.FromArgb(230, 230, 230);
 
             };
             dropIn.DragDrop += (sender, e) =>
@@ -452,20 +477,20 @@ namespace Honeybee.UI
                 //    return;
                 //e.Effects = DragEffects.All;
                 //dropIn.BackgroundColor = Colors.Red;
-                var newValue = e.Data.GetString("Material");
+                var newValue = e.Data.GetString("HBObj");
                 dropInValue.Text = newValue;
                 actionAfterChanged(layerIndex, newValue);
 
             };
-            layerPanel.Add(backgroundLayer, 0, 0);
-            layerPanel.Add(dropInValue, 15, 0);
+            //layerPanel.Add(backgroundLayer, 0, 0);
+            layerPanel.Add(dropInValue, 0, 0);
             layerPanel.Add(dropIn, 0, 0);
             layerPanel.Add(deleteBtn, width - 26, 8);
             return layerPanel;
         }
         private Control GenAddMoreDropInArea(Action<string> actionAfterNewDroppedIn)
         {
-            var width = 300;
+            var width = _leftControlsWith;
             var height = 60;
 
             var layerPanel = new PixelLayout();
@@ -499,7 +524,7 @@ namespace Honeybee.UI
             dropIn.DragDrop += (sender, e) =>
             {
               
-                var newValue = e.Data.GetString("Material");
+                var newValue = e.Data.GetString("HBObj");
                 //dropInValue.Text = newValue;
                 actionAfterNewDroppedIn(newValue);
 
