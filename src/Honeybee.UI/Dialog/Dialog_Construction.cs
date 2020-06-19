@@ -428,7 +428,6 @@ namespace Honeybee.UI
             //ctrls.EndGroup();
         }
 
-        private Color TextBackgroundColor = (new TextBox()).BackgroundColor;
         private int _leftControlsWith = 300;
         private Control GenDropInArea(int layerIndex, string text, Action<int, string> actionAfterChanged, Action<int> deleteAction)
         {
@@ -445,7 +444,7 @@ namespace Honeybee.UI
             dropInValue.Width = width;
             dropInValue.Height = height;
             dropInValue.Enabled = false;
-
+            dropInValue.BackgroundColor = Colors.Transparent;
    
 
             var dropIn = new Drawable();
@@ -481,12 +480,12 @@ namespace Honeybee.UI
             //};
             dropIn.DragLeave += (sender, e) =>
             {
-                dropInValue.BackgroundColor = TextBackgroundColor;
+                dropInValue.BackgroundColor = Colors.Transparent;
             };
             dropIn.DragOver += (sender, e) =>
             {
                 e.Effects = DragEffects.Move;
-                dropInValue.BackgroundColor = Color.FromArgb(230, 230, 230);
+                dropInValue.BackgroundColor = Colors.LightGrey;
 
             };
             dropIn.DragDrop += (sender, e) =>
@@ -537,7 +536,7 @@ namespace Honeybee.UI
             dropIn.DragOver += (sender, e) =>
             {
                 e.Effects = DragEffects.Move;
-                dropInValue.BackgroundColor = Colors.Yellow;
+                dropInValue.BackgroundColor = Colors.LightGrey;
             };
             dropIn.DragDrop += (sender, e) =>
             {
