@@ -7,12 +7,14 @@
             {
                 "assets": [
                     {
-                        "path": "Honeybee.UI.zip",
-                        "label": "Honeybee.UI.zip"
+                        "path": "HoneybeeUI.zip",
+                        "name": "HoneybeeUI.zip",
+                        "label": "HoneybeeUI.zip"
                     },
                     {
-                        "path": "Honeybee.UI.Rhino.zip",
-                        "label": "Honeybee.UI.Rhino.zip"
+                        "path": "HoneybeeUI_Rhino.zip",
+                        "name": "HoneybeeUI_Rhino.zip",
+                        "label": "HoneybeeUI_Rhino.zip"
                     }
                 ]
             }
