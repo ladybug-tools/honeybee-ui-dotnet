@@ -51,7 +51,7 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <Choose>
-    <When Condition="'$(Configuration)' == 'Debug_Rhino' OR '$(Configuration)' == 'Release_Rhino'">
+    <When Condition="'$(Configuration)' == 'Release_Rhino'">
       <ItemGroup>
         <Reference Include="Eto, Version=2.5.0.0, Culture=neutral, PublicKeyToken=552281e97c755530, processorArchitecture=MSIL">
           <HintPath>..\..\lib\RhinoEto\Eto.dll</HintPath>
