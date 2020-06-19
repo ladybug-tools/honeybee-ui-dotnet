@@ -40,8 +40,8 @@ jobs:
 
       - name: Zip Build Artifact
         run: |
-          Compress-Archive -U -Path src\HoneybeeRhino.PlugIn\bin\Release\* -DestinationPath HoneybeeUI
-          Compress-Archive -U -Path src\HoneybeeRhino.PlugIn\bin\Release_Rhino\* -DestinationPath HoneybeeUI_Rhino
+          Compress-Archive -U -Path src\Honeybee.UI\bin\Release\* -DestinationPath HoneybeeUI
+          Compress-Archive -U -Path src\Honeybee.UI\bin\Release_Rhino\* -DestinationPath HoneybeeUI_Rhino
       
       - run: npx semantic-release
         env:
