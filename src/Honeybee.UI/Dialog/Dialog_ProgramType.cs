@@ -260,7 +260,7 @@ namespace Honeybee.UI
             pTypePanel.AddSeparateRow(new Label() { Text = "ID: " }, new Label() { Text = _vm.hbObj.Identifier, Enabled = false });
             pTypePanel.AddSeparateRow(new Label() { Text = "Name:" });
             pTypePanel.AddSeparateRow(nameTbx);
-
+            pTypePanel.AddSpace();
 
             pTypePanel.AddSeparateRow(_peopleGroup);
             pTypePanel.AddSeparateRow(_lightingGroup);
@@ -721,28 +721,33 @@ namespace Honeybee.UI
         List<Control> GenDropInInputControl<TObject>(string inputName, Expression<Func<TObject, string>> propertyIdentifierExpression, Expression<Func<TObject, string>> propertyNameExpression, Type type)
             where TObject : ViewModelBase
         {
+            var w = 317;
+            var h = 25;
             var inputLabel = new Label() { Text = inputName, Width = 150 };
 
+            // for tracking ID
             var layerPanel = new PixelLayout();
             var dropInValueIdentifier = new TextBox() {};
-            dropInValueIdentifier.Width = 312;
+            dropInValueIdentifier.Width = w;
+            dropInValueIdentifier.Height = h;
             dropInValueIdentifier.Enabled = false;
-            //dropInValue.TextBinding.Bind(propertyExpression)
+            dropInValueIdentifier.Visible = false;
             dropInValueIdentifier.TextBinding.BindDataContext(propertyIdentifierExpression);
 
             // for display name
             var dropInValueName = new TextBox() { PlaceholderText = "Drag from library" };
-            dropInValueName.Width = 312;
+            dropInValueName.Width = w;
+            dropInValueName.Height = h;
             dropInValueName.Enabled = false;
-            //dropInValue.TextBinding.Bind(propertyExpression)
+            dropInValueIdentifier.BackgroundColor = Colors.Transparent;
             dropInValueName.TextBinding.BindDataContext(propertyNameExpression);
 
 
 
             var dropIn = new Drawable();
             dropIn.AllowDrop = true;
-            dropIn.Width = dropInValueIdentifier.Width;
-            dropIn.Height = 25;
+            dropIn.Width = w;
+            dropIn.Height = h;
             dropIn.BackgroundColor = Colors.Transparent;
 
             var deleteBtn = new Button();
@@ -764,12 +769,12 @@ namespace Honeybee.UI
 
             dropIn.DragLeave += (sender, e) =>
             {
-                dropInValueName.BackgroundColor = Colors.White;
+                dropInValueName.BackgroundColor = Colors.Transparent;
             };
             dropIn.DragOver += (sender, e) =>
             {
                 e.Effects = DragEffects.Move;
-                dropInValueName.BackgroundColor = Colors.Yellow;
+                dropInValueName.BackgroundColor = Colors.LightGrey;
             };
             dropIn.DragDrop += (sender, e) =>
             {
@@ -864,16 +869,17 @@ namespace Honeybee.UI
         //public delegate void SetLoadAction(ILoad load);
         private DynamicLayout GenGroup(string groupName, List<Control> inputCtrlRows, bool isNull, Action<ILoad> setAction, Type type)
         {
+
             //var gp = new GroupBox() { Text = groupName};
-            var separater = new DynamicLayout() { Height = 1, DefaultPadding = new Padding(10), BackgroundColor = Color.FromArgb(150, 150, 150) };
+            var separater = new DynamicLayout() { Height = 1, BackgroundColor = Color.FromArgb(150, 150, 150) };
             var titleLabel = new Label() { Text = groupName }; 
             var f = titleLabel.Font;
             titleLabel.Font = new Font(f.Family, f.Size, FontStyle.Bold);
+     
 
+            var layout = new DynamicLayout() { DefaultPadding = new Padding(0, 0, 0, 15) };
 
-
-            var layout = new DynamicLayout() {};
-            var layoutLoads = new DynamicLayout() { Spacing = new Size(3, 3), Padding = new Padding(5) };
+            var layoutLoads = new DynamicLayout() { DefaultPadding = new Padding(0,3) };
             layoutLoads.Visible = !isNull;
             var layerDropIn = new PixelLayout();
             layerDropIn.Visible = isNull;
@@ -919,7 +925,7 @@ namespace Honeybee.UI
             dropIn.DragOver += (sender, e) =>
             {
                 e.Effects = DragEffects.Move;
-                layout.BackgroundColor = Colors.Yellow;
+                layout.BackgroundColor = Colors.LightGrey;
             };
             dropIn.DragDrop += (sender, e) =>
             {
