@@ -157,8 +157,7 @@ namespace Honeybee.UI
                 .Where(_ => _.Obj is HB.ConstructionSetAbridged)
                 .Select(_ => _.Obj as HB.Energy.IBuildingConstructionset)
                 .ToList();
-                var globalCSet = _model.Properties.Energy.GlobalConstructionSet;
-                var dialog = new Dialog_ConstructionSetManager(constrcutionSetsInModel, (id)=> id == globalCSet);
+                var dialog = new Dialog_ConstructionSetManager(constrcutionSetsInModel);
                 var dialog_rc = dialog.ShowModal(this);
                 if (dialog_rc != null)
                 {
