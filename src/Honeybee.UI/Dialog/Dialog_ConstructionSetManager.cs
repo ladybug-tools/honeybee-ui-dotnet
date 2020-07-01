@@ -12,13 +12,12 @@ namespace Honeybee.UI
     public class Dialog_ConstructionSetManager : Dialog<List<HB.Energy.IBuildingConstructionset>>
     {
      
-        public Dialog_ConstructionSetManager(List<HB.Energy.IBuildingConstructionset> constructionsets, Func<string, bool> checkIfGlobalConstructionSet)
+        public Dialog_ConstructionSetManager(List<HB.Energy.IBuildingConstructionset> constructionsets)
         {
             try
             {
                 //var md = model;
                
-
                 Padding = new Padding(5);
                 Resizable = true;
                 Title = "ConstructionSet Manager - Honeybee";
@@ -149,7 +148,7 @@ namespace Honeybee.UI
                     }
 
                     var index = gd.SelectedRow;
-                    if ( checkIfGlobalConstructionSet(selected.Identifier))
+                    if ( selected.Identifier.Equals("Default Generic Construction Set"))
                     {
                         MessageBox.Show(this, $"{selected.DisplayName ?? selected.Identifier } cannot be removed, because it is set to default global construction set.");
                         return;
