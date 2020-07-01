@@ -52,7 +52,7 @@ namespace Honeybee.UI
 
 
                 var constructionSetDP = DialogHelper.MakeDropDown(EnergyProp.ConstructionSet, (v) => EnergyProp.ConstructionSet = v?.Identifier,
-                    cSets, "By Global Model ConstructionSet");
+                    cSets, "Default Generic Construction Set");
 
                 //var cSetBtn = new Button();
                 //cSetBtn.Text = "+";
