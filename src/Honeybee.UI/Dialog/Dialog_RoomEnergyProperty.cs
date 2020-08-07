@@ -246,7 +246,7 @@ namespace Honeybee.UI
             }
             catch (Exception e)
             {
-                throw e;
+                throw new ArgumentException($"Failed to open RoomEnergyProperty dialog:\n{e.Message}");
             }
             
             
