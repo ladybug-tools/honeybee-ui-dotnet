@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;NET45</TargetFrameworks>
+    <TargetFramework>NET45</TargetFramework>
     <Authors>Ladybug Tools</Authors>
     <Company>LadybugTools LLC</Company>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
@@ -15,10 +15,16 @@
     <AssemblyVersion>0.0.0.1</AssemblyVersion>
     <FileVersion>0.0.0.1</FileVersion>
   </PropertyGroup>
-
+  
   <ItemGroup>
     <PackageReference Include="HoneybeeSchema" Version="1.36.0.1" />
-    <PackageReference Include="Eto.Forms" Version="2.5.4" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Reference Include="Eto, Version=2.5.0.0, Culture=neutral, PublicKeyToken=552281e97c755530, processorArchitecture=MSIL">
+      <HintPath>..\..\lib\RhinoEto\Eto.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
 
 </Project>
