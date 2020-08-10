@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29920.165
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Honeybee.UI", "src\Honeybee.UI\Honeybee.UI.csproj", "{2BCA5DA3-6EE5-4D59-BB33-E8C327E49145}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Honeybee.UI.ConsoleApp", "src\Honeybee.UI.ConsoleApp\Honeybee.UI.ConsoleApp.csproj", "{DFC2C235-FDC0-482B-B9C7-B22E97AC927F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demo", "Demo", "{D7B700E8-C192-44CA-A5C0-CD5BB57CED9C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Honeybee.UI.ConsoleAppMac", "src\Honeybee.UI.ConsoleApp\Honeybee.UI.ConsoleAppMac.csproj", "{1727471B-4058-4DF5-B143-806B68883AC9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Honeybee.UI", "src\Honeybee.UI\Honeybee.UI.csproj", "{E514D143-0B9D-4B94-8339-356232F2372D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,12 +18,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2BCA5DA3-6EE5-4D59-BB33-E8C327E49145}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2BCA5DA3-6EE5-4D59-BB33-E8C327E49145}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2BCA5DA3-6EE5-4D59-BB33-E8C327E49145}.Release_Rhino|Any CPU.ActiveCfg = Release_Rhino|Any CPU
-		{2BCA5DA3-6EE5-4D59-BB33-E8C327E49145}.Release_Rhino|Any CPU.Build.0 = Release_Rhino|Any CPU
-		{2BCA5DA3-6EE5-4D59-BB33-E8C327E49145}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2BCA5DA3-6EE5-4D59-BB33-E8C327E49145}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DFC2C235-FDC0-482B-B9C7-B22E97AC927F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DFC2C235-FDC0-482B-B9C7-B22E97AC927F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DFC2C235-FDC0-482B-B9C7-B22E97AC927F}.Release_Rhino|Any CPU.ActiveCfg = Release|Any CPU
@@ -35,6 +29,12 @@ Global
 		{1727471B-4058-4DF5-B143-806B68883AC9}.Release_Rhino|Any CPU.Build.0 = Release|Any CPU
 		{1727471B-4058-4DF5-B143-806B68883AC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1727471B-4058-4DF5-B143-806B68883AC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E514D143-0B9D-4B94-8339-356232F2372D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E514D143-0B9D-4B94-8339-356232F2372D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E514D143-0B9D-4B94-8339-356232F2372D}.Release_Rhino|Any CPU.ActiveCfg = Release|Any CPU
+		{E514D143-0B9D-4B94-8339-356232F2372D}.Release_Rhino|Any CPU.Build.0 = Release|Any CPU
+		{E514D143-0B9D-4B94-8339-356232F2372D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E514D143-0B9D-4B94-8339-356232F2372D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

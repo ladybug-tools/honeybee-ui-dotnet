@@ -3,7 +3,6 @@ using Eto.Forms;
 using System.Linq;
 using HB = HoneybeeSchema;
 using System.Collections.Generic;
-using System.Drawing.Drawing2D;
 
 namespace Honeybee.UI
 {

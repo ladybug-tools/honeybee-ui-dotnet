@@ -45,12 +45,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Honeybee.UI\Honeybee.UI.csproj">
-      <Project>{2bca5da3-6ee5-4d59-bb33-e8c327e49145}</Project>
-      <Name>Honeybee.UI</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Eto.Platform.Wpf">
       <Version>2.5.0</Version>
     </PackageReference>

@@ -11,20 +11,20 @@ namespace Honeybee.UI
         public static Icon HoneybeeIcon => GetHoneybeeIcon();
         //public static Icon LadybugIcon => Icon.FromResource("Honeybee.UI.EmbeddedResources.ladybug.ico");
 
-        static System.Drawing.Icon _icon;
+        //static System.Drawing.Icon _icon;
         static Eto.Drawing.Icon _etoicon;
 
-        public static System.Drawing.Icon GetHoneybeeIcon(System.Drawing.Size sizeInPixels)
-        {
-            if (_icon == null)
-            {
-                using (var stream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("Honeybee.UI.EmbeddedResources.honeybee.ico"))
-                {
-                    if (stream != null) _icon = new System.Drawing.Icon(stream, sizeInPixels);
-                }
-            }
-            return _icon;
-        }
+        //public static System.Drawing.Icon GetHoneybeeIcon(System.Drawing.Size sizeInPixels)
+        //{
+        //    if (_icon == null)
+        //    {
+        //        using (var stream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("Honeybee.UI.EmbeddedResources.honeybee.ico"))
+        //        {
+        //            if (stream != null) _icon = new System.Drawing.Icon(stream, sizeInPixels);
+        //        }
+        //    }
+        //    return _icon;
+        //}
 
         public static Eto.Drawing.Icon GetHoneybeeIcon()
         {
@@ -35,6 +35,7 @@ namespace Honeybee.UI
                     if (stream != null) _etoicon = new Eto.Drawing.Icon(stream);
                 }
             }
+            
             return _etoicon;
         }
 
