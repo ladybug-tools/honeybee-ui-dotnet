@@ -13,7 +13,8 @@ namespace Honeybee.UI.ConsoleApp
         [STAThread]
         static void Main(string[] args)
         {
-            new Eto.Forms.Application().Run(new MyForm());
+            var app = new Application();
+            app.Run(new MyForm());
             Console.ReadLine();
         }
 
