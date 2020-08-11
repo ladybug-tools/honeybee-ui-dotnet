@@ -12,31 +12,13 @@ jobs:
     steps:
       - name: "Checkout Master Branch"
         uses: actions/checkout@v2
-        
-      - name: Setup MSbuild
-        uses: microsoft/setup-msbuild@v1.0.0
-        
-      - name: Setup Nuget.exe
-        uses: nuget/setup-nuget@v1
-        
-      - name: Setup npm
-        uses: actions/setup-node@v1
-        with:
-          node-version: '12.x'
+  
 
-      - name: Set up Python
-        uses: actions/setup-python@v1
-        with:
-          python-version: '3.7'
-
-      - name: Nuget Restore
-        run: nuget restore 
-
-      - name: MSBuild  
+      - name: Compile  
         working-directory: src/Honeybee.UI
         run: |
-          msbuild /p:Configuration=Release /restore
-          msbuild /p:Configuration=Release_Rhino /restore
+          dotnet build Honeybee.UI.csproj --configuration Release /nowarn:CS0472,CS0108 --force --no-incremental
+          dotnet build Honeybee.UI.Rhino.csproj --configuration Release /nowarn:CS0472,CS0108 --force --no-incremental
           ls bin -R
 
       - name: Zip Build Artifact
@@ -47,9 +29,20 @@ jobs:
       - run: npx semantic-release
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-
-      - name: Deploy to Nuget
-        env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      
+      - name: update the assembly version
         run: |
-          python deploy.py
+          python update_assembly_version.py
+
+      - name: Deploy
+        working-directory: src/Honeybee.UI
+        run: |
+          echo "Rebuilding Honeybee.UI with the new version......"
+          dotnet build Honeybee.UI.csproj --configuration Release /nowarn:CS0472,CS0108 --force --no-incremental
+          echo "Deploying Honeybee.UI......"
+          dotnet nuget push bin\Release\Honeybee.UI.*.nupkg -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json
+
+          echo "Rebuilding Honeybee.UI.Rhino with the new version......"
+          dotnet build Honeybee.UI.Rhino.csproj --configuration Release /nowarn:CS0472,CS0108 --force --no-incremental
+          echo "Deploying Honeybee.UI for Rhino......"
+          dotnet nuget push bin\Release_Rhino\Honeybee.UI.Rhino.*.nupkg -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json
