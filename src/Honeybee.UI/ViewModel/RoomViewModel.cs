@@ -80,7 +80,8 @@ namespace Honeybee.UI
         {
             HoneybeeObject = honeybeeRoom;
             //HoneybeeObject.DisplayName = honeybeeRoom.DisplayName ?? string.Empty;
-            FaceCount = honeybeeRoom.Faces.Count().ToString();
+            HoneybeeObject.Faces = honeybeeRoom.Faces.Where(_ => _ != null).ToList();
+            FaceCount = HoneybeeObject.Faces.Count().ToString();
             ActionWhenChanged = actionWhenChanged ?? delegate (string m) { };
             Redraw = redrawDisplay ?? delegate (string m) { };
         }
