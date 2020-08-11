@@ -30,6 +30,8 @@ namespace Honeybee.UI
         {
             if (_etoicon == null)
             {
+
+                // var rs = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceNames();
                 using (var stream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("Honeybee.UI.EmbeddedResources.honeybee.ico"))
                 {
                     if (stream != null) _etoicon = new Eto.Drawing.Icon(stream);
