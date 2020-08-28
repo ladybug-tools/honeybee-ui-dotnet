@@ -114,6 +114,23 @@ namespace Honeybee.UI
             return layout;
         }
 
+        /// <summary>
+        /// This old method for not breaking depending programs.
+        /// Use Honeybee.UI.View.Room.Instance.UpdateRoomView() instead.
+        /// </summary>
+        /// <param name="HoneybeeObj"></param>
+        /// <param name="geometryReset"></param>
+        /// <param name="redrawDisplay"></param>
+        /// <returns></returns>
+        public static Panel UpdateRoomPanel(HB.Room HoneybeeObj, Action<string> geometryReset = default, Action<string> redrawDisplay = default)
+        {
+            var panel = View.Room.Instance;
+            panel.UpdateRoomView(HoneybeeObj, geometryReset, redrawDisplay);
+            return panel;
+        }
+
+
+
 
     }
 }

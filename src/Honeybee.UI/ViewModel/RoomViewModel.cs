@@ -5,75 +5,54 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-
+using System.Windows.Input;
 
 namespace Honeybee.UI
 {
-    public class RoomViewModel : INotifyPropertyChanged
+    public class RoomViewModel : ViewModelBase
     {
-        private Room _hbObj;
+        private Room _hbObj = new Room("InvalidRoom", new List<Face>(), new RoomPropertiesAbridged());
         public Room HoneybeeObject
         {
             get { return _hbObj; }
-            private set 
-            {
-                if (_hbObj != value)
-                {
-                    _hbObj = value;
-                    OnPropertyChanged();
-                }
-            }
+            private set { this.Set(() => _hbObj = value, nameof(HoneybeeObject)); }
         }
 
         private string _faceCount;
         public string FaceCount
         {
-            get { return _faceCount.ToString(); }
-            private set
-            {
-                if (_faceCount != value)
-                {
-                    _faceCount = value;
-                    OnPropertyChanged();
-                }
+            get { return _faceCount; }
+            private set { this.Set(() => _faceCount = value, nameof(FaceCount)); }
+        }
+
+        private string _displayName;
+
+        public string DisplayName
+        {
+            get { return _displayName; }
+            private set { 
+                this.Set(() => _faceCount = value, nameof(FaceCount));
+                this._hbObj.DisplayName = value;
             }
         }
 
 
-        private static readonly RoomViewModel _instance = new RoomViewModel();
-        public static RoomViewModel Instance => _instance;
 
-       
 
-        public static Action<string> _action;
-        public Action<string> ActionWhenChanged
-        {
-            get { return _action; }
-            private set
-            {
-                if (_action != value)
-                {
-                    _action = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
+        /// <summary>
+        /// Action after the property is changed.
+        /// </summary>
+        public Action<string> ActionWhenChanged { get; private set; }
+        /// <summary>
+        /// Action to execute when a subsurface is selected from face list.
+        /// </summary>
+        public Action<string> Redraw { get; private set; }
 
-        public static Action<string> _redraw;
-        public Action<string> Redraw
+        private View.Room Control;
+
+        public RoomViewModel(View.Room roomPanel)
         {
-            get { return _redraw; }
-            private set
-            {
-                if (_redraw != value)
-                {
-                    _redraw = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-        private RoomViewModel()
-        {
+            this.Control = roomPanel;
         }
 
         public void Update(Room honeybeeRoom, Action<string> actionWhenChanged, Action<string> redrawDisplay)
@@ -86,17 +65,51 @@ namespace Honeybee.UI
             Redraw = redrawDisplay ?? delegate (string m) { };
         }
 
-        void OnPropertyChanged([CallerMemberName] string memberName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(memberName));
-          
-        }
-        public event PropertyChangedEventHandler PropertyChanged;
 
-        public string GetIDTitle()
+        public void OnRoomFaceSelected(object s, EventArgs e)
         {
-            return $"ID: {HoneybeeObject.Identifier}";
+            var sel = this.Control.FacesGridView.SelectedItem as Face;
+            if (sel != null)
+                this.Redraw(sel.Identifier);
+            else
+                this.Redraw(null);
         }
+
+        public void OnRoomFaceMouseDoubleClick(object s, EventArgs e)
+        {
+            var sel = this.Control.FacesGridView.SelectedItem as Face;
+            if (sel == null)
+                return;
+
+            var dialog = new Dialog_Face(sel);
+            var dialog_rc = dialog.ShowModal(Helper.Owner);
+            if (dialog_rc != null)
+            {
+                //MessageBox.Show(dialog_rc.ToJson());
+                var faces = this.HoneybeeObject.Faces;
+                var index = faces.FindIndex(_ => _.Identifier == dialog_rc.Identifier);
+                this.HoneybeeObject.Faces[index] = dialog_rc;
+
+                this.ActionWhenChanged($"Set {dialog_rc.Identifier} Properties");
+            }
+            //MessageBox.Show(sel.ToJson());
+        }
+
+        public ICommand RoomEnergyPropertyBtnClick => new RelayCommand(() => {
+            var energyProp = this.HoneybeeObject.Properties.Energy ?? new RoomEnergyPropertiesAbridged();
+            energyProp = RoomEnergyPropertiesAbridged.FromJson(energyProp.ToJson());
+            var dialog = new Dialog_RoomEnergyProperty(energyProp);
+            var dialog_rc = dialog.ShowModal(Helper.Owner);
+            if (dialog_rc != null)
+            {
+                this.HoneybeeObject.Properties.Energy = dialog_rc;
+                this.ActionWhenChanged($"Set {this.HoneybeeObject.Identifier} Energy Properties ");
+            }
+        });
+        public ICommand HBDataBtnClick => new RelayCommand(() => {
+            Dialog_Message.Show(Helper.Owner, this.HoneybeeObject.ToJson(), "Honeybee Data");
+        });
+
     }
 
 
