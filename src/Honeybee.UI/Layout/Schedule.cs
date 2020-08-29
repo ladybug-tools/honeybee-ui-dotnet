@@ -4,8 +4,6 @@ using HB = HoneybeeSchema;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Globalization;
-using HoneybeeSchema;
 
 namespace Honeybee.UI
 {
@@ -45,7 +43,7 @@ namespace Honeybee.UI
         private Drawable _scheduleDaydrawable;
         private Drawable _calendarPanel;
         private Color _defaultColor = Color.FromArgb(184, 229, 255);
-        private List<(Color color, ScheduleRuleAbridged schRule)> colorsetPerRuleset = new List<(Color, ScheduleRuleAbridged)>();
+        private List<(Color color, HB.ScheduleRuleAbridged schRule)> colorsetPerRuleset = new List<(Color, HB.ScheduleRuleAbridged)>();
         private Size _calendarSize = new Size(200, 1550);
 
         public Panel_Schedule(HB.ScheduleRuleset scheduleRuleset)
@@ -88,7 +86,7 @@ namespace Honeybee.UI
             rulesPanel.AddRow("Day Profiles:");
             var random = new Random();
 
-            var rules = _vm.ScheduleRules ?? new List<ScheduleRuleAbridged>();
+            var rules = _vm.ScheduleRules ?? new List<HB.ScheduleRuleAbridged>();
             foreach (var item in rules)
             {
                 if (string.IsNullOrEmpty(item.ScheduleDay))

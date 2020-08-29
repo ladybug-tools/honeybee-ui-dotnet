@@ -4,9 +4,6 @@ using HB = HoneybeeSchema;
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.IO.Compression;
-using HoneybeeSchema;
-using Newtonsoft.Json.Converters;
 using System.Text.RegularExpressions;
 
 namespace Honeybee.UI

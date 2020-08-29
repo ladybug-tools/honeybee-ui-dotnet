@@ -27,8 +27,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="HoneybeeSchema" Version="1.38.1" />
-    <PackageReference Include="Eto.Forms" Version="2.5.5" />
+    <PackageReference Include="HoneybeeSchema" Version="1.38.1.3" />
+    <PackageReference Include="Eto.Forms" Version="2.5.4" />
   </ItemGroup>
 
 </Project>

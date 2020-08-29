@@ -48,9 +48,13 @@ namespace Honeybee.UI.View
 
 
             layout.AddSeparateRow(new Label { Text = "Properties:" });
-            var rmPropBtn = new Button { Text = "Room Energy Properties" };
-            rmPropBtn.Command = vm.RoomEnergyPropertyBtnClick;
-            layout.AddSeparateRow(rmPropBtn);
+            var rmRadPropBtn = new Button { Text = "Room Radiance Properties" };
+            rmRadPropBtn.Command = vm.RoomRadiancePropertyBtnClick;
+            layout.AddSeparateRow(rmRadPropBtn);
+
+            var rmEngPropBtn = new Button { Text = "Room Energy Properties" };
+            rmEngPropBtn.Command = vm.RoomEnergyPropertyBtnClick;
+            layout.AddSeparateRow(rmEngPropBtn);
 
 
             var faceTitle = new Label();
