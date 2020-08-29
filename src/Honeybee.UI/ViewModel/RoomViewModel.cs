@@ -97,13 +97,25 @@ namespace Honeybee.UI
 
         public ICommand RoomEnergyPropertyBtnClick => new RelayCommand(() => {
             var energyProp = this.HoneybeeObject.Properties.Energy ?? new RoomEnergyPropertiesAbridged();
-            energyProp = RoomEnergyPropertiesAbridged.FromJson(energyProp.ToJson());
+            energyProp = energyProp.DuplicateRoomEnergyPropertiesAbridged();
             var dialog = new Dialog_RoomEnergyProperty(energyProp);
             var dialog_rc = dialog.ShowModal(Helper.Owner);
             if (dialog_rc != null)
             {
                 this.HoneybeeObject.Properties.Energy = dialog_rc;
                 this.ActionWhenChanged($"Set {this.HoneybeeObject.Identifier} Energy Properties ");
+            }
+        });
+
+        public ICommand RoomRadiancePropertyBtnClick => new RelayCommand(() => {
+            var prop = this.HoneybeeObject.Properties.Radiance ?? new RoomRadiancePropertiesAbridged();
+            prop = prop.DuplicateRoomRadiancePropertiesAbridged();
+            var dialog = new Dialog_RoomRadianceProperty(prop);
+            var dialog_rc = dialog.ShowModal(Helper.Owner);
+            if (dialog_rc != null)
+            {
+                this.HoneybeeObject.Properties.Radiance = dialog_rc;
+                this.ActionWhenChanged($"Set {this.HoneybeeObject.Identifier} Radiance Properties ");
             }
         });
         public ICommand HBDataBtnClick => new RelayCommand(() => {

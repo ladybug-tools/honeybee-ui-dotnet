@@ -5,7 +5,6 @@ using System.Linq;
 using HB = HoneybeeSchema;
 using System;
 using EnergyLibrary = HoneybeeSchema.Helper.EnergyLibrary;
-using HoneybeeSchema;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using HoneybeeSchema.Energy;
@@ -285,10 +284,10 @@ namespace Honeybee.UI
             var isSptNull = _vm.hbObj.Setpoint == null;
             var spt = new List<Control>() { };
             spt.AddRange(GenInputControl("Name", (ProgramTypeViewModel m) => m.SPT_DisplayName));
-            spt.AddRange(GenDropInInputControl("Cooling Schedule", (ProgramTypeViewModel m) => m.SPT_CoolingSchedule, (ProgramTypeViewModel m) => m.SPT_CoolingScheduleName, typeof(ScheduleRulesetAbridged)));
-            spt.AddRange(GenDropInInputControl("Heating Schedule", (ProgramTypeViewModel m) => m.SPT_HeatingSchedule, (ProgramTypeViewModel m) => m.SPT_HeatingScheduleName, typeof(ScheduleRulesetAbridged)));
-            spt.AddRange(GenDropInInputControl("Humidifying Schedule", (ProgramTypeViewModel m) => m.SPT_HumidifyingSchedule, (ProgramTypeViewModel m) => m.SPT_HumidifyingScheduleName, typeof(ScheduleRulesetAbridged)));
-            spt.AddRange(GenDropInInputControl("Dehumidifying Schedule", (ProgramTypeViewModel m) => m.SPT_DehumidifyingSchedule, (ProgramTypeViewModel m) => m.SPT_DehumidifyingScheduleName, typeof(ScheduleRulesetAbridged)));
+            spt.AddRange(GenDropInInputControl("Cooling Schedule", (ProgramTypeViewModel m) => m.SPT_CoolingSchedule, (ProgramTypeViewModel m) => m.SPT_CoolingScheduleName, typeof(HB.ScheduleRulesetAbridged)));
+            spt.AddRange(GenDropInInputControl("Heating Schedule", (ProgramTypeViewModel m) => m.SPT_HeatingSchedule, (ProgramTypeViewModel m) => m.SPT_HeatingScheduleName, typeof(HB.ScheduleRulesetAbridged)));
+            spt.AddRange(GenDropInInputControl("Humidifying Schedule", (ProgramTypeViewModel m) => m.SPT_HumidifyingSchedule, (ProgramTypeViewModel m) => m.SPT_HumidifyingScheduleName, typeof(HB.ScheduleRulesetAbridged)));
+            spt.AddRange(GenDropInInputControl("Dehumidifying Schedule", (ProgramTypeViewModel m) => m.SPT_DehumidifyingSchedule, (ProgramTypeViewModel m) => m.SPT_DehumidifyingScheduleName, typeof(HB.ScheduleRulesetAbridged)));
             return GenGroup("Setpoint", spt, isSptNull, (v) => _vm.Setpoint = v as HB.SetpointAbridged, typeof(HB.SetpointAbridged));
         }
 
@@ -299,7 +298,7 @@ namespace Honeybee.UI
             var vnt = new List<Control>() { };
             vnt.AddRange(GenInputControl("Name", (ProgramTypeViewModel m) => m.VNT_DisplayName));
             vnt.AddRange(GenInputControl("Flow/Area", (ProgramTypeViewModel m) => m.VNT_FlowPerArea));
-            vnt.AddRange(GenDropInInputControl("Schedule", (ProgramTypeViewModel m) => m.VNT_Schedule, (ProgramTypeViewModel m) => m.VNT_ScheduleName, typeof(ScheduleRulesetAbridged)));
+            vnt.AddRange(GenDropInInputControl("Schedule", (ProgramTypeViewModel m) => m.VNT_Schedule, (ProgramTypeViewModel m) => m.VNT_ScheduleName, typeof(HB.ScheduleRulesetAbridged)));
             vnt.AddRange(GenInputControl("Flow/Person", (ProgramTypeViewModel m) => m.VNT_FlowPerPerson));
             vnt.AddRange(GenInputControl("Flow/Zone", (ProgramTypeViewModel m) => m.VNT_FlowPerZone));
             vnt.AddRange(GenInputControl("AirChanges/Hour", (ProgramTypeViewModel m) => m.VNT_AirChangesPerHour));
@@ -313,7 +312,7 @@ namespace Honeybee.UI
             var inf = new List<Control>() { };
             inf.AddRange(GenInputControl("Name", (ProgramTypeViewModel m) => m.INF_DisplayName));
             inf.AddRange(GenInputControl("Flow/FacadeArea", (ProgramTypeViewModel m) => m.INF_FlowPerExteriorArea));
-            inf.AddRange(GenDropInInputControl("Schedule", (ProgramTypeViewModel m) => m.INF_Schedule, (ProgramTypeViewModel m) => m.INF_ScheduleName, typeof(ScheduleRulesetAbridged)));
+            inf.AddRange(GenDropInInputControl("Schedule", (ProgramTypeViewModel m) => m.INF_Schedule, (ProgramTypeViewModel m) => m.INF_ScheduleName, typeof(HB.ScheduleRulesetAbridged)));
             inf.AddRange(GenInputControl("Velocity Coefficient", (ProgramTypeViewModel m) => m.INF_VelocityCoefficient));
             inf.AddRange(GenInputControl("Temperature Coefficient", (ProgramTypeViewModel m) => m.INF_TemperatureCoefficient));
             inf.AddRange(GenInputControl("Constant Coefficient", (ProgramTypeViewModel m) => m.INF_ConstantCoefficient));
@@ -327,7 +326,7 @@ namespace Honeybee.UI
             var gas = new List<Control>() { };
             gas.AddRange(GenInputControl("Name", (ProgramTypeViewModel m) => m.GAS_DisplayName));
             gas.AddRange(GenInputControl("Watts/Area", (ProgramTypeViewModel m) => m.GAS_WattsPerArea));
-            gas.AddRange(GenDropInInputControl("Schedule", (ProgramTypeViewModel m) => m.GAS_Schedule, (ProgramTypeViewModel m) => m.GAS_ScheduleName, typeof(ScheduleRulesetAbridged)));
+            gas.AddRange(GenDropInInputControl("Schedule", (ProgramTypeViewModel m) => m.GAS_Schedule, (ProgramTypeViewModel m) => m.GAS_ScheduleName, typeof(HB.ScheduleRulesetAbridged)));
             gas.AddRange(GenInputControl("Radiant Fraction", (ProgramTypeViewModel m) => m.GAS_RadiantFraction));
             gas.AddRange(GenInputControl("Latent Fraction", (ProgramTypeViewModel m) => m.GAS_LatentFraction));
             gas.AddRange(GenInputControl("Lost Fraction", (ProgramTypeViewModel m) => m.GAS_LostFraction));
@@ -341,7 +340,7 @@ namespace Honeybee.UI
             var eqp = new List<Control>() { };
             eqp.AddRange(GenInputControl("Name", (ProgramTypeViewModel m) => m.EQP_DisplayName));
             eqp.AddRange(GenInputControl("Watts/Area", (ProgramTypeViewModel m) => m.EQP_WattsPerArea));
-            eqp.AddRange(GenDropInInputControl("Schedule", (ProgramTypeViewModel m) => m.EQP_Schedule, (ProgramTypeViewModel m) => m.EQP_ScheduleName, typeof(ScheduleRulesetAbridged)));
+            eqp.AddRange(GenDropInInputControl("Schedule", (ProgramTypeViewModel m) => m.EQP_Schedule, (ProgramTypeViewModel m) => m.EQP_ScheduleName, typeof(HB.ScheduleRulesetAbridged)));
             eqp.AddRange(GenInputControl("Radiant Schedule", (ProgramTypeViewModel m) => m.EQP_RadiantFraction));
             eqp.AddRange(GenInputControl("Latent Fraction", (ProgramTypeViewModel m) => m.EQP_LatentFraction));
             eqp.AddRange(GenInputControl("Lost Fraction", (ProgramTypeViewModel m) => m.EQP_LostFraction));
@@ -355,7 +354,7 @@ namespace Honeybee.UI
             var lpd = new List<Control>() { };
             lpd.AddRange(GenInputControl("Name", (ProgramTypeViewModel m) => m.LPD_DisplayName));
             lpd.AddRange(GenInputControl("Watts/Area", (ProgramTypeViewModel m) => m.LPD_WattsPerArea));
-            lpd.AddRange(GenDropInInputControl("Schedule", (ProgramTypeViewModel m) => m.LPD_Schedule, (ProgramTypeViewModel m) => m.LPD_ScheduleName, typeof(ScheduleRulesetAbridged)));
+            lpd.AddRange(GenDropInInputControl("Schedule", (ProgramTypeViewModel m) => m.LPD_Schedule, (ProgramTypeViewModel m) => m.LPD_ScheduleName, typeof(HB.ScheduleRulesetAbridged)));
             lpd.AddRange(GenInputControl("Visible Fraction", (ProgramTypeViewModel m) => m.LPD_VisibleFraction));
             lpd.AddRange(GenInputControl("Radiant Fraction", (ProgramTypeViewModel m) => m.LPD_RadiantFraction));
             lpd.AddRange(GenInputControl("Return Air Fraction", (ProgramTypeViewModel m) => m.LPD_ReturnAirFraction));
@@ -375,7 +374,7 @@ namespace Honeybee.UI
             ppl.AddRange(GenDropInInputControl("Occupancy Schedule", (ProgramTypeViewModel m) => m.PPL_OccupancySchedule, (ProgramTypeViewModel m) => m.PPL_OccupancyScheduleName, typeof(HB.ScheduleRulesetAbridged)));
             ppl.AddRange(GenDropInInputControl("Activity Schedule", (ProgramTypeViewModel m) => m.PPL_ActivitySchedule, (ProgramTypeViewModel m) => m.PPL_ActivityScheduleName, typeof(HB.ScheduleRulesetAbridged)));
             ppl.AddRange(GenInputControl("Radiant Fraction", (ProgramTypeViewModel m) => m.PPL_RadiantFraction));
-            ppl.AddRange(GenInputControl("Latent Fraction", typeof(Autocalculate), (ProgramTypeViewModel m) => m.PPL_IsLatentFractionAutocalculate, (ProgramTypeViewModel m) => m.PPL_LatentFraction));
+            ppl.AddRange(GenInputControl("Latent Fraction", typeof(HB.Autocalculate), (ProgramTypeViewModel m) => m.PPL_IsLatentFractionAutocalculate, (ProgramTypeViewModel m) => m.PPL_LatentFraction));
             return GenGroup("People", ppl, isPplNull, (v) => _vm.People = v as HB.PeopleAbridged, typeof(HB.PeopleAbridged));
         }
 

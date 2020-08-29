@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using HB = HoneybeeSchema;
 using System;
-using HoneybeeSchema;
 using System.Text.RegularExpressions;
 
 namespace Honeybee.UI
@@ -205,7 +204,7 @@ namespace Honeybee.UI
                 }; 
 
                 //WallConstructionSetAbridged
-                cSet.WallSet = cSet.WallSet ?? new WallConstructionSetAbridged();
+                cSet.WallSet = cSet.WallSet ?? new HB.WallConstructionSetAbridged();
                 var setWallSetActions = new List<(string, string, Action<HB.Energy.IConstruction>, Type)>() { };
                 setWallSetActions.Add(("Exterior", cSet.WallSet.ExteriorConstruction, (cons) => cSet.WallSet.ExteriorConstruction = cons?.Identifier, typeof(HB.OpaqueConstructionAbridged)));
                 setWallSetActions.Add(("Ground", cSet.WallSet.GroundConstruction, (cons) => cSet.WallSet.GroundConstruction = cons?.Identifier, typeof(HB.OpaqueConstructionAbridged)));
@@ -213,7 +212,7 @@ namespace Honeybee.UI
                 var wallGroup = GenPanelOpaqueConstrSet("Wall Construction Set", getSelected, setWallSetActions);
 
                 //FloorConstructionSetAbridged
-                cSet.FloorSet = cSet.FloorSet ?? new FloorConstructionSetAbridged();
+                cSet.FloorSet = cSet.FloorSet ?? new HB.FloorConstructionSetAbridged();
                 var setfloorSetActions = new List<(string, string, Action<HB.Energy.IConstruction>, Type)>() { };
                 setfloorSetActions.Add(("Exterior", cSet.FloorSet.ExteriorConstruction, (cons) => cSet.FloorSet.ExteriorConstruction = cons?.Identifier, typeof(HB.OpaqueConstructionAbridged)));
                 setfloorSetActions.Add(("Ground", cSet.FloorSet.GroundConstruction, (cons) => cSet.FloorSet.GroundConstruction = cons?.Identifier, typeof(HB.OpaqueConstructionAbridged)));
@@ -221,7 +220,7 @@ namespace Honeybee.UI
                 var floorGroup = GenPanelOpaqueConstrSet("Floor Construction Set", getSelected, setfloorSetActions);
 
                 //RoofCeilingConstructionSetAbridged
-                cSet.RoofCeilingSet = cSet.RoofCeilingSet ?? new RoofCeilingConstructionSetAbridged();
+                cSet.RoofCeilingSet = cSet.RoofCeilingSet ?? new HB.RoofCeilingConstructionSetAbridged();
                 var setRoofSetActions = new List<(string, string, Action<HB.Energy.IConstruction>, Type)>() { };
                 setRoofSetActions.Add(("Exterior", cSet.RoofCeilingSet.ExteriorConstruction, (cons) => cSet.RoofCeilingSet.ExteriorConstruction = cons?.Identifier, typeof(HB.OpaqueConstructionAbridged)));
                 setRoofSetActions.Add(("Ground", cSet.RoofCeilingSet.GroundConstruction, (cons) => cSet.RoofCeilingSet.GroundConstruction = cons?.Identifier, typeof(HB.OpaqueConstructionAbridged)));
@@ -229,7 +228,7 @@ namespace Honeybee.UI
                 var roofCeilingGroup = GenPanelOpaqueConstrSet("Roof/Ceiling Construction Set", getSelected, setRoofSetActions);
 
                 //ApertureConstructionSetAbridged
-                cSet.ApertureSet = cSet.ApertureSet ?? new ApertureConstructionSetAbridged();
+                cSet.ApertureSet = cSet.ApertureSet ?? new HB.ApertureConstructionSetAbridged();
                 var setApertureSetActions = new List<(string, string, Action<HB.Energy.IConstruction>, Type)>() { };
                 setApertureSetActions.Add(("Exterior", cSet.ApertureSet.WindowConstruction, (cons) => cSet.ApertureSet.WindowConstruction = cons?.Identifier, typeof(HB.WindowConstructionAbridged)));
                 setApertureSetActions.Add(("Operable", cSet.ApertureSet.OperableConstruction, (cons) => cSet.ApertureSet.OperableConstruction = cons?.Identifier, typeof(HB.WindowConstructionAbridged)));
@@ -238,7 +237,7 @@ namespace Honeybee.UI
                 var apertureGroup = GenPanelOpaqueConstrSet("Aperture Construction Set", getSelected, setApertureSetActions);
 
                 //DoorConstructionSetAbridged
-                cSet.DoorSet = cSet.DoorSet ?? new DoorConstructionSetAbridged();
+                cSet.DoorSet = cSet.DoorSet ?? new HB.DoorConstructionSetAbridged();
                 var setDoorSetActions = new List<(string, string, Action<HB.Energy.IConstruction>, Type)>() { };
                 setDoorSetActions.Add(("Exterior", cSet.DoorSet.ExteriorConstruction, (cons) => cSet.DoorSet.ExteriorConstruction = cons?.Identifier, typeof(HB.OpaqueConstructionAbridged)));
                 setDoorSetActions.Add(("Interior", cSet.DoorSet.InteriorConstruction, (cons) => cSet.DoorSet.InteriorConstruction = cons?.Identifier, typeof(HB.OpaqueConstructionAbridged)));
