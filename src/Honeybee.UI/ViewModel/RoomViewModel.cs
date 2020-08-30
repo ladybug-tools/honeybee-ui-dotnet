@@ -7,7 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
-namespace Honeybee.UI
+namespace Honeybee.UI.ViewModel
 {
     public class RoomViewModel : ViewModelBase
     {
