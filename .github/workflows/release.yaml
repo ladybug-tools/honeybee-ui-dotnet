@@ -37,6 +37,9 @@ jobs:
       - name: Deploy
         working-directory: src/Honeybee.UI
         run: |
+          echo "Removing existing builds"
+          rm -r -fo bin
+
           echo "Rebuilding Honeybee.UI with the new version......"
           dotnet build Honeybee.UI.csproj --configuration Release /nowarn:CS0472,CS0108 --force --no-incremental
           echo "Deploying Honeybee.UI......"
