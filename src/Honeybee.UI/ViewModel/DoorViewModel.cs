@@ -4,23 +4,17 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Input;
 
-namespace Honeybee.UI
+namespace Honeybee.UI.ViewModel
 {
-    public class DoorViewModel : INotifyPropertyChanged
+    public class DoorViewModel : ViewModelBase
     {
         private Door _hbObj;
         public Door HoneybeeObject
         {
             get { return _hbObj; }
-            private set
-            {
-                if (_hbObj != value)
-                {
-                    _hbObj = value;
-                    OnPropertyChanged();
-                }
-            }
+            private set { this.Set(() => _hbObj = value, nameof(HoneybeeObject)); }
         }
 
         public List<AnyOf<Outdoors, Surface>> Bcs =>
@@ -38,8 +32,7 @@ namespace Honeybee.UI
                 if (value == -1)
                     throw new Exception("selected index set to -1");
 
-                _selectedIndex = value;
-                OnPropertyChanged();
+                this.Set(() => _selectedIndex = value, nameof(SelectedIndex));
 
                 if (this.HoneybeeObject.BoundaryCondition.Obj.GetType().Name != Bcs[value].Obj.GetType().Name)
                 {
@@ -57,36 +50,13 @@ namespace Honeybee.UI
         public bool IsOutdoor
         {
             get { return _isOutdoor; }
-            set
-            {
-                if (_isOutdoor != value)
-                {
-                    //MessageBox.Show("isoutdoor: " + value);
-                    _isOutdoor = value;
-                    OnPropertyChanged();
-                }
-            }
+            set { this.Set(() => _isOutdoor = value, nameof(IsOutdoor)); }
 
         }
 
-        private static readonly DoorViewModel _instance = new DoorViewModel();
-        public static DoorViewModel Instance => _instance;
+        public Action<string> ActionWhenChanged { get; set; }
 
-        public static Action<string> _action;
-        public Action<string> ActionWhenChanged
-        {
-            get { return _action; }
-            private set
-            {
-                if (_action != value)
-                {
-                    _action = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private DoorViewModel()
+        public DoorViewModel()
         {
         }
 
@@ -99,11 +69,47 @@ namespace Honeybee.UI
             ActionWhenChanged = actionWhenChanged ?? delegate (string m) { };
         }
 
-        void OnPropertyChanged([CallerMemberName] string memberName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(memberName));
-        }
-        public event PropertyChangedEventHandler PropertyChanged;
+        public ICommand FaceEnergyPropertyBtnClick => new RelayCommand(() => {
+            var energyProp = this.HoneybeeObject.Properties.Energy ?? new DoorEnergyPropertiesAbridged();
+            energyProp = energyProp.DuplicateDoorEnergyPropertiesAbridged();
+            var dialog = new Dialog_DoorEnergyProperty(energyProp);
+            var dialog_rc = dialog.ShowModal(Helper.Owner);
+            if (dialog_rc != null)
+            {
+                this.HoneybeeObject.Properties.Energy = dialog_rc;
+                this.ActionWhenChanged($"Set {this.HoneybeeObject.Identifier} Energy Properties ");
+            }
+        });
+
+        public ICommand FaceRadiancePropertyBtnClick => new RelayCommand(() => {
+            var energyProp = this.HoneybeeObject.Properties.Radiance ?? new DoorRadiancePropertiesAbridged();
+            energyProp = energyProp.DuplicateDoorRadiancePropertiesAbridged();
+            var dialog = new Dialog_DoorRadianceProperty(energyProp);
+            var dialog_rc = dialog.ShowModal(Helper.Owner);
+            if (dialog_rc != null)
+            {
+                this.HoneybeeObject.Properties.Radiance = dialog_rc;
+                this.ActionWhenChanged($"Set {this.HoneybeeObject.Identifier} Radiance Properties ");
+            }
+        });
+
+        public ICommand EditBoundaryConditionBtnClick => new RelayCommand(() => {
+            if (this.HoneybeeObject.BoundaryCondition.Obj is Outdoors outdoors)
+            {
+                var od = Outdoors.FromJson(outdoors.ToJson());
+                var dialog = new UI.Dialog_BoundaryCondition_Outdoors(od);
+                var dialog_rc = dialog.ShowModal(Helper.Owner);
+                if (dialog_rc != null)
+                {
+                    this.HoneybeeObject.BoundaryCondition = dialog_rc;
+                    this.ActionWhenChanged($"Set Door Boundary Condition");
+                }
+            }
+            else
+            {
+                MessageBox.Show(Helper.Owner, "Only Outdoors type has additional properties to edit!");
+            }
+        });
     }
 
 
