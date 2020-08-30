@@ -129,7 +129,20 @@ namespace Honeybee.UI
             return panel;
         }
 
-
+        /// <summary>
+        /// This old method for not breaking depending programs.
+        /// Use Honeybee.UI.View.Face.Instance.UpdateRoomView() instead.
+        /// </summary>
+        /// <param name="HoneybeeObj"></param>
+        /// <param name="geometryReset"></param>
+        /// <param name="redrawDisplay"></param>
+        /// <returns></returns>
+        public static Panel UpdateFacePanel(HB.Face HoneybeeObj, System.Action<string> geometryReset = default)
+        {
+            var panel = View.Face.Instance;
+            panel.UpdateRoomView(HoneybeeObj, geometryReset);
+            return panel;
+        }
 
 
     }

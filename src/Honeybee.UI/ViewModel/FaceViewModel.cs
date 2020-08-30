@@ -4,37 +4,24 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Input;
 
-namespace Honeybee.UI
+namespace Honeybee.UI.ViewModel
 {
-    public class FaceViewModel : INotifyPropertyChanged
+    public class FaceViewModel : ViewModelBase
     {
         private Face _hbObj;
         public Face HoneybeeObject
         {
             get { return _hbObj; }
-            private set
-            {
-                if (_hbObj != value)
-                {
-                    _hbObj = value;
-                    OnPropertyChanged();
-                }
-            }
+            private set { this.Set(() => _hbObj = value, nameof(HoneybeeObject)); }
         }
 
         private string _apertureCount;
         public string ApertureCount
         {
             get { return _apertureCount.ToString(); }
-            private set
-            {
-                if (_apertureCount != value)
-                {
-                    _apertureCount = value;
-                    OnPropertyChanged();
-                }
-            }
+            private set { this.Set(() => _apertureCount = value, nameof(ApertureCount)); }
         }
 
         public List<AnyOf<Ground, Outdoors, Adiabatic, Surface>> Bcs =>
@@ -53,8 +40,7 @@ namespace Honeybee.UI
                 if (value == -1)
                     throw new Exception("selected index set to -1");
 
-                _selectedIndex = value;
-                OnPropertyChanged();
+                this.Set(() => _selectedIndex = value, nameof(SelectedIndex));
 
                 if (this.HoneybeeObject.BoundaryCondition.Obj.GetType().Name != Bcs[value].Obj.GetType().Name)
                 {
@@ -72,37 +58,12 @@ namespace Honeybee.UI
         public bool IsOutdoor
         {
             get { return _isOutdoor; }
-            set
-            {
-                if (_isOutdoor != value)
-                {
-                    //MessageBox.Show("isoutdoor: " + value);
-                    _isOutdoor = value;
-                    OnPropertyChanged();
-                }
-            }
-
+            set { this.Set(() => _isOutdoor = value, nameof(IsOutdoor)); }
         }
 
-        private static readonly FaceViewModel _instance = new FaceViewModel();
-        public static FaceViewModel Instance => _instance;
+        public Action<string> ActionWhenChanged { get; set; }
 
-  
-
-        public static Action<string> _action;
-        public Action<string> ActionWhenChanged
-        {
-            get { return _action; }
-            private set
-            {
-                if (_action != value)
-                {
-                    _action = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-        private FaceViewModel()
+        public FaceViewModel()
         {
         }
 
@@ -118,11 +79,49 @@ namespace Honeybee.UI
             ActionWhenChanged = actionWhenChanged ?? delegate (string m) { };
         }
 
-        void OnPropertyChanged([CallerMemberName] string memberName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(memberName));
-        }
-        public event PropertyChangedEventHandler PropertyChanged;
+
+        public ICommand FaceEnergyPropertyBtnClick => new RelayCommand(() => {
+            var energyProp = this.HoneybeeObject.Properties.Energy ?? new FaceEnergyPropertiesAbridged();
+            energyProp = energyProp.DuplicateFaceEnergyPropertiesAbridged();
+            var dialog = new Dialog_FaceEnergyProperty(energyProp);
+            var dialog_rc = dialog.ShowModal(Helper.Owner);
+            if (dialog_rc != null)
+            {
+                this.HoneybeeObject.Properties.Energy = dialog_rc;
+                this.ActionWhenChanged($"Set {this.HoneybeeObject.Identifier} Energy Properties ");
+            }
+        });
+
+        public ICommand FaceRadiancePropertyBtnClick => new RelayCommand(() => {
+            var prop = this.HoneybeeObject.Properties.Radiance ?? new FaceRadiancePropertiesAbridged();
+            prop = prop.DuplicateFaceRadiancePropertiesAbridged();
+            var dialog = new Dialog_FaceRadianceProperty(prop);
+            var dialog_rc = dialog.ShowModal(Helper.Owner);
+            if (dialog_rc != null)
+            {
+                this.HoneybeeObject.Properties.Radiance = dialog_rc;
+                this.ActionWhenChanged($"Set {this.HoneybeeObject.Identifier} Radiance Properties ");
+            }
+        });
+
+        public ICommand EditFaceBoundaryConditionBtnClick => new RelayCommand(() => {
+            if (this.HoneybeeObject.BoundaryCondition.Obj is Outdoors outdoors)
+            {
+                var od = Outdoors.FromJson(outdoors.ToJson());
+                var dialog = new UI.Dialog_BoundaryCondition_Outdoors(od);
+                var dialog_rc = dialog.ShowModal(Helper.Owner);
+                if (dialog_rc != null)
+                {
+                    this.HoneybeeObject.BoundaryCondition = dialog_rc;
+                    this.ActionWhenChanged($"Set Face Boundary Condition");
+                }
+            }
+            else
+            {
+                MessageBox.Show(Helper.Owner, "Only Outdoors type has additional properties to edit!");
+            }
+        });
+
     }
 
 

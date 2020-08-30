@@ -3,6 +3,7 @@ using Eto.Forms;
 using System.Linq;
 using HB = HoneybeeSchema;
 using System;
+using Honeybee.UI.ViewModel;
 
 namespace Honeybee.UI.View
 {
