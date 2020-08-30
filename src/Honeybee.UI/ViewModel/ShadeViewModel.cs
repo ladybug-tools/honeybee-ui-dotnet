@@ -1,9 +1,6 @@
 ﻿using Eto.Forms;
 using HoneybeeSchema;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
 namespace Honeybee.UI.ViewModel
@@ -14,14 +11,7 @@ namespace Honeybee.UI.ViewModel
         public Shade HoneybeeObject
         {
             get { return _hbObj; }
-            private set
-            {
-                if (_hbObj != value)
-                {
-                    _hbObj = value;
-                    OnPropertyChanged();
-                }
-            }
+            private set { this.Set(() => _hbObj = value, nameof(HoneybeeObject)); }
         }
 
         public Action<string> ActionWhenChanged { get; set; }
