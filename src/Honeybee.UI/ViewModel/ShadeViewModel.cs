@@ -4,10 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Input;
 
-namespace Honeybee.UI
+namespace Honeybee.UI.ViewModel
 {
-    public class ShadeViewModel : INotifyPropertyChanged
+    public class ShadeViewModel : ViewModelBase
     {
         private Shade _hbObj;
         public Shade HoneybeeObject
@@ -23,25 +24,10 @@ namespace Honeybee.UI
             }
         }
 
-        private static readonly ShadeViewModel _instance = new ShadeViewModel();
-        public static ShadeViewModel Instance => _instance;
+        public Action<string> ActionWhenChanged { get; set; }
+       
 
-
-        public static Action<string> _action;
-        public Action<string> ActionWhenChanged
-        {
-            get { return _action; }
-            private set
-            {
-                if (_action != value)
-                {
-                    _action = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private ShadeViewModel()
+        public ShadeViewModel()
         {
         }
 
@@ -50,12 +36,29 @@ namespace Honeybee.UI
             HoneybeeObject = honeybeeObj;
             ActionWhenChanged = actionWhenChanged ?? delegate (string m) { };
         }
+        public ICommand ShadeEnergyPropertyBtnClick => new RelayCommand(() => {
+            var energyProp = this.HoneybeeObject.Properties.Energy ?? new ShadeEnergyPropertiesAbridged();
+            energyProp = energyProp.DuplicateShadeEnergyPropertiesAbridged();
+            var dialog = new Dialog_ShadeEnergyProperty(energyProp);
+            var dialog_rc = dialog.ShowModal(Helper.Owner);
+            if (dialog_rc != null)
+            {
+                this.HoneybeeObject.Properties.Energy = dialog_rc;
+                this.ActionWhenChanged($"Set {this.HoneybeeObject.Identifier} Energy Properties ");
+            }
+        });
 
-        void OnPropertyChanged([CallerMemberName] string memberName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(memberName));
-        }
-        public event PropertyChangedEventHandler PropertyChanged;
+        public ICommand ShadeRadiancePropertyBtnClick => new RelayCommand(() => {
+            var energyProp = this.HoneybeeObject.Properties.Radiance ?? new ShadeRadiancePropertiesAbridged();
+            energyProp = energyProp.DuplicateShadeRadiancePropertiesAbridged();
+            var dialog = new Dialog_ShadeRadianceProperty(energyProp);
+            var dialog_rc = dialog.ShowModal(Helper.Owner);
+            if (dialog_rc != null)
+            {
+                this.HoneybeeObject.Properties.Radiance = dialog_rc;
+                this.ActionWhenChanged($"Set {this.HoneybeeObject.Identifier} Radiance Properties ");
+            }
+        });
     }
 
 

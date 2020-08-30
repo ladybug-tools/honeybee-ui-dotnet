@@ -1,10 +1,6 @@
 ﻿using Eto.Drawing;
 using Eto.Forms;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using HB = HoneybeeSchema;
 
 namespace Honeybee.UI
@@ -167,6 +163,20 @@ namespace Honeybee.UI
         public static Panel UpdateAperturePanel(HB.Aperture HoneybeeObj, System.Action<string> geometryReset = default)
         {
             var panel = View.Aperture.Instance;
+            panel.UpdateRoomView(HoneybeeObj, geometryReset);
+            return panel;
+        }
+
+        /// <summary>
+        /// This old method for not breaking depending programs.
+        /// Use Honeybee.UI.View.Face.Instance.UpdateRoomView() instead.
+        /// </summary>
+        /// <param name="HoneybeeObj"></param>
+        /// <param name="geometryReset"></param>
+        /// <returns></returns>
+        public static Panel UpdateShadePanel(HB.Shade HoneybeeObj, System.Action<string> geometryReset = default)
+        {
+            var panel = View.Shade.Instance;
             panel.UpdateRoomView(HoneybeeObj, geometryReset);
             return panel;
         }
