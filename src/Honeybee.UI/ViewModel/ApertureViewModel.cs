@@ -2,26 +2,17 @@
 using HoneybeeSchema;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using System.Windows.Input;
 
-namespace Honeybee.UI
+namespace Honeybee.UI.ViewModel
 {
-    public class ApertureViewModel : INotifyPropertyChanged
+    public class ApertureViewModel : ViewModelBase
     {
         private Aperture _hbObj;
         public Aperture HoneybeeObject
         {
             get { return _hbObj; }
-            private set
-            {
-                if (_hbObj != value)
-                {
-                    //MessageBox.Show(value.DisplayName);
-                    _hbObj = value;
-                    OnPropertyChanged();
-                }
-            }
+            private set { this.Set(() => _hbObj = value, nameof(HoneybeeObject)); }
         }
 
         public List<AnyOf<Outdoors, Surface>> Bcs =>
@@ -39,8 +30,7 @@ namespace Honeybee.UI
                 if (value == -1)
                     throw new Exception("selected index set to -1");
 
-                _selectedIndex = value;
-                OnPropertyChanged();
+                this.Set(() => _selectedIndex = value, nameof(SelectedIndex));
 
                 if (this.HoneybeeObject.BoundaryCondition.Obj.GetType().Name != Bcs[value].Obj.GetType().Name)
                 {
@@ -58,37 +48,13 @@ namespace Honeybee.UI
         public bool IsOutdoor
         {
             get { return _isOutdoor; }
-            set
-            {
-                if (_isOutdoor != value)
-                {
-                    //MessageBox.Show("isoutdoor: " + value);
-                    _isOutdoor = value;
-                    OnPropertyChanged();
-                }
-            }
+            set { this.Set(() => _isOutdoor = value, nameof(IsOutdoor)); }
 
         }
 
-        private static readonly ApertureViewModel _instance = new ApertureViewModel();
-        public static ApertureViewModel Instance => _instance;
+        public Action<string> ActionWhenChanged { get; set; }
 
-
-        public static Action<string> _action;
-        public Action<string> ActionWhenChanged
-        {
-            get { return _action; }
-            private set
-            {
-                if (_action != value)
-                {
-                    _action = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private ApertureViewModel()
+        public ApertureViewModel()
         {
         }
 
@@ -101,11 +67,47 @@ namespace Honeybee.UI
             ActionWhenChanged = actionWhenChanged ?? delegate (string m) { };
         }
 
-        void OnPropertyChanged([CallerMemberName] string memberName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(memberName));
-        }
-        public event PropertyChangedEventHandler PropertyChanged;
+        public ICommand ApertureEnergyPropertyBtnClick => new RelayCommand(() => {
+            var energyProp = this.HoneybeeObject.Properties.Energy ?? new ApertureEnergyPropertiesAbridged();
+            energyProp = energyProp.DuplicateApertureEnergyPropertiesAbridged();
+            var dialog = new Dialog_ApertureEnergyProperty(energyProp);
+            var dialog_rc = dialog.ShowModal(Helper.Owner);
+            if (dialog_rc != null)
+            {
+                this.HoneybeeObject.Properties.Energy = dialog_rc;
+                this.ActionWhenChanged($"Set {this.HoneybeeObject.Identifier} Energy Properties ");
+            }
+        });
+
+        public ICommand ApertureRadiancePropertyBtnClick => new RelayCommand(() => {
+            var energyProp = this.HoneybeeObject.Properties.Radiance ?? new ApertureRadiancePropertiesAbridged();
+            energyProp = energyProp.DuplicateApertureRadiancePropertiesAbridged();
+            var dialog = new Dialog_ApertureRadianceProperty(energyProp);
+            var dialog_rc = dialog.ShowModal(Helper.Owner);
+            if (dialog_rc != null)
+            {
+                this.HoneybeeObject.Properties.Radiance = dialog_rc;
+                this.ActionWhenChanged($"Set {this.HoneybeeObject.Identifier} Radiance Properties ");
+            }
+        });
+
+        public ICommand EditBoundaryConditionBtnClick => new RelayCommand(() => {
+            if (this.HoneybeeObject.BoundaryCondition.Obj is Outdoors outdoors)
+            {
+                var od = outdoors.DuplicateOutdoors();
+                var dialog = new UI.Dialog_BoundaryCondition_Outdoors(od);
+                var dialog_rc = dialog.ShowModal(Helper.Owner);
+                if (dialog_rc != null)
+                {
+                    this.HoneybeeObject.BoundaryCondition = dialog_rc;
+                    this.ActionWhenChanged($"Set Aperture Boundary Condition");
+                }
+            }
+            else
+            {
+                MessageBox.Show(Helper.Owner, "Only Outdoors type has additional properties to edit!");
+            }
+        });
     }
 
 

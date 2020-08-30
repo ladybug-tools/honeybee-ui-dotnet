@@ -1,151 +1,32 @@
 ﻿using Eto.Drawing;
 using Eto.Forms;
-using System.Linq;
-using HoneybeeSchema;
-using System.Collections.Generic;
+using HB = HoneybeeSchema;
+using System;
+using Honeybee.UI.ViewModel;
 
-
-namespace Honeybee.UI
+namespace Honeybee.UI.View
 {
-    public static partial class PanelHelper
+
+    public class Aperture: Panel
     {
-        /// <summary>
-        /// Create Eto panel based on Honeybee geomerty. 
-        /// If input HoneybeeObj is a duplicated object, geometryReset action must be provided, 
-        /// otherwise no changes would be applied to original honeybee object.
-        /// </summary>
-        /// <param name="HoneybeeObj"></param>
-        /// <param name="geometryReset"></param>
-        /// <returns></returns>
-        public static Panel GenAperturePanel(Aperture HoneybeeObj, System.Action<string> geometryReset = default)
+        private ApertureViewModel ViewModel { get; set; }
+        private static Lazy<Aperture> _instance = new Lazy<Aperture>(() => new Aperture());
+        public static Aperture Instance => _instance.Value;
+
+        private Aperture()
         {
-            var apt = HoneybeeObj;
-            var objID = apt.Identifier;
-            geometryReset = geometryReset ?? delegate (string m) { }; //Do nothing if geometryReset is null
-
-            var layout = new DynamicLayout { };
-            layout.MinimumSize = new Size(100, 200);
-            layout.Spacing = new Size(5, 5);
-            layout.Padding = new Padding(10);
-            layout.DefaultSpacing = new Size(2, 2);
-
-
-            layout.AddSeparateRow(new Label { Text = $"ID: {apt.Identifier}" });
-
-
-            layout.AddSeparateRow(new Label { Text = "Name:" });
-            var nameTBox = new TextBox() { };
-            apt.DisplayName = apt.DisplayName ?? string.Empty;
-            nameTBox.TextBinding.Bind(apt, m => m.DisplayName);
-            nameTBox.LostFocus += (s, e) => { geometryReset($"Set Aperture Name: {apt.DisplayName}"); };
-            layout.AddSeparateRow(nameTBox);
-
-
-            layout.AddSeparateRow(new Label { Text = "Operable:" });
-            var operableCBox = new CheckBox();
-            operableCBox.CheckedBinding.Bind(apt, v => v.IsOperable);
-            operableCBox.CheckedChanged += (s, e) => { geometryReset($"Set Aperture Operable: {apt.IsOperable}"); };
-            layout.AddSeparateRow(operableCBox);
-
-
-            layout.AddSeparateRow(new Label { Text = "Properties:" });
-            var faceRadPropBtn = new Button { Text = "Radiance Properties (WIP)" };
-            faceRadPropBtn.Click += (s, e) => MessageBox.Show("Work in progress", "Honeybee");
-            layout.AddSeparateRow(faceRadPropBtn);
-            var faceEngPropBtn = new Button { Text = "Energy Properties" };
-            faceEngPropBtn.Click += (s, e) =>
-            {
-                var energyProp = apt.Properties.Energy ?? new ApertureEnergyPropertiesAbridged();
-                energyProp = ApertureEnergyPropertiesAbridged.FromJson(energyProp.ToJson());
-                var dialog = new Dialog_ApertureEnergyProperty(energyProp);
-                var dialog_rc = dialog.ShowModal();
-                if (dialog_rc != null)
-                {
-                    apt.Properties.Energy = dialog_rc;
-                    geometryReset($"Set Aperture Energy Properties");
-                }
-                    
-            };
-            layout.AddSeparateRow(faceEngPropBtn);
-
-
-            layout.AddSeparateRow(new Label { Text = "Boundary Condition:" });
-            var bcBtn = new Button { Text = "Edit Boundary Condition" };
-            bcBtn.Enabled = apt.BoundaryCondition.Obj is Outdoors;
-            bcBtn.Click += (s, e) =>
-            {
-                if (apt.BoundaryCondition.Obj is Outdoors outdoors)
-                {
-                    var od = Outdoors.FromJson(outdoors.ToJson());
-                    var dialog = new UI.Dialog_BoundaryCondition_Outdoors(od);
-                    var dialog_rc = dialog.ShowModal();
-                    if (dialog_rc != null)
-                    {
-                        apt.BoundaryCondition = dialog_rc;
-                        geometryReset($"Set Boundary Condition Properties");
-                    }
-                    
-                }
-            };
-
-            var bcs = new List<AnyOf<Outdoors, Surface>>() { new Outdoors(), new Surface(new List<string>()) };
-            var bcDP = DialogHelper.MakeDropDownForAnyOfType(apt.BoundaryCondition.Obj.GetType().Name, v => apt.BoundaryCondition = v, bcs);
-            bcDP.SelectedIndexChanged += (s, e) =>
-            {
-                bcBtn.Enabled = false;
-                if (bcDP.SelectedKey == nameof(Outdoors))
-                    bcBtn.Enabled = true;
-            };
-
-            layout.AddSeparateRow(bcDP);
-            layout.AddSeparateRow(bcBtn);
-
-
-            layout.AddSeparateRow(new Label { Text = "IndoorShades:" });
-            var inShadesListBox = new ListBox();
-            inShadesListBox.Height = 50;
-            var inShds = apt.IndoorShades;
-            if (inShds != null)
-            {
-                var idShds = inShds.Select(_ => new ListItem() { Text = _.DisplayName ?? _.Identifier, Tag = _ });
-                inShadesListBox.Items.AddRange(idShds);
-            }
-            layout.AddSeparateRow(inShadesListBox);
-
-            layout.AddSeparateRow(new Label { Text = "OutdoorShades:" });
-            var outShadesListBox = new ListBox();
-            outShadesListBox.Height = 50;
-            var outShds = apt.OutdoorShades;
-            if (outShds != null)
-            {
-                var outShdItems = outShds.Select(_ => new ListItem() { Text = _.DisplayName ?? _.Identifier, Tag = _ });
-                outShadesListBox.Items.AddRange(outShdItems);
-            }
-            layout.AddSeparateRow(outShadesListBox);
-
-
-            layout.Add(null);
-            var data_button = new Button { Text = "Honeybee Data" };
-            data_button.Click += (sender, e) => MessageBox.Show(apt.ToJson(), "Honeybee Data");
-            layout.AddSeparateRow(data_button, null);
-
-            return layout;
-
+            this.ViewModel = new ApertureViewModel();
+            Initialize();
         }
 
-        private static Panel _aperturePanel;
-        public static Panel UpdateAperturePanel(Aperture HoneybeeObj, System.Action<string> geometryReset = default)
+        public void UpdateRoomView(HB.Aperture HoneybeeObj, System.Action<string> geometryReset = default)
         {
-            var vm = ApertureViewModel.Instance;
-            vm.Update(HoneybeeObj, geometryReset);
-            if (_aperturePanel == null)
-                _aperturePanel = GenAperturePanel();
-            return _aperturePanel;
+            this.ViewModel.Update(HoneybeeObj, geometryReset);
         }
 
-        private static Panel GenAperturePanel()
+        private void Initialize()
         {
-            var vm = ApertureViewModel.Instance;
+            var vm = this.ViewModel;
 
             var layout = new DynamicLayout { DataContext = vm };
             layout.MinimumSize = new Size(100, 200);
@@ -155,10 +36,10 @@ namespace Honeybee.UI
 
             var id = new Label();
             id.TextBinding.BindDataContext((ApertureViewModel m) => m.HoneybeeObject.Identifier);
-            layout.AddSeparateRow(new Label { Text = "ID: " }, id);
+            layout.AddSeparateRow("ID: ", id);
 
 
-            layout.AddSeparateRow(new Label { Text = "Name:" });
+            layout.AddSeparateRow("Name:");
             var nameTB = new TextBox() { };
             nameTB.TextBinding.BindDataContext((ApertureViewModel m) => m.HoneybeeObject.DisplayName);
             nameTB.LostFocus += (s, e) => { vm.ActionWhenChanged($"Set Room Name {vm.HoneybeeObject.DisplayName}"); };
@@ -169,73 +50,44 @@ namespace Honeybee.UI
             var operableCBox = new CheckBox();
             operableCBox.CheckedBinding.BindDataContext((ApertureViewModel m) => m.HoneybeeObject.IsOperable);
             operableCBox.CheckedChanged += (s, e) => { vm.ActionWhenChanged($"Set Aperture Operable: {vm.HoneybeeObject.IsOperable}"); };
-            layout.AddSeparateRow(new Label { Text = "Operable:" }, operableCBox);
+            layout.AddSeparateRow("Operable:", operableCBox);
 
 
-            layout.AddSeparateRow(new Label { Text = "Properties:" });
-            var faceRadPropBtn = new Button { Text = "Radiance Properties (WIP)" };
-            faceRadPropBtn.Click += (s, e) => MessageBox.Show(Helper.Owner, "Work in progress", "Honeybee");
+            layout.AddSeparateRow("Properties:");
+            var faceRadPropBtn = new Button { Text = "Radiance Properties" };
+            faceRadPropBtn.Command = vm.ApertureRadiancePropertyBtnClick;
             layout.AddSeparateRow(faceRadPropBtn);
             var faceEngPropBtn = new Button { Text = "Energy Properties" };
-            faceEngPropBtn.Click += (s, e) =>
-            {
-                var energyProp = vm.HoneybeeObject.Properties.Energy ?? new ApertureEnergyPropertiesAbridged();
-                energyProp = ApertureEnergyPropertiesAbridged.FromJson(energyProp.ToJson());
-                var dialog = new Dialog_ApertureEnergyProperty(energyProp);
-                var dialog_rc = dialog.ShowModal(Helper.Owner);
-                if (dialog_rc != null)
-                {
-                    vm.HoneybeeObject.Properties.Energy = dialog_rc;
-                    vm.ActionWhenChanged($"Set Aperture Energy Properties");
-                }
-
-            };
+            faceEngPropBtn.Command = vm.ApertureEnergyPropertyBtnClick;
             layout.AddSeparateRow(faceEngPropBtn);
 
 
-            layout.AddSeparateRow(new Label { Text = "Boundary Condition:" });
+            layout.AddSeparateRow("Boundary Condition:");
             var bcDP = new DropDown();
             bcDP.BindDataContext(c => c.DataStore, (ApertureViewModel m) => m.Bcs);
-            bcDP.ItemTextBinding = Binding.Delegate<AnyOf, string>(m => m.Obj.GetType().Name);
+            bcDP.ItemTextBinding = Binding.Delegate<HB.AnyOf, string>(m => m.Obj.GetType().Name);
             bcDP.SelectedIndexBinding.BindDataContext((ApertureViewModel m) => m.SelectedIndex);
             layout.AddSeparateRow(bcDP);
 
             var bcBtn = new Button { Text = "Edit Boundary Condition" };
             bcBtn.BindDataContext(c => c.Enabled, (ApertureViewModel m) => m.IsOutdoor, DualBindingMode.OneWay);
-            bcBtn.Click += (s, e) =>
-            {
-                if (vm.HoneybeeObject.BoundaryCondition.Obj is Outdoors outdoors)
-                {
-                    var od = Outdoors.FromJson(outdoors.ToJson());
-                    var dialog = new UI.Dialog_BoundaryCondition_Outdoors(od);
-                    var dialog_rc = dialog.ShowModal(Helper.Owner);
-                    if (dialog_rc != null)
-                    {
-                        vm.HoneybeeObject.BoundaryCondition = dialog_rc;
-                        vm.ActionWhenChanged($"Set Aperture Boundary Condition");
-                    }
-                }
-                else
-                {
-                    MessageBox.Show(Helper.Owner, "Only Outdoors type has additional properties to edit!");
-                }
-            };
+            bcBtn.Command = vm.EditBoundaryConditionBtnClick;
             layout.AddSeparateRow(bcBtn);
 
 
-            layout.AddSeparateRow(new Label { Text = "IndoorShades:" });
+            layout.AddSeparateRow("IndoorShades:");
             var inShadesListBox = new ListBox();
             inShadesListBox.BindDataContext(c => c.DataStore, (ApertureViewModel m) => m.HoneybeeObject.IndoorShades);
-            inShadesListBox.ItemTextBinding = Binding.Delegate<Shade, string>(m => m.DisplayName ?? m.Identifier);
+            inShadesListBox.ItemTextBinding = Binding.Delegate<HB.Shade, string>(m => m.DisplayName ?? m.Identifier);
             inShadesListBox.Height = 50;
             layout.AddSeparateRow(inShadesListBox);
 
 
-            layout.AddSeparateRow(new Label { Text = "OutdoorShades:" });
+            layout.AddSeparateRow("OutdoorShades:");
             var outShadesListBox = new ListBox();
             outShadesListBox.Height = 50;
             outShadesListBox.BindDataContext(c => c.DataStore, (ApertureViewModel m) => m.HoneybeeObject.OutdoorShades);
-            outShadesListBox.ItemTextBinding = Binding.Delegate<Shade, string>(m => m.DisplayName ?? m.Identifier);
+            outShadesListBox.ItemTextBinding = Binding.Delegate<HB.Shade, string>(m => m.DisplayName ?? m.Identifier);
             layout.AddSeparateRow(outShadesListBox);
 
 
@@ -244,11 +96,9 @@ namespace Honeybee.UI
             data_button.Click += (sender, e) => Dialog_Message.Show(Helper.Owner, vm.HoneybeeObject.ToJson(), "Honeybee Data");
             layout.AddSeparateRow(data_button, null);
 
-            return layout;
-
+            this.Content = layout;
         }
-
-
     }
+    
 
 }
