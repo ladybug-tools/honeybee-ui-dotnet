@@ -135,7 +135,6 @@ namespace Honeybee.UI
         /// </summary>
         /// <param name="HoneybeeObj"></param>
         /// <param name="geometryReset"></param>
-        /// <param name="redrawDisplay"></param>
         /// <returns></returns>
         public static Panel UpdateFacePanel(HB.Face HoneybeeObj, System.Action<string> geometryReset = default)
         {
@@ -144,6 +143,32 @@ namespace Honeybee.UI
             return panel;
         }
 
+        /// <summary>
+        /// This old method for not breaking depending programs.
+        /// Use Honeybee.UI.View.Face.Instance.UpdateRoomView() instead.
+        /// </summary>
+        /// <param name="HoneybeeObj"></param>
+        /// <param name="geometryReset"></param>
+        /// <returns></returns>
+        public static Panel UpdateDoorPanel(HB.Door HoneybeeObj, System.Action<string> geometryReset = default)
+        {
+            var panel = View.Door.Instance;
+            panel.UpdateRoomView(HoneybeeObj, geometryReset);
+            return panel;
+        }
 
+        /// <summary>
+        /// This old method for not breaking depending programs.
+        /// Use Honeybee.UI.View.Face.Instance.UpdateRoomView() instead.
+        /// </summary>
+        /// <param name="HoneybeeObj"></param>
+        /// <param name="geometryReset"></param>
+        /// <returns></returns>
+        public static Panel UpdateAperturePanel(HB.Aperture HoneybeeObj, System.Action<string> geometryReset = default)
+        {
+            var panel = View.Aperture.Instance;
+            panel.UpdateRoomView(HoneybeeObj, geometryReset);
+            return panel;
+        }
     }
 }
