@@ -21,7 +21,7 @@ namespace Honeybee.UI.ViewModel
                 new Outdoors(), new Surface(new List<string>())
             };
 
-        private int _selectedIndex;
+        private int _selectedIndex = -1;
         public int SelectedIndex
         {
             get { return _selectedIndex; }
@@ -44,7 +44,7 @@ namespace Honeybee.UI.ViewModel
         }
 
 
-        private bool _isOutdoor;
+        private bool _isOutdoor = true;
         public bool IsOutdoor
         {
             get { return _isOutdoor; }
@@ -52,7 +52,7 @@ namespace Honeybee.UI.ViewModel
 
         }
 
-        public Action<string> ActionWhenChanged { get; set; }
+        public Action<string> ActionWhenChanged { get; private set; }
 
         public ApertureViewModel()
         {
@@ -60,11 +60,14 @@ namespace Honeybee.UI.ViewModel
 
         public void Update(Aperture honeybeeObj, Action<string> actionWhenChanged)
         {
-            HoneybeeObject = honeybeeObj;
+            ActionWhenChanged = actionWhenChanged;
             //HoneybeeObject.DisplayName = honeybeeObj.DisplayName ?? string.Empty;
+
+            HoneybeeObject = honeybeeObj;
             IsOutdoor = honeybeeObj.BoundaryCondition.Obj is Outdoors;
             SelectedIndex = Bcs.FindIndex(_ => _.Obj.GetType().Name == this.HoneybeeObject.BoundaryCondition.Obj.GetType().Name);
-            ActionWhenChanged = actionWhenChanged ?? delegate (string m) { };
+            
+            
         }
 
         public ICommand ApertureEnergyPropertyBtnClick => new RelayCommand(() => {

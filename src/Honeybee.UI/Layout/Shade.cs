@@ -18,7 +18,7 @@ namespace Honeybee.UI.View
             Initialize();
         }
 
-        public void UpdateRoomView(HB.Shade HoneybeeObj, System.Action<string> geometryReset = default)
+        public void UpdatePanel(HB.Shade HoneybeeObj, System.Action<string> geometryReset = default)
         {
             this.ViewModel.Update(HoneybeeObj, geometryReset);
         }
@@ -41,7 +41,7 @@ namespace Honeybee.UI.View
             layout.AddRow("Name:");
             var nameTB = new TextBox() { };
             nameTB.TextBinding.BindDataContext((ShadeViewModel m) => m.HoneybeeObject.DisplayName);
-            nameTB.LostFocus += (s, e) => { vm.ActionWhenChanged($"Set Room Name {vm.HoneybeeObject.DisplayName}"); };
+            nameTB.LostFocus += (s, e) => { vm.ActionWhenChanged?.Invoke($"Set Room Name {vm.HoneybeeObject.DisplayName}"); };
             layout.AddRow(nameTB);
 
 
@@ -58,6 +58,8 @@ namespace Honeybee.UI.View
             var data_button = new Button { Text = "Honeybee Data" };
             data_button.Click += (sender, e) => Dialog_Message.Show(Helper.Owner, vm.HoneybeeObject.ToJson(), "Honeybee Data");
             layout.AddSeparateRow(data_button, null);
+
+            this.Content = layout;
 
         }
     }

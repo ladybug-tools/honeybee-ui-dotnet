@@ -2,8 +2,6 @@
 using HoneybeeSchema;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
 namespace Honeybee.UI.ViewModel
@@ -17,7 +15,7 @@ namespace Honeybee.UI.ViewModel
             private set { this.Set(() => _hbObj = value, nameof(HoneybeeObject)); }
         }
 
-        private string _apertureCount;
+        private string _apertureCount = "0";
         public string ApertureCount
         {
             get { return _apertureCount.ToString(); }
@@ -31,7 +29,7 @@ namespace Honeybee.UI.ViewModel
             };
 
 
-        private int _selectedIndex;
+        private int _selectedIndex = -1;
         public int SelectedIndex
         {
             get { return _selectedIndex; }
@@ -54,14 +52,14 @@ namespace Honeybee.UI.ViewModel
         }
 
 
-        private bool _isOutdoor;
+        private bool _isOutdoor = true;
         public bool IsOutdoor
         {
             get { return _isOutdoor; }
             set { this.Set(() => _isOutdoor = value, nameof(IsOutdoor)); }
         }
 
-        public Action<string> ActionWhenChanged { get; set; }
+        public Action<string> ActionWhenChanged { get; private set; }
 
         public FaceViewModel()
         {
@@ -69,6 +67,8 @@ namespace Honeybee.UI.ViewModel
 
         public void Update(Face honeybeeObj, Action<string> actionWhenChanged)
         {
+            ActionWhenChanged = actionWhenChanged;
+
             HoneybeeObject = honeybeeObj;
             //HoneybeeObject.DisplayName = honeybeeObj.DisplayName ?? string.Empty;
             ApertureCount = honeybeeObj.Apertures.Count.ToString();
@@ -76,7 +76,7 @@ namespace Honeybee.UI.ViewModel
             //BC = new Outdoors();
             //BC = honeybeeObj.BoundaryCondition.Obj.GetType().Name;
             SelectedIndex = Bcs.FindIndex(_ => _.Obj.GetType().Name == this.HoneybeeObject.BoundaryCondition.Obj.GetType().Name);
-            ActionWhenChanged = actionWhenChanged ?? delegate (string m) { };
+            
         }
 
 

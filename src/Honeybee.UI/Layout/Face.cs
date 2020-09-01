@@ -23,7 +23,7 @@ namespace Honeybee.UI.View
             Initialize();
         }
 
-        public void UpdateRoomView(HB.Face HoneybeeObj, System.Action<string> geometryReset = default)
+        public void UpdatePanel(HB.Face HoneybeeObj, System.Action<string> geometryReset = default)
         {
             this.ViewModel.Update(HoneybeeObj, geometryReset);
         }
@@ -47,14 +47,14 @@ namespace Honeybee.UI.View
             layout.AddSeparateRow("Name:");
             var nameTB = new TextBox() { };
             nameTB.TextBinding.BindDataContext((FaceViewModel m) => m.HoneybeeObject.DisplayName);
-            nameTB.LostFocus += (s, e) => { vm.ActionWhenChanged($"Set Face Name {vm.HoneybeeObject.DisplayName}"); };
+            nameTB.LostFocus += (s, e) => { vm.ActionWhenChanged?.Invoke($"Set Face Name {vm.HoneybeeObject.DisplayName}"); };
             layout.AddSeparateRow(nameTB);
 
 
             layout.AddSeparateRow("Face Type:");
             var faceTypeDP = new EnumDropDown<HB.FaceType>();
             faceTypeDP.SelectedValueBinding.BindDataContext((FaceViewModel m) => m.HoneybeeObject.FaceType);
-            faceTypeDP.LostFocus += (s, e) => { vm.ActionWhenChanged($"Set Face Type: {vm.HoneybeeObject.FaceType}"); };
+            faceTypeDP.LostFocus += (s, e) => { vm.ActionWhenChanged?.Invoke($"Set Face Type: {vm.HoneybeeObject.FaceType}"); };
             layout.AddSeparateRow(faceTypeDP);
 
 
@@ -82,7 +82,7 @@ namespace Honeybee.UI.View
 
             var aptCount = new Label();
             aptCount.TextBinding.BindDataContext((FaceViewModel m) => m.ApertureCount);
-            layout.AddSeparateRow(new Label { Text = $"Apertures:" }, null, new Label { Text = $"Total: " }, aptCount);
+            layout.AddSeparateRow("Apertures:", null, $"Total: ", aptCount);
             var apertureLBox = new ListBox();
             apertureLBox.Height = 100;
             apertureLBox.BindDataContext(c => c.DataStore, (FaceViewModel m) => m.HoneybeeObject.Apertures);
