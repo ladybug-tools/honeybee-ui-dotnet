@@ -14,7 +14,7 @@ namespace Honeybee.UI.ViewModel
             private set { this.Set(() => _hbObj = value, nameof(HoneybeeObject)); }
         }
 
-        public Action<string> ActionWhenChanged { get; set; }
+        public Action<string> ActionWhenChanged { get; private set; }
        
 
         public ShadeViewModel()
@@ -23,8 +23,8 @@ namespace Honeybee.UI.ViewModel
 
         public void Update(Shade honeybeeObj, Action<string> actionWhenChanged)
         {
+            ActionWhenChanged = actionWhenChanged;
             HoneybeeObject = honeybeeObj;
-            ActionWhenChanged = actionWhenChanged ?? delegate (string m) { };
         }
         public ICommand ShadeEnergyPropertyBtnClick => new RelayCommand(() => {
             var energyProp = this.HoneybeeObject.Properties.Energy ?? new ShadeEnergyPropertiesAbridged();

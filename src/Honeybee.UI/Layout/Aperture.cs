@@ -19,7 +19,7 @@ namespace Honeybee.UI.View
             Initialize();
         }
 
-        public void UpdateRoomView(HB.Aperture HoneybeeObj, System.Action<string> geometryReset = default)
+        public void UpdatePanel(HB.Aperture HoneybeeObj, System.Action<string> geometryReset = default)
         {
             this.ViewModel.Update(HoneybeeObj, geometryReset);
         }
@@ -42,14 +42,14 @@ namespace Honeybee.UI.View
             layout.AddSeparateRow("Name:");
             var nameTB = new TextBox() { };
             nameTB.TextBinding.BindDataContext((ApertureViewModel m) => m.HoneybeeObject.DisplayName);
-            nameTB.LostFocus += (s, e) => { vm.ActionWhenChanged($"Set Room Name {vm.HoneybeeObject.DisplayName}"); };
+            nameTB.LostFocus += (s, e) => { vm.ActionWhenChanged?.Invoke($"Set Room Name {vm.HoneybeeObject.DisplayName}"); };
             layout.AddSeparateRow(nameTB);
 
 
             //layout.AddSeparateRow(new Label { Text = "Operable:" });
             var operableCBox = new CheckBox();
             operableCBox.CheckedBinding.BindDataContext((ApertureViewModel m) => m.HoneybeeObject.IsOperable);
-            operableCBox.CheckedChanged += (s, e) => { vm.ActionWhenChanged($"Set Aperture Operable: {vm.HoneybeeObject.IsOperable}"); };
+            operableCBox.CheckedChanged += (s, e) => { vm.ActionWhenChanged?.Invoke($"Set Aperture Operable: {vm.HoneybeeObject.IsOperable}"); };
             layout.AddSeparateRow("Operable:", operableCBox);
 
 

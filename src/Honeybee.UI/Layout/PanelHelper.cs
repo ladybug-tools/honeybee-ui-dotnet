@@ -112,7 +112,7 @@ namespace Honeybee.UI
 
         /// <summary>
         /// This old method for not breaking depending programs.
-        /// Use Honeybee.UI.View.Room.Instance.UpdateRoomView() instead.
+        /// Use Honeybee.UI.View.Room.Instance.UpdatePanel() instead.
         /// </summary>
         /// <param name="HoneybeeObj"></param>
         /// <param name="geometryReset"></param>
@@ -121,13 +121,13 @@ namespace Honeybee.UI
         public static Panel UpdateRoomPanel(HB.Room HoneybeeObj, Action<string> geometryReset = default, Action<string> redrawDisplay = default)
         {
             var panel = View.Room.Instance;
-            panel.UpdateRoomView(HoneybeeObj, geometryReset, redrawDisplay);
+            panel.UpdatePanel(HoneybeeObj, geometryReset, redrawDisplay);
             return panel;
         }
 
         /// <summary>
         /// This old method for not breaking depending programs.
-        /// Use Honeybee.UI.View.Face.Instance.UpdateRoomView() instead.
+        /// Use Honeybee.UI.View.Face.Instance.UpdatePanel() instead.
         /// </summary>
         /// <param name="HoneybeeObj"></param>
         /// <param name="geometryReset"></param>
@@ -135,13 +135,13 @@ namespace Honeybee.UI
         public static Panel UpdateFacePanel(HB.Face HoneybeeObj, System.Action<string> geometryReset = default)
         {
             var panel = View.Face.Instance;
-            panel.UpdateRoomView(HoneybeeObj, geometryReset);
+            panel.UpdatePanel(HoneybeeObj, geometryReset);
             return panel;
         }
 
         /// <summary>
         /// This old method for not breaking depending programs.
-        /// Use Honeybee.UI.View.Face.Instance.UpdateRoomView() instead.
+        /// Use Honeybee.UI.View.Face.Instance.UpdatePanel() instead.
         /// </summary>
         /// <param name="HoneybeeObj"></param>
         /// <param name="geometryReset"></param>
@@ -149,13 +149,13 @@ namespace Honeybee.UI
         public static Panel UpdateDoorPanel(HB.Door HoneybeeObj, System.Action<string> geometryReset = default)
         {
             var panel = View.Door.Instance;
-            panel.UpdateRoomView(HoneybeeObj, geometryReset);
+            panel.UpdatePanel(HoneybeeObj, geometryReset);
             return panel;
         }
 
         /// <summary>
         /// This old method for not breaking depending programs.
-        /// Use Honeybee.UI.View.Face.Instance.UpdateRoomView() instead.
+        /// Use Honeybee.UI.View.Face.Instance.UpdatePanel() instead.
         /// </summary>
         /// <param name="HoneybeeObj"></param>
         /// <param name="geometryReset"></param>
@@ -163,13 +163,13 @@ namespace Honeybee.UI
         public static Panel UpdateAperturePanel(HB.Aperture HoneybeeObj, System.Action<string> geometryReset = default)
         {
             var panel = View.Aperture.Instance;
-            panel.UpdateRoomView(HoneybeeObj, geometryReset);
+            panel.UpdatePanel(HoneybeeObj, geometryReset);
             return panel;
         }
 
         /// <summary>
         /// This old method for not breaking depending programs.
-        /// Use Honeybee.UI.View.Face.Instance.UpdateRoomView() instead.
+        /// Use Honeybee.UI.View.Face.Instance.UpdatePanel() instead.
         /// </summary>
         /// <param name="HoneybeeObj"></param>
         /// <param name="geometryReset"></param>
@@ -177,7 +177,7 @@ namespace Honeybee.UI
         public static Panel UpdateShadePanel(HB.Shade HoneybeeObj, System.Action<string> geometryReset = default)
         {
             var panel = View.Shade.Instance;
-            panel.UpdateRoomView(HoneybeeObj, geometryReset);
+            panel.UpdatePanel(HoneybeeObj, geometryReset);
             return panel;
         }
     }

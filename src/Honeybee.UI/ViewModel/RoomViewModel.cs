@@ -18,22 +18,19 @@ namespace Honeybee.UI.ViewModel
             private set { this.Set(() => _hbObj = value, nameof(HoneybeeObject)); }
         }
 
-        private string _faceCount;
+        private string _faceCount = "0";
         public string FaceCount
         {
             get { return _faceCount; }
             private set { this.Set(() => _faceCount = value, nameof(FaceCount)); }
         }
 
-        private string _displayName;
+        private string _displayName = "";
 
         public string DisplayName
         {
             get { return _displayName; }
-            private set { 
-                this.Set(() => _faceCount = value, nameof(FaceCount));
-                this._hbObj.DisplayName = value;
-            }
+            private set { this.Set(() => _displayName = value, nameof(DisplayName));}
         }
 
 
@@ -57,12 +54,14 @@ namespace Honeybee.UI.ViewModel
 
         public void Update(Room honeybeeRoom, Action<string> actionWhenChanged, Action<string> redrawDisplay)
         {
+            ActionWhenChanged = actionWhenChanged;
+            Redraw = redrawDisplay;
+
             HoneybeeObject = honeybeeRoom;
             //HoneybeeObject.DisplayName = honeybeeRoom.DisplayName ?? string.Empty;
             HoneybeeObject.Faces = honeybeeRoom.Faces.Where(_ => _ != null).ToList();
-            FaceCount = HoneybeeObject.Faces.Count().ToString();
-            ActionWhenChanged = actionWhenChanged ?? delegate (string m) { };
-            Redraw = redrawDisplay ?? delegate (string m) { };
+            FaceCount = honeybeeRoom.Faces.Count().ToString();
+            
         }
 
 

@@ -21,7 +21,7 @@ namespace Honeybee.UI.View
             
         }
 
-        public void UpdateRoomView(HB.Room HoneybeeObj, Action<string> geometryReset = default, Action<string> redrawDisplay = default)
+        public void UpdatePanel(HB.Room HoneybeeObj, Action<string> geometryReset = default, Action<string> redrawDisplay = default)
         {
             this.ViewModel.Update(HoneybeeObj, geometryReset, redrawDisplay);
         }
@@ -44,7 +44,7 @@ namespace Honeybee.UI.View
             layout.AddSeparateRow(new Label { Text = "Name:" });
             var nameTB = new TextBox() { };
             nameTB.TextBinding.BindDataContext((RoomViewModel m) => m.HoneybeeObject.DisplayName);
-            nameTB.LostFocus += (s, e) => { vm.ActionWhenChanged($"Set Room Name {vm.HoneybeeObject.DisplayName}"); };
+            nameTB.LostFocus += (s, e) => { vm.ActionWhenChanged?.Invoke($"Set Room Name {vm.HoneybeeObject.DisplayName}"); };
             layout.AddSeparateRow(nameTB);
 
 
@@ -59,8 +59,8 @@ namespace Honeybee.UI.View
 
 
             var faceTitle = new Label();
-            faceTitle.TextBinding.BindDataContext((RoomViewModel m) => $"Total: {m.FaceCount}");
-            layout.AddSeparateRow("Faces: ", null, faceTitle);
+            faceTitle.TextBinding.BindDataContext((RoomViewModel m) => m.FaceCount);
+            layout.AddSeparateRow("Faces: ", null, $"Total: ", faceTitle);
             FacesGridView = new GridView() { ShowHeader = false, AllowMultipleSelection = false };
             FacesGridView.Height = 120;
             FacesGridView.BindDataContext(c => c.DataStore, (RoomViewModel m) => m.HoneybeeObject.Faces);
@@ -95,7 +95,7 @@ namespace Honeybee.UI.View
             var multiplier_NS = new NumericStepper() { MaximumDecimalPlaces = 0, MinValue = 0 };
             //multiplier_NS.ValueBinding.Bind(room, m => m.Multiplier);
             multiplier_NS.ValueBinding.BindDataContext<RoomViewModel>(m => m.HoneybeeObject.Multiplier);
-            multiplier_NS.LostFocus += (s, e) => { vm.ActionWhenChanged($"Set Multiplier {vm.HoneybeeObject.Multiplier}"); };
+            multiplier_NS.LostFocus += (s, e) => { vm.ActionWhenChanged?.Invoke($"Set Multiplier {vm.HoneybeeObject.Multiplier}"); };
             layout.AddSeparateRow(multiplier_NS);
 
 

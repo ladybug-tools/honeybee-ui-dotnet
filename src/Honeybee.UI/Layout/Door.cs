@@ -23,7 +23,7 @@ namespace Honeybee.UI.View
             Initialize();
         }
 
-        public void UpdateRoomView(HB.Door HoneybeeObj, System.Action<string> geometryReset = default)
+        public void UpdatePanel(HB.Door HoneybeeObj, System.Action<string> geometryReset = default)
         {
             this.ViewModel.Update(HoneybeeObj, geometryReset);
         }
@@ -46,13 +46,13 @@ namespace Honeybee.UI.View
             layout.AddSeparateRow("Name:");
             var nameTB = new TextBox() { };
             nameTB.TextBinding.BindDataContext((DoorViewModel m) => m.HoneybeeObject.DisplayName);
-            nameTB.LostFocus += (s, e) => { vm.ActionWhenChanged($"Set door name {vm.HoneybeeObject.DisplayName}"); };
+            nameTB.LostFocus += (s, e) => { vm.ActionWhenChanged?.Invoke($"Set door name {vm.HoneybeeObject.DisplayName}"); };
             layout.AddSeparateRow(nameTB);
 
 
             var isGlassCBox = new CheckBox();
             isGlassCBox.CheckedBinding.BindDataContext((DoorViewModel m) => m.HoneybeeObject.IsGlass);
-            isGlassCBox.CheckedChanged += (s, e) => { vm.ActionWhenChanged($"Set Glass Door: {vm.HoneybeeObject.IsGlass}"); };
+            isGlassCBox.CheckedChanged += (s, e) => { vm.ActionWhenChanged?.Invoke($"Set Glass Door: {vm.HoneybeeObject.IsGlass}"); };
             layout.AddSeparateRow("Glass:", isGlassCBox);
 
 

@@ -2,8 +2,6 @@
 using HoneybeeSchema;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
 namespace Honeybee.UI.ViewModel
@@ -23,7 +21,7 @@ namespace Honeybee.UI.ViewModel
                 new Outdoors(), new Surface(new List<string>())
             };
 
-        private int _selectedIndex;
+        private int _selectedIndex = -1;
         public int SelectedIndex
         {
             get { return _selectedIndex; }
@@ -46,7 +44,7 @@ namespace Honeybee.UI.ViewModel
         }
 
 
-        private bool _isOutdoor;
+        private bool _isOutdoor = true;
         public bool IsOutdoor
         {
             get { return _isOutdoor; }
@@ -54,7 +52,7 @@ namespace Honeybee.UI.ViewModel
 
         }
 
-        public Action<string> ActionWhenChanged { get; set; }
+        public Action<string> ActionWhenChanged { get; private set; }
 
         public DoorViewModel()
         {
@@ -62,11 +60,13 @@ namespace Honeybee.UI.ViewModel
 
         public void Update(Door honeybeeObj, Action<string> actionWhenChanged)
         {
+            ActionWhenChanged = actionWhenChanged;
+
             HoneybeeObject = honeybeeObj;
             //HoneybeeObject.DisplayName = honeybeeObj.DisplayName ?? string.Empty;
             IsOutdoor = honeybeeObj.BoundaryCondition.Obj is Outdoors;
             SelectedIndex = Bcs.FindIndex(_ => _.Obj.GetType().Name == this.HoneybeeObject.BoundaryCondition.Obj.GetType().Name);
-            ActionWhenChanged = actionWhenChanged ?? delegate (string m) { };
+            
         }
 
         public ICommand FaceEnergyPropertyBtnClick => new RelayCommand(() => {
