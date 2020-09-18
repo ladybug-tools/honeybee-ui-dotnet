@@ -47,6 +47,7 @@ namespace Honeybee.UI
 
                 //TerrainType
                 var terrainTypeDP = new EnumDropDown<HB.TerrianTypes>();
+                param.TerrainType = param.TerrainType.GetValueOrDefault(HB.TerrianTypes.City);
                 terrainTypeDP.SelectedValueBinding.Bind(Binding.Delegate(() => param.TerrainType.Value, v => param.TerrainType = v));
                 
 
@@ -138,10 +139,12 @@ namespace Honeybee.UI
                     );
 
                 //shadowCal.SolarDistribution
+                shadowCal.SolarDistribution = shadowCal.SolarDistribution.GetValueOrDefault(HB.SolarDistribution.FullExteriorWithReflections);
                 var solarDist_DP = new EnumDropDown<HB.SolarDistribution>();
                 solarDist_DP.SelectedValueBinding.Bind(() => shadowCal.SolarDistribution.Value, v => shadowCal.SolarDistribution = v);
 
                 //shadowCal.CalculationMethodEnum
+                shadowCal.CalculationMethod = shadowCal.CalculationMethod.GetValueOrDefault(HB.CalculationMethod.PolygonClipping);
                 var CalMethod_DP = new EnumDropDown<HB.CalculationMethod>();
                 CalMethod_DP.SelectedValueBinding.Bind(() => shadowCal.CalculationMethod.Value, v => shadowCal.CalculationMethod = v);
 
