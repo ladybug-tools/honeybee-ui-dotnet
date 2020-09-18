@@ -71,7 +71,7 @@ namespace Honeybee.UI.ViewModel
 
             HoneybeeObject = honeybeeObj;
             //HoneybeeObject.DisplayName = honeybeeObj.DisplayName ?? string.Empty;
-            ApertureCount = honeybeeObj.Apertures.Count.ToString();
+            ApertureCount = honeybeeObj.Apertures?.Count.ToString();
             IsOutdoor = honeybeeObj.BoundaryCondition.Obj is Outdoors;
             //BC = new Outdoors();
             //BC = honeybeeObj.BoundaryCondition.Obj.GetType().Name;

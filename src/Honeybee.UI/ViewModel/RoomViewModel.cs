@@ -59,8 +59,8 @@ namespace Honeybee.UI.ViewModel
 
             HoneybeeObject = honeybeeRoom;
             //HoneybeeObject.DisplayName = honeybeeRoom.DisplayName ?? string.Empty;
-            HoneybeeObject.Faces = honeybeeRoom.Faces.Where(_ => _ != null).ToList();
-            FaceCount = honeybeeRoom.Faces.Count().ToString();
+            HoneybeeObject.Faces = honeybeeRoom.Faces?.Where(_ => _ != null).ToList();
+            FaceCount = honeybeeRoom.Faces?.Count().ToString();
             
         }
 
