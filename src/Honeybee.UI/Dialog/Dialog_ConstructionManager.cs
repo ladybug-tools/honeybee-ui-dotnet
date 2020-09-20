@@ -78,16 +78,14 @@ namespace Honeybee.UI
                       new Eto.Forms.ButtonMenuItem()
                       {
                           Text = "Shade Construction",
-                          Command = AddShadeConstructionCommand,
-                          Enabled = false
+                          Command = AddShadeConstructionCommand
                       });
                     // AirBoundary 
                     contextMenu.Items.Add(
                       new Eto.Forms.ButtonMenuItem()
                       {
                           Text = "AirBoundary Construction",
-                          Command = AddAirBoundaryConstructionCommand,
-                          Enabled = false
+                          Command = AddAirBoundaryConstructionCommand
                       });
 
 
@@ -125,19 +123,35 @@ namespace Honeybee.UI
                         return;
                     }
 
-                    var dup = selected.Duplicate() as HB.Energy.IConstruction;
-
-                    var dialog = new Honeybee.UI.Dialog_Construction(dup);
-                    var dialog_rc = dialog.ShowModal(this);
-                    if (dialog_rc != null)
+                    HB.Energy.IConstruction dialog_rc;
+                    if (selected is ShadeConstruction shd)
                     {
-                        var index = gd.SelectedRow;
-                        var newDataStore = gd.DataStore.Select(_ => _ as HB.Energy.IConstruction).ToList();
-                        newDataStore.RemoveAt(index);
-                        newDataStore.Insert(index, dialog_rc);
-                        gd.DataStore = newDataStore;
-
+                        var dup = shd.DuplicateShadeConstruction();
+                        var dialog = new Honeybee.UI.Dialog_Construction_Shade(dup);
+                        dialog_rc = dialog.ShowModal(this);
                     }
+                    else if (selected is AirBoundaryConstructionAbridged airBoundary)
+                    {
+                        var dup = airBoundary.DuplicateAirBoundaryConstructionAbridged();
+                        var dialog = new Honeybee.UI.Dialog_Construction_AirBoundary(dup);
+                        dialog_rc = dialog.ShowModal(this);
+                    }
+                    else
+                    {
+                        // Opaque Construction or Window Construciton
+                        var dup = selected.Duplicate() as HB.Energy.IConstruction;
+                        var dialog = new Honeybee.UI.Dialog_Construction(dup);
+                        dialog_rc = dialog.ShowModal(this);
+                    }
+
+                    if (dialog_rc == null) return;
+                    var index = gd.SelectedRow;
+                    var newDataStore = gd.DataStore.OfType<HB.Energy.IConstruction>().ToList();
+                    newDataStore.RemoveAt(index);
+                    newDataStore.Insert(index, dialog_rc);
+                    gd.DataStore = newDataStore;
+
+
                 };
                 edit.Click += (s, e) =>
                 {
@@ -219,7 +233,7 @@ namespace Honeybee.UI
             var dialog_rc = dialog.ShowModal(this);
             if (dialog_rc != null)
             {
-                var d = this._gridView.DataStore.Select(_ => _ as HB.Energy.IConstruction).ToList();
+                var d = this._gridView.DataStore.OfType<HB.Energy.IConstruction>().ToList();
                 d.Add(dialog_rc);
                 this._gridView.DataStore = d;
 
@@ -233,7 +247,7 @@ namespace Honeybee.UI
             var dialog_rc = dialog.ShowModal(this);
             if (dialog_rc != null)
             {
-                var d = this._gridView.DataStore.Select(_ => _ as HB.Energy.IConstruction).ToList();
+                var d = this._gridView.DataStore.OfType<HB.Energy.IConstruction>().ToList();
                 d.Add(dialog_rc);
                 this._gridView.DataStore = d;
 
@@ -241,33 +255,34 @@ namespace Honeybee.UI
         });
         public ICommand AddShadeConstructionCommand => new RelayCommand(() => {
             var id = Guid.NewGuid().ToString();
-            var newConstrucion = new ShadeConstruction(id, $"New Window Construction {id.Substring(0, 5)}");
+            var newConstrucion = new ShadeConstruction(id, $"New Shade Construction {id.Substring(0, 5)}");
 
-            //var dialog = new Honeybee.UI.Dialog_Construction(newConstrucion);
-            //var dialog_rc = dialog.ShowModal(this);
-            //if (dialog_rc != null)
-            //{
-            //    var d = this._gridView.DataStore.Select(_ => _ as HB.Energy.IConstruction).ToList();
-            //    d.Add(dialog_rc);
-            //    this._gridView.DataStore = d;
-
-            //}
+            var dialog = new Honeybee.UI.Dialog_Construction_Shade(newConstrucion);
+            var dialog_rc = dialog.ShowModal(this);
+            if (dialog_rc != null)
+            {
+                var d = this._gridView.DataStore.OfType<HB.Energy.IConstruction>().ToList();
+                d.Add(dialog_rc);
+                this._gridView.DataStore = d;
+            }
         });
 
         public ICommand AddAirBoundaryConstructionCommand => new RelayCommand(() => {
             var id = Guid.NewGuid().ToString();
             var newConstrucion = new AirBoundaryConstructionAbridged(id, string.Empty, $"New AirBoundary Construction {id.Substring(0, 5)}");
 
-            //var dialog = new Honeybee.UI.Dialog_Construction(newConstrucion);
-            //var dialog_rc = dialog.ShowModal(this);
-            //if (dialog_rc != null)
-            //{
-            //    var d = this._gridView.DataStore.Select(_ => _ as HB.Energy.IConstruction).ToList();
-            //    d.Add(dialog_rc);
-            //    this._gridView.DataStore = d;
-
-            //}
+            var dialog = new Honeybee.UI.Dialog_Construction_AirBoundary(newConstrucion);
+            var dialog_rc = dialog.ShowModal(this);
+            if (dialog_rc != null)
+            {
+                var d = this._gridView.DataStore.OfType<HB.Energy.IConstruction>().ToList();
+                d.Add(dialog_rc);
+                this._gridView.DataStore = d;
+            }
         });
+
+
+
 
     }
 }
