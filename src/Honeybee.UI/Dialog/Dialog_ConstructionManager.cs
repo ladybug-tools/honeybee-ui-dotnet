@@ -53,41 +53,27 @@ namespace Honeybee.UI
 
 
 
-
+                var menuDic = new Dictionary<string, ICommand>()
+                {
+                    { "Opaque", AddOpaqueConstructionCommand},
+                    { "Window", AddOpaqueConstructionCommand},
+                    { "Shade",AddShadeConstructionCommand },
+                    { "AirBoundary", AddAirBoundaryConstructionCommand}
+                };
                 addNew.Click += (s, e) =>
                 {
                     var contextMenu = new ContextMenu();
 
-                    // Opaque 
-                    contextMenu.Items.Add(
-                        new Eto.Forms.ButtonMenuItem()
-                        {
-                            Text = "Opaque Construction",
-                            Command = AddOpaqueConstructionCommand
-                        });
-
-                    // Window 
-                    contextMenu.Items.Add(
-                      new Eto.Forms.ButtonMenuItem()
-                      {
-                          Text = "Window Construction",
-                          Command = AddOpaqueConstructionCommand
-                      });
-                    // Shade 
-                    contextMenu.Items.Add(
-                      new Eto.Forms.ButtonMenuItem()
-                      {
-                          Text = "Shade Construction",
-                          Command = AddShadeConstructionCommand
-                      });
-                    // AirBoundary 
-                    contextMenu.Items.Add(
-                      new Eto.Forms.ButtonMenuItem()
-                      {
-                          Text = "AirBoundary Construction",
-                          Command = AddAirBoundaryConstructionCommand
-                      });
-
+                    foreach (var item in menuDic)
+                    {
+                        contextMenu.Items.Add(
+                          new Eto.Forms.ButtonMenuItem()
+                          {
+                              Text = item.Key,
+                              Command = item.Value
+                          });
+                    }
+                    contextMenu.Show();
 
                 };
                 duplicate.Click += (s, e) =>
