@@ -6,12 +6,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using HoneybeeSchema;
+using System.Windows.Input;
 
 namespace Honeybee.UI
 {
     public class Dialog_ConstructionManager : Dialog<List<HB.Energy.IConstruction>>
     {
-     
+        
+        private GridView _gridView { get; set; }
 
         public Dialog_ConstructionManager(List<HB.Energy.IConstruction> constructions)
         {
@@ -42,28 +44,53 @@ namespace Honeybee.UI
 
                 layout.AddSeparateRow("Constructions:", null, addNew, duplicate, edit, remove);
 
-                var gd = GenGridView(constrcutionsInModel);
-                gd.Height = 250;
-                layout.AddRow(gd);
+                this._gridView = GenGridView(constrcutionsInModel);
+                this._gridView.Height = 250;
+                layout.AddRow(this._gridView);
+
+                var gd = this._gridView;
 
 
-            
+
 
 
                 addNew.Click += (s, e) =>
                 {
-                    var id = Guid.NewGuid().ToString();
-                    var newConstrucion = new OpaqueConstructionAbridged(id, new List<string>(), $"New Opaque Construction {id.Substring(0, 5)}");
-                    
-                    var dialog = new Honeybee.UI.Dialog_Construction(newConstrucion);
-                    var dialog_rc = dialog.ShowModal(this);
-                    if (dialog_rc != null)
-                    {
-                        var d = gd.DataStore.Select(_ => _ as HB.Energy.IConstruction).ToList();
-                        d.Add(dialog_rc);
-                        gd.DataStore = d;
+                    var contextMenu = new ContextMenu();
 
-                    }
+                    // Opaque 
+                    contextMenu.Items.Add(
+                        new Eto.Forms.ButtonMenuItem()
+                        {
+                            Text = "Opaque Construction",
+                            Command = AddOpaqueConstructionCommand
+                        });
+
+                    // Window 
+                    contextMenu.Items.Add(
+                      new Eto.Forms.ButtonMenuItem()
+                      {
+                          Text = "Window Construction",
+                          Command = AddOpaqueConstructionCommand
+                      });
+                    // Shade 
+                    contextMenu.Items.Add(
+                      new Eto.Forms.ButtonMenuItem()
+                      {
+                          Text = "Shade Construction",
+                          Command = AddShadeConstructionCommand,
+                          Enabled = false
+                      });
+                    // AirBoundary 
+                    contextMenu.Items.Add(
+                      new Eto.Forms.ButtonMenuItem()
+                      {
+                          Text = "AirBoundary Construction",
+                          Command = AddAirBoundaryConstructionCommand,
+                          Enabled = false
+                      });
+
+
                 };
                 duplicate.Click += (s, e) =>
                 {
@@ -184,9 +211,63 @@ namespace Honeybee.UI
             return gd;
         }
 
+        public ICommand AddOpaqueConstructionCommand => new RelayCommand(() => {
+            var id = Guid.NewGuid().ToString();
+            var newConstrucion = new OpaqueConstructionAbridged(id, new List<string>(), $"New Opaque Construction {id.Substring(0, 5)}");
 
+            var dialog = new Honeybee.UI.Dialog_Construction(newConstrucion);
+            var dialog_rc = dialog.ShowModal(this);
+            if (dialog_rc != null)
+            {
+                var d = this._gridView.DataStore.Select(_ => _ as HB.Energy.IConstruction).ToList();
+                d.Add(dialog_rc);
+                this._gridView.DataStore = d;
 
+            }
+        });
+        public ICommand AddWindowConstructionCommand => new RelayCommand(() => {
+            var id = Guid.NewGuid().ToString();
+            var newConstrucion = new WindowConstructionAbridged(id, new List<string>(), $"New Window Construction {id.Substring(0, 5)}");
 
+            var dialog = new Honeybee.UI.Dialog_Construction(newConstrucion);
+            var dialog_rc = dialog.ShowModal(this);
+            if (dialog_rc != null)
+            {
+                var d = this._gridView.DataStore.Select(_ => _ as HB.Energy.IConstruction).ToList();
+                d.Add(dialog_rc);
+                this._gridView.DataStore = d;
+
+            }
+        });
+        public ICommand AddShadeConstructionCommand => new RelayCommand(() => {
+            var id = Guid.NewGuid().ToString();
+            var newConstrucion = new ShadeConstruction(id, $"New Window Construction {id.Substring(0, 5)}");
+
+            //var dialog = new Honeybee.UI.Dialog_Construction(newConstrucion);
+            //var dialog_rc = dialog.ShowModal(this);
+            //if (dialog_rc != null)
+            //{
+            //    var d = this._gridView.DataStore.Select(_ => _ as HB.Energy.IConstruction).ToList();
+            //    d.Add(dialog_rc);
+            //    this._gridView.DataStore = d;
+
+            //}
+        });
+
+        public ICommand AddAirBoundaryConstructionCommand => new RelayCommand(() => {
+            var id = Guid.NewGuid().ToString();
+            var newConstrucion = new AirBoundaryConstructionAbridged(id, string.Empty, $"New AirBoundary Construction {id.Substring(0, 5)}");
+
+            //var dialog = new Honeybee.UI.Dialog_Construction(newConstrucion);
+            //var dialog_rc = dialog.ShowModal(this);
+            //if (dialog_rc != null)
+            //{
+            //    var d = this._gridView.DataStore.Select(_ => _ as HB.Energy.IConstruction).ToList();
+            //    d.Add(dialog_rc);
+            //    this._gridView.DataStore = d;
+
+            //}
+        });
 
     }
 }
