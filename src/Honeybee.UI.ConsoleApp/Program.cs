@@ -161,6 +161,27 @@ namespace Honeybee.UI.ConsoleApp
 
                 };
 
+                var modifierBtn = new Button() { Text = "Modifier Manager" };
+                modifierBtn.Click += (s, e) =>
+                {
+                    var hbModel = new HB.Model("", new HB.ModelProperties(radiance: HB.ModelRadianceProperties.Default));
+                    var existingItems = hbModel.Properties.Radiance.Modifiers
+                        .OfType<HoneybeeSchema.ModifierBase>()
+                        .ToList();
+
+                    var dup = existingItems.Select(_ => _.Duplicate()).OfType<HoneybeeSchema.ModifierBase>().ToList();
+                    var dialog = new Honeybee.UI.Dialog_ModifierManager(dup);
+
+                    var dialog_rc = dialog.ShowModal(this);
+                    if (dialog_rc != null)
+                    {
+                        hbModel.Properties.Radiance.Modifiers.Clear();
+                        hbModel.AddModifiers(dialog_rc);
+
+                    }
+
+                };
+
                 var outputs = new Button() { Text = "EPOutputs" };
                 outputs.Click += (s, e) =>
                 {
@@ -182,6 +203,7 @@ namespace Honeybee.UI.ConsoleApp
                 panel.AddSeparateRow(modelManager);
                 panel.AddSeparateRow(materialBtn);
                 panel.AddSeparateRow(stndBtn);
+                panel.AddSeparateRow(modifierBtn);
                 panel.AddSeparateRow(outputs);
                 panel.AddSeparateRow(null);
                 Content = panel;
