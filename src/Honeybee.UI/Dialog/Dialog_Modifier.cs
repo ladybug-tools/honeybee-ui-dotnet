@@ -36,30 +36,56 @@ namespace Honeybee.UI
         
             layout.AddRow(textArea);
 
-            var isValid = new Label() { Text = "Valid input text" };
+            var isValid = new Label();
+            isValid.Height = 30;
             layout.AddRow(isValid);
 
 
             textArea.TextChanged += (s, e) =>
             {
                 var changedText = textArea.Text.Trim();
-                //var newObj = HB.ModifierBase.FromJson(changedText);
-                var newObj = typeof(T).GetMethod("FromJson", BindingFlags.Static).Invoke(null, new[] { changedText }) as T;
+
+                object newObj = null;
+                try
+                {
+                    newObj = ValidateJsonText<T>(changedText);
+                }
+                catch (System.Reflection.TargetInvocationException err)
+                {
+                    var error = err.InnerException;
+                    isValid.Text = error.Message;
+                    OkButton.Enabled = false;
+                    return;
+                }
+
                 if (newObj == null)
                 {
                     isValid.Text = "Invalid input text";
                     OkButton.Enabled = false;
                     return;
                 }
-
                 OkButton.Enabled = true;
-                _hbObj = newObj;
+                isValid.Text = $"Valid {typeof(T).Name} object";
+                _hbObj = newObj as T;
             };
 
             layout.AddRow(null);
             layout.AddSeparateRow(null, OkButton, AbortButton, null);
 
             Content = layout;
+
+        }
+
+        private object ValidateJsonText<T>(string userInput)
+        {
+            var changedText = userInput;
+            var hbType = typeof(T);
+            var fromJsonMethod = hbType.GetMethod("FromJson");
+
+            //object newObj = null;
+            var newObj = fromJsonMethod.Invoke(null, new[] { changedText });
+          
+            return newObj;
 
         }
 
