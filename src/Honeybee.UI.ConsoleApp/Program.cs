@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Eto.Forms;
 using HB = HoneybeeSchema;
+using HoneybeeSchema;
 
 namespace Honeybee.UI.ConsoleApp
 {
@@ -22,8 +23,9 @@ namespace Honeybee.UI.ConsoleApp
         {
             public MyForm()
             {
-                ClientSize = new Eto.Drawing.Size(400, 300);
+                //ClientSize = new Eto.Drawing.Size(400, 300);
                 Title = "Eto.Forms";
+                Width = 400;
 
                 var panel = new DynamicLayout();
                 var btn = new Button() { Text="Room Energy Property"};
@@ -182,6 +184,26 @@ namespace Honeybee.UI.ConsoleApp
 
                 };
 
+                var modifierSetBtn = new Button() { Text = "ModifierSet Manager" };
+                modifierSetBtn.Click += (s, e) =>
+                {
+                    var hbModel = new HB.Model("", new HB.ModelProperties(radiance: HB.ModelRadianceProperties.Default));
+                    var existingItems = hbModel.Properties.Radiance.ModifierSets
+                    .OfType<HoneybeeSchema.ModifierSetAbridged>()
+                    .ToList();
+
+                    var dup = existingItems.Select(_ => _.Duplicate()).OfType<HoneybeeSchema.ModifierSetAbridged>().ToList();
+                    var dialog = new Honeybee.UI.Dialog_ModifierSetManager(dup);
+
+                    var dialog_rc = dialog.ShowModal(this);
+                    if (dialog_rc != null)
+                    {
+                        hbModel.Properties.Radiance.ModifierSets.Clear();
+                        hbModel.AddModifierSets(dialog_rc.OfType<IDdRadianceBaseModel>().ToList());
+
+                    }
+
+                };
                 var outputs = new Button() { Text = "EPOutputs" };
                 outputs.Click += (s, e) =>
                 {
@@ -204,6 +226,7 @@ namespace Honeybee.UI.ConsoleApp
                 panel.AddSeparateRow(materialBtn);
                 panel.AddSeparateRow(stndBtn);
                 panel.AddSeparateRow(modifierBtn);
+                panel.AddSeparateRow(modifierSetBtn);
                 panel.AddSeparateRow(outputs);
                 panel.AddSeparateRow(null);
                 Content = panel;

@@ -3,6 +3,7 @@ using Eto.Forms;
 using System.Collections.Generic;
 using System.Linq;
 using HB = HoneybeeSchema;
+using HoneybeeSchema;
 using System;
 using System.Text.RegularExpressions;
 
@@ -57,7 +58,7 @@ namespace Honeybee.UI
 
             var idCell = new TextBoxCell
             {
-                Binding = Binding.Delegate<HB.Energy.IIDdEnergyBaseModel, string>(r => r.DisplayName ?? r.Identifier)
+                Binding = Binding.Delegate<HB.ModifierBase, string>(r => r.DisplayName ?? r.Identifier)
             };
             lib.Columns.Add(new GridColumn() { DataCell = idCell });
 
@@ -82,9 +83,10 @@ namespace Honeybee.UI
                 if (lib.SelectedItem == null)
                     return;
 
-                var selected = (lib.SelectedItem as HB.HoneybeeObject).ToJson();
+                var selected = lib.SelectedItem as HB.IDdRadianceBaseModel;
                 var data = new DataObject();
-                data.SetString(selected, "HBObj");
+                data.SetString(selected.DisplayName?? string.Empty, "HBObjName");
+                data.SetString(selected.Identifier, "HBObjID");
                 lib.DoDragDrop(data, DragEffects.Move);
                 e.Handled = true;
 
@@ -100,8 +102,9 @@ namespace Honeybee.UI
                     return;
 
                 //Update Preview
-                var details = selItem.ToString(true).Split('\n').Select(_ => new ListItem() { Text = _ });
-                ModifierDetailsLBox.Items.AddRange(details);
+                //var details = selItem.ToString(true).Split('\n').Select(_ => new ListItem() { Text = _ });
+                var details = selItem.GetType().Name;
+                ModifierDetailsLBox.Items.Add(details);
 
             };
 
@@ -132,54 +135,54 @@ namespace Honeybee.UI
 
             //WallModifierSetAbridged
             mSet.WallSet = mSet.WallSet ?? new HB.WallModifierSetAbridged();
-            var setWallSetActions = new List<(string, string, Action<HB.ModifierBase>)>() { };
-            setWallSetActions.Add(("Exterior", mSet.WallSet.ExteriorModifier, (cons) => mSet.WallSet.ExteriorModifier = cons?.Identifier));
-            setWallSetActions.Add(("Interior", mSet.WallSet.InteriorModifier, (cons) => mSet.WallSet.InteriorModifier = cons?.Identifier));
+            var setWallSetActions = new List<(string, string, Action<string>)>() { };
+            setWallSetActions.Add(("Exterior", mSet.WallSet.ExteriorModifier, (cons) => mSet.WallSet.ExteriorModifier = cons));
+            setWallSetActions.Add(("Interior", mSet.WallSet.InteriorModifier, (cons) => mSet.WallSet.InteriorModifier = cons));
             var wallGroup = GenPanelOpaqueConstrSet("Wall Modifier Set", getSelected, setWallSetActions);
 
             //FloorModifierSetAbridged
             mSet.FloorSet = mSet.FloorSet ?? new HB.FloorModifierSetAbridged();
-            var setfloorSetActions = new List<(string, string, Action<HB.ModifierBase>)>() { };
-            setfloorSetActions.Add(("Exterior", mSet.FloorSet.ExteriorModifier, (cons) => mSet.FloorSet.ExteriorModifier = cons?.Identifier));
-            setfloorSetActions.Add(("Interior", mSet.FloorSet.InteriorModifier, (cons) => mSet.FloorSet.InteriorModifier = cons?.Identifier));
+            var setfloorSetActions = new List<(string, string, Action<string>)>() { };
+            setfloorSetActions.Add(("Exterior", mSet.FloorSet.ExteriorModifier, (cons) => mSet.FloorSet.ExteriorModifier = cons));
+            setfloorSetActions.Add(("Interior", mSet.FloorSet.InteriorModifier, (cons) => mSet.FloorSet.InteriorModifier = cons));
             var floorGroup = GenPanelOpaqueConstrSet("Floor Modifier Set", getSelected, setfloorSetActions);
 
             //RoofCeilingModifierSetAbridged
             mSet.RoofCeilingSet = mSet.RoofCeilingSet ?? new HB.RoofCeilingModifierSetAbridged();
-            var setRoofSetActions = new List<(string, string, Action<HB.ModifierBase>)>() { };
-            setRoofSetActions.Add(("Exterior", mSet.RoofCeilingSet.ExteriorModifier, (cons) => mSet.RoofCeilingSet.ExteriorModifier = cons?.Identifier));
-            setRoofSetActions.Add(("Interior", mSet.RoofCeilingSet.InteriorModifier, (cons) => mSet.RoofCeilingSet.InteriorModifier = cons?.Identifier));
+            var setRoofSetActions = new List<(string, string, Action<string>)>() { };
+            setRoofSetActions.Add(("Exterior", mSet.RoofCeilingSet.ExteriorModifier, (cons) => mSet.RoofCeilingSet.ExteriorModifier = cons));
+            setRoofSetActions.Add(("Interior", mSet.RoofCeilingSet.InteriorModifier, (cons) => mSet.RoofCeilingSet.InteriorModifier = cons));
             var roofCeilingGroup = GenPanelOpaqueConstrSet("Roof/Ceiling Modifier Set", getSelected, setRoofSetActions);
 
             //ApertureModifierSetAbridged
             mSet.ApertureSet = mSet.ApertureSet ?? new HB.ApertureModifierSetAbridged();
-            var setApertureSetActions = new List<(string, string, Action<HB.ModifierBase>)>() { };
-            setApertureSetActions.Add(("Exterior", mSet.ApertureSet.WindowModifier, (cons) => mSet.ApertureSet.WindowModifier = cons?.Identifier));
-            setApertureSetActions.Add(("Operable", mSet.ApertureSet.OperableModifier, (cons) => mSet.ApertureSet.OperableModifier = cons?.Identifier));
-            setApertureSetActions.Add(("Skylight", mSet.ApertureSet.SkylightModifier, (cons) => mSet.ApertureSet.SkylightModifier = cons?.Identifier));
-            setApertureSetActions.Add(("Interior", mSet.ApertureSet.InteriorModifier, (cons) => mSet.ApertureSet.InteriorModifier = cons?.Identifier));
+            var setApertureSetActions = new List<(string, string, Action<string>)>() { };
+            setApertureSetActions.Add(("Exterior", mSet.ApertureSet.WindowModifier, (cons) => mSet.ApertureSet.WindowModifier = cons));
+            setApertureSetActions.Add(("Operable", mSet.ApertureSet.OperableModifier, (cons) => mSet.ApertureSet.OperableModifier = cons));
+            setApertureSetActions.Add(("Skylight", mSet.ApertureSet.SkylightModifier, (cons) => mSet.ApertureSet.SkylightModifier = cons));
+            setApertureSetActions.Add(("Interior", mSet.ApertureSet.InteriorModifier, (cons) => mSet.ApertureSet.InteriorModifier = cons));
             var apertureGroup = GenPanelOpaqueConstrSet("Aperture Modifier Set", getSelected, setApertureSetActions);
 
             //DoorModifierSetAbridged
             mSet.DoorSet = mSet.DoorSet ?? new HB.DoorModifierSetAbridged();
-            var setDoorSetActions = new List<(string, string, Action<HB.ModifierBase>)>() { };
-            setDoorSetActions.Add(("Exterior", mSet.DoorSet.ExteriorModifier, (cons) => mSet.DoorSet.ExteriorModifier = cons?.Identifier));
-            setDoorSetActions.Add(("Interior", mSet.DoorSet.InteriorModifier, (cons) => mSet.DoorSet.InteriorModifier = cons?.Identifier));
-            setDoorSetActions.Add(("Exterior Glass", mSet.DoorSet.ExteriorGlassModifier, (cons) => mSet.DoorSet.ExteriorGlassModifier = cons?.Identifier));
-            setDoorSetActions.Add(("Interior Glass", mSet.DoorSet.InteriorGlassModifier, (cons) => mSet.DoorSet.InteriorGlassModifier = cons?.Identifier));
-            setDoorSetActions.Add(("Overhead", mSet.DoorSet.OverheadModifier, (cons) => mSet.DoorSet.OverheadModifier = cons?.Identifier));
+            var setDoorSetActions = new List<(string, string, Action<string>)>() { };
+            setDoorSetActions.Add(("Exterior", mSet.DoorSet.ExteriorModifier, (cons) => mSet.DoorSet.ExteriorModifier = cons));
+            setDoorSetActions.Add(("Interior", mSet.DoorSet.InteriorModifier, (cons) => mSet.DoorSet.InteriorModifier = cons));
+            setDoorSetActions.Add(("Exterior Glass", mSet.DoorSet.ExteriorGlassModifier, (cons) => mSet.DoorSet.ExteriorGlassModifier = cons));
+            setDoorSetActions.Add(("Interior Glass", mSet.DoorSet.InteriorGlassModifier, (cons) => mSet.DoorSet.InteriorGlassModifier = cons));
+            setDoorSetActions.Add(("Overhead", mSet.DoorSet.OverheadModifier, (cons) => mSet.DoorSet.OverheadModifier = cons));
             var doorGroup = GenPanelOpaqueConstrSet("Door Modifier Set", getSelected, setDoorSetActions);
 
             //ShadeModifier
             mSet.ShadeSet = mSet.ShadeSet ?? new HB.ShadeModifierSetAbridged();
-            var setShadeSetActions = new List<(string, string, Action<HB.ModifierBase>)>() { };
-            setShadeSetActions.Add(("Exterior", mSet.ShadeSet.ExteriorModifier, (cons) => mSet.ShadeSet.ExteriorModifier = cons?.Identifier));
-            setShadeSetActions.Add(("Interior", mSet.ShadeSet.InteriorModifier, (cons) => mSet.ShadeSet.InteriorModifier = cons?.Identifier));
+            var setShadeSetActions = new List<(string, string, Action<string>)>() { };
+            setShadeSetActions.Add(("Exterior", mSet.ShadeSet.ExteriorModifier, (cons) => mSet.ShadeSet.ExteriorModifier = cons));
+            setShadeSetActions.Add(("Interior", mSet.ShadeSet.InteriorModifier, (cons) => mSet.ShadeSet.InteriorModifier = cons));
             var shadeGroup = GenPanelOpaqueConstrSet("Shade Modifier", getSelected, setShadeSetActions);
 
             //AirBoundaryModifier
-            var setAirBdActions = new List<(string, string, Action<HB.ModifierBase>)>() { };
-            setAirBdActions.Add(("Air Boundary", mSet.AirBoundaryModifier, (cons) => mSet.AirBoundaryModifier = cons?.Identifier));
+            var setAirBdActions = new List<(string, string, Action<string>)>() { };
+            setAirBdActions.Add(("Air Boundary", mSet.AirBoundaryModifier, (cons) => mSet.AirBoundaryModifier = cons));
             var airBdGroup = GenPanelOpaqueConstrSet("Air Boundary Modifier", getSelected, setAirBdActions);
 
 
@@ -247,9 +250,9 @@ namespace Honeybee.UI
 
 
         }
-        private Color _defaultTextBackgroundColor = new TextBox().BackgroundColor;
+        private Eto.Drawing.Color _defaultTextBackgroundColor = Colors.Transparent;
 
-        Control GenDropInArea(string currentValue, Action<HB.ModifierBase> setAction)
+        Control GenDropInArea(string currentValue, Action<string> setAction)
         {
             //var width = 300;
             //var height = 60;
@@ -261,7 +264,7 @@ namespace Honeybee.UI
             dropInValue.Text = currentValue;
             dropInValue.Height = 25;
           
-            var backGround = Color.FromArgb(230, 230, 230);
+            //var backGround = System.Drawing.Color.FromArgb(230, 230, 230);
             //dropInValue.BackgroundColor = backGround;
 
             var dropIn = new Drawable();
@@ -294,13 +297,12 @@ namespace Honeybee.UI
             };
             dropIn.DragDrop += (sender, e) =>
             {
-                // Get drop-in object
-                var value = e.Data.GetString("HBObj");
-                var newValue = HB.ModifierBase.FromJson(value);
+                var name = e.Data.GetString("HBObjName");
+                var id = e.Data.GetString("HBObjID");
 
                 deleteBtn.Visible = true;
-                dropInValue.Text = newValue.DisplayName?? newValue.Identifier;
-                setAction(newValue);
+                dropInValue.Text = string.IsNullOrEmpty(name) ? id: name;
+                setAction(id);
 
             };
 
@@ -311,7 +313,7 @@ namespace Honeybee.UI
             return layerPanel;
         }
 
-        private GroupBox GenPanelOpaqueConstrSet(string groupName, Func<HB.ModifierBase> getSelected, IEnumerable<(string label, string currentValue, Action<HB.ModifierBase> setAction)> setActions)
+        private GroupBox GenPanelOpaqueConstrSet(string groupName, Func<HB.ModifierBase> getSelected, IEnumerable<(string label, string currentValue, Action<string> setAction)> setActions)
         {
             
             //Wall Modifier Set
