@@ -171,7 +171,7 @@ namespace Honeybee.UI
             var doorGroup = GenPanelOpaqueConstrSet("Door Modifier Set", getSelected, setDoorSetActions);
 
             //ShadeModifier
-            //var shadeSet = cSet.ShadeModifier;
+            mSet.ShadeSet = mSet.ShadeSet ?? new HB.ShadeModifierSetAbridged();
             var setShadeSetActions = new List<(string, string, Action<HB.ModifierBase>)>() { };
             setShadeSetActions.Add(("Exterior", mSet.ShadeSet.ExteriorModifier, (cons) => mSet.ShadeSet.ExteriorModifier = cons?.Identifier));
             setShadeSetActions.Add(("Interior", mSet.ShadeSet.InteriorModifier, (cons) => mSet.ShadeSet.InteriorModifier = cons?.Identifier));
