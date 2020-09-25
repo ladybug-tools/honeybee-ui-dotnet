@@ -70,6 +70,11 @@ namespace Honeybee.UI.ViewModel
             ActionWhenChanged = actionWhenChanged;
 
             HoneybeeObject = honeybeeObj;
+            HoneybeeObject.Apertures = HoneybeeObject.Apertures ?? new List<Aperture>();
+            HoneybeeObject.Doors = HoneybeeObject.Doors ?? new List<Door>();
+            HoneybeeObject.IndoorShades = HoneybeeObject.IndoorShades ?? new List<Shade>();
+            HoneybeeObject.OutdoorShades = HoneybeeObject.OutdoorShades ?? new List<Shade>();
+
             //HoneybeeObject.DisplayName = honeybeeObj.DisplayName ?? string.Empty;
             ApertureCount = honeybeeObj.Apertures?.Count.ToString();
             IsOutdoor = honeybeeObj.BoundaryCondition.Obj is Outdoors;
