@@ -48,6 +48,13 @@ namespace Honeybee.UI.View
             layout.AddSeparateRow(nameTB);
 
 
+            layout.AddSeparateRow(new Label { Text = "Story:" });
+            var storyTB = new TextBox() { };
+            storyTB.TextBinding.BindDataContext((RoomViewModel m) => m.HoneybeeObject.Story);
+            storyTB.LostFocus += (s, e) => { vm.ActionWhenChanged?.Invoke($"Set Room Story {vm.HoneybeeObject.DisplayName}"); };
+            layout.AddSeparateRow(nameTB);
+
+
             layout.AddSeparateRow(new Label { Text = "Properties:" });
             var rmRadPropBtn = new Button { Text = "Room Radiance Properties" };
             rmRadPropBtn.Command = vm.RoomRadiancePropertyBtnClick;
