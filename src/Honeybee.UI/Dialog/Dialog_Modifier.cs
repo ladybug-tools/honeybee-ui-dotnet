@@ -40,6 +40,15 @@ namespace Honeybee.UI
             isValid.Height = 30;
             layout.AddRow(isValid);
 
+            var docLink = new LinkButton();
+            docLink.Text = "View help documents...";
+            docLink.ToolTip = @"https://www.ladybug.tools/honeybee-schema/model.html";
+            docLink.Click += (s, e) =>
+            {
+                var url = $"https://www.ladybug.tools/honeybee-schema/model.html#tag/{typeof(T).Name.ToLower()}_model";
+                System.Diagnostics.Process.Start(url);
+            };
+            layout.AddRow(docLink);
 
             textArea.TextChanged += (s, e) =>
             {
@@ -71,7 +80,7 @@ namespace Honeybee.UI
 
             layout.AddRow(null);
             layout.AddSeparateRow(null, OkButton, AbortButton, null);
-
+            layout.AddRow(null);
             Content = layout;
 
         }
