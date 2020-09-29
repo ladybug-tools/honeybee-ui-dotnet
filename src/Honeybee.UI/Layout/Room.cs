@@ -52,7 +52,7 @@ namespace Honeybee.UI.View
             var storyTB = new TextBox() { };
             storyTB.TextBinding.BindDataContext((RoomViewModel m) => m.HoneybeeObject.Story);
             storyTB.LostFocus += (s, e) => { vm.ActionWhenChanged?.Invoke($"Set Room Story {vm.HoneybeeObject.DisplayName}"); };
-            layout.AddSeparateRow(nameTB);
+            layout.AddSeparateRow(storyTB);
 
 
             layout.AddSeparateRow(new Label { Text = "Properties:" });
