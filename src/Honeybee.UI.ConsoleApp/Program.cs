@@ -204,6 +204,7 @@ namespace Honeybee.UI.ConsoleApp
                     }
 
                 };
+
                 var outputs = new Button() { Text = "EPOutputs" };
                 outputs.Click += (s, e) =>
                 {
@@ -211,6 +212,13 @@ namespace Honeybee.UI.ConsoleApp
                     var dialog = new Honeybee.UI.Dialog_EPOutputs(epoutput);
                     dialog.ShowModal(this);
 
+                };
+
+                var opsProgramType = new Button() { Text = "OpenStudioProgramType" };
+                opsProgramType.Click += (s, e) =>
+                {
+                    var dialog = new Honeybee.UI.Dialog_OpsProgramTypes();
+                    dialog.ShowModal(this);
                 };
 
                 panel.AddSeparateRow(btn);
@@ -228,6 +236,7 @@ namespace Honeybee.UI.ConsoleApp
                 panel.AddSeparateRow(modifierBtn);
                 panel.AddSeparateRow(modifierSetBtn);
                 panel.AddSeparateRow(outputs);
+                panel.AddSeparateRow(opsProgramType);
                 panel.AddSeparateRow(null);
                 Content = panel;
             }

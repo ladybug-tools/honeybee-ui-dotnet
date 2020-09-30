@@ -55,6 +55,7 @@ namespace Honeybee.UI
                     var program = vm.ProgramTypeWithSches.programType;
                     var sch = vm.ProgramTypeWithSches.schedules;
                     program.Identifier = Guid.NewGuid().ToString();
+                    program.DisplayName = $"{vm.FullProgramType}_Dup";
                     var dialog = new Honeybee.UI.Dialog_ProgramType(program);
                     var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
@@ -78,6 +79,7 @@ namespace Honeybee.UI
                     var programT = vm.ProgramTypeWithSches.programType;
                     var sch = vm.ProgramTypeWithSches.schedules;
                     programT.DisplayName = programT.Identifier;
+                    programT.DisplayName = vm.FullProgramType;
                     programT.Identifier = Guid.NewGuid().ToString();
                     Close((programT, sch));
                 }; 
