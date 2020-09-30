@@ -41,9 +41,14 @@ namespace Honeybee.UI.View
             layout.AddRow("Name:");
             var nameTB = new TextBox() { };
             nameTB.TextBinding.BindDataContext((ShadeViewModel m) => m.HoneybeeObject.DisplayName);
-            nameTB.LostFocus += (s, e) => { vm.ActionWhenChanged?.Invoke($"Set Room Name {vm.HoneybeeObject.DisplayName}"); };
+            nameTB.LostFocus += (s, e) => { vm.ActionWhenChanged?.Invoke($"Set Shade Name {vm.HoneybeeObject.DisplayName}"); };
             layout.AddRow(nameTB);
 
+            layout.AddRow("IsSiteContext:");
+            var isContextTB = new CheckBox() { };
+            isContextTB.CheckedBinding.BindDataContext((ShadeViewModel m) => m.HoneybeeObject.IsDetached);
+            isContextTB.LostFocus += (s, e) => { vm.ActionWhenChanged?.Invoke($"Set Shade as site context {vm.HoneybeeObject.IsDetached}"); };
+            layout.AddRow(isContextTB);
 
             layout.AddRow("Properties:");
             var faceRadPropBtn = new Button { Text = "Radiance Properties" };
