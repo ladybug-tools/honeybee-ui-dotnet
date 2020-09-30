@@ -50,7 +50,8 @@ namespace Honeybee.UI
                     var consts = vm.ConstructionWithMats.constructions;
                     var mats = vm.ConstructionWithMats.materials;
                     var id = Guid.NewGuid().ToString();
-                    cSet.DisplayName = $"{cSet.Identifier} {id.Substring(0,5)}";
+
+                    cSet.DisplayName =  $"{vm.FullConstructionSet}_dup";
                     cSet.Identifier = id;
                     var dialog = new Honeybee.UI.Dialog_ConstructionSet(cSet);
                     var dialog_rc = dialog.ShowModal(this);
@@ -76,7 +77,7 @@ namespace Honeybee.UI
                     var consts = vm.ConstructionWithMats.constructions;
                     var mats = vm.ConstructionWithMats.materials;
 
-                    cSet.DisplayName = cSet.Identifier;
+                    cSet.DisplayName = vm.FullConstructionSet;
                     cSet.Identifier = Guid.NewGuid().ToString();
 
                     Close((cSet, consts, mats));
