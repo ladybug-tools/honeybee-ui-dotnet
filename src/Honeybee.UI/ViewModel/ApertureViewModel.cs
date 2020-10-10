@@ -53,9 +53,11 @@ namespace Honeybee.UI.ViewModel
         }
 
         public Action<string> ActionWhenChanged { get; private set; }
+        public ModelProperties ModelProperties { get; set; }
 
-        public ApertureViewModel()
+        public ApertureViewModel(ModelProperties modelProperties)
         {
+            this.ModelProperties = modelProperties;
         }
 
         public void Update(Aperture honeybeeObj, Action<string> actionWhenChanged)
@@ -73,7 +75,7 @@ namespace Honeybee.UI.ViewModel
         public ICommand ApertureEnergyPropertyBtnClick => new RelayCommand(() => {
             var energyProp = this.HoneybeeObject.Properties.Energy ?? new ApertureEnergyPropertiesAbridged();
             energyProp = energyProp.DuplicateApertureEnergyPropertiesAbridged();
-            var dialog = new Dialog_ApertureEnergyProperty(energyProp);
+            var dialog = new Dialog_ApertureEnergyProperty(this.ModelProperties.Energy, energyProp);
             var dialog_rc = dialog.ShowModal(Helper.Owner);
             if (dialog_rc != null)
             {
@@ -85,7 +87,7 @@ namespace Honeybee.UI.ViewModel
         public ICommand ApertureRadiancePropertyBtnClick => new RelayCommand(() => {
             var energyProp = this.HoneybeeObject.Properties.Radiance ?? new ApertureRadiancePropertiesAbridged();
             energyProp = energyProp.DuplicateApertureRadiancePropertiesAbridged();
-            var dialog = new Dialog_ApertureRadianceProperty(energyProp);
+            var dialog = new Dialog_ApertureRadianceProperty(this.ModelProperties.Radiance, energyProp);
             var dialog_rc = dialog.ShowModal(Helper.Owner);
             if (dialog_rc != null)
             {

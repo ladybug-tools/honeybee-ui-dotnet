@@ -1,21 +1,22 @@
 ﻿using Eto.Drawing;
 using Eto.Forms;
-using HB = HoneybeeSchema;
+using HoneybeeSchema;
 using System;
 using System.Linq;
 using System.Collections.Generic;
 
 namespace Honeybee.UI
 {
-    public class Dialog_OpsProgramTypes : Dialog<(HB.ProgramTypeAbridged programType, IEnumerable<HB.ScheduleRulesetAbridged> schedules)>
+    public class Dialog_OpsProgramTypes : Dialog<(ProgramTypeAbridged programType, IEnumerable<ScheduleRulesetAbridged> schedules)>
     {
-     
-        public Dialog_OpsProgramTypes()
+        private ModelEnergyProperties ModelEnergyProperties { get; set; }
+        public Dialog_OpsProgramTypes(ModelEnergyProperties libSource)
         {
             try
             {
+                this.ModelEnergyProperties = libSource;
                 //var output = simulationOutput;
-                var vm = OpsProgramTypesViewModel.Instance;
+                var vm = new OpsProgramTypesViewModel(this.ModelEnergyProperties);
 
                 Padding = new Padding(5);
                 Resizable = true;
@@ -56,7 +57,7 @@ namespace Honeybee.UI
                     var sch = vm.ProgramTypeWithSches.schedules;
                     program.Identifier = Guid.NewGuid().ToString();
                     program.DisplayName = $"{vm.FullProgramType}_Dup";
-                    var dialog = new Honeybee.UI.Dialog_ProgramType(program);
+                    var dialog = new Honeybee.UI.Dialog_ProgramType(this.ModelEnergyProperties, program);
                     var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
                     {

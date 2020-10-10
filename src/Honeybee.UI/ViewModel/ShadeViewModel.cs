@@ -15,10 +15,11 @@ namespace Honeybee.UI.ViewModel
         }
 
         public Action<string> ActionWhenChanged { get; private set; }
-       
 
-        public ShadeViewModel()
+        public ModelProperties ModelProperties { get; set; }
+        public ShadeViewModel(ModelProperties libSource)
         {
+            this.ModelProperties = libSource;
         }
 
         public void Update(Shade honeybeeObj, Action<string> actionWhenChanged)
@@ -29,7 +30,7 @@ namespace Honeybee.UI.ViewModel
         public ICommand ShadeEnergyPropertyBtnClick => new RelayCommand(() => {
             var energyProp = this.HoneybeeObject.Properties.Energy ?? new ShadeEnergyPropertiesAbridged();
             energyProp = energyProp.DuplicateShadeEnergyPropertiesAbridged();
-            var dialog = new Dialog_ShadeEnergyProperty(energyProp);
+            var dialog = new Dialog_ShadeEnergyProperty(this.ModelProperties.Energy, energyProp);
             var dialog_rc = dialog.ShowModal(Helper.Owner);
             if (dialog_rc != null)
             {
@@ -41,7 +42,7 @@ namespace Honeybee.UI.ViewModel
         public ICommand ShadeRadiancePropertyBtnClick => new RelayCommand(() => {
             var energyProp = this.HoneybeeObject.Properties.Radiance ?? new ShadeRadiancePropertiesAbridged();
             energyProp = energyProp.DuplicateShadeRadiancePropertiesAbridged();
-            var dialog = new Dialog_ShadeRadianceProperty(energyProp);
+            var dialog = new Dialog_ShadeRadianceProperty(this.ModelProperties.Radiance, energyProp);
             var dialog_rc = dialog.ShowModal(Helper.Owner);
             if (dialog_rc != null)
             {

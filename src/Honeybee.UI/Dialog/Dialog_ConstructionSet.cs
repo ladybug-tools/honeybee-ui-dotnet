@@ -3,6 +3,7 @@ using Eto.Forms;
 using System.Collections.Generic;
 using System.Linq;
 using HB = HoneybeeSchema;
+using HoneybeeSchema;
 using System;
 using System.Text.RegularExpressions;
 
@@ -19,9 +20,7 @@ namespace Honeybee.UI
             get
             {
                 var libObjs = HB.Helper.EnergyLibrary.StandardsOpaqueConstructions.Values.ToList();
-                var inModelObjs = HB.Helper.EnergyLibrary.InModelEnergyProperties.Constructions
-                    .Select(_ => _.Obj)
-                    .OfType<HB.OpaqueConstructionAbridged>();
+                var inModelObjs = this.ModelEnergyProperties.Constructions.OfType<HB.OpaqueConstructionAbridged>();
 
                 libObjs.AddRange(inModelObjs);
                 _opaqueConstructions = libObjs;
@@ -37,9 +36,7 @@ namespace Honeybee.UI
             get
             {
                 var libObjs = HB.Helper.EnergyLibrary.StandardsWindowConstructions.Values.ToList();
-                var inModelObjs = HB.Helper.EnergyLibrary.InModelEnergyProperties.Constructions
-                    .Select(_ => _.Obj)
-                    .OfType<HB.WindowConstructionAbridged>();
+                var inModelObjs = this.ModelEnergyProperties.Constructions.OfType<HB.WindowConstructionAbridged>();
 
                 libObjs.AddRange(inModelObjs);
                 _windowConstructions = libObjs;
@@ -47,11 +44,13 @@ namespace Honeybee.UI
                 return _windowConstructions;
             }
         }
-        public Dialog_ConstructionSet(HB.ConstructionSetAbridged constructionSet)
+
+        private HB.ModelEnergyProperties ModelEnergyProperties { get; set; }
+        public Dialog_ConstructionSet(HB.ModelEnergyProperties libSource, HB.ConstructionSetAbridged constructionSet)
         {
             try
             {
-                
+                this.ModelEnergyProperties = libSource;
                 var cSet = constructionSet ?? new HB.ConstructionSetAbridged(identifier: Guid.NewGuid().ToString());
                 //cSet.WallSet = new WallConstructionSetAbridged("interior C");
 
@@ -330,7 +329,7 @@ namespace Honeybee.UI
 
 
         }
-        private Color _defaultTextBackgroundColor = new TextBox().BackgroundColor;
+        private Eto.Drawing.Color _defaultTextBackgroundColor = new TextBox().BackgroundColor;
 
         Control GenDropInArea(string currentValue, Action<HB.Energy.IConstruction> setAction, Type setType)
         {
@@ -344,7 +343,7 @@ namespace Honeybee.UI
             dropInValue.Text = currentValue;
             dropInValue.Height = 25;
           
-            var backGround = Color.FromArgb(230, 230, 230);
+            var backGround = Eto.Drawing.Color.FromArgb(230, 230, 230);
             //dropInValue.BackgroundColor = backGround;
 
             var dropIn = new Drawable();

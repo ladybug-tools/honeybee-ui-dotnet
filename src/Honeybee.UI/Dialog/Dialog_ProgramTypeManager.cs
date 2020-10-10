@@ -11,11 +11,13 @@ namespace Honeybee.UI
     public class Dialog_ProgramTypeManager : Dialog<List<HB.Energy.IProgramtype>>
     {
      
-        public Dialog_ProgramTypeManager(List<HB.ProgramTypeAbridged> programTypes)
+        private ModelEnergyProperties ModelEnergyProperties { get; set; }
+        public Dialog_ProgramTypeManager(ModelEnergyProperties libSource, List<HB.ProgramTypeAbridged> programTypes)
         {
             try
             {
                 //var md = model;
+                this.ModelEnergyProperties = libSource;
                 var pTypes = programTypes;
 
                 Padding = new Padding(5);
@@ -23,6 +25,7 @@ namespace Honeybee.UI
                 Title = "Program Type Manager - Honeybee";
                 WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(900, 400);
+
                 this.Icon = DialogHelper.HoneybeeIcon;
 
                 var layout = new DynamicLayout();
@@ -42,7 +45,7 @@ namespace Honeybee.UI
 
                 addNew.Click += (s, e) =>
                 {
-                    var dialog = new Honeybee.UI.Dialog_OpsProgramTypes();
+                    var dialog = new Honeybee.UI.Dialog_OpsProgramTypes(this.ModelEnergyProperties);
                     var dialog_rc = dialog.ShowModal(this);
 
                     var type = dialog_rc.programType;
@@ -50,12 +53,12 @@ namespace Honeybee.UI
                     if (type != null)
                     {
                         // add schedules
-                        var existingScheduleIds = HB.Helper.EnergyLibrary.InModelEnergyProperties.Schedules.Select(_ => (_.Obj as HB.IDdEnergyBaseModel).Identifier);
+                        var existingScheduleIds = this.ModelEnergyProperties.Schedules.Select(_ => (_.Obj as HB.IDdEnergyBaseModel).Identifier);
                         foreach (var sch in sches)
                         {
                             if (existingScheduleIds.Any(_ => _ == sch.Identifier))
                                 continue;
-                            HB.Helper.EnergyLibrary.InModelEnergyProperties.Schedules.Add(sch);
+                            this.ModelEnergyProperties.Schedules.Add(sch);
                         }
 
                         // add program type
@@ -81,7 +84,7 @@ namespace Honeybee.UI
                     var newPType = ProgramTypeAbridged.FromJson((gd.SelectedItem as ProgramTypeAbridged).ToJson());
                     newPType.Identifier = id;
                     newPType.DisplayName = string.IsNullOrEmpty( newPType.DisplayName) ? $"New Duplicate {id.Substring(0, 5)}": $"{newPType.DisplayName}_dup";
-                    var dialog = new Honeybee.UI.Dialog_ProgramType(newPType);
+                    var dialog = new Honeybee.UI.Dialog_ProgramType(this.ModelEnergyProperties, newPType);
                     var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
                     {
@@ -101,7 +104,7 @@ namespace Honeybee.UI
                     }
 
                     var newPType = ProgramTypeAbridged.FromJson((selected as ProgramTypeAbridged).ToJson());
-                    var dialog = new Honeybee.UI.Dialog_ProgramType(newPType);
+                    var dialog = new Honeybee.UI.Dialog_ProgramType(this.ModelEnergyProperties, newPType);
                     var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
                     {

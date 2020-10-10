@@ -1,19 +1,20 @@
 ﻿using Eto.Drawing;
 using Eto.Forms;
-using HB = HoneybeeSchema;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using HoneybeeSchema;
 
 namespace Honeybee.UI
 {
-    public class Dialog_OpsConstructionSet : Dialog<(HB.ConstructionSetAbridged constructionSet, IEnumerable<HB.Energy.IConstruction> constructions, IEnumerable<HB.Energy.IMaterial> materials)>
+    public class Dialog_OpsConstructionSet : Dialog<(ConstructionSetAbridged constructionSet, IEnumerable<HoneybeeSchema.Energy.IConstruction> constructions, IEnumerable<HoneybeeSchema.Energy.IMaterial> materials)>
     {
-     
-        public Dialog_OpsConstructionSet()
+        private ModelEnergyProperties ModelEnergyProperties { get; set; }
+        public Dialog_OpsConstructionSet(ModelEnergyProperties libSource)
         {
             try
             {
+                this.ModelEnergyProperties = libSource;
                 //var output = simulationOutput;
                 var vm = OpsConstructionSetsViewModel.Instance;
 
@@ -53,7 +54,7 @@ namespace Honeybee.UI
 
                     cSet.DisplayName =  $"{vm.FullConstructionSet}_dup";
                     cSet.Identifier = id;
-                    var dialog = new Honeybee.UI.Dialog_ConstructionSet(cSet);
+                    var dialog = new Honeybee.UI.Dialog_ConstructionSet(this.ModelEnergyProperties, cSet);
                     var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
                     {

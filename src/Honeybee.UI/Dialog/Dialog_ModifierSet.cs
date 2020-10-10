@@ -20,7 +20,7 @@ namespace Honeybee.UI
             get
             {
                 var libObjs = HB.Helper.EnergyLibrary.DefaultModelRadianceProperties.Modifiers.OfType<HB.ModifierBase>().ToList();
-                var inModelObjs = HB.Helper.EnergyLibrary.InModelRadianceProperties.Modifiers.OfType<HB.ModifierBase>().ToList();
+                var inModelObjs = this.ModelRadianceProperties.Modifiers.OfType<HB.ModifierBase>().ToList();
 
                 libObjs.AddRange(inModelObjs);
                 libObjs = libObjs.Distinct().ToList();
@@ -29,9 +29,10 @@ namespace Honeybee.UI
                 return _modifiers;
             }
         }
-
-        public Dialog_ModifierSet(HB.ModifierSetAbridged modifierSet)
+        private ModelRadianceProperties ModelRadianceProperties { get; set; }
+        public Dialog_ModifierSet(ModelRadianceProperties libSource, HB.ModifierSetAbridged modifierSet)
         {
+            this.ModelRadianceProperties = libSource;
             var mSet = modifierSet ?? new HB.ModifierSetAbridged(identifier: Guid.NewGuid().ToString());
 
             Padding = new Padding(5);

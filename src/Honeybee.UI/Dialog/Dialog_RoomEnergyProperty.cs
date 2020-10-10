@@ -11,11 +11,12 @@ namespace Honeybee.UI
 {
     public class Dialog_RoomEnergyProperty: Dialog<HB.RoomEnergyPropertiesAbridged>
     {
-     
-        public Dialog_RoomEnergyProperty(HB.RoomEnergyPropertiesAbridged roomEnergyProperties, bool updateChangesOnly = false)
+        private ModelEnergyProperties ModelEnergyProperties { get; set; }
+        public Dialog_RoomEnergyProperty(ModelEnergyProperties libSource, HB.RoomEnergyPropertiesAbridged roomEnergyProperties, bool updateChangesOnly = false)
         {
             try
             {
+                this.ModelEnergyProperties = libSource;
                 var EnergyProp = roomEnergyProperties ?? new HB.RoomEnergyPropertiesAbridged();
                 var noChangeEnergyProp = new HB.RoomEnergyPropertiesAbridged(
                     "No Changes", 
@@ -43,9 +44,7 @@ namespace Honeybee.UI
 
                 //Get constructions
                 //var cSets = EnergyLibrary.DefaultConstructionSets.ToList();
-                var cSets = EnergyLibrary.InModelEnergyProperties.ConstructionSets
-                    .Where(_=>_.Obj is ConstructionSetAbridged)
-                    .Select(_ => _.Obj as ConstructionSetAbridged).ToList();
+                var cSets = this.ModelEnergyProperties.ConstructionSets.OfType<ConstructionSetAbridged>().ToList();
 
                 if (updateChangesOnly)
                     cSets.Insert(0, new ConstructionSetAbridged("No Changes"));
@@ -54,89 +53,23 @@ namespace Honeybee.UI
                 var constructionSetDP = DialogHelper.MakeDropDown(EnergyProp.ConstructionSet, (v) => EnergyProp.ConstructionSet = v?.Identifier,
                     cSets, "Default Generic Construction Set");
 
-                //var cSetBtn = new Button();
-                //cSetBtn.Text = "+";
-                //cSetBtn.Width = 20;
-                //cSetBtn.Height = 20;
-                //cSetBtn.Click += (s, e) => 
-                //{
 
-                //    var constrcutionSetsInModel = modelProp.ConstructionSets
-                //    .Where(_ => _.Obj is HB.ConstructionSetAbridged)
-                //    .Select(_ => _.Obj as HB.Energy.IBuildingConstructionset)
-                //    .ToList();
-
-                //    var globalCSet = modelProp.GlobalConstructionSet;
-                //    var dialog = new Dialog_ConstructionSetManager(constrcutionSetsInModel, (id) => id == globalCSet);
-                //    var dialog_rc = dialog.ShowModal(this);
-                //    if (dialog_rc != null)
-                //    {
-                //        var newCSets = dialog_rc.OfType<HB.ConstructionSetAbridged>();
-                //        modelProp.ConstructionSets.Clear();
-
-                //        var dpItems = constructionSetDP.Items.Take(1).ToList();
-                //        constructionSetDP.Items.Clear();
-                //        foreach (var item in newCSets)
-                //        {
-                //            modelProp.ConstructionSets.Add(item);
-                //            var name = item.DisplayName ?? item.Identifier;
-                //            dpItems.Add(new ListItem() { Text = name, Key = name });
-                //        }
-                //        constructionSetDP.Items.AddRange(dpItems);
-                //        constructionSetDP.SelectedIndex = 0;
-
-                //    }
-                //};
 
                 //Get programs
                 //var pTypes = EnergyLibrary.DefaultProgramTypes.ToList();
-                var pTypes = EnergyLibrary.InModelEnergyProperties.ProgramTypes
-                    .Where(_ => _.Obj is HB.ProgramTypeAbridged)
-                    .Select(_ => _.Obj as HB.ProgramTypeAbridged).ToList();
-
+                var pTypes = this.ModelEnergyProperties.ProgramTypes.OfType<HB.ProgramTypeAbridged>().ToList();
+         
                 if (updateChangesOnly)
                     pTypes.Insert(0, new ProgramTypeAbridged("No Changes"));
 
                 var programTypesDP = DialogHelper.MakeDropDown(EnergyProp.ProgramType, (v) => EnergyProp.ProgramType = v?.Identifier,
                    pTypes, "Unoccupied, NoLoads");
 
-                //var pTypeBtn = new Button();
-                //pTypeBtn.Text = "+";
-                //pTypeBtn.Width = 20;
-                //pTypeBtn.Height = 20;
-                //pTypeBtn.Click += (s, e) =>
-                //{
-
-                //    var pTypeInModel = modelProp.ProgramTypes
-                //   .Where(_ => _.Obj is HB.ProgramTypeAbridged)
-                //   .Select(_ => _.Obj as HB.ProgramTypeAbridged)
-                //   .ToList();
-
-
-                //    var dialog = new Dialog_ProgramTypeManager(pTypeInModel);
-                //    var dialog_rc = dialog.ShowModal(this);
-                //    if (dialog_rc != null)
-                //    {
-                //        modelProp.ProgramTypes.Clear();
-
-                //        var newPTypes = dialog_rc.OfType<HB.ProgramTypeAbridged>();
-                //        var dpItems = programTypesDP.Items.Take(1).ToList();
-                //        programTypesDP.Items.Clear();
-                //        foreach (var item in newPTypes)
-                //        {
-                //            modelProp.ProgramTypes.Add(item);
-                //            var name = item.DisplayName ?? item.Identifier;
-                //            dpItems.Add(new ListItem() { Text = name, Key = name });
-                //        }
-                //        programTypesDP.Items.AddRange(dpItems);
-                //        programTypesDP.SelectedIndex = 0;
-                //    }
-                //};
-
+              
 
                 //Get HVACs
                 //var hvacs = EnergyLibrary.DefaultHVACs.ToList();+
-                var hvacs = EnergyLibrary.InModelEnergyProperties.Hvacs.OfType<HoneybeeSchema.Energy.IHvac>().ToList();
+                var hvacs = this.ModelEnergyProperties.Hvacs.OfType<HoneybeeSchema.Energy.IHvac>().ToList();
 
                 if (updateChangesOnly)
                     hvacs.Insert(0, new IdealAirSystemAbridged("No Changes"));

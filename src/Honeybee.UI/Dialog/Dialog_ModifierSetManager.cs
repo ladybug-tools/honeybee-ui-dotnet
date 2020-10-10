@@ -1,6 +1,5 @@
 ﻿using Eto.Drawing;
 using Eto.Forms;
-using HB = HoneybeeSchema;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,11 +7,13 @@ using HoneybeeSchema;
 
 namespace Honeybee.UI
 {
-    public class Dialog_ModifierSetManager : Dialog<List<HB.ModifierSetAbridged>>
+    public class Dialog_ModifierSetManager : Dialog<List<ModifierSetAbridged>>
     {
-     
-        public Dialog_ModifierSetManager(List<HB.ModifierSetAbridged> modifierSets)
+        private ModelRadianceProperties ModelRadianceProperties { get; set; }
+        public Dialog_ModifierSetManager(ModelRadianceProperties libSource, List<ModifierSetAbridged> modifierSets)
         {
+            this.ModelRadianceProperties = libSource;
+
             Padding = new Padding(5);
             Resizable = true;
             Title = "ModifierSet Manager - Honeybee";
@@ -51,11 +52,11 @@ namespace Honeybee.UI
 
             addNew.Click += (s, e) =>
             {
-                var dialog = new Honeybee.UI.Dialog_ModifierSet(null);
+                var dialog = new Honeybee.UI.Dialog_ModifierSet(this.ModelRadianceProperties, null);
                 var dialog_rc = dialog.ShowModal(this);
 
                 if (dialog_rc == null) return;
-                var d = gd.DataStore.OfType<HB.ModifierSetAbridged>().ToList();
+                var d = gd.DataStore.OfType<ModifierSetAbridged>().ToList();
                 d.Add(dialog_rc);
                 gd.DataStore = d;
             };
@@ -70,11 +71,11 @@ namespace Honeybee.UI
 
                 var id = Guid.NewGuid().ToString();
 
-                var dup = (gd.SelectedItem as HB.ModifierSetAbridged).DuplicateModifierSetAbridged();
+                var dup = (gd.SelectedItem as ModifierSetAbridged).DuplicateModifierSetAbridged();
 
                 dup.Identifier = id;
                 dup.DisplayName = string.IsNullOrEmpty(dup.DisplayName) ? $"ModifierSet {id.Substring(0, 5)}" : $"{dup.DisplayName}_dup";
-                var dialog = new Honeybee.UI.Dialog_ModifierSet(dup);
+                var dialog = new Honeybee.UI.Dialog_ModifierSet(this.ModelRadianceProperties, dup);
                 var dialog_rc = dialog.ShowModal(this);
                 if (dialog_rc == null) return;
                 var d = gd.DataStore.OfType<ModifierSetAbridged>().ToList();
@@ -83,7 +84,7 @@ namespace Honeybee.UI
             };
 
             Action editAction = () => {
-                var selected = gd.SelectedItem as HB.ModifierSetAbridged;
+                var selected = gd.SelectedItem as ModifierSetAbridged;
                 if (selected == null)
                 {
                     MessageBox.Show(this, "Nothing is selected to edit!");
@@ -92,7 +93,7 @@ namespace Honeybee.UI
 
                 var dup = selected.DuplicateModifierSetAbridged();
 
-                var dialog = new Honeybee.UI.Dialog_ModifierSet(dup);
+                var dialog = new Honeybee.UI.Dialog_ModifierSet(this.ModelRadianceProperties, dup);
                 var dialog_rc = dialog.ShowModal(this);
                 if (dialog_rc == null) return;
 
@@ -108,7 +109,7 @@ namespace Honeybee.UI
             };
             remove.Click += (s, e) =>
             {
-                var selected = gd.SelectedItem as HB.ModifierSetAbridged;
+                var selected = gd.SelectedItem as ModifierSetAbridged;
                 if (selected == null)
                 {
                     MessageBox.Show(this, "Nothing is selected to edit!");
@@ -149,7 +150,7 @@ namespace Honeybee.UI
   
             var nameTB = new TextBoxCell
             {
-                Binding = Binding.Delegate<HB.ModifierSetAbridged, string>(r => r.DisplayName ?? r.Identifier)
+                Binding = Binding.Delegate<ModifierSetAbridged, string>(r => r.DisplayName ?? r.Identifier)
             };
             gd.Columns.Add(new GridColumn { DataCell = nameTB, HeaderText = "Name" });
 

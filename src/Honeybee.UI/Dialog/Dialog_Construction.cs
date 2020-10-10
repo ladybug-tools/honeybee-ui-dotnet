@@ -70,7 +70,7 @@ namespace Honeybee.UI
             get {
 
                 var libObjs = HB.Helper.EnergyLibrary.StandardsOpaqueMaterials.Values.ToList();
-                var inModelObjs = HB.Helper.EnergyLibrary.InModelEnergyProperties.Materials
+                var inModelObjs =  this.ModelEnergyProperties.Materials
                     .Where(_ => !_.Obj.GetType().Name.Contains("EnergyWindow"))
                     .Select(_=>_.Obj as HB.Energy.IMaterial);
 
@@ -87,7 +87,7 @@ namespace Honeybee.UI
             get
             {
                 var libObjs = HB.Helper.EnergyLibrary.StandardsWindowMaterials.Values.ToList();
-                var inModelObjs = HB.Helper.EnergyLibrary.InModelEnergyProperties.Materials
+                var inModelObjs =  this.ModelEnergyProperties.Materials
                     .Where(_ => _.Obj.GetType().Name.Contains("EnergyWindow"))
                     .Select(_ => _.Obj as HB.Energy.IMaterial);
 
@@ -99,12 +99,14 @@ namespace Honeybee.UI
         }
 
         //private bool _primMousePressed = false;
+        private HB.ModelEnergyProperties ModelEnergyProperties { get; set; }
 
-        public Dialog_Construction(HB.Energy.IConstruction construction)
+        public Dialog_Construction(HB.ModelEnergyProperties libSource, HB.Energy.IConstruction construction)
         {
             try
             {
-                //_hbObj = HB.ModelEnergyProperties.Default.Constructions.First(_ => _.Obj is HB.OpaqueConstructionAbridged).Obj as HB.OpaqueConstructionAbridged;
+                this.ModelEnergyProperties = libSource;
+
                 _hbObj = construction;
 
                 Padding = new Padding(5);

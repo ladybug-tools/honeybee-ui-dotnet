@@ -19,7 +19,7 @@ namespace Honeybee.UI.View
 
         private Door()
         {
-            this.ViewModel = new DoorViewModel();
+            this.ViewModel = new DoorViewModel(PanelHelper.ModelProperties);
             Initialize();
         }
 

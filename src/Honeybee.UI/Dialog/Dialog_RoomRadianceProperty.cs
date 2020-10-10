@@ -1,25 +1,23 @@
 ﻿using Eto.Drawing;
 using Eto.Forms;
-using System.Collections.Generic;
 using System.Linq;
-using HB = HoneybeeSchema;
 using System;
-using EnergyLibrary = HoneybeeSchema.Helper.EnergyLibrary;
 using HoneybeeSchema;
 
 namespace Honeybee.UI
 {
-    public class Dialog_RoomRadianceProperty: Dialog<HB.RoomRadiancePropertiesAbridged>
+    public class Dialog_RoomRadianceProperty: Dialog<RoomRadiancePropertiesAbridged>
     {
-     
-        public Dialog_RoomRadianceProperty(HB.RoomRadiancePropertiesAbridged roomRadianceProperties, bool updateChangesOnly = false)
+        private ModelRadianceProperties ModelRadianceProperties { get; set; }
+        public Dialog_RoomRadianceProperty(ModelRadianceProperties libSource, RoomRadiancePropertiesAbridged roomRadianceProperties, bool updateChangesOnly = false)
         {
             try
             {
-                var prop = roomRadianceProperties ?? new HB.RoomRadiancePropertiesAbridged();
+                this.ModelRadianceProperties = libSource;
+                var prop = roomRadianceProperties ?? new RoomRadiancePropertiesAbridged();
 
                 if (updateChangesOnly)
-                    prop = new HB.RoomRadiancePropertiesAbridged("No Changes");
+                    prop = new RoomRadiancePropertiesAbridged("No Changes");
 
 
                 Padding = new Padding(15);
@@ -30,7 +28,7 @@ namespace Honeybee.UI
 
                 //Get constructions
                 //var cSets = EnergyLibrary.DefaultConstructionSets.ToList();
-                var mSets = EnergyLibrary.InModelRadianceProperties.ModifierSets
+                var mSets = this.ModelRadianceProperties.ModifierSets
                     .OfType<ModifierSetAbridged>()
                     .ToList();
 
