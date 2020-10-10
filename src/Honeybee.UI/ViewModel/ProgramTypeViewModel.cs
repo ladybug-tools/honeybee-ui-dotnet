@@ -6,14 +6,18 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using EnergyLibrary = HoneybeeSchema.Helper.EnergyLibrary;
 
 namespace Honeybee.UI
 {
 
     public class ProgramTypeViewModel : ViewModelBase
     {
-        private static IDdEnergyBaseModel _schAlwaysOn;
-        private static IDdEnergyBaseModel SchAlwaysOn 
+
+        public ModelEnergyProperties ModelEnergyProp { get; set; }
+
+        private IDdEnergyBaseModel _schAlwaysOn;
+        private IDdEnergyBaseModel SchAlwaysOn 
         {
             get
             {
@@ -25,22 +29,42 @@ namespace Honeybee.UI
             }
         }
 
-        private static IEnumerable<IDdEnergyBaseModel> _schedules;
-        public static IEnumerable<IDdEnergyBaseModel> Schedules
+        private IEnumerable<IDdEnergyBaseModel> _schedules;
+
+        public IEnumerable<IDdEnergyBaseModel> Schedules
         {
             get
             {
-                //var libObjs = HoneybeeSchema.Helper.EnergyLibrary.StandardsSchedules.ToList<IDdEnergyBaseModel>();
-                var inModelObjs = HoneybeeSchema.Helper.EnergyLibrary.InModelEnergyProperties.Schedules
-                    .Select(_ => _.Obj as IDdEnergyBaseModel);
-
-                //libObjs.AddRange(inModelObjs);
-                _schedules = inModelObjs;
-
+                _schedules = _schedules ?? this.ModelEnergyProp.Schedules.OfType<IDdEnergyBaseModel>();
                 return _schedules;
             }
         }
-        private static string GetScheduleName(string scheduleID)
+
+        private IEnumerable<HoneybeeSchema.Energy.ILoad> _loads;
+
+        public IEnumerable<HoneybeeSchema.Energy.ILoad> Loads
+        {
+            get
+            {
+                if (_loads == null)
+                {
+                    var libObjs = new List<HoneybeeSchema.Energy.ILoad>();
+                    libObjs.AddRange(EnergyLibrary.DefaultPeopleLoads);
+                    libObjs.AddRange(EnergyLibrary.DefaultLightingLoads);
+                    libObjs.AddRange(EnergyLibrary.DefaultElectricEquipmentLoads);
+                    libObjs.AddRange(EnergyLibrary.GasEquipmentLoads);
+                    libObjs.AddRange(EnergyLibrary.DefaultInfiltrationLoads);
+                    libObjs.AddRange(EnergyLibrary.DefaultVentilationLoads);
+                    libObjs.AddRange(EnergyLibrary.DefaultSetpoints);
+                    _loads = libObjs;
+                }
+
+
+                return _loads;
+            }
+        }
+
+        private string GetScheduleName(string scheduleID)
         {
             var foundFromLib = Schedules.FirstOrDefault(_ => _.Identifier == scheduleID);
             var name = foundFromLib == null ? null : foundFromLib.DisplayName ?? foundFromLib.Identifier;
@@ -552,56 +576,14 @@ namespace Honeybee.UI
         }
         #endregion
 
-      
 
-        private static readonly ProgramTypeViewModel _instance = new ProgramTypeViewModel();
-        public static ProgramTypeViewModel Instance => _instance;
+     
 
-        //public void UpdatePeople(PeopleAbridged newObj)
-        //{
-        //    this.hbObj.People = newObj;
-        //    var propleProps = this.GetType().GetProperties().Where(_ => _.Name.StartsWith("PPL_")).Select(_ => _.Name);
-        //    this.RefreshControls(propleProps);
-        //}
-        //public void UpdateLighting(LightingAbridged newObj)
-        //{
-        //    this.hbObj.Lighting = newObj;
-        //    var propleProps = this.GetType().GetProperties().Where(_ => _.Name.StartsWith("LPD_")).Select(_ => _.Name);
-        //    this.RefreshControls(propleProps);
-        //}
-        //public void UpdateEquipment(ElectricEquipmentAbridged newObj)
-        //{
-        //    this.hbObj.ElectricEquipment = newObj;
-        //    var propleProps = this.GetType().GetProperties().Where(_ => _.Name.StartsWith("EQP_")).Select(_ => _.Name);
-        //    this.RefreshControls(propleProps);
-        //}
-        //public void UpdateGasEquipment(GasEquipmentAbridged newObj)
-        //{
-        //    this.hbObj.GasEquipment = newObj;
-        //    var propleProps = this.GetType().GetProperties().Where(_ => _.Name.StartsWith("GAS_")).Select(_ => _.Name);
-        //    this.RefreshControls(propleProps);
-        //}
-        //public void UpdateInfiltration(InfiltrationAbridged newObj)
-        //{
-        //    this.hbObj.Infiltration = newObj;
-        //    var propleProps = this.GetType().GetProperties().Where(_ => _.Name.StartsWith("INF_")).Select(_ => _.Name);
-        //    this.RefreshControls(propleProps);
-        //}
-        //public void UpdateVentilation(VentilationAbridged newObj)
-        //{
-        //    this.hbObj.Ventilation = newObj;
-        //    var propleProps = this.GetType().GetProperties().Where(_ => _.Name.StartsWith("VNT_")).Select(_ => _.Name);
-        //    this.RefreshControls(propleProps);
-        //}
-        //public void UpdateSetpoint(SetpointAbridged newObj)
-        //{
-        //    this.hbObj.Setpoint = newObj;
-        //    var propleProps = this.GetType().GetProperties().Where(_ => _.Name.StartsWith("SPT_")).Select(_ => _.Name);
-        //    this.RefreshControls(propleProps);
-        //}
+       
 
-        private ProgramTypeViewModel()
+        public ProgramTypeViewModel(ModelEnergyProperties modelEnergyProperties)
         {
+            this.ModelEnergyProp = modelEnergyProperties;
         }
 
     }

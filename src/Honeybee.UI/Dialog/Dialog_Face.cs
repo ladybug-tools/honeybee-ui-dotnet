@@ -1,18 +1,19 @@
 ﻿using Eto.Drawing;
 using Eto.Forms;
-using HB = HoneybeeSchema;
+using HoneybeeSchema;
 using System;
 
 namespace Honeybee.UI
 {
-    public class Dialog_Face: Dialog<HB.Face>
+    public class Dialog_Face: Dialog<Face>
     {
-     
-        public Dialog_Face(HB.Face honeybeeObj)
+        public ModelProperties ModelProperties { get; set; }
+        public Dialog_Face(ModelProperties libSource , Face honeybeeObj)
         {
             try
             {
-                var dup = HB.Face.FromJson(honeybeeObj.ToJson());
+                this.ModelProperties = libSource;
+                var dup = Face.FromJson(honeybeeObj.ToJson());
 
 
                 Padding = new Padding(5);
@@ -36,7 +37,7 @@ namespace Honeybee.UI
                 };
 
                 //Create layout
-                var panel = PanelHelper.UpdateFacePanel(dup);
+                var panel = PanelHelper.UpdateFacePanel(this.ModelProperties, dup);
 
                 //Create layout
                 Content = new TableLayout()

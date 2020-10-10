@@ -1,7 +1,7 @@
 ﻿using Eto.Drawing;
 using Eto.Forms;
 using System;
-using HB = HoneybeeSchema;
+using HoneybeeSchema;
 
 namespace Honeybee.UI
 {
@@ -19,25 +19,26 @@ namespace Honeybee.UI
         //    //layout.Spacing = new Size(8, 8);
 
         //    //var bc = boundaryCondition.Obj;
-        //    //if (bc is HB.Ground || bc is HB.Adiabatic)
+        //    //if (bc is Ground || bc is Adiabatic)
         //    //{
         //    //    //bcGround.
         //    //}
-        //    //else if (bc is HB.Outdoors bcOutdoors)
+        //    //else if (bc is Outdoors bcOutdoors)
         //    //{
 
         //    //}
 
         //}
+        public static ModelProperties ModelProperties { get; set; }
 
-        public static DynamicLayout GetLayout(HB.AnyOf boundaryCondition)
+        public static DynamicLayout GetLayout(AnyOf boundaryCondition)
         {
             var bc = boundaryCondition.Obj;
-            if (bc is HB.Surface)
+            if (bc is Surface)
             {
                 return EmptyLayout;
             }
-            else if (bc is HB.Outdoors bcOutdoors)
+            else if (bc is Outdoors bcOutdoors)
             {
                 return CreateOutdoorLayout(bcOutdoors);
             }
@@ -52,7 +53,7 @@ namespace Honeybee.UI
         //    return new DynamicLayout();
         //}
 
-        public static DynamicLayout CreateOutdoorLayout(HB.Outdoors bcOutdoors)
+        public static DynamicLayout CreateOutdoorLayout(Outdoors bcOutdoors)
         {
             var layout = new DynamicLayout() { Spacing = new Size(8, 8) };
             var sun_CB = new CheckBox();
@@ -85,19 +86,19 @@ namespace Honeybee.UI
                 }
                 else
                 {
-                    bcOutdoors.ViewFactor = new HB.Autocalculate();
+                    bcOutdoors.ViewFactor = new Autocalculate();
                 }
             };
 
             // View Factor Autocalculate
             var vF_CB = new CheckBox();
-            vF_CB.CheckedBinding.Bind(bcOutdoors, v => v.ViewFactor.Obj is HB.Autocalculate);
+            vF_CB.CheckedBinding.Bind(bcOutdoors, v => v.ViewFactor.Obj is Autocalculate);
             vF_CB.Text = "Autocalculate";
             vF_CB.CheckedChanged += (s, e) =>
             {
                 vF_NS.Enabled = !vF_CB.Checked.Value;
                 if (vF_CB.Checked.Value)
-                    bcOutdoors.ViewFactor = new HB.Autocalculate();
+                    bcOutdoors.ViewFactor = new Autocalculate();
             };
 
             layout.AddRow("Outdoors:");
@@ -118,8 +119,9 @@ namespace Honeybee.UI
         /// <param name="geometryReset"></param>
         /// <param name="redrawDisplay"></param>
         /// <returns></returns>
-        public static Panel UpdateRoomPanel(HB.Room HoneybeeObj, Action<string> geometryReset = default, Action<string> redrawDisplay = default)
+        public static Panel UpdateRoomPanel(ModelProperties libSource, Room HoneybeeObj, Action<string> geometryReset = default, Action<string> redrawDisplay = default)
         {
+            ModelProperties = libSource;
             var panel = View.Room.Instance;
             panel.UpdatePanel(HoneybeeObj, geometryReset, redrawDisplay);
             return panel;
@@ -132,10 +134,11 @@ namespace Honeybee.UI
         /// <param name="HoneybeeObj"></param>
         /// <param name="geometryReset"></param>
         /// <returns></returns>
-        public static Panel UpdateFacePanel(HB.Face HoneybeeObj, System.Action<string> geometryReset = default)
+        public static Panel UpdateFacePanel(ModelProperties libSource, Face HoneybeeObj, System.Action<string> geometryReset = default)
         {
+            ModelProperties = libSource;
             var panel = View.Face.Instance;
-            panel.UpdatePanel(HoneybeeObj, geometryReset);
+            panel.UpdatePanel( HoneybeeObj, geometryReset);
             return panel;
         }
 
@@ -146,8 +149,9 @@ namespace Honeybee.UI
         /// <param name="HoneybeeObj"></param>
         /// <param name="geometryReset"></param>
         /// <returns></returns>
-        public static Panel UpdateDoorPanel(HB.Door HoneybeeObj, System.Action<string> geometryReset = default)
+        public static Panel UpdateDoorPanel(ModelProperties libSource, Door HoneybeeObj, System.Action<string> geometryReset = default)
         {
+            ModelProperties = libSource;
             var panel = View.Door.Instance;
             panel.UpdatePanel(HoneybeeObj, geometryReset);
             return panel;
@@ -160,8 +164,9 @@ namespace Honeybee.UI
         /// <param name="HoneybeeObj"></param>
         /// <param name="geometryReset"></param>
         /// <returns></returns>
-        public static Panel UpdateAperturePanel(HB.Aperture HoneybeeObj, System.Action<string> geometryReset = default)
+        public static Panel UpdateAperturePanel(ModelProperties libSource, Aperture HoneybeeObj, System.Action<string> geometryReset = default)
         {
+            ModelProperties = libSource;
             var panel = View.Aperture.Instance;
             panel.UpdatePanel(HoneybeeObj, geometryReset);
             return panel;
@@ -174,8 +179,9 @@ namespace Honeybee.UI
         /// <param name="HoneybeeObj"></param>
         /// <param name="geometryReset"></param>
         /// <returns></returns>
-        public static Panel UpdateShadePanel(HB.Shade HoneybeeObj, System.Action<string> geometryReset = default)
+        public static Panel UpdateShadePanel(ModelProperties libSource, Shade HoneybeeObj, System.Action<string> geometryReset = default)
         {
+            ModelProperties = libSource;
             var panel = View.Shade.Instance;
             panel.UpdatePanel(HoneybeeObj, geometryReset);
             return panel;

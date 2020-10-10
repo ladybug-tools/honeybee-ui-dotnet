@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HB = HoneybeeSchema;
 using System;
-using EnergyLibrary = HoneybeeSchema.Helper.EnergyLibrary;
+
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using HoneybeeSchema.Energy;
@@ -14,62 +14,23 @@ namespace Honeybee.UI
 
     public class Dialog_ProgramType: Dialog<HB.ProgramTypeAbridged>
     {
-        private static ProgramTypeViewModel _vm;
+        private ProgramTypeViewModel _vm;
 
-        private static Panel _peopleGroup;
-        private static Panel _lightingGroup;
-        private static Panel _equipmentGroup; 
-        private static Panel _gasEqpGroup;
-        private static Panel _infiltrationGroup;
-        private static Panel _ventilationGroup;
-        private static Panel _setpoinGroup;
+        private Panel _peopleGroup;
+        private Panel _lightingGroup;
+        private Panel _equipmentGroup; 
+        private Panel _gasEqpGroup;
+        private Panel _infiltrationGroup;
+        private Panel _ventilationGroup;
+        private Panel _setpoinGroup;
 
-        private static IEnumerable<HB.Energy.ILoad> _loads;
+       
 
-        public static IEnumerable<HB.Energy.ILoad> Loads
-        {
-            get
-            {
-                if (_loads == null)
-                {
-                    var libObjs = new List<HB.Energy.ILoad>();
-                    libObjs.AddRange(EnergyLibrary.DefaultPeopleLoads);
-                    libObjs.AddRange(EnergyLibrary.DefaultLightingLoads);
-                    libObjs.AddRange(EnergyLibrary.DefaultElectricEquipmentLoads);
-                    libObjs.AddRange(EnergyLibrary.GasEquipmentLoads);
-                    libObjs.AddRange(EnergyLibrary.DefaultInfiltrationLoads);
-                    libObjs.AddRange(EnergyLibrary.DefaultVentilationLoads);
-                    libObjs.AddRange(EnergyLibrary.DefaultSetpoints);
-                    _loads = libObjs;
-                }
-            
-
-                return _loads;
-            }
-        }
-
-        private static IEnumerable<HB.IDdEnergyBaseModel> _schedules;
-
-        public static IEnumerable<HB.IDdEnergyBaseModel> Schedules
-        {
-            get
-            {
-                //var libObjs = HB.Helper.EnergyLibrary.StandardsSchedules.ToList<HB.IDdEnergyBaseModel>();
-                var inModelObjs = HB.Helper.EnergyLibrary.InModelEnergyProperties.Schedules
-                    .Select(_ => _.Obj as HB.IDdEnergyBaseModel);
-
-                //libObjs.AddRange(inModelObjs);
-                _schedules = inModelObjs;
-
-                return _schedules;
-            }
-        }
-
-        public Dialog_ProgramType(HB.ProgramTypeAbridged ProgramType)
+        public Dialog_ProgramType(HB.ModelEnergyProperties libSource, HB.ProgramTypeAbridged ProgramType)
         {
             try
             {
-                _vm = ProgramTypeViewModel.Instance;
+                _vm = new ProgramTypeViewModel(libSource);
                 _vm.hbObj = ProgramType ?? new HB.ProgramTypeAbridged(identifier: Guid.NewGuid().ToString());
 
                 Padding = new Padding(5);
@@ -378,11 +339,11 @@ namespace Honeybee.UI
             return GenGroup("People", ppl, isPplNull, (v) => _vm.People = v as HB.PeopleAbridged, typeof(HB.PeopleAbridged));
         }
 
-        private static (List<Control> allControls, GridView libraryLBox) GenLibraryPanel()
+        private (List<Control> allControls, GridView libraryLBox) GenLibraryPanel()
         {
             //IEnumerable<HB.Energy.IIDdEnergyBaseModel> hbLoads = Loads;
 
-            IEnumerable<HB.Energy.IIDdEnergyBaseModel> itemsToShow = Loads;
+            IEnumerable<HB.Energy.IIDdEnergyBaseModel> itemsToShow = this._vm.Loads;
 
             // Library List
             var library_GV = new GridView();
@@ -489,11 +450,11 @@ namespace Honeybee.UI
                 if (selectedType == "Schedule")
                 {
                     //itemsToShow.Clear();
-                    itemsToShow = Schedules;
+                    itemsToShow = this._vm.Schedules;
                 }
                 else
                 {
-                    itemsToShow = Loads;
+                    itemsToShow = this._vm.Loads;
                 }
 
                 searchTBox.Text = null;
@@ -634,89 +595,6 @@ namespace Honeybee.UI
             return rows;
 
         }
-        //List<Control> GenDropInInputControl<TObject>(string inputName, Expression<Func<TObject, string>> propertyExpression, Type type)
-        //     where TObject : ViewModelBase
-        //{
-        //    var inputLabel = new Label() { Text = inputName, Width = 150 };
-
-        //    var layerPanel = new PixelLayout();
-        //    var dropInValueIdentifier = new TextBox() { PlaceholderText = "Drag from library" };
-        //    dropInValueIdentifier.Width = 312;
-        //    dropInValueIdentifier.Enabled = false;
-        //    //dropInValue.TextBinding.Bind(propertyExpression)
-        //    dropInValueIdentifier.TextBinding.BindDataContext(propertyExpression);
-
-        //    // for display name
-        //    var dropInValueName = new TextBox() { };
-        //    dropInValueName.Width = 312;
-        //    dropInValueName.Enabled = false;
-        //    //dropInValue.TextBinding.Bind(propertyExpression)
-        //    dropInValueName.TextBinding.BindDataContext(propertyExpression);
-
-
-
-        //    var dropIn = new Drawable();
-        //    dropIn.AllowDrop = true;
-        //    dropIn.Width = dropInValueIdentifier.Width;
-        //    dropIn.Height = 25;
-        //    dropIn.BackgroundColor = Colors.Transparent;
-
-        //    var deleteBtn = new Button();
-        //    deleteBtn.Text = "✕";
-        //    deleteBtn.Width = 24;
-        //    deleteBtn.Height = 24;
-
-        //    deleteBtn.Click += (s, e) =>
-        //    {
-        //        dropInValueIdentifier.Text = null;
-        //        deleteBtn.Visible = false;
-        //        //setAction(null);
-        //    };
-
-        //    dropInValueIdentifier.TextChanged += (s, e) =>
-        //    {
-        //        deleteBtn.Visible = !string.IsNullOrEmpty(dropInValueIdentifier.Text);
-        //    };
-
-        //    dropIn.DragLeave += (sender, e) =>
-        //    {
-        //        dropInValueIdentifier.BackgroundColor = Colors.White;
-        //    };
-        //    dropIn.DragOver += (sender, e) =>
-        //    {
-        //        e.Effects = DragEffects.Move;
-        //        dropInValueIdentifier.BackgroundColor = Colors.Yellow;
-        //    };
-        //    dropIn.DragDrop += (sender, e) =>
-        //    {
-        //        // Get drop-in object
-        //        var value = e.Data.GetObject("HBObj");
-        //        var newValue = type.GetMethod("FromJson").Invoke(null, new object[] { value }) as HB.IIDdBase;
-
-        //        if (newValue == null)
-        //        {
-        //            MessageBox.Show(this, $"{type.Name.Replace("Abridged", "")} is required!");
-        //            return;
-        //        }
-
-
-        //        deleteBtn.Visible = true;
-        //        //dropInValue.Text = newValue.DisplayName ?? newValue.Identifier;
-        //        dropInValueIdentifier.Text = newValue.Identifier;
-        //        //dropInValueName.Text = newValue.DisplayName;
-        //        //setAction(newValue.Identifier);
-
-        //    };
-
-
-        //    layerPanel.Add(dropInValueIdentifier, 0, 0);
-        //    layerPanel.Add(dropInValueName, 20, 0);
-        //    layerPanel.Add(dropIn, 0, 0);
-        //    layerPanel.Add(deleteBtn, dropInValueIdentifier.Width - 24, 0);
-        //    return new List<Control>() { inputLabel, layerPanel };
-
-
-        //}
         List<Control> GenDropInInputControl<TObject>(string inputName, Expression<Func<TObject, string>> propertyIdentifierExpression, Expression<Func<TObject, string>> propertyNameExpression, Type type)
             where TObject : ViewModelBase
         {
@@ -806,66 +684,7 @@ namespace Honeybee.UI
 
         }
 
-        //List<Control> GenInputControl<TObject>(string inputName, Expression<Func<TObject, string>> propertyExpression, Func<object> getSelectedFromLib, Type type) where TObject : ViewModelBase
-        //{
-        //    var panel = new DynamicLayout();
-        //    var inputLabel = new Label() { Text = inputName, Width = 150};
-        //    // Select from library
-        //    var tbx = new TextBox() { PlaceholderText = "Add one from library" };
-        //    tbx.Width = _inputControlWidth - 25;
-        //    tbx.Enabled = false;
-        //    tbx.TextBinding.BindDataContext(propertyExpression);
-
-        //    // Button for selecting item from library
-        //    var inWallBtn = new Button() { Width = 25 };
-        //    UpdateAddBtn(tbx.Text == null);
-
-        //    inWallBtn.Click += (sender, e) =>
-        //    {
-        //        var txt = inWallBtn.Text;
-        //        string newText = null;
-        //        if (txt == "＋")
-        //        {
-        //            var selectedItem = getSelectedFromLib() as IIDdBase;
-        //            if (selectedItem == null)
-        //                return;
-
-        //            if (!type.IsAssignableFrom(selectedItem.GetType()))
-        //            {
-        //                MessageBox.Show(this, $"Selected {selectedItem.GetType().Name.Replace("Abridged", "")} cannot be set to {type.Name.Replace("Abridged", "")}!");
-        //                return;
-        //            }
-        //            //TODO: this will be a problem when schedule has set a display name.
-        //            newText = selectedItem.DisplayName ?? selectedItem.Identifier;
-
-        //        }
-
-        //        tbx.Text = newText;
-        //        UpdateAddBtn(newText == null);
-        //    };
-
-        //    var rows = new List<Control>()
-        //    {
-        //        inputLabel,tbx,inWallBtn
-        //    };
-        //    return rows;
-
-        //    void UpdateAddBtn(bool isAdd)
-        //    {
-        //        if (isAdd)
-        //        {
-        //            inWallBtn.Text = "＋";
-        //            inWallBtn.ToolTip = "Add from library";
-        //        }
-        //        else
-        //        {
-        //            inWallBtn.Text = "−";
-        //            inWallBtn.ToolTip = "Remove";
-        //        }
-        //    }
-        //}
-
-        //public delegate void SetLoadAction(ILoad load);
+        
         private DynamicLayout GenGroup(string groupName, List<Control> inputCtrlRows, bool isNull, Action<ILoad> setAction, Type type)
         {
 
@@ -960,83 +779,7 @@ namespace Honeybee.UI
             return layout;
         }
        
-        //private GroupBox GenPanel(string groupName, Func<HB.Energy.IConstruction> getSelected, IEnumerable<(string label, Expression<Func<ViewModelBase, object>> propertyExpression, Type setType)> setActions)
-        //{
-
-        //    //Wall Construction Set
-        //    var wallGroup = new GroupBox() { Text = groupName };
-
-        //    var wallLayout = new DynamicLayout() { Spacing = new Size(3, 3), Padding = new Padding(5) };
-        //    foreach (var item in setActions)
-        //    {
-        //        var inWall = GenTextBoxWithBtn(getSelected, item.propertyExpression, item.setType);
-        //        wallLayout.AddRow(new Label() { Text = item.label, Width = 125 }, inWall, null);
-        //    }
-
-        //    //var exWall = GenTextBoxWithBtn(getSelected, (cons) => c.ExteriorConstruction = cons.Identifier);
-        //    //var gWall =  GenTextBoxWithBtn(getSelected, (cons) => c.GroundConstruction = cons.Identifier);
-
-        //    //wallLayout.AddRow(new Label() { Text = "Exterior", Width = 75 }, exWall, null);
-        //    //wallLayout.AddRow(new Label() { Text = "Ground", Width = 75 }, gWall, null);
-        //    wallGroup.Content = wallLayout;
-        //    return wallGroup;
-
-        //}
-
-
-        //private GroupBox GenPanelFloorSet()
-        //{
-        //    //Wall Construction Set
-        //    var wallGroup = new GroupBox() { Text = "Floor Construction Set" };
-        //    var wallLayout = new DynamicLayout() { Spacing = new Size(3, 3), Padding = new Padding(5) };
-        //    var inWall = new TextBox() { PlaceholderText = "By Global" };
-        //    inWall.Width = 300;
-        //    var inWallBtn = new Button() { Text = "+", Width = 30 };
-        //    inWallBtn.Click += (sender, e) =>
-        //    {
-        //        var txt = inWallBtn.Text;
-        //        inWall.Text = txt == "+" ? "A New Construction" : null;
-        //        inWallBtn.Text = txt == "+" ? "-" : "+";
-        //    };
-
-        //    var exWall = new TextBox() { PlaceholderText = "By Global" };
-        //    var exWallBtn = new Button() { Text = "+", Width = 30 };
-        //    exWallBtn.Click += (sender, e) =>
-        //    {
-        //        var txt = exWallBtn.Text;
-        //        exWall.Text = txt == "+" ? "A New Construction" : null;
-        //        exWallBtn.Text = txt == "+" ? "-" : "+";
-        //    };
-
-        //    var gWall = new TextBox() { PlaceholderText = "By Global" };
-        //    var gWallBtn = new Button() { Text = "+", Width = 30 };
-        //    gWallBtn.Click += (sender, e) =>
-        //    {
-        //        var txt = gWallBtn.Text;
-        //        gWall.Text = txt == "+" ? "A New Construction" : null;
-        //        gWallBtn.Text = txt == "+" ? "-" : "+";
-        //    };
-
-        //    wallLayout.AddRow(new Label() { Text = "Interior", Width = 50 }, inWall, inWallBtn, null);
-        //    wallLayout.AddRow(new Label() { Text = "Exterior", Width = 50 }, exWall, exWallBtn, null);
-        //    wallLayout.AddRow(new Label() { Text = "Ground", Width = 50 }, gWall, gWallBtn, null);
-        //    wallGroup.Content = wallLayout;
-        //    return wallGroup;
-
-        //}
-
-        //private GroupBox GenPanelAirBoundary(string groupName, ListBox tbox)
-        //{
-        //    //Wall Construction Set
-        //    var wallGroup = new GroupBox() { Text = groupName };
-        //    var wallLayout = new DynamicLayout() { Spacing = new Size(3, 3), Padding = new Padding(5) };
-        //    var texBox = GenTextBoxWithBtn(tbox);
-
-        //    wallLayout.AddRow(new Label() { Text = "AirBoundary", Width = 75 }, texBox, null);
-        //    wallGroup.Content = wallLayout;
-        //    return wallGroup;
-
-        //}
+        
 
 
 

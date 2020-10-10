@@ -14,11 +14,13 @@ namespace Honeybee.UI
     {
         
         private GridView _gridView { get; set; }
+        private ModelEnergyProperties ModelEnergyProperties { get; set; }
 
-        public Dialog_ConstructionManager(List<HB.Energy.IConstruction> constructions)
+        public Dialog_ConstructionManager(ModelEnergyProperties libSource, List<HB.Energy.IConstruction> constructions)
         {
             try
             {
+                this.ModelEnergyProperties = libSource;
                 //var md = model;
                 var constrcutionsInModel = constructions;
 
@@ -90,7 +92,7 @@ namespace Honeybee.UI
 
                     dup.Identifier = id;
                     dup.DisplayName = string.IsNullOrEmpty(dup.DisplayName) ? $"New Duplicate {id.Substring(0, 5)}" : $"{dup.DisplayName}_dup";
-                    var dialog = new Honeybee.UI.Dialog_Construction(dup);
+                    var dialog = new Honeybee.UI.Dialog_Construction(this.ModelEnergyProperties, dup);
                     var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
                     {
@@ -126,7 +128,7 @@ namespace Honeybee.UI
                     {
                         // Opaque Construction or Window Construciton
                         var dup = selected.Duplicate() as HB.Energy.IConstruction;
-                        var dialog = new Honeybee.UI.Dialog_Construction(dup);
+                        var dialog = new Honeybee.UI.Dialog_Construction(this.ModelEnergyProperties, dup);
                         dialog_rc = dialog.ShowModal(this);
                     }
 
@@ -215,7 +217,7 @@ namespace Honeybee.UI
             var id = Guid.NewGuid().ToString();
             var newConstrucion = new OpaqueConstructionAbridged(id, new List<string>(), $"New Opaque Construction {id.Substring(0, 5)}");
 
-            var dialog = new Honeybee.UI.Dialog_Construction(newConstrucion);
+            var dialog = new Honeybee.UI.Dialog_Construction(this.ModelEnergyProperties, newConstrucion);
             var dialog_rc = dialog.ShowModal(this);
             if (dialog_rc != null)
             {
@@ -229,7 +231,7 @@ namespace Honeybee.UI
             var id = Guid.NewGuid().ToString();
             var newConstrucion = new WindowConstructionAbridged(id, new List<string>(), $"New Window Construction {id.Substring(0, 5)}");
 
-            var dialog = new Honeybee.UI.Dialog_Construction(newConstrucion);
+            var dialog = new Honeybee.UI.Dialog_Construction(this.ModelEnergyProperties, newConstrucion);
             var dialog_rc = dialog.ShowModal(this);
             if (dialog_rc != null)
             {

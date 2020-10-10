@@ -14,7 +14,7 @@ namespace Honeybee.UI.View
 
         private Shade()
         {
-            this.ViewModel = new ShadeViewModel();
+            this.ViewModel = new ShadeViewModel(PanelHelper.ModelProperties);
             Initialize();
         }
 

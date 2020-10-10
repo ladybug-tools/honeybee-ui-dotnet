@@ -11,12 +11,12 @@ namespace Honeybee.UI
 {
     public class Dialog_ConstructionSetManager : Dialog<List<HB.Energy.IBuildingConstructionset>>
     {
-     
-        public Dialog_ConstructionSetManager(List<HB.Energy.IBuildingConstructionset> constructionsets)
+        private ModelEnergyProperties ModelEnergyProperties { get; set; }
+        public Dialog_ConstructionSetManager(ModelEnergyProperties libSource, List<HB.Energy.IBuildingConstructionset> constructionsets)
         {
             try
             {
-                //var md = model;
+                this.ModelEnergyProperties = libSource;
                
                 Padding = new Padding(5);
                 Resizable = true;
@@ -59,7 +59,7 @@ namespace Honeybee.UI
 
                 addNew.Click += (s, e) =>
                 {
-                    var dialog = new Honeybee.UI.Dialog_OpsConstructionSet();
+                    var dialog = new Honeybee.UI.Dialog_OpsConstructionSet(this.ModelEnergyProperties);
                     var dialog_rc = dialog.ShowModal(this);
 
                     var cSet = dialog_rc.constructionSet;
@@ -68,16 +68,16 @@ namespace Honeybee.UI
                     if (cSet != null)
                     {
                         
-                        var existingConstructionIds = HB.Helper.EnergyLibrary.InModelEnergyProperties.Constructions.Select(_ => (_.Obj as HB.IDdEnergyBaseModel).Identifier);
-                        var existingMaterialIds = HB.Helper.EnergyLibrary.InModelEnergyProperties.Materials.Select(_ => (_.Obj as HB.IDdEnergyBaseModel).Identifier);
+                        var existingConstructionIds =  this.ModelEnergyProperties.Constructions.Select(_ => (_.Obj as HB.IDdEnergyBaseModel).Identifier);
+                        var existingMaterialIds =  this.ModelEnergyProperties.Materials.Select(_ => (_.Obj as HB.IDdEnergyBaseModel).Identifier);
 
                         // add constructions
                         var newConstrs = contrs.Where(_ => !existingConstructionIds.Any(c => c == _.Identifier)).ToList();
-                        HB.Helper.EnergyLibrary.InModelEnergyProperties.AddConstructions(newConstrs);
+                         this.ModelEnergyProperties.AddConstructions(newConstrs);
 
                         // add materials
                         var newMats = mats.Where(_ => !existingMaterialIds.Any(m => m == _.Identifier)).ToList();
-                        HB.Helper.EnergyLibrary.InModelEnergyProperties.AddMaterials(newMats);
+                         this.ModelEnergyProperties.AddMaterials(newMats);
 
                         // add program type
                         var d = gd.DataStore.Select(_ => _ as ConstructionSetAbridged).ToList();
@@ -101,7 +101,7 @@ namespace Honeybee.UI
 
                     dup.Identifier = id;
                     dup.DisplayName = string.IsNullOrEmpty(dup.DisplayName) ? $"New Duplicate {id.Substring(0, 5)}" : $"{dup.DisplayName}_dup";
-                    var dialog = new Honeybee.UI.Dialog_ConstructionSet(dup);
+                    var dialog = new Honeybee.UI.Dialog_ConstructionSet(this.ModelEnergyProperties, dup);
                     var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
                     {
@@ -122,7 +122,7 @@ namespace Honeybee.UI
 
                     var dup = (gd.SelectedItem as HB.ConstructionSetAbridged).DuplicateConstructionSetAbridged();
 
-                    var dialog = new Honeybee.UI.Dialog_ConstructionSet(dup);
+                    var dialog = new Honeybee.UI.Dialog_ConstructionSet(this.ModelEnergyProperties, dup);
                     var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
                     {

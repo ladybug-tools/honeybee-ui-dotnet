@@ -15,7 +15,7 @@ namespace Honeybee.UI.View
 
         private Aperture()
         {
-            this.ViewModel = new ApertureViewModel();
+            this.ViewModel = new ApertureViewModel(PanelHelper.ModelProperties);
             Initialize();
         }
 

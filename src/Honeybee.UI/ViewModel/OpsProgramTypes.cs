@@ -100,15 +100,11 @@ namespace Honeybee.UI
 
 
         public string FullProgramType => $"{Vintage}::{BuildingType}::{ProgramType}";
-       
 
-
-        private static readonly OpsProgramTypesViewModel _instance = new OpsProgramTypesViewModel();
-        public static OpsProgramTypesViewModel Instance => _instance;
-
-
-        private OpsProgramTypesViewModel()
+        public ModelEnergyProperties ModelEnergyProperties { get; set; }
+        public OpsProgramTypesViewModel(ModelEnergyProperties libSource)
         {
+            this.ModelEnergyProperties = libSource;
             CurrentBuildingTypes = DefaultBuildingTypes;
         }
 

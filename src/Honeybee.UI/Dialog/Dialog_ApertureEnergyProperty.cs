@@ -2,20 +2,20 @@
 using Eto.Forms;
 using System.Collections.Generic;
 using System.Linq;
-using HB = HoneybeeSchema;
+using HoneybeeSchema;
 using System;
-using EnergyLibrary = HoneybeeSchema.Helper.EnergyLibrary;
 
 namespace Honeybee.UI
 {
-    public class Dialog_ApertureEnergyProperty: Dialog<HB.ApertureEnergyPropertiesAbridged>
+    public class Dialog_ApertureEnergyProperty: Dialog<ApertureEnergyPropertiesAbridged>
     {
-     
-        public Dialog_ApertureEnergyProperty(HB.ApertureEnergyPropertiesAbridged energyProp)
+        private ModelEnergyProperties ModelEnergyProperties { get; set; }
+        public Dialog_ApertureEnergyProperty(ModelEnergyProperties libSource, ApertureEnergyPropertiesAbridged energyProp)
         {
             try
             {
-                var EnergyProp = energyProp ?? new HB.ApertureEnergyPropertiesAbridged();
+                this.ModelEnergyProperties = libSource;
+                var EnergyProp = energyProp ?? new ApertureEnergyPropertiesAbridged();
 
                 Padding = new Padding(5);
                 Resizable = true;
@@ -25,8 +25,9 @@ namespace Honeybee.UI
                 this.Icon = DialogHelper.HoneybeeIcon;
 
                 //Get constructions
+                var cSets = this.ModelEnergyProperties.ConstructionSets.OfType<WindowConstructionAbridged>();
                 var constructionSetDP = DialogHelper.MakeDropDown(EnergyProp.Construction, (v) => EnergyProp.Construction = v?.Identifier,
-                    EnergyLibrary.StandardsWindowConstructions.Values, "By Room ConstructionSet---------------------");
+                    cSets, "By Room ConstructionSet---------------------");
 
 
                 DefaultButton = new Button { Text = "OK" };

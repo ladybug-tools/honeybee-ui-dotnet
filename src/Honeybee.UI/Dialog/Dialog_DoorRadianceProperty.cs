@@ -1,24 +1,23 @@
 ﻿using Eto.Drawing;
 using Eto.Forms;
 using System.Linq;
-using HB = HoneybeeSchema;
 using System;
-using EnergyLibrary = HoneybeeSchema.Helper.EnergyLibrary;
 using HoneybeeSchema;
 
 namespace Honeybee.UI
 {
-    public class Dialog_DoorRadianceProperty : Dialog<HB.DoorRadiancePropertiesAbridged>
+    public class Dialog_DoorRadianceProperty : Dialog<DoorRadiancePropertiesAbridged>
     {
-     
-        public Dialog_DoorRadianceProperty(HB.DoorRadiancePropertiesAbridged doorRadianceProperties, bool updateChangesOnly = false)
+        private ModelRadianceProperties ModelRadianceProperties { get; set; }
+        public Dialog_DoorRadianceProperty(ModelRadianceProperties libSource, DoorRadiancePropertiesAbridged doorRadianceProperties, bool updateChangesOnly = false)
         {
             try
             {
-                var prop = doorRadianceProperties ?? new HB.DoorRadiancePropertiesAbridged();
+                this.ModelRadianceProperties = libSource;
+                var prop = doorRadianceProperties ?? new DoorRadiancePropertiesAbridged();
 
                 if (updateChangesOnly)
-                    prop = new HB.DoorRadiancePropertiesAbridged("No Changes");
+                    prop = new DoorRadiancePropertiesAbridged("No Changes");
 
 
                 Padding = new Padding(15);
@@ -28,12 +27,12 @@ namespace Honeybee.UI
                 this.Icon = DialogHelper.HoneybeeIcon;
 
                 //Get Modifier
-                var mSets = EnergyLibrary.InModelRadianceProperties.Modifiers
-                    .OfType<HB.IDdRadianceBaseModel>()
+                var mSets = this.ModelRadianceProperties.Modifiers
+                    .OfType<IDdRadianceBaseModel>()
                     .ToList();
 
                 if (updateChangesOnly)
-                    mSets.Insert(0, new HB.Plastic("No Changes"));
+                    mSets.Insert(0, new Plastic("No Changes"));
 
                 var modifierDP = DialogHelper.MakeDropDown(prop.Modifier, (v) => prop.Modifier = v?.Identifier,
                     mSets, "Default Modifier");

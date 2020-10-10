@@ -19,7 +19,7 @@ namespace Honeybee.UI.View
 
         private Face()
         {
-            this.ViewModel = new FaceViewModel();
+            this.ViewModel = new FaceViewModel(PanelHelper.ModelProperties);
             Initialize();
         }
 

@@ -46,10 +46,11 @@ namespace Honeybee.UI.ViewModel
         public Action<string> Redraw { get; private set; }
 
         private View.Room Control;
-
-        public RoomViewModel(View.Room roomPanel)
+        public ModelProperties ModelProperties { get; set; }
+        public RoomViewModel(ModelProperties libSource, View.Room roomPanel)
         {
             this.Control = roomPanel;
+            this.ModelProperties = libSource;
         }
 
         public void Update(Room honeybeeRoom, Action<string> actionWhenChanged, Action<string> redrawDisplay)
@@ -80,7 +81,7 @@ namespace Honeybee.UI.ViewModel
             if (sel == null)
                 return;
 
-            var dialog = new Dialog_Face(sel);
+            var dialog = new Dialog_Face(this.ModelProperties, sel);
             var dialog_rc = dialog.ShowModal(Helper.Owner);
             if (dialog_rc != null)
             {
@@ -97,7 +98,7 @@ namespace Honeybee.UI.ViewModel
         public ICommand RoomEnergyPropertyBtnClick => new RelayCommand(() => {
             var energyProp = this.HoneybeeObject.Properties.Energy ?? new RoomEnergyPropertiesAbridged();
             energyProp = energyProp.DuplicateRoomEnergyPropertiesAbridged();
-            var dialog = new Dialog_RoomEnergyProperty(energyProp);
+            var dialog = new Dialog_RoomEnergyProperty(this.ModelProperties.Energy, energyProp);
             var dialog_rc = dialog.ShowModal(Helper.Owner);
             if (dialog_rc != null)
             {
@@ -109,7 +110,7 @@ namespace Honeybee.UI.ViewModel
         public ICommand RoomRadiancePropertyBtnClick => new RelayCommand(() => {
             var prop = this.HoneybeeObject.Properties.Radiance ?? new RoomRadiancePropertiesAbridged();
             prop = prop.DuplicateRoomRadiancePropertiesAbridged();
-            var dialog = new Dialog_RoomRadianceProperty(prop);
+            var dialog = new Dialog_RoomRadianceProperty(this.ModelProperties.Radiance, prop);
             var dialog_rc = dialog.ShowModal(Helper.Owner);
             if (dialog_rc != null)
             {

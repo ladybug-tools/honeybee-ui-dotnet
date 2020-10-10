@@ -16,7 +16,7 @@ namespace Honeybee.UI.View
         public GridView FacesGridView { get; private set; }
         private Room()
         {            
-            this.ViewModel = new RoomViewModel(this);
+            this.ViewModel = new RoomViewModel(PanelHelper.ModelProperties, this);
             Initialize();
             
         }

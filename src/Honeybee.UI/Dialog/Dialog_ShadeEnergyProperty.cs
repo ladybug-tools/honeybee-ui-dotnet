@@ -1,19 +1,18 @@
 ﻿using Eto.Drawing;
 using Eto.Forms;
-using HB = HoneybeeSchema;
+using HoneybeeSchema;
 using System;
-using EnergyLibrary = HoneybeeSchema.Helper.EnergyLibrary;
 
 namespace Honeybee.UI
 {
-    public class Dialog_ShadeEnergyProperty: Dialog<HB.ShadeEnergyPropertiesAbridged>
+    public class Dialog_ShadeEnergyProperty: Dialog<ShadeEnergyPropertiesAbridged>
     {
      
-        public Dialog_ShadeEnergyProperty(HB.ShadeEnergyPropertiesAbridged energyProp)
+        public Dialog_ShadeEnergyProperty(ModelEnergyProperties libSource, ShadeEnergyPropertiesAbridged energyProp)
         {
             try
             {
-                var EnergyProp = energyProp ?? new HB.ShadeEnergyPropertiesAbridged();
+                var EnergyProp = energyProp ?? new ShadeEnergyPropertiesAbridged();
 
                 Padding = new Padding(5);
                 Resizable = true;
@@ -23,8 +22,9 @@ namespace Honeybee.UI
                 this.Icon = DialogHelper.HoneybeeIcon;
 
                 //Get constructions
+                var shades = libSource.Constructions.OfType<ShadeConstruction>();
                 var constructionSetDP = DialogHelper.MakeDropDown(EnergyProp.Construction, (v) => EnergyProp.Construction = v?.Identifier,
-                    EnergyLibrary.StandardsWindowConstructions.Values, "By Global Construction Set ---------------------");
+                    shades, "By Global Construction Set ---------------------");
 
                 //Placeholder 
                 var bcTBox = new TextBox() { };

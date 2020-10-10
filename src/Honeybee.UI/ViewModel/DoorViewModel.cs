@@ -53,9 +53,10 @@ namespace Honeybee.UI.ViewModel
         }
 
         public Action<string> ActionWhenChanged { get; private set; }
-
-        public DoorViewModel()
+        public ModelProperties ModelProperties { get; set; }
+        public DoorViewModel(ModelProperties libSource)
         {
+            this.ModelProperties = libSource;
         }
 
         public void Update(Door honeybeeObj, Action<string> actionWhenChanged)
@@ -72,7 +73,7 @@ namespace Honeybee.UI.ViewModel
         public ICommand FaceEnergyPropertyBtnClick => new RelayCommand(() => {
             var energyProp = this.HoneybeeObject.Properties.Energy ?? new DoorEnergyPropertiesAbridged();
             energyProp = energyProp.DuplicateDoorEnergyPropertiesAbridged();
-            var dialog = new Dialog_DoorEnergyProperty(energyProp);
+            var dialog = new Dialog_DoorEnergyProperty(ModelProperties.Energy, energyProp);
             var dialog_rc = dialog.ShowModal(Helper.Owner);
             if (dialog_rc != null)
             {
@@ -84,7 +85,7 @@ namespace Honeybee.UI.ViewModel
         public ICommand FaceRadiancePropertyBtnClick => new RelayCommand(() => {
             var energyProp = this.HoneybeeObject.Properties.Radiance ?? new DoorRadiancePropertiesAbridged();
             energyProp = energyProp.DuplicateDoorRadiancePropertiesAbridged();
-            var dialog = new Dialog_DoorRadianceProperty(energyProp);
+            var dialog = new Dialog_DoorRadianceProperty(this.ModelProperties.Radiance, energyProp);
             var dialog_rc = dialog.ShowModal(Helper.Owner);
             if (dialog_rc != null)
             {
