@@ -17,13 +17,13 @@ namespace Honeybee.UI.ViewModel
         public Action<string> ActionWhenChanged { get; private set; }
 
         public ModelProperties ModelProperties { get; set; }
-        public ShadeViewModel(ModelProperties libSource)
+        internal ShadeViewModel()
         {
-            this.ModelProperties = libSource;
         }
 
-        public void Update(Shade honeybeeObj, Action<string> actionWhenChanged)
+        public void Update(ModelProperties libSource, Shade honeybeeObj, Action<string> actionWhenChanged)
         {
+            this.ModelProperties = libSource;
             ActionWhenChanged = actionWhenChanged;
             HoneybeeObject = honeybeeObj;
         }

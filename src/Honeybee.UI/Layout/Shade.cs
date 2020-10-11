@@ -14,13 +14,13 @@ namespace Honeybee.UI.View
 
         private Shade()
         {
-            this.ViewModel = new ShadeViewModel(PanelHelper.ModelProperties);
+            this.ViewModel = new ShadeViewModel();
             Initialize();
         }
 
-        public void UpdatePanel(HB.Shade HoneybeeObj, System.Action<string> geometryReset = default)
+        public void UpdatePanel(HB.ModelProperties libSource, HB.Shade HoneybeeObj, System.Action<string> geometryReset = default)
         {
-            this.ViewModel.Update(HoneybeeObj, geometryReset);
+            this.ViewModel.Update(libSource, HoneybeeObj, geometryReset);
         }
 
         private void Initialize()

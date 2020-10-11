@@ -19,13 +19,13 @@ namespace Honeybee.UI.View
 
         private Door()
         {
-            this.ViewModel = new DoorViewModel(PanelHelper.ModelProperties);
+            this.ViewModel = new DoorViewModel();
             Initialize();
         }
 
-        public void UpdatePanel(HB.Door HoneybeeObj, System.Action<string> geometryReset = default)
+        public void UpdatePanel(HB.ModelProperties libSource, HB.Door HoneybeeObj, System.Action<string> geometryReset = default)
         {
-            this.ViewModel.Update(HoneybeeObj, geometryReset);
+            this.ViewModel.Update(libSource, HoneybeeObj, geometryReset);
         }
 
         private void Initialize() 

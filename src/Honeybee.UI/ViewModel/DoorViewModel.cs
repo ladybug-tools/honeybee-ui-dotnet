@@ -54,13 +54,13 @@ namespace Honeybee.UI.ViewModel
 
         public Action<string> ActionWhenChanged { get; private set; }
         public ModelProperties ModelProperties { get; set; }
-        public DoorViewModel(ModelProperties libSource)
+        internal DoorViewModel()
         {
-            this.ModelProperties = libSource;
         }
 
-        public void Update(Door honeybeeObj, Action<string> actionWhenChanged)
+        public void Update(ModelProperties libSource, Door honeybeeObj, Action<string> actionWhenChanged)
         {
+            this.ModelProperties = libSource;
             ActionWhenChanged = actionWhenChanged;
 
             HoneybeeObject = honeybeeObj;

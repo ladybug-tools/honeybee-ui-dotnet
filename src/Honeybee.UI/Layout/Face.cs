@@ -19,13 +19,13 @@ namespace Honeybee.UI.View
 
         private Face()
         {
-            this.ViewModel = new FaceViewModel(PanelHelper.ModelProperties);
+            this.ViewModel = new FaceViewModel();
             Initialize();
         }
 
-        public void UpdatePanel(HB.Face HoneybeeObj, System.Action<string> geometryReset = default)
+        public void UpdatePanel(HB.ModelProperties libSource, HB.Face HoneybeeObj, System.Action<string> geometryReset = default)
         {
-            this.ViewModel.Update(HoneybeeObj, geometryReset);
+            this.ViewModel.Update(libSource, HoneybeeObj, geometryReset);
         }
 
         private void Initialize()

@@ -16,14 +16,14 @@ namespace Honeybee.UI.View
         public GridView FacesGridView { get; private set; }
         private Room()
         {            
-            this.ViewModel = new RoomViewModel(PanelHelper.ModelProperties, this);
+            this.ViewModel = new RoomViewModel(this);
             Initialize();
             
         }
 
-        public void UpdatePanel(HB.Room HoneybeeObj, Action<string> geometryReset = default, Action<string> redrawDisplay = default)
+        public void UpdatePanel(HB.ModelProperties libSource, HB.Room HoneybeeObj, Action<string> geometryReset = default, Action<string> redrawDisplay = default)
         {
-            this.ViewModel.Update(HoneybeeObj, geometryReset, redrawDisplay);
+            this.ViewModel.Update(libSource, HoneybeeObj, geometryReset, redrawDisplay);
         }
 
         private void Initialize()

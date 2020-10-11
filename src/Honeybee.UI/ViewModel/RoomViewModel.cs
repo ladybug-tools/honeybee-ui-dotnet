@@ -47,14 +47,15 @@ namespace Honeybee.UI.ViewModel
 
         private View.Room Control;
         public ModelProperties ModelProperties { get; set; }
-        public RoomViewModel(ModelProperties libSource, View.Room roomPanel)
+        internal RoomViewModel(View.Room roomPanel)
         {
             this.Control = roomPanel;
-            this.ModelProperties = libSource;
         }
 
-        public void Update(Room honeybeeRoom, Action<string> actionWhenChanged, Action<string> redrawDisplay)
+        public void Update(ModelProperties libSource, Room honeybeeRoom, Action<string> actionWhenChanged, Action<string> redrawDisplay)
         {
+            this.ModelProperties = libSource;
+
             ActionWhenChanged = actionWhenChanged;
             Redraw = redrawDisplay;
 
