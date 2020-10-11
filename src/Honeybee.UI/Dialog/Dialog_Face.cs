@@ -37,7 +37,8 @@ namespace Honeybee.UI
                 };
 
                 //Create layout
-                var panel = PanelHelper.UpdateFacePanel(this.ModelProperties, dup);
+                var panel = Honeybee.UI.View.Face.Instance;
+                panel.UpdatePanel(libSource, dup);
 
                 //Create layout
                 Content = new TableLayout()

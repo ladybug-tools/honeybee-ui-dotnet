@@ -15,13 +15,13 @@ namespace Honeybee.UI.View
 
         private Aperture()
         {
-            this.ViewModel = new ApertureViewModel(PanelHelper.ModelProperties);
+            this.ViewModel = new ApertureViewModel();
             Initialize();
         }
 
-        public void UpdatePanel(HB.Aperture HoneybeeObj, System.Action<string> geometryReset = default)
+        public void UpdatePanel(HB.ModelProperties libSource, HB.Aperture HoneybeeObj, System.Action<string> geometryReset = default)
         {
-            this.ViewModel.Update(HoneybeeObj, geometryReset);
+            this.ViewModel.Update(libSource, HoneybeeObj, geometryReset);
         }
 
         private void Initialize()

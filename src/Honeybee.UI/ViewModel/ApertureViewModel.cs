@@ -55,13 +55,14 @@ namespace Honeybee.UI.ViewModel
         public Action<string> ActionWhenChanged { get; private set; }
         public ModelProperties ModelProperties { get; set; }
 
-        public ApertureViewModel(ModelProperties modelProperties)
+        internal ApertureViewModel()
         {
-            this.ModelProperties = modelProperties;
         }
 
-        public void Update(Aperture honeybeeObj, Action<string> actionWhenChanged)
+        public void Update(ModelProperties libSource, Aperture honeybeeObj, Action<string> actionWhenChanged)
         {
+            this.ModelProperties = libSource;
+
             ActionWhenChanged = actionWhenChanged;
             //HoneybeeObject.DisplayName = honeybeeObj.DisplayName ?? string.Empty;
 
