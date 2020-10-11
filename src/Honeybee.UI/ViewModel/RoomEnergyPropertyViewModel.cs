@@ -212,7 +212,7 @@ namespace Honeybee.UI.ViewModel
             this.ConstructionSets = cSets;
 
             // set selected item
-            var found = cSets.FirstOrDefault(_ => _.Identifier == this.HoneybeeObject.ProgramType);
+            var found = cSets.FirstOrDefault(_ => _.Identifier == this.HoneybeeObject.ConstructionSet);
             this.ConstructionSet = found ?? (updateChangesOnly ? noChange : nullValue);
         }
 
@@ -253,7 +253,7 @@ namespace Honeybee.UI.ViewModel
             this.Hvacs = pTypes;
 
             // set selected item
-            var found = pTypes.FirstOrDefault(_ => _.Identifier == this.HoneybeeObject.ProgramType);
+            var found = pTypes.FirstOrDefault(_ => _.Identifier == this.HoneybeeObject.Hvac);
             this.HVAC = found ?? (updateChangesOnly ? noChange : nullValue);
         }
         
