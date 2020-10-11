@@ -1,178 +1,140 @@
 ﻿using Eto.Drawing;
 using Eto.Forms;
-using System.Collections.Generic;
-using System.Linq;
-using HB = HoneybeeSchema;
 using System;
-using EnergyLibrary = HoneybeeSchema.Helper.EnergyLibrary;
 using HoneybeeSchema;
+using Honeybee.UI.ViewModel;
 
 namespace Honeybee.UI
 {
-    public class Dialog_RoomEnergyProperty: Dialog<HB.RoomEnergyPropertiesAbridged>
+    public class Dialog_RoomEnergyProperty: Dialog<RoomEnergyPropertiesAbridged>
     {
-        private ModelEnergyProperties ModelEnergyProperties { get; set; }
-        public Dialog_RoomEnergyProperty(ModelEnergyProperties libSource, HB.RoomEnergyPropertiesAbridged roomEnergyProperties, bool updateChangesOnly = false)
+        private RoomEnergyPropertyViewModel ViewModel { get; set; }
+        public Dialog_RoomEnergyProperty(ModelEnergyProperties libSource, RoomEnergyPropertiesAbridged roomEnergyProperties, bool updateChangesOnly = false)
         {
             try
             {
-                this.ModelEnergyProperties = libSource;
-                var EnergyProp = roomEnergyProperties ?? new HB.RoomEnergyPropertiesAbridged();
-                var noChangeEnergyProp = new HB.RoomEnergyPropertiesAbridged(
-                    "No Changes", 
-                    "No Changes", 
-                    "No Changes", 
-                    new PeopleAbridged("No Changes",0,"",""), 
-                    new LightingAbridged("No Changes",0,""),
-                    new ElectricEquipmentAbridged("No Changes", 0,""),
-                    new GasEquipmentAbridged("No Changes", 0,""),
-                    new InfiltrationAbridged("No Changes", 0,""),
-                    new VentilationAbridged("No Changes"),
-                    new SetpointAbridged("No Changes", "","")
-                    );
 
-                if (updateChangesOnly)
-                    EnergyProp = noChangeEnergyProp;
-
+                this.ViewModel = new RoomEnergyPropertyViewModel(this, libSource, roomEnergyProperties, updateChangesOnly); 
 
                 Padding = new Padding(15);
-                Resizable = true;
                 Title = "Room Energy Properties - Honeybee";
                 WindowStyle = WindowStyle.Default;
-                MinimumSize = new Size(450, 620);
+                Width = 450;
                 this.Icon = DialogHelper.HoneybeeIcon;
 
                 //Get constructions
-                //var cSets = EnergyLibrary.DefaultConstructionSets.ToList();
-                var cSets = this.ModelEnergyProperties.ConstructionSets.OfType<ConstructionSetAbridged>().ToList();
-
-                if (updateChangesOnly)
-                    cSets.Insert(0, new ConstructionSetAbridged("No Changes"));
-
-
-                var constructionSetDP = DialogHelper.MakeDropDown(EnergyProp.ConstructionSet, (v) => EnergyProp.ConstructionSet = v?.Identifier,
-                    cSets, "Default Generic Construction Set");
-
+                var constructionSetDP = new DropDown();
+                constructionSetDP.Bind((t) => t.DataStore, this.ViewModel, v => v.ConstructionSets);
+                constructionSetDP.ItemTextBinding = Binding.Delegate<ConstructionSetAbridged, string>(g => g.DisplayName ?? g.Identifier);
+                constructionSetDP.Bind((t) => t.SelectedValue, this.ViewModel, v => v.ConstructionSet);
+                var addCSetBtn = new LinkButton() { Text = "Add", ToolTip = "Add a new one from OpenStudio library"};
+                addCSetBtn.Command = ViewModel.AddNewConstructionSet;
 
 
                 //Get programs
-                //var pTypes = EnergyLibrary.DefaultProgramTypes.ToList();
-                var pTypes = this.ModelEnergyProperties.ProgramTypes.OfType<HB.ProgramTypeAbridged>().ToList();
-         
-                if (updateChangesOnly)
-                    pTypes.Insert(0, new ProgramTypeAbridged("No Changes"));
-
-                var programTypesDP = DialogHelper.MakeDropDown(EnergyProp.ProgramType, (v) => EnergyProp.ProgramType = v?.Identifier,
-                   pTypes, "Unoccupied, NoLoads");
-
-              
+                var programTypesDP = new DropDown();
+                programTypesDP.Bind((t) => t.DataStore, this.ViewModel, v => v.ProgramTypes);
+                programTypesDP.ItemTextBinding = Binding.Delegate<ProgramTypeAbridged, string>(g => g.DisplayName ?? g.Identifier);
+                programTypesDP.Bind((t) => t.SelectedValue, this.ViewModel, v => v.ProgramType);
+                var addPTypeBtn = new LinkButton() { Text = "Add", ToolTip = "Add a new one from OpenStudio library" };
+                addPTypeBtn.Command = ViewModel.AddNewProgramType;
 
                 //Get HVACs
-                //var hvacs = EnergyLibrary.DefaultHVACs.ToList();+
-                var hvacs = this.ModelEnergyProperties.Hvacs.OfType<HoneybeeSchema.Energy.IHvac>().ToList();
-
-                if (updateChangesOnly)
-                    hvacs.Insert(0, new IdealAirSystemAbridged("No Changes"));
-
-                var hvacDP = DialogHelper.MakeDropDown(EnergyProp.Hvac, (v) => EnergyProp.Hvac = v?.Identifier,
-                   hvacs, "Unconditioned");
+                var hvacDP = new DropDown();
+                hvacDP.Bind((t) => t.DataStore, this.ViewModel, v => v.Hvacs);
+                hvacDP.ItemTextBinding = Binding.Delegate<HoneybeeSchema.Energy.IHvac, string>(g => g.DisplayName ?? g.Identifier);
+                hvacDP.Bind((t) => t.SelectedValue, this.ViewModel, v => v.HVAC);
+                var addHvacBtn = new LinkButton() { Text = "Add", ToolTip = "Add a new one from OpenStudio library", Enabled = false};
+                //addHvacBtn.Command = ViewModel.AddNewConstructionSet;
 
 
-                var defaultByProgramType = "By Room Program Type";
                 //Get people
-                var ppls = EnergyLibrary.DefaultPeopleLoads.ToList();
-                if (updateChangesOnly)
-                    ppls.Insert(0, noChangeEnergyProp.People);
-                var peopleDP = DialogHelper.MakeDropDown(EnergyProp.People, (v) => EnergyProp.People = v,
-                    ppls, defaultByProgramType);
+                var peopleDP = new DropDown();
+                peopleDP.Bind((t) => t.DataStore, this.ViewModel, v => v.Peoples);
+                peopleDP.ItemTextBinding = Binding.Delegate<PeopleAbridged, string>(g => g.DisplayName ?? g.Identifier);
+                peopleDP.Bind((t) => t.SelectedValue, this.ViewModel, v => v.People);
+                var addpplBtn = new LinkButton() { Text = "Add", ToolTip = "Override with a new load", Enabled = false };
 
                 //Get lighting
-                var lpds = EnergyLibrary.DefaultLightingLoads.ToList();
-                if (updateChangesOnly)
-                    lpds.Insert(0, noChangeEnergyProp.Lighting);
-                var lightingDP = DialogHelper.MakeDropDown(EnergyProp.Lighting, (v) => EnergyProp.Lighting = v,
-                    lpds, defaultByProgramType);
+                var lightingDP = new DropDown();
+                lightingDP.Bind((t) => t.DataStore, this.ViewModel, v => v.Lightings);
+                lightingDP.ItemTextBinding = Binding.Delegate <LightingAbridged, string>(g => g.DisplayName ?? g.Identifier);
+                lightingDP.Bind((t) => t.SelectedValue, this.ViewModel, v => v.Lighting);
+                var addLpdBtn = new LinkButton() { Text = "Add", ToolTip = "Override with a new load", Enabled = false };
 
                 //Get ElecEqp
-                var eqps = EnergyLibrary.DefaultElectricEquipmentLoads.ToList();
-                if (updateChangesOnly)
-                    eqps.Insert(0, noChangeEnergyProp.ElectricEquipment);
-                var elecEqpDP = DialogHelper.MakeDropDown(EnergyProp.ElectricEquipment, (v) => EnergyProp.ElectricEquipment = v,
-                    eqps, defaultByProgramType);
+                var elecEqpDP = new DropDown();
+                elecEqpDP.Bind((t) => t.DataStore, this.ViewModel, v => v.ElectricEquipments);
+                elecEqpDP.ItemTextBinding = Binding.Delegate<ElectricEquipmentAbridged, string>(g => g.DisplayName ?? g.Identifier);
+                elecEqpDP.Bind((t) => t.SelectedValue, this.ViewModel, v => v.ElectricEquipment);
+                var addEqpBtn = new LinkButton() { Text = "Add", ToolTip = "Override with a new load", Enabled = false };
 
                 //Get gasEqp
-                var gas = EnergyLibrary.GasEquipmentLoads.ToList();
-                if (updateChangesOnly)
-                    gas.Insert(0, noChangeEnergyProp.GasEquipment);
-                var gasEqpDP = DialogHelper.MakeDropDown(EnergyProp.GasEquipment, (v) => EnergyProp.GasEquipment = v,
-                    gas, defaultByProgramType);
+                var gasEqpDP = new DropDown();
+                gasEqpDP.Bind((t) => t.DataStore, this.ViewModel, v => v.GasEquipments);
+                gasEqpDP.ItemTextBinding = Binding.Delegate<GasEquipmentAbridged, string>(g => g.DisplayName ?? g.Identifier);
+                gasEqpDP.Bind((t) => t.SelectedValue, this.ViewModel, v => v.GasEquipment);
+                var addGasBtn = new LinkButton() { Text = "Add", ToolTip = "Override with a new load", Enabled = false };
 
                 //Get infiltration
-                var inf = EnergyLibrary.DefaultInfiltrationLoads.ToList();
-                if (updateChangesOnly)
-                    inf.Insert(0, noChangeEnergyProp.Infiltration);
-                var infilDP = DialogHelper.MakeDropDown(EnergyProp.Infiltration, (v) => EnergyProp.Infiltration = v,
-                    inf, defaultByProgramType);
-
+                var infilDP = new DropDown();
+                infilDP.Bind((t) => t.DataStore, this.ViewModel, v => v.Infiltrations);
+                infilDP.ItemTextBinding = Binding.Delegate<InfiltrationAbridged, string>(g => g.DisplayName ?? g.Identifier);
+                infilDP.Bind((t) => t.SelectedValue, this.ViewModel, v => v.Infiltration);
+                var addInfilBtn = new LinkButton() { Text = "Add", ToolTip = "Override with a new load", Enabled = false };
 
                 //Get ventilation
-                var vent = EnergyLibrary.DefaultVentilationLoads.ToList();
-                if (updateChangesOnly)
-                    vent.Insert(0, noChangeEnergyProp.Ventilation);
-                var ventDP = DialogHelper.MakeDropDown(EnergyProp.Ventilation, (v) => EnergyProp.Ventilation = v,
-                    vent, defaultByProgramType);
+                var ventDP = new DropDown();
+                ventDP.Bind((t) => t.DataStore, this.ViewModel, v => v.Ventilations);
+                ventDP.ItemTextBinding = Binding.Delegate<VentilationAbridged, string>(g => g.DisplayName ?? g.Identifier);
+                ventDP.Bind((t) => t.SelectedValue, this.ViewModel, v => v.Ventilation);
+                var addVentBtn = new LinkButton() { Text = "Add", ToolTip = "Override with a new load", Enabled = false };
 
                 //Get setpoint
-                var spt = EnergyLibrary.DefaultSetpoints.ToList();
-                if (updateChangesOnly)
-                    spt.Insert(0, noChangeEnergyProp.Setpoint);
-                var setPtDP = DialogHelper.MakeDropDown(EnergyProp.Setpoint, (v) => EnergyProp.Setpoint = v,
-                    spt, defaultByProgramType);
+                var setPtDP = new DropDown();
+                setPtDP.Bind((t) => t.DataStore, this.ViewModel, v => v.Setpoints);
+                setPtDP.ItemTextBinding = Binding.Delegate<SetpointAbridged, string>(g => g.DisplayName ?? g.Identifier);
+                setPtDP.Bind((t) => t.SelectedValue, this.ViewModel, v => v.Setpoint);
+                var addSptBtn = new LinkButton() { Text = "Add", ToolTip = "Override with a new load", Enabled = false };
 
 
-                DefaultButton = new Button { Text = "OK" };
-                DefaultButton.Click += (sender, e) => 
+                var OK = new Button { Text = "OK" };
+                OK.Click += (sender, e) => 
                 {
-                    Close(EnergyProp); 
+                    Close(this.ViewModel.HoneybeeObject); 
                 };
 
                 AbortButton = new Button { Text = "Cancel" };
                 AbortButton.Click += (sender, e) => Close();
 
-                var buttons = new TableLayout
-                {
-                    Padding = new Padding(5, 10, 5, 5),
-                    Spacing = new Size(10, 10),
-                    Rows = { new TableRow(null, this.DefaultButton, this.AbortButton, null) }
-                };
-
-
+              
                 var layout = new DynamicLayout();
                 //layout.DefaultPadding = new Padding(10);
                 layout.DefaultSpacing = new Size(5, 5);
 
-                layout.AddSeparateRow("Room ConstructionSet:");
+                layout.AddSeparateRow("Room ConstructionSet:", null, addCSetBtn);
                 layout.AddSeparateRow(constructionSetDP);
-                layout.AddSeparateRow("Room Program Type:");
+                layout.AddSeparateRow("Room Program Type:", null, addPTypeBtn);
                 layout.AddSeparateRow(programTypesDP);
-                layout.AddSeparateRow("Room HVAC:");
+                layout.AddSeparateRow("Room HVAC:", null, addHvacBtn);
                 layout.AddSeparateRow(hvacDP);
                 layout.AddSeparateRow("");
-                layout.AddSeparateRow("People [ppl/m2]:");
+                layout.AddSeparateRow("People [ppl/m2]:", null, addpplBtn);
                 layout.AddSeparateRow(peopleDP);
-                layout.AddSeparateRow("Lighting [W/m2]:");
+                layout.AddSeparateRow("Lighting [W/m2]:", null, addLpdBtn);
                 layout.AddSeparateRow(lightingDP);
-                layout.AddSeparateRow("Electric Equipment [W/m2]:");
+                layout.AddSeparateRow("Electric Equipment [W/m2]:", null, addEqpBtn);
                 layout.AddSeparateRow(elecEqpDP);
-                layout.AddSeparateRow("Gas Equipment [W/m2]:");
+                layout.AddSeparateRow("Gas Equipment [W/m2]:", null, addGasBtn);
                 layout.AddSeparateRow(gasEqpDP);
-                layout.AddSeparateRow("Infiltration [m3/s per m2 facade @4Pa]:");
+                layout.AddSeparateRow("Infiltration [m3/s per m2 facade @4Pa]:", null, addInfilBtn);
                 layout.AddSeparateRow(infilDP);
-                layout.AddSeparateRow("Ventilation [m3/s.m2]:");
+                layout.AddSeparateRow("Ventilation [m3/s.m2]:", null, addVentBtn);
                 layout.AddSeparateRow(ventDP);
-                layout.AddSeparateRow("Setpoint [C]:");
+                layout.AddSeparateRow("Setpoint [C]:", null, addSptBtn);
                 layout.AddSeparateRow(setPtDP);
-                layout.AddSeparateRow(buttons);
+                layout.AddSeparateRow("");
+                layout.AddSeparateRow(null, OK, this.AbortButton, null);
                 layout.AddSeparateRow(null);
                 //Create layout
                 Content = layout;
