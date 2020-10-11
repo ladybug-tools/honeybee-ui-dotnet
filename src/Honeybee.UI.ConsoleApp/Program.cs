@@ -32,6 +32,7 @@ namespace Honeybee.UI.ConsoleApp
                 btn.Click += (s, e) =>
                 {
                     var energyProp = new HoneybeeSchema.RoomEnergyPropertiesAbridged();
+                    energyProp.ProgramType = "Plenum";
                     //var dialog = new Honeybee.UI.Dialog_RoomEnergyProperty(energyProp, ModelEnergyProperties.Default);
                     var dialog = new Honeybee.UI.Dialog_RoomEnergyProperty(md.Properties.Energy, energyProp);
                     var dialog_rc = dialog.ShowModal();
@@ -98,7 +99,7 @@ namespace Honeybee.UI.ConsoleApp
                         .Where(_ => _.Obj.GetType().Name.Contains("Abridged"))
                         .OfType<HoneybeeSchema.Energy.IConstruction>()
                         .ToList();
-                    var dialog = new Honeybee.UI.Dialog_ConstructionManager(constrcutionsInModel);
+                    var dialog = new Honeybee.UI.Dialog_ConstructionManager(md.Properties.Energy, constrcutionsInModel);
                     dialog.ShowModal(this);
 
                 };
@@ -145,7 +146,7 @@ namespace Honeybee.UI.ConsoleApp
                 var stndBtn = new Button() { Text = "Standards" };
                 stndBtn.Click += (s, e) =>
                 {
-                    var dialog = new Honeybee.UI.Dialog_OpsProgramTypes();
+                    var dialog = new Honeybee.UI.Dialog_OpsProgramTypes(md.Properties.Energy);
                     dialog.ShowModal(this);
 
                 };
@@ -178,7 +179,7 @@ namespace Honeybee.UI.ConsoleApp
                     .ToList();
 
                     var dup = existingItems.Select(_ => _.Duplicate()).OfType<HoneybeeSchema.ModifierSetAbridged>().ToList();
-                    var dialog = new Honeybee.UI.Dialog_ModifierSetManager(dup);
+                    var dialog = new Honeybee.UI.Dialog_ModifierSetManager(md.Properties.Radiance, dup);
 
                     var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
@@ -202,7 +203,7 @@ namespace Honeybee.UI.ConsoleApp
                 var opsProgramType = new Button() { Text = "OpenStudioProgramType" };
                 opsProgramType.Click += (s, e) =>
                 {
-                    var dialog = new Honeybee.UI.Dialog_OpsProgramTypes();
+                    var dialog = new Honeybee.UI.Dialog_OpsProgramTypes(md.Properties.Energy);
                     dialog.ShowModal(this);
                 };
 
