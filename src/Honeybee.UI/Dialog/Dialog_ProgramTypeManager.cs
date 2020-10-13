@@ -21,10 +21,9 @@ namespace Honeybee.UI
                 var pTypes = programTypes;
 
                 Padding = new Padding(5);
-                Resizable = true;
                 Title = "Program Type Manager - Honeybee";
                 WindowStyle = WindowStyle.Default;
-                MinimumSize = new Size(900, 400);
+                Width = 900;
 
                 this.Icon = DialogHelper.HoneybeeIcon;
 
@@ -156,7 +155,7 @@ namespace Honeybee.UI
                 AbortButton.Click += (sender, e) => Close();
                 layout.AddSeparateRow(null);
                 layout.AddSeparateRow(null, DefaultButton, AbortButton, null);
-                
+                layout.AddSeparateRow(null);
 
                 //Create layout
                 Content = layout;
@@ -182,45 +181,45 @@ namespace Honeybee.UI
             };
             pType_GD.Columns.Add(new GridColumn { DataCell = nameTB, HeaderText = "Name" });
 
-            var peopleTB = new TextBoxCell
+            var peopleTB = new CheckBoxCell
             {
-                Binding = Binding.Delegate<HB.ProgramTypeAbridged, string>( r => r.People == null ? "No Load" : r.People.DisplayName ?? r.People.Identifier)
+                Binding = Binding.Delegate<HB.ProgramTypeAbridged, bool?>( r => r.People == null ? false : true)
             };
             pType_GD.Columns.Add(new GridColumn { DataCell = peopleTB, HeaderText = "People", Sortable = true });
 
-            var lightingTB = new TextBoxCell
+            var lightingTB = new CheckBoxCell
             {
-                Binding = Binding.Delegate<HB.ProgramTypeAbridged, string>(r => r.Lighting == null ? "No Load" : r.Lighting.DisplayName ?? r.Lighting.Identifier)
+                Binding = Binding.Delegate<HB.ProgramTypeAbridged, bool?>(r => r.Lighting == null ? false : true)
             };
             pType_GD.Columns.Add(new GridColumn { DataCell = lightingTB, HeaderText = "Lighting", Sortable = true });
 
-            var equipTB = new TextBoxCell
+            var equipTB = new CheckBoxCell
             {
-                Binding = Binding.Delegate<HB.ProgramTypeAbridged, string>(r => r.ElectricEquipment == null ? "No Load" : r.ElectricEquipment.DisplayName ?? r.ElectricEquipment.Identifier)
+                Binding = Binding.Delegate<HB.ProgramTypeAbridged, bool?>(r => r.ElectricEquipment == null ? false : true)
             };
             pType_GD.Columns.Add(new GridColumn { DataCell = equipTB, HeaderText = "ElecEquip", Sortable = true });
 
-            var gasTB = new TextBoxCell
+            var gasTB = new CheckBoxCell
             {
-                Binding = Binding.Delegate<HB.ProgramTypeAbridged, string>(r => r.GasEquipment == null ? "No Load": r.GasEquipment.DisplayName ?? r.GasEquipment.Identifier)
+                Binding = Binding.Delegate<HB.ProgramTypeAbridged, bool?>(r => r.GasEquipment == null ? false : true)
             };
             pType_GD.Columns.Add(new GridColumn { DataCell = gasTB, HeaderText = "GasEquip", Sortable = true });
 
-            var infTB = new TextBoxCell
+            var infTB = new CheckBoxCell
             {
-                Binding = Binding.Delegate<HB.ProgramTypeAbridged, string>(r => r.Infiltration == null ? "No Load": r.Infiltration.DisplayName ?? r.Infiltration.Identifier)
+                Binding = Binding.Delegate<HB.ProgramTypeAbridged, bool?>(r => r.Infiltration == null ? false : true)
             };
             pType_GD.Columns.Add(new GridColumn { DataCell = infTB, HeaderText = "Infiltration", Sortable = true });
 
-            var ventTB = new TextBoxCell
+            var ventTB = new CheckBoxCell
             {
-                Binding = Binding.Delegate<HB.ProgramTypeAbridged, string>(r => r.Ventilation == null ? "No Load" : r.Ventilation.DisplayName ?? r.Ventilation.Identifier)
+                Binding = Binding.Delegate<HB.ProgramTypeAbridged, bool?>(r => r.Ventilation == null ? false : true)
             };
             pType_GD.Columns.Add(new GridColumn { DataCell = ventTB, HeaderText = "Ventilation", Sortable = true });
 
-            var setpointTB = new TextBoxCell
+            var setpointTB = new CheckBoxCell
             {
-                Binding = Binding.Delegate<HB.ProgramTypeAbridged, string>(r => r.Setpoint == null ? "No Load" : r.Setpoint.DisplayName ?? r.Setpoint.Identifier)
+                Binding = Binding.Delegate<HB.ProgramTypeAbridged, bool?>(r => r.Setpoint == null ? false : true)
             };
             pType_GD.Columns.Add(new GridColumn { DataCell = setpointTB, HeaderText = "Setpoint", Sortable = true });
 
