@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using HoneybeeSchema;
 
 namespace Honeybee.UI
 {
@@ -158,11 +159,17 @@ namespace Honeybee.UI
                   {
                       var newIndex = _layers.Count;
                       _layers.Add(newValue);
+                      // add new material to library source
+                      HB.Energy.IMaterial m = null;
+                      if (_hbObj is HB.OpaqueConstructionAbridged)
+                          m = _opaqueMaterials.FirstOrDefault(_ => _.Identifier == newValue);
+                      else if (_hbObj is HB.WindowConstructionAbridged)
+                          m = _windowMaterials.FirstOrDefault(_ => _.Identifier == newValue);
+                      if (null != m)
+                          libSource.AddMaterial(m);
+
+
                       GenMaterialLayersPanel(_layersPanel, actionWhenItemChanged);
-                      //var newPanel = GenMaterialLayersPanel(_layers, actionWhenItemChanged);
-                      //var newLayer = GenDropInArea(newIndex, newValue, actionWhenItemChanged, (index) => { _layers.RemoveAt(index); groupPanel.Create(); });
-                      ////groupPanel.Content = newPanel;
-                      //_layersPanel.AddRow(newLayer);
                       _layersPanel.Create();
 
                   }
@@ -518,7 +525,7 @@ namespace Honeybee.UI
 
             dropInValue.Width = width;
             dropInValue.Height = height;
-            var backGround =  Color.FromArgb(230, 230, 230);
+            var backGround =  Eto.Drawing.Color.FromArgb(230, 230, 230);
             dropInValue.BackgroundColor = backGround;
 
             var dropIn = new Drawable();
