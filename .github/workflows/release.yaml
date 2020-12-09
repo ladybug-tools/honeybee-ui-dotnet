@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: "Build and release the Rhino Plugin"
+    name: "Build and release"
     runs-on: windows-latest
 
     steps:
