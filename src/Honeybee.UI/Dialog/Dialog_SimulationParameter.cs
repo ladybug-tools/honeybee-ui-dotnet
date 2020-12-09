@@ -47,8 +47,8 @@ namespace Honeybee.UI
 
                 //TerrainType
                 var terrainTypeDP = new EnumDropDown<HB.TerrianTypes>();
-                param.TerrainType = param.TerrainType.GetValueOrDefault(HB.TerrianTypes.City);
-                terrainTypeDP.SelectedValueBinding.Bind(Binding.Delegate(() => param.TerrainType.Value, v => param.TerrainType = v));
+                param.TerrainType = param.TerrainType;
+                terrainTypeDP.SelectedValueBinding.Bind(Binding.Delegate(() => param.TerrainType, v => param.TerrainType = v));
                 
 
                 // RunPeriod
@@ -139,14 +139,14 @@ namespace Honeybee.UI
                     );
 
                 //shadowCal.SolarDistribution
-                shadowCal.SolarDistribution = shadowCal.SolarDistribution.GetValueOrDefault(HB.SolarDistribution.FullExteriorWithReflections);
+                shadowCal.SolarDistribution = shadowCal.SolarDistribution;
                 var solarDist_DP = new EnumDropDown<HB.SolarDistribution>();
-                solarDist_DP.SelectedValueBinding.Bind(() => shadowCal.SolarDistribution.Value, v => shadowCal.SolarDistribution = v);
+                solarDist_DP.SelectedValueBinding.Bind(() => shadowCal.SolarDistribution, v => shadowCal.SolarDistribution = v);
 
                 //shadowCal.CalculationMethodEnum
-                shadowCal.CalculationMethod = shadowCal.CalculationMethod.GetValueOrDefault(HB.CalculationMethod.PolygonClipping);
+                shadowCal.CalculationMethod = shadowCal.CalculationMethod;
                 var CalMethod_DP = new EnumDropDown<HB.CalculationMethod>();
-                CalMethod_DP.SelectedValueBinding.Bind(() => shadowCal.CalculationMethod.Value, v => shadowCal.CalculationMethod = v);
+                CalMethod_DP.SelectedValueBinding.Bind(() => shadowCal.CalculationMethod, v => shadowCal.CalculationMethod = v);
 
                 // MaximumFigures
                 var maxFigure_NS = new NumericStepper();
