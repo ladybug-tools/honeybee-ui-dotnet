@@ -171,6 +171,7 @@ namespace Honeybee.UI.ViewModel
                    new LightingAbridged(NoChanges, 0, ""),
                    new ElectricEquipmentAbridged(NoChanges, 0, ""),
                    new GasEquipmentAbridged(NoChanges, 0, ""),
+                   new ServiceHotWaterAbridged(NoChanges, 0, ""),
                    new InfiltrationAbridged(NoChanges, 0, ""),
                    new VentilationAbridged(NoChanges),
                    new SetpointAbridged(NoChanges, "", "")
