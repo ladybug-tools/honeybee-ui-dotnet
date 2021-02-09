@@ -35,7 +35,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="HoneybeeSchema" Version="1.40.2.3" />
+    <PackageReference Include="HoneybeeSchema" Version="1.42.0" />
   </ItemGroup>
   
   <ItemGroup>
