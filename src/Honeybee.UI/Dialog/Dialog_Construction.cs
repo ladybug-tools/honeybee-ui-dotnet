@@ -70,14 +70,18 @@ namespace Honeybee.UI
         {
             get {
 
-                var libObjs = HB.Helper.EnergyLibrary.StandardsOpaqueMaterials.Values.ToList();
-                var inModelObjs =  this.ModelEnergyProperties.Materials
-                    .Where(_ => !_.Obj.GetType().Name.Contains("EnergyWindow"))
-                    .Select(_=>_.Obj as HB.Energy.IMaterial);
+                if (_opaqueMaterials == null)
+                {
+                    var libObjs = HB.Helper.EnergyLibrary.StandardsOpaqueMaterials.Values.ToList();
 
-                libObjs.AddRange(inModelObjs);
-                _opaqueMaterials = libObjs;
+                    var inModelObjs = this.ModelEnergyProperties.Materials
+                        .Where(_ => !_.Obj.GetType().Name.Contains("EnergyWindow"))
+                        .OfType<HB.Energy.IMaterial>();
 
+                    libObjs.AddRange(inModelObjs);
+                    _opaqueMaterials = libObjs;
+                }
+               
                 return _opaqueMaterials; 
             }
         }
@@ -87,14 +91,18 @@ namespace Honeybee.UI
         {
             get
             {
-                var libObjs = HB.Helper.EnergyLibrary.StandardsWindowMaterials.Values.ToList();
-                var inModelObjs =  this.ModelEnergyProperties.Materials
-                    .Where(_ => _.Obj.GetType().Name.Contains("EnergyWindow"))
-                    .Select(_ => _.Obj as HB.Energy.IMaterial);
+                if (_windowMaterials == null)
+                {
+                    var libObjs = HB.Helper.EnergyLibrary.StandardsWindowMaterials.Values.ToList();
+                    var inModelObjs = this.ModelEnergyProperties.Materials
+                        .Where(_ => _.Obj.GetType().Name.Contains("EnergyWindow"))
+                        .OfType<HB.Energy.IMaterial>();
+                        
 
-                libObjs.AddRange(inModelObjs);
-                _windowMaterials = libObjs;
-
+                    libObjs.AddRange(inModelObjs);
+                    _windowMaterials = libObjs;
+                }
+                
                 return _windowMaterials;
             }
         }
@@ -109,7 +117,7 @@ namespace Honeybee.UI
                 this.ModelEnergyProperties = libSource;
 
                 _hbObj = construction;
-
+                
                 Padding = new Padding(5);
                 Resizable = true;
                 Title = "Construction - Honeybee";
@@ -120,14 +128,17 @@ namespace Honeybee.UI
                 var OkButton = new Button { Text = "OK" };
                 OkButton.Click += (sender, e) =>
                 {
-                    // add materials to the lib
+                    // add new material to library source
                     foreach (var layer in _layers)
                     {
-                        var mat = _opaqueMaterials.FirstOrDefault(_ => _.Identifier == layer);
-                        mat = mat ?? _windowMaterials.FirstOrDefault(_ => _.Identifier == layer);
-                        mat.Identifier = Guid.NewGuid().ToString();
-                        libSource.AddMaterial(mat);
+                        var m = OpaqueMaterials.FirstOrDefault(_ => _.Identifier == layer);
+                        m = m ?? WindowMaterials.FirstOrDefault(_ => _.Identifier == layer);
+                        var dup = m.Duplicate() as HB.Energy.IMaterial;
+                        dup.DisplayName = m.DisplayName ?? m.Identifier;
+                        dup.Identifier = Guid.NewGuid().ToString();
+                        libSource.AddMaterial(dup);
                     }
+
                     Close(_hbObj);
                 };
 
@@ -170,15 +181,6 @@ namespace Honeybee.UI
                   {
                       var newIndex = _layers.Count;
                       _layers.Add(newValue);
-                      // add new material to library source
-                      HB.Energy.IMaterial m = null;
-                      if (_hbObj is HB.OpaqueConstructionAbridged)
-                          m = _opaqueMaterials.FirstOrDefault(_ => _.Identifier == newValue);
-                      else if (_hbObj is HB.WindowConstructionAbridged)
-                          m = _windowMaterials.FirstOrDefault(_ => _.Identifier == newValue);
-                      if (null != m)
-                          libSource.AddMaterial(m);
-
 
                       GenMaterialLayersPanel(_layersPanel, actionWhenItemChanged);
                       _layersPanel.Create();
@@ -266,15 +268,7 @@ namespace Honeybee.UI
                 materialType.SelectedIndexChanged += (sender, e) =>
                 {
                     var selectedType = materialType.SelectedKey;
-
-                    if (selectedType == "Window")
-                    {
-                        allMaterials = this.WindowMaterials;
-                    }
-                    else
-                    {
-                        allMaterials = this.OpaqueMaterials;
-                    }
+                    allMaterials = selectedType == "Window" ? this.WindowMaterials : this.OpaqueMaterials;
                     searchTBox.Text = null;
                     //lib.Items.Clear();
 
