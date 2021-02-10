@@ -70,13 +70,13 @@ namespace Honeybee.UI
         {
             get {
 
-                // var libObjs = HB.Helper.EnergyLibrary.StandardsOpaqueMaterials.Values.ToList();
+                var libObjs = HB.Helper.EnergyLibrary.StandardsOpaqueMaterials.Values.ToList();
                 var inModelObjs =  this.ModelEnergyProperties.Materials
                     .Where(_ => !_.Obj.GetType().Name.Contains("EnergyWindow"))
                     .Select(_=>_.Obj as HB.Energy.IMaterial);
 
-                // libObjs.AddRange(inModelObjs);
-                _opaqueMaterials = inModelObjs;
+                libObjs.AddRange(inModelObjs);
+                _opaqueMaterials = libObjs;
 
                 return _opaqueMaterials; 
             }
@@ -87,13 +87,13 @@ namespace Honeybee.UI
         {
             get
             {
-                // var libObjs = HB.Helper.EnergyLibrary.StandardsWindowMaterials.Values.ToList();
+                var libObjs = HB.Helper.EnergyLibrary.StandardsWindowMaterials.Values.ToList();
                 var inModelObjs =  this.ModelEnergyProperties.Materials
                     .Where(_ => _.Obj.GetType().Name.Contains("EnergyWindow"))
                     .Select(_ => _.Obj as HB.Energy.IMaterial);
 
-                // libObjs.AddRange(inModelObjs);
-                _windowMaterials = inModelObjs;
+                libObjs.AddRange(inModelObjs);
+                _windowMaterials = libObjs;
 
                 return _windowMaterials;
             }
@@ -118,7 +118,18 @@ namespace Honeybee.UI
                 this.Icon = DialogHelper.HoneybeeIcon;
 
                 var OkButton = new Button { Text = "OK" };
-                OkButton.Click += (sender, e) => Close(_hbObj);
+                OkButton.Click += (sender, e) =>
+                {
+                    // add materials to the lib
+                    foreach (var layer in _layers)
+                    {
+                        var mat = _opaqueMaterials.FirstOrDefault(_ => _.Identifier == layer);
+                        mat = mat ?? _windowMaterials.FirstOrDefault(_ => _.Identifier == layer);
+                        mat.Identifier = Guid.NewGuid().ToString();
+                        libSource.AddMaterial(mat);
+                    }
+                    Close(_hbObj);
+                };
 
                 AbortButton = new Button { Text = "Cancel" };
                 AbortButton.Click += (sender, e) => Close();
