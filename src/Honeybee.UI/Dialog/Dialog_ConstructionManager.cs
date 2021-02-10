@@ -58,7 +58,7 @@ namespace Honeybee.UI
                 var menuDic = new Dictionary<string, ICommand>()
                 {
                     { "Opaque", AddOpaqueConstructionCommand},
-                    { "Window", AddOpaqueConstructionCommand},
+                    { "Window", AddWindowConstructionCommand},
                     { "Shade",AddShadeConstructionCommand },
                     { "AirBoundary", AddAirBoundaryConstructionCommand}
                 };
