@@ -44,8 +44,8 @@ namespace Honeybee.UI
                 hvacDP.Bind((t) => t.DataStore, this.ViewModel, v => v.Hvacs);
                 hvacDP.ItemTextBinding = Binding.Delegate<HoneybeeSchema.Energy.IHvac, string>(g => g.DisplayName ?? g.Identifier);
                 hvacDP.Bind((t) => t.SelectedValue, this.ViewModel, v => v.HVAC);
-                var addHvacBtn = new LinkButton() { Text = "Add", ToolTip = "Add a new one from OpenStudio library", Enabled = false};
-                //addHvacBtn.Command = ViewModel.AddNewConstructionSet;
+                var addHvacBtn = new LinkButton() { Text = "Add", ToolTip = "Add a new one from OpenStudio library"};
+                addHvacBtn.Command = ViewModel.AddNewHVAC;
 
 
                 //Get people

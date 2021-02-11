@@ -434,6 +434,23 @@ namespace Honeybee.UI.ViewModel
                     );
             }
         });
+
+        public ICommand AddNewHVAC => new RelayCommand(() =>
+        {
+            var dialog = new Dialog_OpsHVACs();
+            var dialog_rc = dialog.ShowModal(this.Control);
+            if (dialog_rc != null)
+            {
+                this.Hvacs.Insert(0, dialog_rc);
+                this.HVAC = dialog_rc;
+
+                MessageBox.Show(
+                    this.Control,
+                    $"A new HVAC [{dialog_rc.DisplayName ?? dialog_rc.Identifier}] is added to model.",
+                    MessageBoxType.Information
+                    );
+            }
+        });
         #endregion
 
     }
