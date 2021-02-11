@@ -207,6 +207,13 @@ namespace Honeybee.UI.ConsoleApp
                     dialog.ShowModal(this);
                 };
 
+                var opsHVACs = new Button() { Text = "OpenStudioHVACs" };
+                opsHVACs.Click += (s, e) =>
+                {
+                    var dialog = new Honeybee.UI.Dialog_OpsHVACs();
+                    dialog.ShowModal(this);
+                };
+
                 panel.AddSeparateRow(btn);
                 panel.AddSeparateRow(Messagebtn);
                 panel.AddSeparateRow(cSetbtn);
@@ -223,6 +230,7 @@ namespace Honeybee.UI.ConsoleApp
                 panel.AddSeparateRow(modifierSetBtn);
                 panel.AddSeparateRow(outputs);
                 panel.AddSeparateRow(opsProgramType);
+                panel.AddSeparateRow(opsHVACs);
                 panel.AddSeparateRow(null);
                 Content = panel;
             }
