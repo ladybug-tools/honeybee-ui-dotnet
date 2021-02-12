@@ -154,13 +154,13 @@ namespace Honeybee.UI
             }
         }
 
-        private bool _economizerEnabled = true;
+        private bool _economizerVisable = true;
         public bool EconomizerVisable
         {
-            get => _economizerEnabled;
+            get => _economizerVisable;
             set
             {
-                Set(() => _economizerEnabled = value, nameof(EconomizerVisable));
+                Set(() => _economizerVisable = value, nameof(EconomizerVisable));
             }
         }
 
@@ -446,6 +446,7 @@ namespace Honeybee.UI
             = new Dictionary<string, string>()
             {
                 { string.Empty,string.Empty},
+                { nameof(IdealAirSystemAbridged),"Ideal air load system"},
                 { "VAV_Chiller_Boiler","VAV chiller with gas boiler reheat"},
                 { "VAV_Chiller_ASHP","VAV chiller with central air source heat pump reheat"},
                 { "VAV_Chiller_DHW","VAV chiller with district hot water reheat"},
