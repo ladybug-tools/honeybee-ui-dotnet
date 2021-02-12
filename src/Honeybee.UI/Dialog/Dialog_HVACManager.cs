@@ -73,7 +73,6 @@ namespace Honeybee.UI
                         return;
                     }
 
-                   
                     var dup = selected.Duplicate() as HB.Energy.IHvac;
                     var id = Guid.NewGuid().ToString();
                     dup.Identifier = id;
@@ -96,7 +95,8 @@ namespace Honeybee.UI
                     HB.Energy.IHvac dialog_rc = null;
                     if (dup is IdealAirSystemAbridged obj)
                     {
-                        // dialog for ideal air load
+                        var dialog = new Dialog_IdealAirLoad(obj);
+                        dialog_rc = dialog.ShowModal(this);
                     }
                     else
                     {
@@ -130,7 +130,7 @@ namespace Honeybee.UI
                     if (res == DialogResult.Yes)
                     {
                         var newDataStore = gd.DataStore.ToList();
-                        newDataStore.RemoveAt(index);
+                        newDataStore.Remove(selected);
                         gd.DataStore = newDataStore;
                     }
 
@@ -191,17 +191,14 @@ namespace Honeybee.UI
         }
 
         #region AddModifier
-        public ICommand AddIdealAirLoadCommand => new RelayCommand<HB.ModifierBase>((obj) => {
+        public ICommand AddIdealAirLoadCommand => new RelayCommand<HoneybeeSchema.IdealAirSystemAbridged>((obj) => {
 
-            //var id = Guid.NewGuid().ToString();
-            //var newModifier = obj as Plastic ?? new Plastic(id, $"Plastic {id.Substring(0, 5)}", new HB.Void() );
-
-            //var dialog = new Honeybee.UI.Dialog_Modifier<Plastic>(newModifier);
-            //var dialog_rc = dialog.ShowModal(this);
-            //AddModifier(dialog_rc);
+            var dialog = new Honeybee.UI.Dialog_IdealAirLoad(obj);
+            var dialog_rc = dialog.ShowModal(this);
+            AddHVACToGridView(dialog_rc);
         });
-        public ICommand AddOpsHVACCommand => new RelayCommand(() => {
-            var dialog = new Honeybee.UI.Dialog_OpsHVACs();
+        public ICommand AddOpsHVACCommand => new RelayCommand<HoneybeeSchema.Energy.IHvac>((obj) => {
+            var dialog = new Honeybee.UI.Dialog_OpsHVACs(obj);
             var dialog_rc = dialog.ShowModal(this);
             AddHVACToGridView(dialog_rc);
         });
