@@ -100,32 +100,32 @@ namespace Honeybee.UI
                 if (value == null)
                     return;
                 Set(() => _hvacType = value, nameof(HvacType));
-                HvacSystems = GetHVACTypes(value);
+                HvacEquipmentTypes = GetHVACTypes(value);
                 this.Name = $"{this.HVACTypesDic[this.HvacType]} {Guid.NewGuid().ToString().Substring(0, 5)}";
             }
         }
 
-        private IEnumerable<string> _hvacSystems;
-        public IEnumerable<string> HvacSystems
+        private IEnumerable<string> _hvacEquipmentTypes;
+        public IEnumerable<string> HvacEquipmentTypes
         {
-            get => _hvacSystems ?? GetHVACTypes(HvacType);
+            get => _hvacEquipmentTypes ?? GetHVACTypes(HvacType);
             set
             {
                 if (value == null)
                     return;
-                Set(() => _hvacSystems = value, nameof(HvacSystems));
-                HvacSystem = HvacSystems.FirstOrDefault();
+                Set(() => _hvacEquipmentTypes = value, nameof(HvacEquipmentTypes));
+                HvacEquipmentType = HvacEquipmentTypes.FirstOrDefault();
             }
         }
-        private string _hvacSystem;
-        public string HvacSystem
+        private string _hvacEquipmentType;
+        public string HvacEquipmentType
         {
-            get => _hvacSystem ?? HvacSystems.First();
+            get => _hvacEquipmentType ?? HvacEquipmentTypes.First();
             set
             {
                 if (string.IsNullOrEmpty(value))
                     return;
-                Set(() => _hvacSystem = value, nameof(HvacSystem));
+                Set(() => _hvacEquipmentType = value, nameof(HvacEquipmentType));
             }
         }
 
@@ -141,7 +141,8 @@ namespace Honeybee.UI
             }
         }
 
-        public IEnumerable<string> Economizers => new List<string>() { "Inferred", "NoEconomizer", "DifferentialDryBulb", "DifferentialEnthalpy" };
+        private IEnumerable<string> _economizers = Enum.GetNames(typeof(AllAirEconomizerType)).ToList();
+        public IEnumerable<string> Economizers => _economizers;
 
         private string _economizer;
         public string Economizer
@@ -188,7 +189,7 @@ namespace Honeybee.UI
             get => _sensibleHRAutosized;
             set
             {
-                Set(() => _sensibleHRInputEnabled = value, nameof(SensibleHRAutosized));
+                Set(() => _sensibleHRAutosized = value, nameof(SensibleHRAutosized));
                 this.SensibleHRInputEnabled = !value;
             }
         }
@@ -244,9 +245,67 @@ namespace Honeybee.UI
             }
         }
 
-        public OpsHVACsViewModel()
+        public OpsHVACsViewModel(HoneybeeSchema.Energy.IHvac hvac)
         {
+            if (hvac == null)
+                return;
 
+            this.Name = hvac.DisplayName;
+
+            var dummy = new VAV("");
+            // vintage
+            var vintage = hvac.GetType().GetProperty(nameof(dummy.Vintage)).GetValue(hvac);
+            if (vintage is Vintages v)
+                this.Vintage = v.ToString();
+
+            // equipment type
+            var eqpType = hvac.GetType().GetProperty(nameof(dummy.EquipmentType)).GetValue(hvac);
+            this.HvacEquipmentType = eqpType.ToString();
+
+            // LatentHeatRecovery
+            var lat = hvac.GetType().GetProperty(nameof(dummy.LatentHeatRecovery)).GetValue(hvac) as AnyOf<Autosize, double>;
+            if (lat != null)
+            {
+                LatentHRAutosized = lat.Obj is Autosize;
+                LatentHRInputEnabled = !LatentHRAutosized;
+                if (double.TryParse(lat.Obj.ToString(), out var latValue))
+                    LatentHR = latValue;
+            }
+
+            // SensibleHeatRecovery
+            var sen = hvac.GetType().GetProperty(nameof(dummy.SensibleHeatRecovery)).GetValue(hvac) as AnyOf<Autosize, double>;
+            if (sen != null)
+            {
+                SensibleHRAutosized = sen.Obj is Autosize;
+                SensibleHRInputEnabled = !SensibleHRAutosized;
+                if (double.TryParse(sen.Obj.ToString(), out var senValue))
+                    SensibleHR = senValue;
+            }
+
+
+            if (this.IsAllAirGroup(hvac))
+            {
+                EconomizerVisable = true;
+                LatentHRVisable = true;
+                SensibleHRVisable = true;
+
+                // Economizer
+                Economizer = hvac.GetType().GetProperty(nameof(dummy.EconomizerType)).GetValue(hvac).ToString();
+            
+            }
+            else if (this.IsDOASGroup(hvac))
+            {
+                EconomizerVisable = false;
+                LatentHRVisable = true;
+                SensibleHRVisable = true;
+
+            }
+            else if (this.IsOtherGroup(hvac))
+            {
+                EconomizerVisable = false;
+                LatentHRVisable = false;
+                SensibleHRVisable = false;
+            }
 
         }
         private IEnumerable<Type> GetAllAirTypes()
@@ -262,6 +321,16 @@ namespace Honeybee.UI
             };
 
             return types;
+        }
+
+        private bool IsAllAirGroup(HoneybeeSchema.Energy.IHvac hvac)
+        {
+            var isGroup = hvac is VAV;
+            isGroup |= hvac is PVAV;
+            isGroup |= hvac is PSZ;
+            isGroup |= hvac is PTAC;
+            isGroup |= hvac is ForcedAirFurnace;
+            return isGroup;
         }
 
         //private IEnumerable<string> GetAllAir()
@@ -289,17 +358,14 @@ namespace Honeybee.UI
             return types;
         }
 
-        //private IEnumerable<string> GetDOAS()
-        //{
-        //    var names = new List<string>();
+        private bool IsDOASGroup(HoneybeeSchema.Energy.IHvac hvac)
+        {
+            var isDoas = hvac is FCUwithDOAS;
+            isDoas |= hvac is VRFwithDOAS;
+            isDoas |= hvac is WSHPwithDOAS;
 
-        //    // DOAS
-        //    names.AddRange(Enum.GetNames(typeof(FCUwithDOASEquipmentType)));
-        //    names.AddRange(Enum.GetNames(typeof(VRFwithDOASEquipmentType)));
-        //    names.AddRange(Enum.GetNames(typeof(WSHPwithDOASEquipmentType)));
-
-        //    return names;
-        //}
+            return isDoas;
+        }
         private IEnumerable<Type> GetOtherTypes()
         {
             var types = new List<Type>()
@@ -316,22 +382,20 @@ namespace Honeybee.UI
 
             return types;
         }
-        //private IEnumerable<string> GetOther()
-        //{
-        //    var names = new List<string>();
 
-        //    // other
-        //    names.AddRange(Enum.GetNames(typeof(BaseboardEquipmentType)));
-        //    names.AddRange(Enum.GetNames(typeof(EvaporativeCoolerEquipmentType)));
-        //    names.AddRange(Enum.GetNames(typeof(FCUEquipmentType)));
-        //    names.AddRange(Enum.GetNames(typeof(GasUnitHeaterEquipmentType)));
-        //    names.AddRange(Enum.GetNames(typeof(ResidentialEquipmentType)));
-        //    names.AddRange(Enum.GetNames(typeof(VRFEquipmentType)));
-        //    names.AddRange(Enum.GetNames(typeof(WSHPEquipmentType)));
-        //    names.AddRange(Enum.GetNames(typeof(WindowACEquipmentType)));
+        private bool IsOtherGroup(HoneybeeSchema.Energy.IHvac hvac)
+        {
+            var isGroup = hvac is Baseboard;
+            isGroup |= hvac is EvaporativeCooler;
+            isGroup |= hvac is FCU;
+            isGroup |= hvac is GasUnitHeater;
+            isGroup |= hvac is Residential;
+            isGroup |= hvac is VRF;
+            isGroup |= hvac is WSHP;
+            isGroup |= hvac is WindowAC;
+            return isGroup;
+        }
 
-        //    return names;
-        //}
         public Dictionary<Type, string> HVACTypesDic
             = new Dictionary<Type, string>()
             {
@@ -376,7 +440,9 @@ namespace Honeybee.UI
 
           };
 
-        public Dictionary<string, string> HVACsDic
+        public Dictionary<string, string> HVACsDic => HVACUserFriendlyNamesDic;
+
+        public static Dictionary<string, string> HVACUserFriendlyNamesDic
             = new Dictionary<string, string>()
             {
                 { string.Empty,string.Empty},
@@ -519,15 +585,18 @@ namespace Honeybee.UI
             return names;
         }
 
-        public HoneybeeSchema.Energy.IHvac GreateHvac()
+        public HoneybeeSchema.Energy.IHvac GreateHvac(HoneybeeSchema.Energy.IHvac existing = default)
         {
+            
             var sysType = this.HvacType;
-            var sysName = this.HvacSystem;
+            var sysName = this.HvacEquipmentType;
             var vintage = Enum.Parse( typeof(Vintages), this.Vintage);
 
             var hvacType = HVACTypeMapper[sysType];
+            hvacType = existing == null ? hvacType : existing.GetType();
             var id = Guid.NewGuid().ToString().Substring(0, 8);
             id = $"{hvacType.Name}_{id}";
+            id = existing == null ? id : existing.Identifier;
 
             var dumy = new VAV(id);
 
@@ -542,6 +611,11 @@ namespace Honeybee.UI
 
             // assign Vintage
             hvacType.GetProperty(nameof(dumy.Vintage)).SetValue(sys, vintage);
+
+            // equipment type 
+            var prop = hvacType.GetProperty(nameof(dumy.EquipmentType));
+            var hvacSysType = Enum.Parse(prop.PropertyType, this.HvacEquipmentType);
+            prop.SetValue(sys, hvacSysType);
 
             // SensibleHeatRecovery
             var sen = this.SensibleHRAutosized ?
