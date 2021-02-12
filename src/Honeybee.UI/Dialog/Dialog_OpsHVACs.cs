@@ -16,7 +16,7 @@ namespace Honeybee.UI
             var vm = new OpsHVACsViewModel(hvac);
 
             Padding = new Padding(5);
-            Title = "OpenStudio Standards - Honeybee";
+            Title = "From OpenStudio HVAC library - Honeybee";
             WindowStyle = WindowStyle.Default;
             Width = 450;
             this.Icon = DialogHelper.HoneybeeIcon;
