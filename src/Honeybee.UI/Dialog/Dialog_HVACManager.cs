@@ -129,8 +129,9 @@ namespace Honeybee.UI
                     var res = MessageBox.Show(this, $"Are you sure you want to delete:\n {selected.DisplayName ?? selected.Identifier }", MessageBoxButtons.YesNo);
                     if (res == DialogResult.Yes)
                     {
-                        var newDataStore = gd.DataStore.ToList();
-                        newDataStore.Remove(selected);
+                        var newDataStore = gd.DataStore.OfType<HB.Energy.IHvac>().ToList();
+                        var found = newDataStore.FindIndex(_=>_.Identifier == selected.Identifier);
+                        newDataStore.RemoveAt(found);
                         gd.DataStore = newDataStore;
                     }
 
