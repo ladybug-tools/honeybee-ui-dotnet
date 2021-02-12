@@ -214,6 +214,14 @@ namespace Honeybee.UI.ConsoleApp
                     dialog.ShowModal(this);
                 };
 
+                var HVACManager = new Button() { Text = "HVACsManager" };
+                HVACManager.Click += (s, e) =>
+                {
+                    var hvacs = md.Properties.Energy.Hvacs.OfType<HoneybeeSchema.Energy.IHvac>().ToList();
+                    var dialog = new Honeybee.UI.Dialog_HVACManager(hvacs);
+                    dialog.ShowModal(this);
+                };
+
                 panel.AddSeparateRow(btn);
                 panel.AddSeparateRow(Messagebtn);
                 panel.AddSeparateRow(cSetbtn);
@@ -231,6 +239,7 @@ namespace Honeybee.UI.ConsoleApp
                 panel.AddSeparateRow(outputs);
                 panel.AddSeparateRow(opsProgramType);
                 panel.AddSeparateRow(opsHVACs);
+                panel.AddSeparateRow(HVACManager);
                 panel.AddSeparateRow(null);
                 Content = panel;
             }
