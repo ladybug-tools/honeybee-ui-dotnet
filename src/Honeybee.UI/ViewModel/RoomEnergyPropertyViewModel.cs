@@ -443,6 +443,7 @@ namespace Honeybee.UI.ViewModel
             {
                 this.Hvacs.Insert(0, dialog_rc);
                 this.HVAC = dialog_rc;
+                this.ModelEnergyProperties.AddHVAC(dialog_rc);
 
                 MessageBox.Show(
                     this.Control,
