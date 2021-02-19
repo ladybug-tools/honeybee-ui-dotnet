@@ -118,7 +118,7 @@ namespace Honeybee.UI
         {
             get
             {
-                _hbObj.ScheduleRules = _hbObj.ScheduleRules ?? new List<ScheduleRuleAbridged>() { new ScheduleRuleAbridged("") };
+                _hbObj.ScheduleRules = _hbObj.ScheduleRules ?? new List<ScheduleRuleAbridged>() { };
                 return _hbObj.ScheduleRules;
             }
             set => Set(() => _hbObj.ScheduleRules = value, nameof(ScheduleRules));

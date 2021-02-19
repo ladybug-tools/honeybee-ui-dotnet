@@ -4,6 +4,7 @@ using HB = HoneybeeSchema;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Input;
 
 namespace Honeybee.UI
 {
@@ -50,7 +51,7 @@ namespace Honeybee.UI
         {
             _vm.hbObj = scheduleRuleset;
             _vmSelectedDay.hbObj = _vm.DefaultDaySchedule;
-            
+
             //_scheduleRuleset = sch;
             //_selectedScheduleDay = _defaultScheduleDay;
 
@@ -70,71 +71,23 @@ namespace Honeybee.UI
             this.DefaultSpacing = new Size(5, 5);
 
             #region Panel for Schedule RuleSet rules
+            var rightPanel = new DynamicLayout();
+            var rules = _vm.ScheduleRules;
+            var rulesPanel = CreateScheduleRulesPanel(rules);
+            rightPanel.AddRow(rulesPanel);
 
-            var rulesPanel = new DynamicLayout();
-            rulesPanel.Width = 200;
-            rulesPanel.Height = 600;
-
-           
-            var summerbtn = new Button() { Text = "Summer Design Day", Enabled = false};
-            var winterbtn = new Button() { Text = "Winter Design Day", Enabled = false };
-            var holidaybtn = new Button() { Text = "Holiday", Enabled = false };
-            rulesPanel.AddRow("Special Day Profiles:");
-            rulesPanel.AddRow(summerbtn);
-            rulesPanel.AddRow(winterbtn);
-            rulesPanel.AddRow(holidaybtn);
-            rulesPanel.AddRow("Day Profiles:");
-            var random = new Random();
-
-            var rules = _vm.ScheduleRules ?? new List<HB.ScheduleRuleAbridged>();
-            foreach (var item in rules)
-            {
-                if (string.IsNullOrEmpty(item.ScheduleDay))
-                    continue;
-
-                var topBorder = new Label() { Height = 1, BackgroundColor = Colors.Black };
-                rulesPanel.AddSeparateRow(topBorder);
-
-                var radColor = Color.FromArgb((int)(0xFF000000 + (random.Next(0xFFFFFF) & 0x7F7F7F)));
-                colorsetPerRuleset.Add((radColor, item));
-                var ruleDay = _vm.DaySchedules.First(_ => _.Identifier == item.ScheduleDay); 
-                var ruleBtn = GenScheduleRuleBtn(item.ScheduleDay, radColor, 
-                    ()=> {
-                        _vmSelectedDay.hbObj = ruleDay;
-                        _vmSelectedRule.hbObj = item;
-                        UpdateScheduleRulePanel(false);
-                        UpdateApplyDayWeekBtns();
-                    } 
-                    );
-                
-                rulesPanel.AddSeparateRow(ruleBtn);
-
-            }
-            var defaultBorder = new Label() { Height = 1, BackgroundColor = Colors.Black };
-            rulesPanel.AddSeparateRow(defaultBorder);
-            var defaultScheduleBtn = GenScheduleRuleBtn("Default Day", _defaultColor, 
-                () => {
-                    _vmSelectedDay.hbObj = _vm.DefaultDaySchedule;
-                    UpdateScheduleRulePanel(true);
-                }
-            );
-            rulesPanel.AddSeparateRow(defaultScheduleBtn);
-            var bottomBorder = new Label() { Height = 1, BackgroundColor = Colors.Black };
-            rulesPanel.AddSeparateRow(bottomBorder);
-            rulesPanel.AddRow(null);
+            // add new rule
+            var new_btn = new Button() { Text = "Add" };
+            new_btn.Command = AddRuleCommand;
+            new_btn.CommandParameter = rulesPanel;
+            rightPanel.AddRow(new_btn);
 
             var hbData_btn = new Button() { Text = "HBData" };
-            hbData_btn.Click += (s, e) =>
-            {
-                Dialog_Message.Show(this, _vm.hbObj.ToJson());
-                //MessageBox.Show(this, string.Join<double>(", ", dayValues));
-            };
+            hbData_btn.Command = HBDataCommand;
 
-            rulesPanel.AddRow(hbData_btn);
-            rulesPanel.AddRow(null);
+            rightPanel.AddRow(hbData_btn);
+            rightPanel.AddRow(null);
             #endregion
-
-
 
 
             var schName_Tb = new TextBox() { };
@@ -145,7 +98,7 @@ namespace Honeybee.UI
             //_vmSelectedDay.hbObj.DisplayName = _vmSelectedDay.hbObj.DisplayName ?? _vmSelectedDay.hbObj.Identifier;
             dayName_Tb.TextBinding.Bind(_vmSelectedDay, c => c.DisplayName);
 
-            
+
             var lowerLimit_TB = new MaskedTextBox() { };
             var lowNumMask = new NumericMaskedTextProvider() { AllowDecimal = true, AllowSign = true };
             lowerLimit_TB.Provider = lowNumMask;
@@ -157,7 +110,7 @@ namespace Honeybee.UI
             higherLimit_TB.TextBinding.Bind(() => _vm.UpperLimit.ToString(), v => _vm.UpperLimit = double.Parse(v));
 
             //var label = new Label() { Text = "Mouse over lines" };
-            var mouseHoverValue_TB = new NumericMaskedTextStepper<double>() { Height = 20, Font= Fonts.Sans(8) };
+            var mouseHoverValue_TB = new NumericMaskedTextStepper<double>() { Height = 20, Font = Fonts.Sans(8) };
             mouseHoverValue_TB.ShowStepper = false;
             mouseHoverValue_TB.PlaceholderText = "Mouse over lines";
 
@@ -246,15 +199,15 @@ namespace Honeybee.UI
                 {
                     var hovered = mouseHoveredRangesForDragging.First();
                     var valueIndex = hovered.valueIndex;
-                    
+
                     if (hovered.isVertical)
                     {
-                        var mappedTime = (mouseLoc.X - canvas.Left) / canvas.Width*24;
+                        var mappedTime = (mouseLoc.X - canvas.Left) / canvas.Width * 24;
                         var timeNormalized = NormalizeHourMinute(mappedTime);
                         var newHour = timeNormalized.hour;
                         var newMinute = timeNormalized.minute;
                         var newTime = newHour + newMinute / 60;
-                       
+
 
                         // get minimum movable left bound; 
                         var beforeTime = 0;
@@ -264,7 +217,7 @@ namespace Honeybee.UI
                             var timeValue = _vmSelectedDay.Times[beforeIndex];
                             beforeTime = timeValue[0] + timeValue[1] / 60;
                         }
-                     
+
 
                         // get maximum movable right bound; 
                         var nextTime = 24;
@@ -274,7 +227,7 @@ namespace Honeybee.UI
                             var timeValue = _vmSelectedDay.Times[nextIndex];
                             nextTime = timeValue[0] + timeValue[1] / 60;
                         }
-                  
+
 
                         if (newTime < nextTime && newTime > beforeTime)
                         {
@@ -297,8 +250,8 @@ namespace Honeybee.UI
                         _vmSelectedDay.Values[valueIndex] = Math.Round(checkedValue, decimalPlaces);
                         _scheduleDaydrawable.Update(canvas);
                     }
-                    
-                   
+
+
                 }
                 else
                 {
@@ -315,7 +268,7 @@ namespace Honeybee.UI
             {
                 var mouseLoc = e.Location;
                 var doubleClickedRanges = allMouseHoverRanges.Where(_ => _.rectangle.Contains(mouseLoc));
-               
+
                 if (doubleClickedRanges.Any())
                 {
                     var hovered = doubleClickedRanges.First();
@@ -330,7 +283,7 @@ namespace Honeybee.UI
 
                     //var mouseLoc = e.Location;
                     var mappedTimeRaw = (mouseLoc.X - canvas.Left) / canvas.Width * 24;
-                
+
                     var timeNormalized = NormalizeHourMinute(mappedTimeRaw);
                     var hour = timeNormalized.hour;
                     var minute = timeNormalized.minute;
@@ -360,9 +313,9 @@ namespace Honeybee.UI
                         _scheduleDaydrawable.Update(new Rectangle(hovered.rectangle));
                     }
 
-              
 
-                    
+
+
                 }
 
             };
@@ -398,7 +351,7 @@ namespace Honeybee.UI
                 {
                     //mouseHoverValue_TB.Text = null;
                     //label.Text = null;
-                   
+
 
                     var hoveredRec = hovered.First();
                     var rec = hoveredRec.rectangle;
@@ -458,7 +411,7 @@ namespace Honeybee.UI
                         mouseHoverValue_TB.Text = null;
                         mouseHoverValue_TB.Enabled = false;
                     }
-                    
+
                 }
 
                 foreach (var pt in allPts)
@@ -473,7 +426,7 @@ namespace Honeybee.UI
                 graphics.DrawRectangle(Colors.Black, canvas);
                 // Draw chart axis ticks
                 DrawTicks(canvas, graphics);
-                
+
             };
 
 
@@ -502,19 +455,19 @@ namespace Honeybee.UI
 
             };
 
-            lowerLimit_TB.TextChanged += (s, e) => 
-            { 
+            lowerLimit_TB.TextChanged += (s, e) =>
+            {
                 //this._selectedScheduleTypeLimits.LowerLimit = lowerLimit_TB.Value;
                 _scheduleDaydrawable.Update(canvas);
             };
-          
-            higherLimit_TB.TextChanged += (s, e) => 
-            { 
+
+            higherLimit_TB.TextChanged += (s, e) =>
+            {
                 //_vm.ScheduleTypeLimit.UpperLimit = higherLimit_TB.Value;
                 _scheduleDaydrawable.Update(canvas);
             };
 
-            
+
 
             var layoutLeft = new DynamicLayout();
             layoutLeft.DefaultPadding = new Padding(5);
@@ -562,12 +515,12 @@ namespace Honeybee.UI
 
             layoutLeft.AddSeparateRow(layoutLeftTop);
             layoutLeft.AddSeparateRow(layoutDayDrawable);
-            
+
             layoutLeft.AddSeparateRow(null);
             #endregion
 
             #region RightPanel
-            
+
             //Background color
             var calendarBackground = new Drawable(true);
             calendarBackground.Size = _calendarSize;
@@ -604,9 +557,73 @@ namespace Honeybee.UI
             #endregion
 
 
-            this.AddRow(rulesPanel, layoutLeft, layoutRight, null);
+            this.AddRow(rightPanel, layoutLeft, layoutRight, null);
 
         }
+
+        private DynamicLayout CreateScheduleRulesPanel(List<HB.ScheduleRuleAbridged> rules)
+        {
+            var layout = new DynamicLayout();
+            layout.Width = 200;
+            //rulesPanel.Height = 600;
+
+
+            var summerbtn = new Button() { Text = "Summer Design Day", Enabled = false };
+            var winterbtn = new Button() { Text = "Winter Design Day", Enabled = false };
+            var holidaybtn = new Button() { Text = "Holiday", Enabled = false };
+            layout.AddRow("Special Day Profiles:");
+            layout.AddRow(summerbtn);
+            layout.AddRow(winterbtn);
+            layout.AddRow(holidaybtn);
+            layout.AddRow("Day Profiles:");
+
+
+            var random = new Random();
+            foreach (var item in rules)
+            {
+                if (string.IsNullOrEmpty(item.ScheduleDay))
+                    continue;
+
+                var topBorder = new Label() { Height = 1, BackgroundColor = Colors.Black };
+                layout.AddSeparateRow(topBorder);
+
+                var radColor = Color.FromArgb((int)(0xFF000000 + (random.Next(0xFFFFFF) & 0x7F7F7F)));
+                colorsetPerRuleset.Add((radColor, item));
+                var ruleDay = _vm.DaySchedules.First(_ => _.Identifier == item.ScheduleDay);
+                var ruleBtn = GenScheduleRuleBtn(item.ScheduleDay, radColor,
+                    () =>
+                    {
+                        _vmSelectedDay.hbObj = ruleDay;
+                        _vmSelectedRule.hbObj = item;
+                        UpdateScheduleRulePanel(false);
+                        UpdateApplyDayWeekBtns();
+                    }
+                    );
+
+                layout.AddSeparateRow(ruleBtn);
+
+            }
+            var defaultBorder = new Label() { Height = 1, BackgroundColor = Colors.Black };
+            layout.AddSeparateRow(defaultBorder);
+            var defaultScheduleBtn = GenScheduleRuleBtn("Default Day", _defaultColor,
+                () =>
+                {
+                    _vmSelectedDay.hbObj = _vm.DefaultDaySchedule;
+                    UpdateScheduleRulePanel(true);
+                }
+            );
+            layout.AddSeparateRow(defaultScheduleBtn);
+            //var bottomBorder = new Label() { Height = 1, BackgroundColor = Colors.Black };
+            //layout.AddSeparateRow(bottomBorder);
+            //layout.AddRow(null);
+
+    
+
+            //layout.AddRow(null);
+
+            return layout;
+        }
+
         private Control[] _applyToDayWeekBtns;
 
         // btn background color
@@ -615,51 +632,60 @@ namespace Honeybee.UI
         private static Color _textColor = new Label().TextColor;
         private static Color TextColor => _textColor;
 
-        private Control[] GenScheduleRuleBtn(string btnName, Color color, Action setAction)
+        private Button GenScheduleRuleBtn(string btnName, Color color, Action setAction)
         {
-            var left = new Label() { Width = 1, BackgroundColor= Colors.Black };
-            var middle = new Label() { Width = 1, BackgroundColor = Colors.Black };
-            var right = new Label() { Width = 1, BackgroundColor = Colors.Black };
+            //var left = new Label() { Width = 1, BackgroundColor= Colors.Black };
+            //var middle = new Label() { Width = 1, BackgroundColor = Colors.Black };
+            //var right = new Label() { Width = 1, BackgroundColor = Colors.Black };
 
-            var labelColor = new Label() { Width = 10 };
-            labelColor.BackgroundColor = color;
+            //var labelColor = new Label() { Width = 10 };
+            //labelColor.BackgroundColor = color;
 
 
-            var defaultDaybtn = new Label() { Text = btnName, Height = 25, TextColor = TextColor };
-            defaultDaybtn.TextAlignment = TextAlignment.Left;
-            defaultDaybtn.Wrap = WrapMode.None;
+            //var ruleDayBtn = new Label() { Text = btnName, Height = 25, TextColor = TextColor };
+            var ruleDayBtn = new Button() { Text = btnName};
+            ruleDayBtn.BackgroundColor = color;
+            ruleDayBtn.ToolTip = btnName;
+            //ruleDayBtn.TextAlignment = TextAlignment.Left;
+            //ruleDayBtn.Wrap = WrapMode.None;
 
-            var defaultBackgroundColor = BtnColor;
-            var pressColor = Color.FromArgb(200, 200, 200);
-            defaultDaybtn.BackgroundColor = defaultBackgroundColor;
-            defaultDaybtn.MouseMove += (s, e) =>
+            //var defaultBackgroundColor = BtnColor;
+            //var pressColor = Color.FromArgb(200, 200, 200);
+            //ruleDayBtn.BackgroundColor = defaultBackgroundColor;
+            //ruleDayBtn.MouseMove += (s, e) =>
+            //{
+            //    ruleDayBtn.BackgroundColor = pressColor;
+            //};
+            //ruleDayBtn.MouseLeave += (s, e) =>
+            //{
+            //    ruleDayBtn.BackgroundColor = defaultBackgroundColor;
+            //};
+
+            ruleDayBtn.Click += (s, e) =>
             {
-                defaultDaybtn.BackgroundColor = pressColor;
-            };
-            defaultDaybtn.MouseLeave += (s, e) =>
-            {
-                defaultDaybtn.BackgroundColor = defaultBackgroundColor;
-            };
-          
-            defaultDaybtn.MouseDown += (s, e) =>
-            {
-                defaultDaybtn.BackgroundColor = pressColor;
-                //var rad = new Random();
-                //var dayValues = new List<double>() { 0, rad.NextDouble(), rad.NextDouble() };
-                //var dayTimes = new List<List<int>>() { new List<int> { 0, 0 }, new List<int> { 6, 0 }, new List<int> { 18, 0 } };
-                //var newday = new ScheduleDay("ddd", dayValues, null, dayTimes) { };
-
-                ////this.DayValues = new List<double>() { 0, 0.5, 0.1 };
-                ////var dayValueFraction = dayValues.Select(_ => _ / scheduleTypelength);
-                ////this.DayTimes = new List<(int hour, int minute)>() { (0, 0), (6, 0), (18, 0) };
-                //this._selectedScheduleDay = newday;
                 setAction();
-                _scheduleDaydrawable.Update(new Rectangle(new Size(600,400)));
-
-
+                _scheduleDaydrawable.Update(new Rectangle(new Size(600, 400)));
             };
+             
+            //ruleDayBtn.MouseDown += (s, e) =>
+            //{
+            //    ruleDayBtn.BackgroundColor = pressColor;
+            //    //var rad = new Random();
+            //    //var dayValues = new List<double>() { 0, rad.NextDouble(), rad.NextDouble() };
+            //    //var dayTimes = new List<List<int>>() { new List<int> { 0, 0 }, new List<int> { 6, 0 }, new List<int> { 18, 0 } };
+            //    //var newday = new ScheduleDay("ddd", dayValues, null, dayTimes) { };
 
-            return new Control[] { left, labelColor, middle, defaultDaybtn };
+            //    ////this.DayValues = new List<double>() { 0, 0.5, 0.1 };
+            //    ////var dayValueFraction = dayValues.Select(_ => _ / scheduleTypelength);
+            //    ////this.DayTimes = new List<(int hour, int minute)>() { (0, 0), (6, 0), (18, 0) };
+            //    //this._selectedScheduleDay = newday;
+            //    setAction();
+            //    _scheduleDaydrawable.Update(new Rectangle(new Size(600,400)));
+
+
+            //};
+
+            return ruleDayBtn;
 
 
         }
@@ -1491,6 +1517,33 @@ namespace Honeybee.UI
         }
 
         #endregion
+
+        public ICommand HBDataCommand => new RelayCommand(() => {
+            Dialog_Message.Show(this, _vm.hbObj.ToJson());
+        });
+
+        public ICommand AddRuleCommand => new RelayCommand<DynamicLayout>((layout) => {
+
+            var rules = _vm.ScheduleRules ?? new List<HB.ScheduleRuleAbridged>();
+            var defaultDay = _vm.DefaultDaySchedule;
+            var newRule = new HB.ScheduleRuleAbridged(defaultDay.Identifier);
+            rules.Add(newRule);
+            _vm.ScheduleRules = rules;
+
+            var ruleBtn = GenScheduleRuleBtn(defaultDay.DisplayName, _defaultColor,
+                () =>
+                {
+                    _vmSelectedDay.hbObj = defaultDay;
+                    _vmSelectedRule.hbObj = newRule;
+                    UpdateScheduleRulePanel(false);
+                    UpdateApplyDayWeekBtns();
+                }
+                );
+
+            layout.AddRow(ruleBtn);
+            layout.Create();
+
+        });
 
     }
 }
