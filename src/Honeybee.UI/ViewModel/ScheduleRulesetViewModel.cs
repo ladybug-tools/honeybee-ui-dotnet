@@ -108,10 +108,7 @@ namespace Honeybee.UI
         {
             get
             {
-                if (_hbObj.DaySchedules == null)
-                {
-                    _hbObj.DaySchedules = new List<ScheduleDay>();
-                }
+                _hbObj.DaySchedules = _hbObj.DaySchedules ?? new List<ScheduleDay>();
                 return _hbObj.DaySchedules;
             }
             set => Set(() => _hbObj.DaySchedules = value, nameof(DaySchedules));
@@ -121,10 +118,7 @@ namespace Honeybee.UI
         {
             get
             {
-                if (_hbObj.ScheduleRules == null)
-                {
-                    _hbObj.ScheduleRules = new List<ScheduleRuleAbridged>() { new ScheduleRuleAbridged("") };
-                }
+                _hbObj.ScheduleRules = _hbObj.ScheduleRules ?? new List<ScheduleRuleAbridged>() { new ScheduleRuleAbridged("") };
                 return _hbObj.ScheduleRules;
             }
             set => Set(() => _hbObj.ScheduleRules = value, nameof(ScheduleRules));
@@ -139,10 +133,7 @@ namespace Honeybee.UI
 
         public ScheduleRuleAbridged CurrentScheduleRule
         {
-            get
-            {
-                return _currentScheduleRule;
-            }
+            get => _currentScheduleRule;
             set => Set(() => _currentScheduleRule = value, nameof(CurrentScheduleRule));
 
         }
