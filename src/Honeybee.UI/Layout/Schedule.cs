@@ -12,14 +12,6 @@ namespace Honeybee.UI
     {
         private static ScheduleRulesetViewModel _vm;
 
-        private double _intervalMinutes = 60; // hourly = 60, 15 minutes = 15, etc
-     
-
-        private double _scheduleTypelength => Math.Abs(_vm.UpperLimit - _vm.LowerLimit);
-        //public List<double> DayValues => _vmSelectedDay.Values;
-        public List<double> DayValuesFraction => _vm.SchDayValues.Select(_ => Math.Abs(_ - _vm.LowerLimit) / _scheduleTypelength).ToList();
-        //public List<List<int>> DayTimes => _vmSelectedDay.Times;
-
         private DynamicLayout _layoutSchRule;
         private Drawable _scheduleDaydrawable;
         private Drawable _calendarPanel;
@@ -30,7 +22,7 @@ namespace Honeybee.UI
         public Panel_Schedule(HB.ScheduleRuleset scheduleRuleset)
         {
             _vm = new ScheduleRulesetViewModel(scheduleRuleset);
-          
+            this.DataContext = _vm;
 
             this.DefaultPadding = new Padding(10);
             this.DefaultSpacing = new Size(5, 5);
@@ -210,8 +202,9 @@ namespace Honeybee.UI
                         mappedPercent = Math.Min(1, mappedPercent);
                         mappedPercent = Math.Max(0, mappedPercent);
 
-                        var decimalPlaces = (this._scheduleTypelength / 100).ToString().Split('.').Last().Length;
-                        var checkedValue = mappedPercent * this._scheduleTypelength + _vm.LowerLimit;
+                        var length = _vm.SchTypelength;
+                        var decimalPlaces = (length / 100).ToString().Split('.').Last().Length;
+                        var checkedValue = mappedPercent * length + _vm.LowerLimit;
                         _vm.SchDayValues[valueIndex] = Math.Round(checkedValue, decimalPlaces);
                         _scheduleDaydrawable.Update(canvas);
                     }
@@ -886,31 +879,20 @@ namespace Honeybee.UI
 
         private Control[] AddIntervalButtons()
         {
-            var btn1 = new Button() { Text = "Hourly", Enabled = false };
+            var btn1 = new Button() { Text = "Hourly"};
             var btn2 = new Button() { Text = "15 Minutes" };
             var btn3 = new Button() { Text = "1 Minute" };
 
-            btn1.Click += (s, e) =>
-            {
-                _intervalMinutes = 60;
-                btn1.Enabled = false;
-                btn2.Enabled = true;
-                btn3.Enabled = true;
-            };
-            btn2.Click += (s, e) =>
-            {
-                _intervalMinutes = 15;
-                btn2.Enabled = false;
-                btn1.Enabled = true;
-                btn3.Enabled = true;
-            };
-            btn3.Click += (s, e) =>
-            {
-                _intervalMinutes = 1;
-                btn3.Enabled = false;
-                btn1.Enabled = true;
-                btn2.Enabled = true;
-            };
+            btn1.Command = _vm.UpdateIntervalCommand;
+            btn1.CommandParameter = 60;
+            btn2.Command = _vm.UpdateIntervalCommand;
+            btn2.CommandParameter = 15;
+            btn3.Command = _vm.UpdateIntervalCommand;
+            btn3.CommandParameter = 1;
+
+            btn1.BindDataContext(c => c.Enabled, (ScheduleRulesetViewModel m) => m.Interval_60);
+            btn2.BindDataContext(c => c.Enabled, (ScheduleRulesetViewModel m) => m.Interval_15);
+            btn3.BindDataContext(c => c.Enabled, (ScheduleRulesetViewModel m) => m.Interval_1);
             return new[] { null, btn1, btn2, btn3, null };
           
         }
@@ -973,7 +955,8 @@ namespace Honeybee.UI
         /// <returns></returns>
         private double NormalizeMinute(int oldMinute)
         {
-            var checkedMinute = Math.Round(oldMinute / _intervalMinutes) * _intervalMinutes;
+            var intverval = (double)_vm.Intervals;
+            var checkedMinute = Math.Round(oldMinute / intverval) * intverval;
             return checkedMinute;
         }
 
@@ -1003,7 +986,7 @@ namespace Honeybee.UI
         {
             var canv = frameBound;
             var dayValues = _vm.SchDayValues;
-            var dayValuesFraction = this.DayValuesFraction;
+            var dayValuesFraction = _vm.SchDayValues.Select(_ => Math.Abs(_ - _vm.LowerLimit) / _vm.SchTypelength).ToList();
             var dayTimes = _vm.SchDayTimes;
 
             var widthPerHour = canv.Width / 24;

@@ -1,7 +1,9 @@
-﻿using HoneybeeSchema;
+﻿using Eto.Forms;
+using HoneybeeSchema;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Input;
 
 namespace Honeybee.UI
 {
@@ -104,7 +106,7 @@ namespace Honeybee.UI
             set => Set(() => _upperLimit = value, nameof(UpperLimit));
         }
 
-
+        public double SchTypelength => Math.Abs(this.UpperLimit - this.LowerLimit);
 
         public List<ScheduleDay> DaySchedules
         {
@@ -145,6 +147,68 @@ namespace Honeybee.UI
             get => DaySchedules.First(_ => _.Identifier == CurrentScheduleRule.ScheduleDay);
         }
 
+        private int _intervals;
+
+        public int Intervals
+        {
+            get => _intervals;
+            set 
+            {
+                var interval = value;
+                switch (value)
+                {
+                    case 60:
+                        this.Interval_60 = false;
+                        this.Interval_15 = true;
+                        this.Interval_1 = true;
+                        break;
+                    case 15:
+                        this.Interval_60 = true;
+                        this.Interval_15 = false;
+                        this.Interval_1 = true;
+                        break;
+                    case 1:
+                        this.Interval_60 = true;
+                        this.Interval_15 = true;
+                        this.Interval_1 = false;
+                        break;
+                    default:
+                        this.Interval_60 = false;
+                        this.Interval_15 = true;
+                        this.Interval_1 = true;
+                        interval = 60;
+                        break;
+                }
+                _intervals = interval;
+            }
+        }
+
+
+        private bool _interval_60;
+
+        public bool Interval_60
+        {
+            get => _interval_60;
+            set => Set(() => _interval_60 = value, nameof(Interval_60));
+        }
+        private bool _interval_15 = true;
+
+        public bool Interval_15
+        {
+            get => _interval_15;
+            set => Set(() => _interval_15 = value, nameof(Interval_15));
+        }
+        private bool _interval_1 = true;
+
+        public bool Interval_1
+        {
+            get => _interval_1;
+            set => Set(() => _interval_1 = value, nameof(Interval_1));
+        }
+
+        public ICommand UpdateIntervalCommand => new RelayCommand<int>((interval) => {
+            this.Intervals = interval;
+        });
         #endregion
 
         #region Schedule Rule
@@ -253,6 +317,7 @@ namespace Honeybee.UI
         {
             this.SchRuleset_hbObj = scheduleRuleset;
             this.SchDay_hbObj = this.DefaultDaySchedule;
+            this.Intervals = 60;
         }
 
     }
