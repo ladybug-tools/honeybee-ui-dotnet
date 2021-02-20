@@ -8,17 +8,19 @@ namespace Honeybee.UI
 
     public class ScheduleRulesetViewModel : ViewModelBase
     {
-        private ScheduleRuleset _hbObj;
-        public ScheduleRuleset hbObj
+        #region Schedule Ruleset
+        private ScheduleRuleset _schRuleset_hbObj;
+        public ScheduleRuleset SchRuleset_hbObj
         {
-            get => _hbObj;
-            set {
-                _hbObj = value;
+            get => _schRuleset_hbObj;
+            set
+            {
+                _schRuleset_hbObj = value;
                 //reset lower/upper limit based on ScheduleTypeLimit
                 _lowerLimit = -999;
                 _upperLimit = 999;
-                var props = this.GetType().GetProperties().Select(_ => _.Name);
-                this.RefreshControls(props);
+
+                Set(() => _schRuleset_hbObj = value, nameof(SchRuleset_hbObj));
             }
         }
 
@@ -26,13 +28,13 @@ namespace Honeybee.UI
         {
             get
             {
-                _hbObj.DisplayName = _hbObj.DisplayName ?? _hbObj.Identifier;
-                return _hbObj.DisplayName;
+                _schRuleset_hbObj.DisplayName = _schRuleset_hbObj.DisplayName ?? _schRuleset_hbObj.Identifier;
+                return _schRuleset_hbObj.DisplayName;
             }
-            set => Set(() => _hbObj.DisplayName = value, nameof(DisplayName));
+            set => Set(() => _schRuleset_hbObj.DisplayName = value, nameof(DisplayName));
         }
 
-        private ScheduleTypeLimit ScheduleTypeLimit => _hbObj.ScheduleTypeLimit ?? new ScheduleTypeLimit("Fractional") { LowerLimit = 0 };
+        private ScheduleTypeLimit ScheduleTypeLimit => _schRuleset_hbObj.ScheduleTypeLimit ?? new ScheduleTypeLimit("Fractional") { LowerLimit = 0 };
 
         private double _lowerLimit = -999;
         public double LowerLimit
@@ -92,7 +94,7 @@ namespace Honeybee.UI
                     var max = Math.Ceiling(DaySchedules.SelectMany(_ => _.Values).Max());
                     // Do not change schedule type limit, NEVER! ScheduleTypeLimits should only be readable
                     //_hbObj.ScheduleTypeLimit.UpperLimit = max;
-                    upperLimit =  max;
+                    upperLimit = max;
                 }
 
                 _upperLimit = upperLimit;
@@ -101,32 +103,32 @@ namespace Honeybee.UI
             }
             set => Set(() => _upperLimit = value, nameof(UpperLimit));
         }
-       
+
 
 
         public List<ScheduleDay> DaySchedules
         {
             get
             {
-                _hbObj.DaySchedules = _hbObj.DaySchedules ?? new List<ScheduleDay>();
-                return _hbObj.DaySchedules;
+                _schRuleset_hbObj.DaySchedules = _schRuleset_hbObj.DaySchedules ?? new List<ScheduleDay>();
+                return _schRuleset_hbObj.DaySchedules;
             }
-            set => Set(() => _hbObj.DaySchedules = value, nameof(DaySchedules));
+            set => Set(() => _schRuleset_hbObj.DaySchedules = value, nameof(DaySchedules));
 
         }
         public List<ScheduleRuleAbridged> ScheduleRules
         {
             get
             {
-                _hbObj.ScheduleRules = _hbObj.ScheduleRules ?? new List<ScheduleRuleAbridged>() { };
-                return _hbObj.ScheduleRules;
+                _schRuleset_hbObj.ScheduleRules = _schRuleset_hbObj.ScheduleRules ?? new List<ScheduleRuleAbridged>() { };
+                return _schRuleset_hbObj.ScheduleRules;
             }
-            set => Set(() => _hbObj.ScheduleRules = value, nameof(ScheduleRules));
+            set => Set(() => _schRuleset_hbObj.ScheduleRules = value, nameof(ScheduleRules));
 
         }
         public ScheduleDay DefaultDaySchedule
         {
-            get => DaySchedules.First(_ => _.Identifier == _hbObj.DefaultDaySchedule);
+            get => DaySchedules.First(_ => _.Identifier == _schRuleset_hbObj.DefaultDaySchedule);
         }
 
         private ScheduleRuleAbridged _currentScheduleRule;
@@ -143,14 +145,114 @@ namespace Honeybee.UI
             get => DaySchedules.First(_ => _.Identifier == CurrentScheduleRule.ScheduleDay);
         }
 
-      
+        #endregion
 
-        private static readonly ScheduleRulesetViewModel _instance = new ScheduleRulesetViewModel();
-        public static ScheduleRulesetViewModel Instance => _instance;
+        #region Schedule Rule
 
-
-        private ScheduleRulesetViewModel()
+        private ScheduleRuleAbridged _schRule_hbObj;
+        public ScheduleRuleAbridged SchRule_hbObj
         {
+            get
+            {
+                _schRule_hbObj = _schRule_hbObj ?? new ScheduleRuleAbridged("DefaultDayThatDoesnotHaveScheduleDay");
+                return _schRule_hbObj;
+            }
+            set => Set(() => _schRule_hbObj = value, nameof(SchRule_hbObj));
+        }
+        public bool ApplySunday
+        {
+            get => SchRule_hbObj.ApplySunday;
+            set => Set(() => SchRule_hbObj.ApplySunday = value, nameof(ApplySunday));
+        }
+        public bool ApplyMonday
+        {
+            get => SchRule_hbObj.ApplyMonday;
+            set => Set(() => SchRule_hbObj.ApplyMonday = value, nameof(ApplyMonday));
+        }
+        public bool ApplyTuesday
+        {
+            get => SchRule_hbObj.ApplyTuesday;
+            set => Set(() => SchRule_hbObj.ApplyTuesday = value, nameof(ApplyTuesday));
+        }
+        public bool ApplyThursday
+        {
+            get => SchRule_hbObj.ApplyThursday;
+            set => Set(() => SchRule_hbObj.ApplyThursday = value, nameof(ApplyThursday));
+        }
+        public bool ApplyWednesday
+        {
+            get => SchRule_hbObj.ApplyWednesday;
+            set => Set(() => SchRule_hbObj.ApplyWednesday = value, nameof(ApplyWednesday));
+        }
+        public bool ApplyFriday
+        {
+            get => SchRule_hbObj.ApplyFriday;
+            set => Set(() => SchRule_hbObj.ApplyFriday = value, nameof(ApplyFriday));
+        }
+        public bool ApplySaturday
+        {
+            get => SchRule_hbObj.ApplySaturday;
+            set => Set(() => SchRule_hbObj.ApplySaturday = value, nameof(ApplySaturday));
+        }
+
+        public DateTime StartDate
+        {
+            get
+            {
+                SchRule_hbObj.StartDate = _schRule_hbObj.StartDate ?? new List<int> { 1, 1 };
+                return new DateTime(2017, SchRule_hbObj.StartDate[0], SchRule_hbObj.StartDate[1]);
+            }
+            set => Set(() => SchRule_hbObj.StartDate = new List<int> { value.Month, value.Day }, nameof(StartDate));
+        }
+        public DateTime EndDate
+        {
+            get
+            {
+                SchRule_hbObj.EndDate = SchRule_hbObj.EndDate ?? new List<int> { 12, 31 };
+                return new DateTime(2017, SchRule_hbObj.EndDate[0], SchRule_hbObj.EndDate[1]);
+            }
+            set => Set(() => _schRule_hbObj.EndDate = new List<int> { value.Month, value.Day }, nameof(EndDate));
+        }
+        #endregion
+
+        #region Schedule Day
+
+        private ScheduleDay _SchDay_hbObj;
+        public ScheduleDay SchDay_hbObj
+        {
+            get => _SchDay_hbObj;
+            set => Set(() => _SchDay_hbObj = value, nameof(SchDay_hbObj));
+        }
+
+        public string SchDayName
+        {
+            get
+            {
+                _SchDay_hbObj.DisplayName = _SchDay_hbObj.DisplayName ?? _SchDay_hbObj.Identifier;
+                return _SchDay_hbObj.DisplayName;
+            }
+            set => Set(() => _SchDay_hbObj.DisplayName = value, nameof(SchDayName));
+        }
+
+        public List<double> SchDayValues
+        {
+            get => SchDay_hbObj.Values;
+            set => Set(() => SchDay_hbObj.Values = value, nameof(SchDayValues));
+        }
+
+
+        public List<List<int>> SchDayTimes
+        {
+            get => _SchDay_hbObj.Times;
+            set => Set(() => SchDay_hbObj.Times = value, nameof(SchDayTimes));
+        }
+        #endregion
+
+
+        public ScheduleRulesetViewModel(ScheduleRuleset scheduleRuleset)
+        {
+            this.SchRuleset_hbObj = scheduleRuleset;
+            this.SchDay_hbObj = this.DefaultDaySchedule;
         }
 
     }
