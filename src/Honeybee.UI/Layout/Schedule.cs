@@ -1474,13 +1474,15 @@ namespace Honeybee.UI
             Dialog_Message.Show(this, _vm.SchRuleset_hbObj.ToJson());
         });
 
-        public ICommand AddRuleCommand => new RelayCommand<DynamicLayout>((layout) => {
-
-            var rules = _vm.ScheduleRules ?? new List<HB.ScheduleRuleAbridged>();
-            var defaultDay = _vm.DefaultDaySchedule;
+        public ICommand AddRuleCommand => new RelayCommand<DynamicLayout>((layout) =>
+        {
+            var defaultDay = _vm.DefaultDaySchedule.DuplicateScheduleDay();
+            defaultDay.Identifier = Guid.NewGuid().ToString();
+            defaultDay.DisplayName = $"New Schedule Day {defaultDay.Identifier.Substring(0,5)}";
             var newRule = new HB.ScheduleRuleAbridged(defaultDay.Identifier);
-            rules.Add(newRule);
-            _vm.ScheduleRules = rules;
+           
+            _vm.ScheduleRules.Add(newRule);
+            _vm.DaySchedules.Add(defaultDay);
 
             var ruleBtn = GenScheduleRuleBtn(defaultDay.DisplayName, _defaultColor,
                 () =>
@@ -1492,7 +1494,8 @@ namespace Honeybee.UI
                 }
                 );
 
-            layout.AddRow(ruleBtn);
+            layout.Rows.Insert(layout.Rows.Count -1, ruleBtn);
+            //layout.AddRow(ruleBtn);
             layout.Create();
 
         });
