@@ -28,28 +28,34 @@ namespace Honeybee.UI
             this.DefaultSpacing = new Size(5, 5);
 
             #region Panel for Schedule RuleSet rules
-            var rightPanel = new DynamicLayout();
+          
             var rules = _vm.ScheduleRules;
             var rulesPanel = CreateScheduleRulesPanel(rules);
-            rightPanel.AddRow(rulesPanel);
+
 
             // add new rule
             var new_btn = new Button() { Text = "Add" };
             new_btn.Command = AddRuleCommand;
             new_btn.CommandParameter = rulesPanel;
-            rightPanel.AddRow(new_btn);
+ 
 
             var hbData_btn = new Button() { Text = "HBData" };
             hbData_btn.Command = HBDataCommand;
 
+            var schName_Tb = new TextBox() { };
+            schName_Tb.TextBinding.Bind(_vm, c => c.DisplayName);
+
+            var rightPanel = new DynamicLayout();
+            rightPanel.DefaultSpacing = new Size(5, 5);
+            rightPanel.AddRow("Schedule Name:");
+            rightPanel.AddRow(schName_Tb);
+            rightPanel.AddRow(rulesPanel);
+            rightPanel.AddRow(new_btn);
             rightPanel.AddRow(hbData_btn);
             rightPanel.AddRow(null);
+
             #endregion
 
-
-            var schName_Tb = new TextBox() { };
-            _vm.SchRuleset_hbObj.DisplayName = _vm.SchRuleset_hbObj.DisplayName ?? _vm.SchRuleset_hbObj.Identifier;
-            schName_Tb.TextBinding.Bind(_vm, c => c.DisplayName);
 
             var dayName_Tb = new TextBox() { Width = 300 };
             //_vmSelectedDay.hbObj.DisplayName = _vmSelectedDay.hbObj.DisplayName ?? _vmSelectedDay.hbObj.Identifier;
@@ -430,13 +436,11 @@ namespace Honeybee.UI
             var layoutLeft = new DynamicLayout();
             layoutLeft.DefaultPadding = new Padding(5);
 
-            var layoutLeftTop = new DynamicLayout();
+
             #region Layout Left Top
-
+            var layoutLeftTop = new DynamicLayout();
             layoutLeftTop.DefaultPadding = new Padding(25, 0, 10, 0);
-
             layoutLeftTop.DefaultSpacing = new Size(3, 3);
-            layoutLeftTop.AddSeparateRow(new Label { Text = "Schedule Name:", Width = 90 }, schName_Tb);
 
             //layoutLeft.DataContext = _vmSelectedRule;
             layoutLeftTop.AddSeparateRow(new Label { Text = "Schedule Day:", Width = 90 }, dayName_Tb, null);
@@ -464,17 +468,17 @@ namespace Honeybee.UI
             //this.AddSeparateRow(null, label, mouseHoverValue_TB);
             var layoutDayDrawable = new DynamicLayout();
             #region Layout Left Bottom
-            //layoutDayDrawable.DefaultPadding = new Padding(5);
-            layoutDayDrawable.DefaultSpacing = new Size(5, 5);
-            layoutDayDrawable.AddSeparateRow(_scheduleDaydrawable);
+            layoutDayDrawable.DefaultPadding = new Padding(5);
+            layoutDayDrawable.DefaultSpacing = new Size(5, 10);
+            layoutDayDrawable.AddRow(_scheduleDaydrawable);
             layoutDayDrawable.AddSeparateRow(this.AddIntervalButtons());
             #endregion
 
 
-            layoutLeft.AddSeparateRow(layoutLeftTop);
-            layoutLeft.AddSeparateRow(layoutDayDrawable);
+            layoutLeft.AddRow(layoutLeftTop);
+            layoutLeft.AddRow(layoutDayDrawable);
 
-            layoutLeft.AddSeparateRow(null);
+            layoutLeft.AddRow(null);
             #endregion
 
             #region RightPanel
@@ -508,7 +512,7 @@ namespace Honeybee.UI
 
 
             var layoutRight = new DynamicLayout();
-            layoutRight.Height = 600;
+            layoutRight.Height = 550;
             layoutRight.BeginScrollable();
             layoutRight.AddRow(layoutLayers);
             layoutRight.EndScrollable();
@@ -914,7 +918,7 @@ namespace Honeybee.UI
             var bottom = canvas.Bottom;
             var left = canvas.Left;
 
-            var tickLength = 8;
+            var tickLength = 5;
             var tickfont = Fonts.Sans(8);
             //var font = Fonts.Sans(10);
             for (int i = 0; i <= markCount; i++)
