@@ -59,12 +59,12 @@ namespace Honeybee.UI
             var lowerLimit_TB = new MaskedTextBox() { };
             var lowNumMask = new NumericMaskedTextProvider() { AllowDecimal = true, AllowSign = true };
             lowerLimit_TB.Provider = lowNumMask;
-            lowerLimit_TB.TextBinding.Bind(() => _vm.LowerLimit.ToString(), v => _vm.LowerLimit = double.Parse(v));
+            lowerLimit_TB.TextBinding.Bind(() => _vm.LowerLimit.ToString(), v => _vm.LowerLimit = double.TryParse(v, out var d) ? d : 0);
 
             var higherLimit_TB = new MaskedTextBox() { };
             var highNumMask = new NumericMaskedTextProvider() { AllowDecimal = true, AllowSign = true };
             higherLimit_TB.Provider = highNumMask;
-            higherLimit_TB.TextBinding.Bind(() => _vm.UpperLimit.ToString(), v => _vm.UpperLimit = double.Parse(v));
+            higherLimit_TB.TextBinding.Bind(() => _vm.UpperLimit.ToString(), v => _vm.UpperLimit = double.TryParse(v, out var d) ? d : 0);
 
             //var label = new Label() { Text = "Mouse over lines" };
             var mouseHoverValue_TB = new NumericMaskedTextStepper<double>() { Height = 20, Font = Fonts.Sans(8) };
@@ -939,8 +939,8 @@ namespace Honeybee.UI
                 var p1 = new PointF(left, bottom - i * heightPerInterval);
                 var p2 = new PointF(left - tickLength, bottom - i * heightPerInterval);
                 graphics.DrawLine(TextColor, p1, p2);
-
-                var tickText = $"{start + i * valueInterval}";
+                var tickValue = Math.Round( start + i * valueInterval, 5);
+                var tickText = tickValue.ToString();
                 var textSize = tickfont.MeasureString(tickText);
                 graphics.DrawText(tickfont, TextColor, p2.X - textSize.Width - 2, p2.Y - textSize.Height / 2, tickText);
             }
