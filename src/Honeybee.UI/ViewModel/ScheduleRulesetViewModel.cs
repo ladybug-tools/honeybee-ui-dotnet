@@ -112,20 +112,20 @@ namespace Honeybee.UI
         {
             get
             {
-                _schRuleset_hbObj.DaySchedules = _schRuleset_hbObj.DaySchedules ?? new List<ScheduleDay>();
-                return _schRuleset_hbObj.DaySchedules;
+                SchRuleset_hbObj.DaySchedules = SchRuleset_hbObj.DaySchedules ?? new List<ScheduleDay>();
+                return SchRuleset_hbObj.DaySchedules;
             }
-            set => Set(() => _schRuleset_hbObj.DaySchedules = value, nameof(DaySchedules));
+            set => Set(() => SchRuleset_hbObj.DaySchedules = value, nameof(DaySchedules));
 
         }
         public List<ScheduleRuleAbridged> ScheduleRules
         {
             get
             {
-                _schRuleset_hbObj.ScheduleRules = _schRuleset_hbObj.ScheduleRules ?? new List<ScheduleRuleAbridged>() { };
-                return _schRuleset_hbObj.ScheduleRules;
+                SchRuleset_hbObj.ScheduleRules = SchRuleset_hbObj.ScheduleRules ?? new List<ScheduleRuleAbridged>() { };
+                return SchRuleset_hbObj.ScheduleRules;
             }
-            set => Set(() => _schRuleset_hbObj.ScheduleRules = value, nameof(ScheduleRules));
+            set => Set(() => SchRuleset_hbObj.ScheduleRules = value, nameof(ScheduleRules));
 
         }
         public ScheduleDay DefaultDaySchedule
