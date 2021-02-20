@@ -133,13 +133,20 @@ namespace Honeybee.UI
             get => DaySchedules.First(_ => _.Identifier == _schRuleset_hbObj.DefaultDaySchedule);
         }
 
+        private Eto.Drawing.Color _currentColor;
+
+        public Eto.Drawing.Color Currentolor
+        {
+            get => _currentColor;
+            set => Set(() => _currentColor = value, nameof(Currentolor));
+        }
+
         private ScheduleRuleAbridged _currentScheduleRule;
 
         public ScheduleRuleAbridged CurrentScheduleRule
         {
             get => _currentScheduleRule;
             set => Set(() => _currentScheduleRule = value, nameof(CurrentScheduleRule));
-
         }
 
         public ScheduleDay CurrentDaySchedule
@@ -313,11 +320,31 @@ namespace Honeybee.UI
         #endregion
 
 
+        public Eto.Drawing.Color DefaultRuleColor { get; set; } = Eto.Drawing.Color.FromArgb(184, 229, 255);
+        public List<Eto.Drawing.Color> RuleColors { get; set; } 
+            = new List<Eto.Drawing.Color>() 
+            { 
+               Eto.Drawing.Color.FromArgb(153, 57, 142),
+               Eto.Drawing.Color.FromArgb(95, 87, 193),
+               Eto.Drawing.Color.FromArgb(51, 145, 80),
+               Eto.Drawing.Color.FromArgb(175, 155, 70),
+               Eto.Drawing.Color.FromArgb(237, 217, 131),
+               Eto.Drawing.Color.FromArgb(216, 119, 141),
+               Eto.Drawing.Color.FromArgb(204, 101, 43),
+               Eto.Drawing.Color.FromArgb(68, 170, 153),
+               Eto.Drawing.Color.FromArgb(102, 153, 204),
+               Eto.Drawing.Color.FromArgb(145, 29, 10),
+               Eto.Drawing.Color.FromArgb(135, 188, 66),
+               Eto.Drawing.Color.FromArgb(112, 111, 112)
+
+            };
+
         public ScheduleRulesetViewModel(ScheduleRuleset scheduleRuleset)
         {
             this.SchRuleset_hbObj = scheduleRuleset;
             this.SchDay_hbObj = this.DefaultDaySchedule;
             this.Intervals = 60;
+            this.Currentolor = this.DefaultRuleColor;
         }
 
     }
