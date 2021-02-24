@@ -19,13 +19,7 @@ namespace Honeybee.UI
         {
             get
             {
-                var libObjs = HB.Helper.EnergyLibrary.DefaultModelRadianceProperties.Modifiers.OfType<HB.ModifierBase>().ToList();
-                var inModelObjs = this.ModelRadianceProperties.Modifiers.OfType<HB.ModifierBase>().ToList();
-
-                libObjs.AddRange(inModelObjs);
-                libObjs = libObjs.Distinct().ToList();
-                _modifiers = libObjs;
-
+                _modifiers = _modifiers ?? this.ModelRadianceProperties.Modifiers.OfType<HB.ModifierBase>().ToList();
                 return _modifiers;
             }
         }
