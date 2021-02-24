@@ -45,6 +45,28 @@ namespace Honeybee.UI
             }
         }
 
+        private static IEnumerable<HB.Energy.IConstruction> _airBoundaryConstructions;
+
+        public IEnumerable<HB.Energy.IConstruction> AirBoundaryConstructions
+        {
+            get
+            {
+                _airBoundaryConstructions = _airBoundaryConstructions ?? this.ModelEnergyProperties.Constructions.OfType<HB.AirBoundaryConstructionAbridged>().ToList();
+                return _airBoundaryConstructions;
+            }
+        }
+
+        private static IEnumerable<HB.Energy.IConstruction> _shadeConstructions;
+
+        public IEnumerable<HB.Energy.IConstruction> ShadeConstructions
+        {
+            get
+            {
+                _shadeConstructions = _shadeConstructions ?? this.ModelEnergyProperties.Constructions.OfType<HB.ShadeConstruction>().ToList();
+                return _shadeConstructions;
+            }
+        }
+
         private HB.ModelEnergyProperties ModelEnergyProperties { get; set; }
         public Dialog_ConstructionSet(HB.ModelEnergyProperties libSource, HB.ConstructionSetAbridged constructionSet)
         {
@@ -173,23 +195,31 @@ namespace Honeybee.UI
                 var constructionTypes = new DropDown();
                 constructionTypes.Items.Add(new ListItem() { Key = "Opaque", Text = "Opaque Construction" });
                 constructionTypes.Items.Add(new ListItem() { Key = "Window", Text = "Window Construction" });
-                //constructionTypes.Items.Add(new ListItem() { Key = "Shade Construction" });
-                //constructionTypes.Items.Add(new ListItem() { Key = "AirBoundary Construction" });
+                constructionTypes.Items.Add(new ListItem() { Key = "Shade", Text = "Shade Construction" });
+                constructionTypes.Items.Add(new ListItem() { Key = "AirBoundary", Text = "AirBoundary Construction" });
                 constructionTypes.SelectedIndex = 0;
                 constructionTypes.SelectedIndexChanged += (sender, e) =>
                 {
                     var selectedType = constructionTypes.SelectedKey;
+                    switch (selectedType)
+                    {
+                        case "Opaque":
+                            constrs = OpaqueConstructions;
+                            break;
+                        case "Window":
+                            constrs = WindowConstructions;
+                            break;
+                        case "Shade":
+                            constrs = ShadeConstructions;
+                            break;
+                        case "AirBoundary":
+                            constrs = AirBoundaryConstructions;
+                            break;
+                        default:
+                            break;
+                    }
 
-                    if (selectedType == "Window")
-                    {
-                        constrs = WindowConstructions;
-                    }
-                    else
-                    {
-                        constrs = OpaqueConstructions;
-                    }
                     searchTBox.Text = null;
-
                     lib.DataStore = constrs;
 
 
