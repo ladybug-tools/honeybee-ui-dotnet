@@ -36,13 +36,10 @@
   
   <ItemGroup>
     <PackageReference Include="HoneybeeSchema" Version="1.42.0" />
+    <PackageReference Include="RhinoCommon" Version="6.23.20055.13111">
+        <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
   </ItemGroup>
   
-  <ItemGroup>
-    <Reference Include="Eto, Version=2.5.0.0, Culture=neutral, PublicKeyToken=552281e97c755530, processorArchitecture=MSIL">
-      <HintPath>..\..\lib\RhinoEto\Eto.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
 
 </Project>
