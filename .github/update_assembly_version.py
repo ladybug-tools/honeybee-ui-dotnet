@@ -2,16 +2,13 @@ import re
 import os
 import json
 import urllib.request
-
+import sys
 
 # Check the version from GitHub release
 print("Getting version from sementic release")
-api = 'https://api.github.com/repos/ladybug-tools/honeybee-ui-dotnet/releases/latest'
-with urllib.request.urlopen(api) as r:
-    data = json.loads(r.read())
-    BUILD_VERSION = data['tag_name'][1:]
 
-print("cleaned new build version: " + BUILD_VERSION)
+BUILD_VERSION = sys.argv[1]
+print(f'New version: \n{BUILD_VERSION}\n')
 
 
 def update_csproj_verison(project_name, version):
