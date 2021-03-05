@@ -5,7 +5,7 @@ update_configs:
     update_schedule: "live"
     automerged_updates:
       - match:
-          dependency_type: "all"
+          dependency_name: "HoneybeeSchema"
           update_type: "all"
     commit_message:
       prefix: "fix"
