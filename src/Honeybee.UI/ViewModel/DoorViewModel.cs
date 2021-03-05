@@ -74,7 +74,7 @@ namespace Honeybee.UI.ViewModel
             var energyProp = this.HoneybeeObject.Properties.Energy ?? new DoorEnergyPropertiesAbridged();
             energyProp = energyProp.DuplicateDoorEnergyPropertiesAbridged();
             var dialog = new Dialog_DoorEnergyProperty(ModelProperties.Energy, energyProp);
-            var dialog_rc = dialog.ShowModal(Helper.Owner);
+            var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
             {
                 this.HoneybeeObject.Properties.Energy = dialog_rc;
@@ -86,7 +86,7 @@ namespace Honeybee.UI.ViewModel
             var energyProp = this.HoneybeeObject.Properties.Radiance ?? new DoorRadiancePropertiesAbridged();
             energyProp = energyProp.DuplicateDoorRadiancePropertiesAbridged();
             var dialog = new Dialog_DoorRadianceProperty(this.ModelProperties.Radiance, energyProp);
-            var dialog_rc = dialog.ShowModal(Helper.Owner);
+            var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
             {
                 this.HoneybeeObject.Properties.Radiance = dialog_rc;
@@ -99,7 +99,7 @@ namespace Honeybee.UI.ViewModel
             {
                 var od = Outdoors.FromJson(outdoors.ToJson());
                 var dialog = new UI.Dialog_BoundaryCondition_Outdoors(od);
-                var dialog_rc = dialog.ShowModal(Helper.Owner);
+                var dialog_rc = dialog.ShowModal(Config.Owner);
                 if (dialog_rc != null)
                 {
                     this.HoneybeeObject.BoundaryCondition = dialog_rc;
@@ -108,7 +108,7 @@ namespace Honeybee.UI.ViewModel
             }
             else
             {
-                MessageBox.Show(Helper.Owner, "Only Outdoors type has additional properties to edit!");
+                MessageBox.Show(Config.Owner, "Only Outdoors type has additional properties to edit!");
             }
         });
     }

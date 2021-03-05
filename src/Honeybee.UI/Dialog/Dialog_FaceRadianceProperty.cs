@@ -21,7 +21,7 @@ namespace Honeybee.UI
 
 
                 Padding = new Padding(15);
-                Title = "Face Radiance Properties - Honeybee";
+                Title = $"Face Radiance Properties - {DialogHelper.PluginName}";
                 WindowStyle = WindowStyle.Default;
                 Width = 450;
                 this.Icon = DialogHelper.HoneybeeIcon;

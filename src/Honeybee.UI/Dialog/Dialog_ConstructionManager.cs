@@ -27,7 +27,7 @@ namespace Honeybee.UI
 
                 Padding = new Padding(5);
                 Resizable = true;
-                Title = "Construction Manager - Honeybee";
+                Title = $"Construction Manager - {DialogHelper.PluginName}";
                 WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(650, 300);
                 this.Icon = DialogHelper.HoneybeeIcon;

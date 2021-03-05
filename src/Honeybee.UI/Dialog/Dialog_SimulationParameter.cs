@@ -24,7 +24,7 @@ namespace Honeybee.UI
 
                 Padding = new Padding(5);
                 Resizable = true;
-                Title = "Simulation Parameter - Honeybee";
+                Title = $"Simulation Parameter - {DialogHelper.PluginName}";
                 //WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(450, 620);
                 this.Icon = DialogHelper.HoneybeeIcon;

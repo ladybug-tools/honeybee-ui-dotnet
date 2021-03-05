@@ -19,7 +19,7 @@ namespace Honeybee.UI
 
                 Padding = new Padding(5);
                 Resizable = true;
-                Title = "Door Energy Properties - Honeybee";
+                Title = $"Door Energy Properties - {DialogHelper.PluginName}";
                 WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(450, 200);
                 this.Icon = DialogHelper.HoneybeeIcon;

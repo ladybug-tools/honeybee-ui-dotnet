@@ -13,7 +13,7 @@ namespace Honeybee.UI
 
             Padding = new Padding(10);
             Resizable = true;
-            Title = "Material - Honeybee";
+            Title = $"Material - {DialogHelper.PluginName}";
             WindowStyle = WindowStyle.Default;
             Width = 450;
             this.Icon = DialogHelper.HoneybeeIcon;
@@ -49,7 +49,7 @@ namespace Honeybee.UI
             layout.AddRow(nameof(_hbObj.AirMixingSchedule));
             layout.AddRow(airMxSch);
 
-            var buttonSource = new Button { Text = "HBData" };
+            var buttonSource = new Button { Text = "Schema Data" };
             buttonSource.Click += (s, e) =>
             {
                 Dialog_Message.Show(this, _hbObj.ToJson());

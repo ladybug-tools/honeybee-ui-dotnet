@@ -52,7 +52,7 @@ namespace Honeybee.UI
 
                 Padding = new Padding(5);
                 Resizable = true;
-                Title = "Schedule Ruleset Manager - Honeybee";
+                Title = $"Schedule Ruleset Manager - {DialogHelper.PluginName}";
                 WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(600, 400);
                 this.Icon = DialogHelper.HoneybeeIcon;

@@ -21,7 +21,7 @@ namespace Honeybee.UI
                 var pTypes = programTypes;
 
                 Padding = new Padding(5);
-                Title = "Program Type Manager - Honeybee";
+                Title = $"Program Type Manager - {DialogHelper.PluginName}";
                 WindowStyle = WindowStyle.Default;
                 Width = 900;
 

@@ -19,7 +19,7 @@ namespace Honeybee.UI
 
                 Padding = new Padding(5);
                 Resizable = true;
-                Title = "Model Resources - Honeybee";
+                Title = $"Model Resources - {DialogHelper.PluginName}";
                 WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(450, 650);
                 this.Icon = DialogHelper.HoneybeeIcon;

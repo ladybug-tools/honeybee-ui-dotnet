@@ -1,16 +1,24 @@
 ﻿using Eto.Drawing;
 using Eto.Forms;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HB = HoneybeeSchema;
 
 namespace Honeybee.UI
 {
-    public static partial class Helper
+    public static partial class Config
     {
+        /// <summary>
+        /// Set this to host control if you want dialogs pop up in the middle of the host control.
+        /// </summary>
         public static Control Owner;
+
+        /// <summary>
+        /// Override default HoneybeeIcon
+        /// </summary>
+        public static Icon HoneybeeIcon;
+
+        /// <summary>
+        /// Override default plugin name that is used for dialog title 
+        /// </summary>
+        public static string PluginName;
+
     }
 }

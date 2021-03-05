@@ -16,7 +16,7 @@ namespace Honeybee.UI
             var vm = new IdealAirLoadViewModel(sys);
 
             Padding = new Padding(5);
-            Title = "Ideal Air Load - Honeybee";
+            Title = $"Ideal Air Load - {DialogHelper.PluginName}";
             WindowStyle = WindowStyle.Default;
             Width = 450;
             this.Icon = DialogHelper.HoneybeeIcon;

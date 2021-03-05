@@ -92,8 +92,8 @@ namespace Honeybee.UI.View
 
 
             layout.Add(null);
-            var data_button = new Button { Text = "Honeybee Data" };
-            data_button.Click += (sender, e) => Dialog_Message.Show(Helper.Owner, vm.HoneybeeObject.ToJson(), "Honeybee Data");
+            var data_button = new Button { Text = "Schema Data" };
+            data_button.Click += (sender, e) => Dialog_Message.Show(Config.Owner, vm.HoneybeeObject.ToJson(), "Schema Data");
             layout.AddSeparateRow(data_button, null);
 
             this.Content = layout;

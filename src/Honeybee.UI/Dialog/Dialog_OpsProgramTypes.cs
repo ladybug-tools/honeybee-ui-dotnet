@@ -20,7 +20,7 @@ namespace Honeybee.UI
 
                 Padding = new Padding(5);
                 Resizable = true;
-                Title = "OpenStudio Standards - Honeybee";
+                Title = $"OpenStudio Standards - {DialogHelper.PluginName}";
                 WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(450, 300);
                 this.Icon = DialogHelper.HoneybeeIcon;
