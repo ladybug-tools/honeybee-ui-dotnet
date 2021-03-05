@@ -13,7 +13,7 @@ namespace Honeybee.UI
 
             Padding = new Padding(10);
             Resizable = true;
-            Title = "Material - Honeybee";
+            Title = $"Material - {DialogHelper.PluginName}";
             WindowStyle = WindowStyle.Default;
             //MinimumSize = new Size(450, 250);
             Width = 450;
@@ -57,7 +57,7 @@ namespace Honeybee.UI
             layout.AddRow(nameof(_hbObj.IsSpecular));
             layout.AddRow(IsSpecular);
 
-            var buttonSource = new Button { Text = "HBData" };
+            var buttonSource = new Button { Text = "Schema Data" };
             buttonSource.Click += (s, e) =>
             {
                 Dialog_Message.Show(this, _hbObj.ToJson());

@@ -17,7 +17,7 @@ namespace Honeybee.UI
 
                 Padding = new Padding(5);
                 Resizable = true;
-                Title = "EnergyPlus Output Names - Honeybee";
+                Title = $"EnergyPlus Output Names - {DialogHelper.PluginName}";
                 WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(450, 500);
                 this.Icon = DialogHelper.HoneybeeIcon;

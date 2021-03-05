@@ -39,7 +39,7 @@ namespace Honeybee.UI
             new_btn.CommandParameter = rulesPanel;
  
 
-            var hbData_btn = new Button() { Text = "HBData" };
+            var hbData_btn = new Button() { Text = "Schema Data" };
             hbData_btn.Command = HBDataCommand;
 
             var schName_Tb = new TextBox() { };

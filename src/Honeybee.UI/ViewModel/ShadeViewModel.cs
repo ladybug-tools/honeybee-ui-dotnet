@@ -31,7 +31,7 @@ namespace Honeybee.UI.ViewModel
             var energyProp = this.HoneybeeObject.Properties.Energy ?? new ShadeEnergyPropertiesAbridged();
             energyProp = energyProp.DuplicateShadeEnergyPropertiesAbridged();
             var dialog = new Dialog_ShadeEnergyProperty(this.ModelProperties.Energy, energyProp);
-            var dialog_rc = dialog.ShowModal(Helper.Owner);
+            var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
             {
                 this.HoneybeeObject.Properties.Energy = dialog_rc;
@@ -43,7 +43,7 @@ namespace Honeybee.UI.ViewModel
             var energyProp = this.HoneybeeObject.Properties.Radiance ?? new ShadeRadiancePropertiesAbridged();
             energyProp = energyProp.DuplicateShadeRadiancePropertiesAbridged();
             var dialog = new Dialog_ShadeRadianceProperty(this.ModelProperties.Radiance, energyProp);
-            var dialog_rc = dialog.ShowModal(Helper.Owner);
+            var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
             {
                 this.HoneybeeObject.Properties.Radiance = dialog_rc;

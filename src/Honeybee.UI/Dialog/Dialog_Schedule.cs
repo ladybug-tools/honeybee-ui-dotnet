@@ -10,7 +10,7 @@ namespace Honeybee.UI
         public Dialog_Schedule(ScheduleRuleset scheduleRuleset)
         {
             Padding = new Padding(5);
-            Title = "Schedule - Honeybee";
+            Title = $"Schedule - {DialogHelper.PluginName}";
             WindowStyle = WindowStyle.Default;
             Width = 1100;
             this.Icon = DialogHelper.HoneybeeIcon;

@@ -31,7 +31,7 @@ namespace Honeybee.UI
 
             Padding = new Padding(5);
             Resizable = true;
-            Title = "Modifier Set - Honeybee";
+            Title = $"Modifier Set - {DialogHelper.PluginName}";
             WindowStyle = WindowStyle.Default;
             MinimumSize = new Size(450, 600);
             this.Icon = DialogHelper.HoneybeeIcon;
@@ -219,8 +219,8 @@ namespace Honeybee.UI
             AbortButton = new Button { Text = "Cancel" };
             AbortButton.Click += (sender, e) => Close();
 
-            var hbData = new Button { Text = "HBData" };
-            hbData.Click += (sender, e) => Dialog_Message.Show(Helper.Owner, mSet.ToJson(), "Honeybee Data");
+            var hbData = new Button { Text = "Schema Data" };
+            hbData.Click += (sender, e) => Dialog_Message.Show(Config.Owner, mSet.ToJson(), "Schema Data");
 
             var buttons = new TableLayout
             {

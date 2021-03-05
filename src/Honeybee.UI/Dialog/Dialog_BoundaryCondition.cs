@@ -14,7 +14,7 @@ namespace Honeybee.UI
            
                 Padding = new Padding(5);
                 Resizable = true;
-                Title = "Energy Boundary Condition - Honeybee";
+                Title = $"Energy Boundary Condition - {DialogHelper.PluginName}";
                 WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(450, 300);
                 this.Icon = DialogHelper.HoneybeeIcon;

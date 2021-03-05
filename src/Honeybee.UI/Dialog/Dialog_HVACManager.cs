@@ -21,7 +21,7 @@ namespace Honeybee.UI
                 var hvacsInModel = hvacs;
 
                 Padding = new Padding(5);
-                Title = "HVAC Manager - Honeybee";
+                Title = $"HVAC Manager - {DialogHelper.PluginName}";
                 WindowStyle = WindowStyle.Default;
                 Width = 650;
                 this.Icon = DialogHelper.HoneybeeIcon;

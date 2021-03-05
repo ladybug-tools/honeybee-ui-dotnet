@@ -83,7 +83,7 @@ namespace Honeybee.UI.ViewModel
                 return;
 
             var dialog = new Dialog_Face(this.ModelProperties, sel);
-            var dialog_rc = dialog.ShowModal(Helper.Owner);
+            var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
             {
                 //MessageBox.Show(dialog_rc.ToJson());
@@ -100,7 +100,7 @@ namespace Honeybee.UI.ViewModel
             var energyProp = this.HoneybeeObject.Properties.Energy ?? new RoomEnergyPropertiesAbridged();
             energyProp = energyProp.DuplicateRoomEnergyPropertiesAbridged();
             var dialog = new Dialog_RoomEnergyProperty(this.ModelProperties.Energy, energyProp);
-            var dialog_rc = dialog.ShowModal(Helper.Owner);
+            var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
             {
                 this.HoneybeeObject.Properties.Energy = dialog_rc;
@@ -112,7 +112,7 @@ namespace Honeybee.UI.ViewModel
             var prop = this.HoneybeeObject.Properties.Radiance ?? new RoomRadiancePropertiesAbridged();
             prop = prop.DuplicateRoomRadiancePropertiesAbridged();
             var dialog = new Dialog_RoomRadianceProperty(this.ModelProperties.Radiance, prop);
-            var dialog_rc = dialog.ShowModal(Helper.Owner);
+            var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
             {
                 this.HoneybeeObject.Properties.Radiance = dialog_rc;
@@ -120,7 +120,7 @@ namespace Honeybee.UI.ViewModel
             }
         });
         public ICommand HBDataBtnClick => new RelayCommand(() => {
-            Dialog_Message.Show(Helper.Owner, this.HoneybeeObject.ToJson(), "Honeybee Data");
+            Dialog_Message.Show(Config.Owner, this.HoneybeeObject.ToJson(), "Schema Data");
         });
 
     }

@@ -15,7 +15,7 @@ namespace Honeybee.UI
                
                 Padding = new Padding(5);
                 Resizable = true;
-                Title = title ?? "Honeybee";
+                Title = title ?? DialogHelper.PluginName;
                 WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(450, 400);
 

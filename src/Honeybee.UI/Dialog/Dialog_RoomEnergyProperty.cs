@@ -17,7 +17,7 @@ namespace Honeybee.UI
                 this.ViewModel = new RoomEnergyPropertyViewModel(this, libSource, roomEnergyProperties, updateChangesOnly); 
 
                 Padding = new Padding(15);
-                Title = "Room Energy Properties - Honeybee";
+                Title = $"Room Energy Properties - {DialogHelper.PluginName}";
                 WindowStyle = WindowStyle.Default;
                 Width = 450;
                 this.Icon = DialogHelper.HoneybeeIcon;

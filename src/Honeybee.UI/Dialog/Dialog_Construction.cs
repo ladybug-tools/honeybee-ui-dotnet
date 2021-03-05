@@ -120,7 +120,7 @@ namespace Honeybee.UI
                 
                 Padding = new Padding(5);
                 Resizable = true;
-                Title = "Construction - Honeybee";
+                Title = $"Construction - {DialogHelper.PluginName}";
                 WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(650, 500);
                 this.Icon = DialogHelper.HoneybeeIcon;
@@ -194,7 +194,7 @@ namespace Honeybee.UI
                 //group.Content = groupContent;
                 leftLayout.AddRow(groupContent);
 
-                var buttonSource = new Button { Text = "HBData" };
+                var buttonSource = new Button { Text = "Schema Data" };
                 buttonSource.Click += (s, e) =>
                 {
                     Dialog_Message.Show(this, _hbObj.ToJson());

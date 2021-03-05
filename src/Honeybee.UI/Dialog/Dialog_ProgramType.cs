@@ -35,7 +35,7 @@ namespace Honeybee.UI
 
                 Padding = new Padding(5);
                 Resizable = true;
-                Title = "Program Type - Honeybee";
+                Title = $"Program Type - {DialogHelper.PluginName}";
                 WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(450, 600);
                 //Height = 800;
@@ -200,8 +200,8 @@ namespace Honeybee.UI
             _setpoinGroup = GenSetpointPanel();
 
             // Json Data
-            var hbData = new Button { Text = "HBData" };
-            hbData.Click += (sender, e) => Dialog_Message.Show(Helper.Owner, _vm.hbObj.ToJson(), "Honeybee Data");
+            var hbData = new Button { Text = "Schema Data" };
+            hbData.Click += (sender, e) => Dialog_Message.Show(Config.Owner, _vm.hbObj.ToJson(), "Schema Data");
 
             //Left panel
             //var panelLeft = new TableLayout() { DataContext = _vm };

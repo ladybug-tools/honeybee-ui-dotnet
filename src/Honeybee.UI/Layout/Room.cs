@@ -107,7 +107,7 @@ namespace Honeybee.UI.View
 
 
             layout.Add(null);
-            var data_button = new Button { Text = "Honeybee Data" };
+            var data_button = new Button { Text = "Schema Data" };
             data_button.Command = this.ViewModel.HBDataBtnClick;
             layout.AddSeparateRow(data_button, null);
 

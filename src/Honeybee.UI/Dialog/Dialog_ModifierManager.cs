@@ -25,7 +25,7 @@ namespace Honeybee.UI
 
                 Padding = new Padding(5);
                 Resizable = true;
-                Title = "Modifiers Manager - Honeybee";
+                Title = $"Modifiers Manager - {DialogHelper.PluginName}";
                 WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(650, 300);
                 this.Icon = DialogHelper.HoneybeeIcon;

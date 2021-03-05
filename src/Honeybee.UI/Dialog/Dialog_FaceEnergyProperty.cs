@@ -19,7 +19,7 @@ namespace Honeybee.UI
 
                 Padding = new Padding(5);
                 Resizable = true;
-                Title = "Face Energy Properties - Honeybee";
+                Title = $"Face Energy Properties - {DialogHelper.PluginName}";
                 WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(450, 200);
                 this.Icon = DialogHelper.HoneybeeIcon;

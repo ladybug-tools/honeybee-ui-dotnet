@@ -8,7 +8,8 @@ namespace Honeybee.UI
 {
     public static class DialogHelper
     {
-        public static Icon HoneybeeIcon => GetHoneybeeIcon();
+        public static Icon HoneybeeIcon => Config.HoneybeeIcon ?? GetHoneybeeIcon();
+        public static string PluginName => Config.PluginName ?? "Honeybee";
         //public static Icon LadybugIcon => Icon.FromResource("Honeybee.UI.EmbeddedResources.ladybug.ico");
 
         //static System.Drawing.Icon _icon;
