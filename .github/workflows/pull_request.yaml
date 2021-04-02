@@ -12,6 +12,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build
+        working-directory: src/Honeybee.UI
         run: |
-          dotnet build --configuration Release 
+          dotnet build Honeybee.UI.csproj --configuration Release 
           
