@@ -223,6 +223,11 @@ namespace Honeybee.UI
             };
             pType_GD.Columns.Add(new GridColumn { DataCell = setpointTB, HeaderText = "Setpoint", Sortable = true });
 
+            var serviceHotWaterTB = new CheckBoxCell
+            {
+                Binding = Binding.Delegate<HB.ProgramTypeAbridged, bool?>(r => r.ServiceHotWater == null ? false : true)
+            };
+            pType_GD.Columns.Add(new GridColumn { DataCell = serviceHotWaterTB, HeaderText = "ServiceHotWater", Sortable = true });
 
 
             return pType_GD;
