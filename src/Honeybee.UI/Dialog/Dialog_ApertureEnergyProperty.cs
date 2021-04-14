@@ -25,9 +25,9 @@ namespace Honeybee.UI
                 this.Icon = DialogHelper.HoneybeeIcon;
 
                 //Get constructions
-                var cSets = this.ModelEnergyProperties.ConstructionSets.OfType<WindowConstructionAbridged>();
-                var constructionSetDP = DialogHelper.MakeDropDown(EnergyProp.Construction, (v) => EnergyProp.Construction = v?.Identifier,
-                    cSets, "By Room ConstructionSet---------------------");
+                var cons = this.ModelEnergyProperties.Constructions.OfType<WindowConstructionAbridged>();
+                var constructionDP = DialogHelper.MakeDropDown(EnergyProp.Construction, (v) => EnergyProp.Construction = v?.Identifier,
+                    cons, "By Room ConstructionSet---------------------");
 
 
                 DefaultButton = new Button { Text = "OK" };
@@ -51,7 +51,7 @@ namespace Honeybee.UI
                     Spacing = new Size(5, 5),
                     Rows =
                 {
-                    new Label() { Text = "Face Construction:" }, constructionSetDP,
+                    new Label() { Text = "Face Construction:" }, constructionDP,
                     new TableRow(buttons),
                     null
                 }
