@@ -19,7 +19,11 @@ namespace Honeybee.UI
         {
             get
             {
-                _modifiers = _modifiers ?? this.ModelRadianceProperties.Modifiers.OfType<HB.ModifierBase>().ToList();
+                //_modifiers = _modifiers ?? this.ModelRadianceProperties.Modifiers.OfType<HB.ModifierBase>().ToList();
+                _modifiers = this.ModelRadianceProperties.Modifiers
+                    .OfType<HB.ModifierBase>()
+                    .ToList();
+
                 return _modifiers;
             }
         }
