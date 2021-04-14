@@ -23,6 +23,7 @@ namespace Honeybee.UI
         private Panel _infiltrationGroup;
         private Panel _ventilationGroup;
         private Panel _setpoinGroup;
+        private Panel _serviceWaterGroup;
 
        
 
@@ -199,6 +200,8 @@ namespace Honeybee.UI
 
             _setpoinGroup = GenSetpointPanel();
 
+            _serviceWaterGroup = GenServiceHotWaterPanel();
+
             // Json Data
             var hbData = new Button { Text = "Schema Data" };
             hbData.Click += (sender, e) => Dialog_Message.Show(Config.Owner, _vm.hbObj.ToJson(true), "Schema Data");
@@ -229,6 +232,7 @@ namespace Honeybee.UI
             pTypePanel.AddSeparateRow(_infiltrationGroup);
             pTypePanel.AddSeparateRow(_ventilationGroup);
             pTypePanel.AddSeparateRow(_setpoinGroup);
+            pTypePanel.AddSeparateRow(_serviceWaterGroup);
             pTypePanel.AddSpace();
             pTypePanel.AddSeparateRow(hbData);
             pTypePanel.AddSeparateRow(null);
@@ -237,6 +241,20 @@ namespace Honeybee.UI
 
             return pTypePanel;
         }
+
+        private Panel GenServiceHotWaterPanel()
+        {
+            var isServiceWaterNull = _vm.hbObj.ServiceHotWater == null;
+            var dhw = new List<Control>() { };
+            dhw.AddRange(GenInputControl("Name", (ProgramTypeViewModel m) => m.SHW_DisplayName));
+            dhw.AddRange(GenDropInInputControl("Schedule", (ProgramTypeViewModel m) => m.SHW_Schedule, (ProgramTypeViewModel m) => m.SHW_ScheduleName, typeof(HB.ScheduleRulesetAbridged)));
+            dhw.AddRange(GenInputControl("Flow/Area", (ProgramTypeViewModel m) => m.SHW_FlowPerArea));
+            dhw.AddRange(GenInputControl("Target Temperature", (ProgramTypeViewModel m) => m.SHW_TargetTemperature));
+            dhw.AddRange(GenInputControl("Sensible Fraction", (ProgramTypeViewModel m) => m.SHW_SensibleFraction));
+            dhw.AddRange(GenInputControl("Latent Fraction", (ProgramTypeViewModel m) => m.SHW_LatentFraction));
+            return GenGroup("ServiceHotWater", dhw, isServiceWaterNull, (v) => _vm.ServiceHotWater = v as HB.ServiceHotWaterAbridged, typeof(HB.ServiceHotWaterAbridged));
+        }
+
 
         private Panel GenSetpointPanel()
         {
@@ -251,6 +269,7 @@ namespace Honeybee.UI
             spt.AddRange(GenDropInInputControl("Dehumidifying Schedule", (ProgramTypeViewModel m) => m.SPT_DehumidifyingSchedule, (ProgramTypeViewModel m) => m.SPT_DehumidifyingScheduleName, typeof(HB.ScheduleRulesetAbridged)));
             return GenGroup("Setpoint", spt, isSptNull, (v) => _vm.Setpoint = v as HB.SetpointAbridged, typeof(HB.SetpointAbridged));
         }
+
 
         private Panel GenVentilaitonPanel()
         {

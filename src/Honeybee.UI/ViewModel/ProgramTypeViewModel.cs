@@ -56,6 +56,7 @@ namespace Honeybee.UI
                     libObjs.AddRange(EnergyLibrary.DefaultInfiltrationLoads);
                     libObjs.AddRange(EnergyLibrary.DefaultVentilationLoads);
                     libObjs.AddRange(EnergyLibrary.DefaultSetpoints);
+                    libObjs.AddRange(EnergyLibrary.DefaultServiceHotWaterLoads);
                     _loads = libObjs;
                 }
 
@@ -576,10 +577,75 @@ namespace Honeybee.UI
         }
         #endregion
 
+        #region ServiceHotWater
+        public ServiceHotWaterAbridged ServiceHotWater
+        {
+            get
+            {
+                if (_hbObj.ServiceHotWater == null)
+                {
+                    // this is only needed to initialize UI
+                    return new ServiceHotWaterAbridged("", 0, "", "");
+                }
+                return _hbObj.ServiceHotWater;
+            }
+            set
+            {
+                _hbObj.ServiceHotWater = value;
+                var props = this.GetType().GetProperties().Where(_ => _.Name.StartsWith("SHW_")).Select(_ => _.Name);
+                this.RefreshControls(props);
+            }
+        }
 
-     
+        public string SHW_DisplayName
+        {
+            get => ServiceHotWater.DisplayName ?? ServiceHotWater.Identifier;
+            set => Set(() => _hbObj.ServiceHotWater.DisplayName = value, nameof(SHW_DisplayName));
+        }
 
-       
+        public double SHW_FlowPerArea
+        {
+            get => ServiceHotWater.FlowPerArea;
+            set => Set(() => _hbObj.ServiceHotWater.FlowPerArea = value, nameof(SHW_FlowPerArea));
+        }
+
+        public string SHW_Schedule
+        {
+            get => ServiceHotWater.Schedule;
+            set
+            {
+                Set(() => _hbObj.ServiceHotWater.Schedule = value, nameof(SHW_Schedule));
+                SHW_ScheduleName = GetScheduleName(value);
+            }
+        }
+
+        public string _SHW_ScheduleName;
+        public string SHW_ScheduleName
+        {
+            get => _SHW_ScheduleName ?? ServiceHotWater.Schedule;
+            set => Set(() => _SHW_ScheduleName = value, nameof(SHW_ScheduleName));
+        }
+
+        public double SHW_TargetTemperature
+        {
+            get => ServiceHotWater.TargetTemperature;
+            set => Set(() => _hbObj.ServiceHotWater.TargetTemperature = value, nameof(SHW_TargetTemperature));
+        }
+
+        public double SHW_SensibleFraction
+        {
+            get => ServiceHotWater.SensibleFraction;
+            set => Set(() => _hbObj.ServiceHotWater.SensibleFraction = value, nameof(SHW_SensibleFraction));
+        }
+
+        public double SHW_LatentFraction
+        {
+            get => ServiceHotWater.LatentFraction;
+            set => Set(() => _hbObj.ServiceHotWater.LatentFraction = value, nameof(SHW_LatentFraction));
+        }
+        #endregion
+
+
 
         public ProgramTypeViewModel(ModelEnergyProperties modelEnergyProperties)
         {
