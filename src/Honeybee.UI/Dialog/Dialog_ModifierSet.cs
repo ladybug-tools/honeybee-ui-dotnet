@@ -13,17 +13,13 @@ namespace Honeybee.UI
     public class Dialog_ModifierSet: Dialog<HB.ModifierSetAbridged>
     {
 
-        private static IEnumerable<HB.ModifierBase> _modifiers;
+        private IEnumerable<HB.ModifierBase> _modifiers;
 
         public IEnumerable<HB.ModifierBase> Modifiers
         {
             get
             {
-                //_modifiers = _modifiers ?? this.ModelRadianceProperties.Modifiers.OfType<HB.ModifierBase>().ToList();
-                _modifiers = this.ModelRadianceProperties.Modifiers
-                    .OfType<HB.ModifierBase>()
-                    .ToList();
-
+                _modifiers = _modifiers ?? this.ModelRadianceProperties.Modifiers.OfType<HB.ModifierBase>().ToList();
                 return _modifiers;
             }
         }
