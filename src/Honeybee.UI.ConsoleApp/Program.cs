@@ -171,8 +171,8 @@ namespace Honeybee.UI.ConsoleApp
 
                 };
 
-                var modifierSetBtn = new Button() { Text = "ModifierSet Manager" };
-                modifierSetBtn.Click += (s, e) =>
+                var modifierSetMngBtn = new Button() { Text = "ModifierSet Manager" };
+                modifierSetMngBtn.Click += (s, e) =>
                 {
                     var existingItems = md.Properties.Radiance.ModifierSets
                     .OfType<HoneybeeSchema.ModifierSetAbridged>()
@@ -188,7 +188,15 @@ namespace Honeybee.UI.ConsoleApp
                         md.AddModifierSets(dialog_rc.OfType<IDdRadianceBaseModel>().ToList());
 
                     }
+                };
 
+                var modifierSetBtn = new Button() { Text = "ModifierSet Editor" };
+                modifierSetBtn.Click += (s, e) =>
+                {
+                    var dup = new ModifierSetAbridged("NewModifierSet");
+                    var dialog = new Honeybee.UI.Dialog_ModifierSet(md.Properties.Radiance, dup);
+
+                    var dialog_rc = dialog.ShowModal(this);
                 };
 
                 var outputs = new Button() { Text = "EPOutputs" };
@@ -224,18 +232,14 @@ namespace Honeybee.UI.ConsoleApp
 
                 panel.AddSeparateRow(btn);
                 panel.AddSeparateRow(Messagebtn);
-                panel.AddSeparateRow(cSetbtn);
-                panel.AddSeparateRow(pTypebtn);
-                panel.AddSeparateRow(pTypeMngbtn);
+                panel.AddSeparateRow(conbtn, cSetbtn, cSetManager, null);
+                panel.AddSeparateRow(pTypebtn, pTypeMngbtn, null);
                 panel.AddSeparateRow(schbtn);
-                panel.AddSeparateRow(conbtn);
-                panel.AddSeparateRow(cSetManager);
                 panel.AddSeparateRow(simuParam);
                 panel.AddSeparateRow(modelManager);
                 panel.AddSeparateRow(materialBtn);
                 panel.AddSeparateRow(stndBtn);
-                panel.AddSeparateRow(modifierBtn);
-                panel.AddSeparateRow(modifierSetBtn);
+                panel.AddSeparateRow(modifierBtn, modifierSetMngBtn, modifierBtn, null);
                 panel.AddSeparateRow(outputs);
                 panel.AddSeparateRow(opsProgramType);
                 panel.AddSeparateRow(opsHVACs);
