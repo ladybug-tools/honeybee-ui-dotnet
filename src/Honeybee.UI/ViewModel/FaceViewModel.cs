@@ -114,7 +114,7 @@ namespace Honeybee.UI.ViewModel
         public ICommand EditFaceBoundaryConditionBtnClick => new RelayCommand(() => {
             if (this.HoneybeeObject.BoundaryCondition.Obj is Outdoors outdoors)
             {
-                var od = Outdoors.FromJson(outdoors.ToJson());
+                var od = outdoors.DuplicateOutdoors();
                 var dialog = new UI.Dialog_BoundaryCondition_Outdoors(od);
                 var dialog_rc = dialog.ShowModal(Config.Owner);
                 if (dialog_rc != null)

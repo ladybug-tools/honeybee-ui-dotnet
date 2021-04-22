@@ -32,7 +32,7 @@ namespace Honeybee.UI
 
             var textArea = new RichTextArea();
             textArea.Height = 300;
-            textArea.Text = _hbObj.ToJson();
+            textArea.Text = _hbObj.ToJson(true);
         
             layout.AddRow(textArea);
 

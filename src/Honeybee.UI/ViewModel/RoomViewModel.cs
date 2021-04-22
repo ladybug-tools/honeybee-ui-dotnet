@@ -120,7 +120,7 @@ namespace Honeybee.UI.ViewModel
             }
         });
         public ICommand HBDataBtnClick => new RelayCommand(() => {
-            Dialog_Message.Show(Config.Owner, this.HoneybeeObject.ToJson(), "Schema Data");
+            Dialog_Message.Show(Config.Owner, this.HoneybeeObject.ToJson(true), "Schema Data");
         });
 
     }

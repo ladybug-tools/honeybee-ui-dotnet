@@ -80,7 +80,7 @@ namespace Honeybee.UI
                     }
                     
                     var id = Guid.NewGuid().ToString();
-                    var newPType = ProgramTypeAbridged.FromJson((gd.SelectedItem as ProgramTypeAbridged).ToJson());
+                    var newPType = (gd.SelectedItem as ProgramTypeAbridged).DuplicateProgramTypeAbridged();
                     newPType.Identifier = id;
                     newPType.DisplayName = string.IsNullOrEmpty( newPType.DisplayName) ? $"New Duplicate {id.Substring(0, 5)}": $"{newPType.DisplayName}_dup";
                     var dialog = new Honeybee.UI.Dialog_ProgramType(this.ModelEnergyProperties, newPType);
@@ -102,7 +102,7 @@ namespace Honeybee.UI
                         return;
                     }
 
-                    var newPType = ProgramTypeAbridged.FromJson((selected as ProgramTypeAbridged).ToJson());
+                    var newPType = (selected as ProgramTypeAbridged).DuplicateProgramTypeAbridged();
                     var dialog = new Honeybee.UI.Dialog_ProgramType(this.ModelEnergyProperties, newPType);
                     var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)

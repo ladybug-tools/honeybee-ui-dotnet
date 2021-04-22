@@ -22,7 +22,8 @@ namespace Honeybee.UI
         }
         private ScheduleRulesetAbridged ToAbridged(ScheduleRuleset obj)
         {
-            //var ifTypeLimitExist = _typeLimits.Any(_ => _.ToJson() == obj.ScheduleTypeLimit.ToJson());
+            //var ifTypeLimitExist = _typeLimits.Any(_ => _
+            //== obj.ScheduleTypeLimit.ToJson());
             //var typeLimit = obj.ScheduleTypeLimit;
             //if (!ifTypeLimitExist)
             //{
@@ -112,7 +113,7 @@ namespace Honeybee.UI
                     
                     var id = Guid.NewGuid().ToString();
 
-                    var newDup = ScheduleRulesetAbridged.FromJson((gd.SelectedItem as ScheduleRulesetAbridged).ToJson());
+                    var newDup = (gd.SelectedItem as ScheduleRulesetAbridged).DuplicateScheduleRulesetAbridged();
                     newDup.Identifier = id;
                     newDup.DisplayName = string.IsNullOrEmpty( newDup.DisplayName) ? $"New Duplicate {id.Substring(0, 5)}": $"{newDup.DisplayName}_dup";
                     //var rules = newDup.ScheduleRules;
@@ -142,7 +143,7 @@ namespace Honeybee.UI
                         return;
                     }
                    
-                    var newDup = ScheduleRulesetAbridged.FromJson((selected).ToJson());
+                    var newDup = selected.DuplicateScheduleRulesetAbridged();
                     var realObj = AbridgedToReal(newDup);
                     var dialog = new Honeybee.UI.Dialog_Schedule(realObj);
                     var dialog_rc = dialog.ShowModal(this);

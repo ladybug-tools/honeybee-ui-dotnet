@@ -13,7 +13,7 @@ namespace Honeybee.UI
             try
             {
                 this.ModelProperties = libSource;
-                var dup = Face.FromJson(honeybeeObj.ToJson());
+                var dup = honeybeeObj.DuplicateFace();
 
 
                 Padding = new Padding(5);

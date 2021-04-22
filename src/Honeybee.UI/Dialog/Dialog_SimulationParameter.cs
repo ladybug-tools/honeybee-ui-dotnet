@@ -270,7 +270,7 @@ namespace Honeybee.UI
             HB.SimulationOutput OutputNamesBtn_Click(HB.SimulationOutput simulationOutput)
             {
                 var simuOutput = simulationOutput ?? new HB.SimulationOutput();
-                simuOutput = HB.SimulationOutput.FromJson(simulationOutput.ToJson());
+                simuOutput = simulationOutput.DuplicateSimulationOutput();
                 var dialog = new UI.Dialog_EPOutputs(simuOutput);
                 var dialog_rc = dialog.ShowModal();
          
