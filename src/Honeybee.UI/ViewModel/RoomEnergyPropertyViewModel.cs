@@ -2,6 +2,7 @@
 using HoneybeeSchema;
 using HoneybeeSchema.Energy;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
@@ -199,8 +200,11 @@ namespace Honeybee.UI.ViewModel
         private void PrepConstructionSets( bool updateChangesOnly)
         {
             var items = this.ModelEnergyProperties.ConstructionSets
-                .OfType<ConstructionSetAbridged>()
-                .OrderBy(_ => _.DisplayName ?? _.Identifier);
+                ?.OfType<ConstructionSetAbridged>()
+                ?.OrderBy(_ => _.DisplayName ?? _.Identifier)
+                ?.ToList();
+
+            items = items ?? new List<ConstructionSetAbridged>();
             var cSets = new ObservableCollection<ConstructionSetAbridged>(items);
             // null case:
             var nullValue = new ConstructionSetAbridged(SetNull, "By Global Building Construction Set");
@@ -220,8 +224,11 @@ namespace Honeybee.UI.ViewModel
         private void PrepProgramTypes(bool updateChangesOnly)
         {
             var items = this.ModelEnergyProperties.ProgramTypes
-                .OfType<ProgramTypeAbridged>()
-                .OrderBy(_ => _.DisplayName ?? _.Identifier);
+                ?.OfType<ProgramTypeAbridged>()
+                ?.OrderBy(_ => _.DisplayName ?? _.Identifier)
+                ?.ToList();
+
+            items = items ?? new List<ProgramTypeAbridged>();
             var pTypes = new ObservableCollection<ProgramTypeAbridged>(items);
 
             var nullValue = new ProgramTypeAbridged(SetNull, "Unoccupied, NoLoads");
@@ -241,8 +248,11 @@ namespace Honeybee.UI.ViewModel
         private void PrepHvacs(bool updateChangesOnly)
         {
             var items = this.ModelEnergyProperties.Hvacs
-                .OfType<IHvac>()
-                .OrderBy(_ => _.DisplayName ?? _.Identifier);
+                ?.OfType<IHvac>()
+                ?.OrderBy(_ => _.DisplayName ?? _.Identifier)
+                ?.ToList();
+
+            items = items ?? new List<IHvac>();
             var pTypes = new ObservableCollection<IHvac>(items);
             var nullValue = new IdealAirSystemAbridged(SetNull, "Unconditioned");
             pTypes.Insert(0, nullValue);
