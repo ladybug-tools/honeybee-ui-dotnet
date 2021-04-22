@@ -1427,7 +1427,7 @@ namespace Honeybee.UI
         #endregion
 
         public ICommand HBDataCommand => new RelayCommand(() => {
-            Dialog_Message.Show(this, _vm.SchRuleset_hbObj.ToJson());
+            Dialog_Message.Show(this, _vm.SchRuleset_hbObj.ToJson(true));
         });
 
         public ICommand AddRuleCommand => new RelayCommand<DynamicLayout>((layout) =>

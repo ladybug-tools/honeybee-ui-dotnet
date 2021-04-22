@@ -201,7 +201,7 @@ namespace Honeybee.UI
 
             // Json Data
             var hbData = new Button { Text = "Schema Data" };
-            hbData.Click += (sender, e) => Dialog_Message.Show(Config.Owner, _vm.hbObj.ToJson(), "Schema Data");
+            hbData.Click += (sender, e) => Dialog_Message.Show(Config.Owner, _vm.hbObj.ToJson(true), "Schema Data");
 
             //Left panel
             //var panelLeft = new TableLayout() { DataContext = _vm };

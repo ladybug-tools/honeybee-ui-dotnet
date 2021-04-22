@@ -220,7 +220,7 @@ namespace Honeybee.UI
             AbortButton.Click += (sender, e) => Close();
 
             var hbData = new Button { Text = "Schema Data" };
-            hbData.Click += (sender, e) => Dialog_Message.Show(Config.Owner, mSet.ToJson(), "Schema Data");
+            hbData.Click += (sender, e) => Dialog_Message.Show(Config.Owner, mSet.ToJson(true), "Schema Data");
 
             var buttons = new TableLayout
             {
