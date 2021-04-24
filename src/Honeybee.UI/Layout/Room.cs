@@ -21,9 +21,9 @@ namespace Honeybee.UI.View
             
         }
 
-        public void UpdatePanel(HB.ModelProperties libSource, HB.Room HoneybeeObj, Action<string> geometryReset = default, Action<string> redrawDisplay = default)
+        public void UpdatePanel(HB.ModelProperties libSource, HB.Room HoneybeeObj, Action<string> geometryReset = default, Action<HB.Face> subGeometryReset = default, Action<string> subGeometryDisplay = default)
         {
-            this.ViewModel.Update(libSource, HoneybeeObj, geometryReset, redrawDisplay);
+            this.ViewModel.Update(libSource, HoneybeeObj, geometryReset, subGeometryReset, subGeometryDisplay);
         }
 
         private void Initialize()
