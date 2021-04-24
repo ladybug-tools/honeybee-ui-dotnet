@@ -44,7 +44,7 @@ namespace Honeybee.UI.ViewModel
                 {
                     //MessageBox.Show(Bcs[value]);
                     this.HoneybeeObject.BoundaryCondition = Bcs[value];
-                    this.ActionWhenChanged("Set boundary condition");
+                    this.ActionWhenChanged?.Invoke("Set boundary condition");
                     
                 }
                 
@@ -95,7 +95,7 @@ namespace Honeybee.UI.ViewModel
             if (dialog_rc != null)
             {
                 this.HoneybeeObject.Properties.Energy = dialog_rc;
-                this.ActionWhenChanged($"Set {this.HoneybeeObject.Identifier} Energy Properties ");
+                this.ActionWhenChanged?.Invoke($"Set {this.HoneybeeObject.Identifier} Energy Properties ");
             }
         });
 
@@ -107,7 +107,7 @@ namespace Honeybee.UI.ViewModel
             if (dialog_rc != null)
             {
                 this.HoneybeeObject.Properties.Radiance = dialog_rc;
-                this.ActionWhenChanged($"Set {this.HoneybeeObject.Identifier} Radiance Properties ");
+                this.ActionWhenChanged?.Invoke($"Set {this.HoneybeeObject.Identifier} Radiance Properties ");
             }
         });
 
@@ -120,7 +120,7 @@ namespace Honeybee.UI.ViewModel
                 if (dialog_rc != null)
                 {
                     this.HoneybeeObject.BoundaryCondition = dialog_rc;
-                    this.ActionWhenChanged($"Set Face Boundary Condition");
+                    this.ActionWhenChanged?.Invoke($"Set Face Boundary Condition");
                 }
             }
             else

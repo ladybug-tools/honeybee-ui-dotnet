@@ -40,6 +40,11 @@ namespace Honeybee.UI.ViewModel
         /// Action after the property is changed.
         /// </summary>
         public Action<string> ActionWhenChanged { get; private set; }
+
+        /// <summary>
+        /// Action after sub-object's property is changed.
+        /// </summary>
+        public Action<Face> SubActionWhenChanged { get; private set; }
         /// <summary>
         /// Action to execute when a subsurface is selected from face list.
         /// </summary>
@@ -52,11 +57,12 @@ namespace Honeybee.UI.ViewModel
             this.Control = roomPanel;
         }
 
-        public void Update(ModelProperties libSource, Room honeybeeRoom, Action<string> actionWhenChanged, Action<string> redrawDisplay)
+        public void Update(ModelProperties libSource, Room honeybeeRoom, Action<string> actionWhenChanged, Action<Face> subActionWhenChanged, Action<string> redrawDisplay)
         {
             this.ModelProperties = libSource;
 
             ActionWhenChanged = actionWhenChanged;
+            SubActionWhenChanged = subActionWhenChanged;
             Redraw = redrawDisplay;
 
             HoneybeeObject = honeybeeRoom;
@@ -84,15 +90,10 @@ namespace Honeybee.UI.ViewModel
 
             var dialog = new Dialog_Face(this.ModelProperties, sel);
             var dialog_rc = dialog.ShowModal(Config.Owner);
-            if (dialog_rc != null)
-            {
-                //MessageBox.Show(dialog_rc.ToJson());
-                var faces = this.HoneybeeObject.Faces;
-                var index = faces.FindIndex(_ => _.Identifier == dialog_rc.Identifier);
-                this.HoneybeeObject.Faces[index] = dialog_rc;
+            if (dialog_rc == null)
+                return;
 
-                this.ActionWhenChanged($"Set {dialog_rc.Identifier} Properties");
-            }
+            this.SubActionWhenChanged?.Invoke(dialog_rc);
             //MessageBox.Show(sel.ToJson());
         }
 
@@ -104,7 +105,7 @@ namespace Honeybee.UI.ViewModel
             if (dialog_rc != null)
             {
                 this.HoneybeeObject.Properties.Energy = dialog_rc;
-                this.ActionWhenChanged($"Set {this.HoneybeeObject.Identifier} Energy Properties ");
+                this.ActionWhenChanged?.Invoke($"Set {this.HoneybeeObject.Identifier} Energy Properties ");
             }
         });
 
@@ -116,7 +117,7 @@ namespace Honeybee.UI.ViewModel
             if (dialog_rc != null)
             {
                 this.HoneybeeObject.Properties.Radiance = dialog_rc;
-                this.ActionWhenChanged($"Set {this.HoneybeeObject.Identifier} Radiance Properties ");
+                this.ActionWhenChanged?.Invoke($"Set {this.HoneybeeObject.Identifier} Radiance Properties ");
             }
         });
         public ICommand HBDataBtnClick => new RelayCommand(() => {
