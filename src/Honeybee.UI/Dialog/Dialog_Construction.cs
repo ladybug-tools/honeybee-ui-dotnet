@@ -135,7 +135,6 @@ namespace Honeybee.UI
                         m = m ?? WindowMaterials.FirstOrDefault(_ => _.Identifier == layer);
                         var dup = m.Duplicate() as HB.Energy.IMaterial;
                         dup.DisplayName = m.DisplayName ?? m.Identifier;
-                        dup.Identifier = Guid.NewGuid().ToString();
                         libSource.AddMaterial(dup);
                     }
 
