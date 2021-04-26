@@ -139,7 +139,12 @@ namespace Honeybee.UI.ConsoleApp
                     var materialsInModel = md.Properties.Energy.Materials.OfType<HoneybeeSchema.Energy.IMaterial>().ToList();
 
                     var dialog = new Honeybee.UI.Dialog_MaterialManager(materialsInModel);
-                    dialog.ShowModal(this);
+                    var newMaterials = dialog.ShowModal(this);
+                    if (newMaterials != null)
+                    {
+                        md.Properties.Energy.Materials.Clear();
+                        md.AddMaterials(newMaterials);
+                    }
 
                 };
 
