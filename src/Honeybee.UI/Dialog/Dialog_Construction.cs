@@ -64,7 +64,7 @@ namespace Honeybee.UI
         }
 
        
-        private static IEnumerable<HB.Energy.IMaterial> _opaqueMaterials;
+        private IEnumerable<HB.Energy.IMaterial> _opaqueMaterials;
 
         public IEnumerable<HB.Energy.IMaterial> OpaqueMaterials
         {
@@ -86,7 +86,7 @@ namespace Honeybee.UI
             }
         }
 
-        private static IEnumerable<HB.Energy.IMaterial> _windowMaterials;
+        private IEnumerable<HB.Energy.IMaterial> _windowMaterials;
         public IEnumerable<HB.Energy.IMaterial> WindowMaterials
         {
             get
