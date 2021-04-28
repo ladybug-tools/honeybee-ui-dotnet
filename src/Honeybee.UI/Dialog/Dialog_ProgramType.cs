@@ -8,6 +8,7 @@ using System;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using HoneybeeSchema.Energy;
+using System.Reflection;
 
 namespace Honeybee.UI
 {
@@ -676,8 +677,16 @@ namespace Honeybee.UI
             {
                 // Get drop-in object
                 var value = e.Data.GetString("HBObj");
-                var newValue = type.GetMethod("FromJson").Invoke(null, new object[] { value }) as HB.IIDdBase;
 
+                HB.IIDdBase newValue = null;
+                try
+                {
+                    newValue = type.GetMethod("FromJson").Invoke(null, new object[] { value }) as HB.IIDdBase;
+                }
+                catch (TargetInvocationException ex)
+                {
+                    newValue = null;
+                }
                 if (newValue == null)
                 {
                     MessageBox.Show(this, $"{type.Name.Replace("Abridged", "")} is required!");
@@ -768,9 +777,16 @@ namespace Honeybee.UI
             {
                 // Get drop-in object
                 var value = e.Data.GetString("HBObj");
-                var newValue = type.GetMethod("FromJson").Invoke(null, new object[] { value }) as HB.Energy.ILoad;
 
-
+                HB.Energy.ILoad newValue = null;
+                try
+                {
+                    newValue = type.GetMethod("FromJson").Invoke(null, new object[] { value }) as HB.Energy.ILoad;
+                }
+                catch (TargetInvocationException ex)
+                {
+                    newValue = null;
+                }
                 if (newValue == null)
                 {
                     MessageBox.Show(this, $"{type.Name.Replace("Abridged", "")} is required!");
