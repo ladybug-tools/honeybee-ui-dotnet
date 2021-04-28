@@ -6,6 +6,7 @@ using HB = HoneybeeSchema;
 using HoneybeeSchema;
 using System;
 using System.Text.RegularExpressions;
+using System.Reflection;
 
 namespace Honeybee.UI
 {
@@ -408,9 +409,16 @@ namespace Honeybee.UI
             {
                 // Get drop-in object
                 var value = e.Data.GetString("HBObj");
-                var newValue = setType.GetMethod("FromJson").Invoke(null, new object[] { value }) as HB.Energy.IConstruction;
 
-
+                HB.Energy.IConstruction newValue = null;
+                try
+                {
+                    newValue = setType.GetMethod("FromJson").Invoke(null, new object[] { value }) as HB.Energy.IConstruction;
+                }
+                catch (TargetInvocationException ex)
+                {
+                    newValue = null;
+                }
                 if (newValue == null)
                 {
                     MessageBox.Show(this, $"{setType.Name.Replace("Abridged", "")} is required!");
