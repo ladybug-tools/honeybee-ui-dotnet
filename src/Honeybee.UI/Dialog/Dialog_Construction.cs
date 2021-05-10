@@ -212,19 +212,33 @@ namespace Honeybee.UI
                 var groupPanel = new DynamicLayout();
 
 
-                var materialType = new DropDown();
-                materialType.Items.Add(new ListItem() { Key = "Opaque", Text = "Opaque Material" });
-                materialType.Items.Add(new ListItem() { Key = "Window", Text = "Window Material" });
+                // ADN: Remove the value lists to avoid users select wrong materials for opaque and vice-versa
+                //var materialType = new DropDown();
+                //materialType.Items.Add(new ListItem() { Key = "Opaque", Text = "Opaque Material" });
+                //materialType.Items.Add(new ListItem() { Key = "Window", Text = "Window Material" });
+
+
+                //ADN: If OpaqueConstructionAbridged shows opaque materials and vice-versa
+                var allMaterials = OpaqueMaterials;
+                if (construction is OpaqueConstructionAbridged)
+                {
+                    allMaterials = this.OpaqueMaterials;
+                }
+                else
+                {
+                    allMaterials = this.WindowMaterials;
+                }
+
+
                 //constructionTypes.Items.Add(new ListItem() { Key = "Shade Material" });
                 //constructionTypes.Items.Add(new ListItem() { Key = "AirBoundary Material" });
-                materialType.SelectedIndex = 0;
-                groupPanel.AddRow(materialType);
+                //materialType.SelectedIndex = 0;
+                //groupPanel.AddRow(materialType);
 
                 //Search tbox
                 var searchTBox = new TextBox() { PlaceholderText = "Search" };
                 groupPanel.AddRow(searchTBox);
 
-                var allMaterials = OpaqueMaterials;
 
                 // Library
                 var lib = new GridView();
@@ -262,20 +276,21 @@ namespace Honeybee.UI
                 rightSplit.Orientation = Orientation.Vertical;
 
                 rightGroup.Content = rightSplit;
+                //materialType.SelectedKey (Opaque)
 
 
-                materialType.SelectedIndexChanged += (sender, e) =>
-                {
-                    var selectedType = materialType.SelectedKey;
-                    allMaterials = selectedType == "Window" ? this.WindowMaterials : this.OpaqueMaterials;
-                    searchTBox.Text = null;
-                    //lib.Items.Clear();
+                //materialType.SelectedIndexChanged += (sender, e) =>
+                //{
+                //    var selectedType = materialType.SelectedKey;
+                //    allMaterials = selectedType == "Window" ? this.WindowMaterials : this.OpaqueMaterials;
+                //    searchTBox.Text = null;
+                //    //lib.Items.Clear();
 
-                    lib.DataStore = allMaterials;
-                    //var filteredItems = allMaterials.Select(_ => new ListItem() { Text = _.Identifier, Key = _.Identifier, Tag = _ });
-                    //lib.Items.AddRange(filteredItems);
+                //    lib.DataStore = allMaterials;
+                //    //var filteredItems = allMaterials.Select(_ => new ListItem() { Text = _.Identifier, Key = _.Identifier, Tag = _ });
+                //    //lib.Items.AddRange(filteredItems);
 
-                };
+                //};
 
 
 
