@@ -360,9 +360,9 @@ namespace Honeybee.UI
 
         private bool IsDOASGroup(HoneybeeSchema.Energy.IHvac hvac)
         {
-            var isDoas = hvac is FCUwithDOAS;
-            isDoas |= hvac is VRFwithDOAS;
-            isDoas |= hvac is WSHPwithDOAS;
+            var isDoas = hvac is FCUwithDOASAbridged;
+            isDoas |= hvac is VRFwithDOASAbridged;
+            isDoas |= hvac is WSHPwithDOASAbridged;
 
             return isDoas;
         }
@@ -426,9 +426,9 @@ namespace Honeybee.UI
                 {  typeof(PSZEquipmentType), typeof(PSZ)},
                 {  typeof(PTACEquipmentType), typeof(PTAC)},
                 {  typeof(FurnaceEquipmentType), typeof(ForcedAirFurnace)},
-                {  typeof(FCUwithDOASEquipmentType), typeof(FCUwithDOAS)},
-                {  typeof(VRFwithDOASEquipmentType), typeof(VRFwithDOAS)},
-                {  typeof(WSHPwithDOASEquipmentType), typeof(WSHPwithDOAS)},
+                {  typeof(FCUwithDOASEquipmentType), typeof(FCUwithDOASAbridged)},
+                {  typeof(VRFwithDOASEquipmentType), typeof(VRFwithDOASAbridged)},
+                {  typeof(WSHPwithDOASEquipmentType), typeof(WSHPwithDOASAbridged)},
                 {  typeof(BaseboardEquipmentType), typeof(Baseboard)},
                 {  typeof(EvaporativeCoolerEquipmentType), typeof(EvaporativeCooler)},
                 {  typeof(FCUEquipmentType),typeof(FCU)},

@@ -21,11 +21,11 @@ namespace Honeybee.UI
             get {
                 if (_hbObj is HB.OpaqueConstructionAbridged obj)
                 {
-                    return obj.Layers;
+                    return obj.Materials;
                 }
                 else if (_hbObj is HB.WindowConstructionAbridged win)
                 {
-                    return win.Layers;
+                    return win.Materials;
                 }
                 return new List<string>();
               
@@ -34,11 +34,11 @@ namespace Honeybee.UI
             {
                 if (_hbObj is HB.OpaqueConstructionAbridged obj)
                 {
-                    obj.Layers = value;
+                    obj.Materials = value;
                 }
                 else if (_hbObj is HB.WindowConstructionAbridged win)
                 {
-                    win.Layers = value;
+                    win.Materials = value;
                 }
                 
             }
