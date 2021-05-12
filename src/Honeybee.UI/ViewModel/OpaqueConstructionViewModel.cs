@@ -31,8 +31,8 @@ namespace Honeybee.UI
 
         public List<string> Layers
         {
-            get => _hbObj.Layers;
-            set => Set(() => _hbObj.Layers = value, nameof(Layers));
+            get => _hbObj.Materials;
+            set => Set(() => _hbObj.Materials = value, nameof(Layers));
         }
 
 

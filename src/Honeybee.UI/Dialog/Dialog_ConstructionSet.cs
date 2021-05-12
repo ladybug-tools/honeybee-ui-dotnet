@@ -150,13 +150,13 @@ namespace Honeybee.UI
                     if (selectedConst is HB.OpaqueConstructionAbridged opq)
                     {
                         layers.Add("----------------Outer------------------");
-                        layers.AddRange(opq.Layers);
+                        layers.AddRange(opq.Materials);
                         layers.Add("----------------Inner------------------");
                     }
                     else if (selectedConst is HB.WindowConstructionAbridged win)
                     {
                         layers.Add("----------------Outer------------------");
-                        layers.AddRange(win.Layers);
+                        layers.AddRange(win.Materials);
                         layers.Add("----------------Inner------------------");
                     }
                     else if (selectedConst is HB.ShadeConstruction shd)
