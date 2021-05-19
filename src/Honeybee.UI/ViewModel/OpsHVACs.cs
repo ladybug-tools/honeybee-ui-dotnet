@@ -174,25 +174,7 @@ namespace Honeybee.UI
             }
         }
 
-        private bool _sensibleHRInputEnabled;
-        public bool SensibleHRInputEnabled
-        {
-            get => _sensibleHRInputEnabled;
-            set
-            {
-                Set(() => _sensibleHRInputEnabled = value, nameof(SensibleHRInputEnabled));
-            }
-        }
-        private bool _sensibleHRAutosized = true;
-        public bool SensibleHRAutosized
-        {
-            get => _sensibleHRAutosized;
-            set
-            {
-                Set(() => _sensibleHRAutosized = value, nameof(SensibleHRAutosized));
-                this.SensibleHRInputEnabled = !value;
-            }
-        }
+       
         private bool _sensibleHRVisable = true;
         public bool SensibleHRVisable
         {
@@ -214,26 +196,9 @@ namespace Honeybee.UI
             }
         }
 
-        private bool _latentHRInputEnabled;
-        public bool LatentHRInputEnabled
-        {
-            get => _latentHRInputEnabled;
-            set
-            {
-                Set(() => _latentHRInputEnabled = value, nameof(LatentHRInputEnabled));
-            }
-        }
+     
 
-        private bool _latentHRAutosized = true;
-        public bool LatentHRAutosized
-        {
-            get => _latentHRAutosized;
-            set
-            {
-                Set(() => _latentHRAutosized = value, nameof(LatentHRAutosized));
-                this.LatentHRInputEnabled = !value;
-            }
-        }
+      
 
         private bool _latentHRVisable = true;
         public bool LatentHRVisable
@@ -266,8 +231,6 @@ namespace Honeybee.UI
             var lat = hvac.GetType().GetProperty(nameof(dummy.LatentHeatRecovery)).GetValue(hvac) as AnyOf<Autosize, double>;
             if (lat != null)
             {
-                LatentHRAutosized = lat.Obj is Autosize;
-                LatentHRInputEnabled = !LatentHRAutosized;
                 if (double.TryParse(lat.Obj.ToString(), out var latValue))
                     LatentHR = latValue;
             }
@@ -276,8 +239,6 @@ namespace Honeybee.UI
             var sen = hvac.GetType().GetProperty(nameof(dummy.SensibleHeatRecovery)).GetValue(hvac) as AnyOf<Autosize, double>;
             if (sen != null)
             {
-                SensibleHRAutosized = sen.Obj is Autosize;
-                SensibleHRInputEnabled = !SensibleHRAutosized;
                 if (double.TryParse(sen.Obj.ToString(), out var senValue))
                     SensibleHR = senValue;
             }
@@ -619,13 +580,9 @@ namespace Honeybee.UI
             prop.SetValue(sys, hvacSysType);
 
             // SensibleHeatRecovery
-            var sen = this.SensibleHRAutosized ?
-                new AnyOf<Autosize, double>(new Autosize()) :
-                new AnyOf<Autosize, double>(this.SensibleHR);
+            var sen = this.SensibleHR;
             // LatentHeatRecovery
-            var lat = this.LatentHRAutosized ?
-                new AnyOf<Autosize, double>(new Autosize()) :
-                new AnyOf<Autosize, double>(this.LatentHR);
+            var lat = this.LatentHR;
 
             if (HvacGroup == HvacGroups[0])     // All air
             {
