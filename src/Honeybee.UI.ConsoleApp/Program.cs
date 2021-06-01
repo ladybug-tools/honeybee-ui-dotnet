@@ -29,7 +29,7 @@ namespace Honeybee.UI.ConsoleApp
 
                 var panel = new DynamicLayout();
 
-                var RoomPropertybtn = new Button() { Text = "Room Property" };
+                var RoomPropertybtn = new Button() { Text = "2 Rooms Property" };
                 var rm1 = new Room("id1", new List<Face>(), new RoomPropertiesAbridged(), "name1", multiplier: 1, story: "11");
                 var rm2 = new Room("id2", new List<Face>(), new RoomPropertiesAbridged(new RoomEnergyPropertiesAbridged("aaa")), "name2", multiplier: 2, story: "22");
                 var rms = new List<Room>() { rm1, rm2 };
@@ -49,6 +49,23 @@ namespace Honeybee.UI.ConsoleApp
                     }
                 };
 
+
+                var RoomPropertybtn2 = new Button() { Text = "1 Room Property" };
+
+                RoomPropertybtn2.Click += (s, e) =>
+                {
+                    var rm = new Room("id2", new List<Face>(), new RoomPropertiesAbridged(new RoomEnergyPropertiesAbridged(programType: "Plenum")), "name2", multiplier: 2, story: "22");
+                    var dialog = new Honeybee.UI.View.RoomPropertyDialog(md.Properties, new List<Room>() { rm });
+                    var dialog_rc = dialog.ShowModal();
+                    if (dialog_rc != null)
+                    {
+                        foreach (var item in dialog_rc)
+                        {
+                            Console.WriteLine(item.ToJson(true));
+                        }
+
+                    }
+                };
 
                 var btn = new Button() { Text="Room Energy Property"};
                 btn.Click += (s, e) =>
@@ -257,7 +274,7 @@ namespace Honeybee.UI.ConsoleApp
                     dialog.ShowModal(this);
                 };
 
-                panel.AddSeparateRow(RoomPropertybtn);
+                panel.AddSeparateRow(RoomPropertybtn, RoomPropertybtn2, null);
                 panel.AddSeparateRow(btn);
                 panel.AddSeparateRow(Messagebtn);
                 panel.AddSeparateRow(conbtn, cSetbtn, cSetManager, null);

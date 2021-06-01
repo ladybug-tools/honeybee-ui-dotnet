@@ -1,5 +1,6 @@
 ﻿using Eto.Forms;
 using HoneybeeSchema;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
@@ -81,270 +82,106 @@ namespace Honeybee.UI
 
         #region ConstructionSet
 
-
-        private bool _isConstructionSetVaries;
-        private HoneybeeSchema.Energy.IBuildingConstructionset _constructionSet
+        private CheckboxButtonViewModel _constructionSet;
+        public CheckboxButtonViewModel ConstructionSet
         {
-            get => GetConstrutionSet(_refHBObj.Properties.Energy?.ConstructionSet);
-            set
-            {
-                _refHBObj.Properties.Energy.ConstructionSet = value?.Identifier;
-                ConstructionSetName = value?.DisplayName ?? value?.Identifier;
-            }
-        }
-
-        private HoneybeeSchema.Energy.IBuildingConstructionset GetConstrutionSet(string name)
-        {
-            return _libSource.Energy.ConstructionSets
-                .OfType<HoneybeeSchema.Energy.IBuildingConstructionset>()
-                .FirstOrDefault(_ => _.Identifier == name);
-        }
-
-        private string _constructionSetName = "Override";
-        public string ConstructionSetName
-        {
-            get => _isConstructionSetVaries ? this.Varies: _constructionSetName;
-            private set {
-                IsByGlobalConstructionSet = _constructionSet == null;
-                IsCSetBtnEnabled = !IsByGlobalConstructionSet;
-
-                _isConstructionSetVaries = value == this.Varies;
-                if (_isConstructionSetVaries)
-                    IsByGlobalConstructionSet = false;
-
-                if (IsCSetBtnEnabled)
-                    this.Set(() => _constructionSetName = value, nameof(ConstructionSetName));
-            
-            }
-        }
-
-        private bool _isCSetBtnEnabled;
-
-        public bool IsCSetBtnEnabled
-        {
-            get => _isCSetBtnEnabled;
-            private set { this.Set(() => _isCSetBtnEnabled = value, nameof(IsCSetBtnEnabled)); }
-        }
-
-        private bool _isByGlobalConstructionSet;
-
-        public bool IsByGlobalConstructionSet
-        {
-            get => _isByGlobalConstructionSet;
-
-            private set {
-                this.Set(() => _isByGlobalConstructionSet = value, nameof(IsByGlobalConstructionSet));
-                IsCSetBtnEnabled = !IsByGlobalConstructionSet;
-                if (_isByGlobalConstructionSet) {
-                    _refHBObj.Properties.Energy.ConstructionSet = null;
-                }
-                
-            }
+            get => _constructionSet;
+            set { this.Set(() => _constructionSet = value, nameof(ConstructionSet)); }
         }
 
         #endregion
 
 
+
         #region ProgramType
-
-
-        private bool _isProgramTypeVaries;
-        private HoneybeeSchema.Energy.IProgramtype _programType
+        private CheckboxButtonViewModel _propgramType;
+        public CheckboxButtonViewModel PropgramType
         {
-            get => GetProgramtype(_refHBObj.Properties.Energy?.ProgramType);
-            set
-            {
-                _refHBObj.Properties.Energy.ProgramType = value?.Identifier;
-                ProgramTypeName = value?.DisplayName ?? value?.Identifier;
-            }
-        }
-        private HoneybeeSchema.Energy.IProgramtype GetProgramtype(string name)
-        {
-            return _libSource.Energy.ProgramTypes
-               .OfType<HoneybeeSchema.Energy.IProgramtype>()
-               .FirstOrDefault(_ => _.Identifier == name);
-        }
-
-        private string _programTypeName = "Override";
-        public string ProgramTypeName
-        {
-            get => _isProgramTypeVaries ? this.Varies : _programTypeName;
-            private set
-            {
-                IsUnoccupied = _programType == null;
-                IsPTypeBtnEnabled = !IsUnoccupied;
-       
-                _isProgramTypeVaries = value == this.Varies;
-                if (_isProgramTypeVaries)
-                    IsUnoccupied = false;
-
-                if (IsPTypeBtnEnabled)
-                    this.Set(() => _programTypeName = value, nameof(ProgramTypeName));
-            }
-        }
-
-        private bool _isPTypeBtnEnabled;
-
-        public bool IsPTypeBtnEnabled
-        {
-            get => _isPTypeBtnEnabled;
-            private set { this.Set(() => _isPTypeBtnEnabled = value, nameof(IsPTypeBtnEnabled)); }
-        }
-
-        private bool _isUnoccupied;
-
-        public bool IsUnoccupied
-        {
-            get => _isUnoccupied;
-
-            private set
-            {
-                this.Set(() => _isUnoccupied = value, nameof(IsUnoccupied));
-                IsPTypeBtnEnabled = !value;
-                if (_isUnoccupied)
-                    _refHBObj.Properties.Energy.ProgramType = null;
-            }
+            get => _propgramType;
+            set { this.Set(() => _propgramType = value, nameof(PropgramType)); }
         }
 
         #endregion
 
 
         #region HVAC
-        private bool _isHVACVaries;
-
-        private HoneybeeSchema.Energy.IHvac _hvac
+        private CheckboxButtonViewModel _hvac;
+        public CheckboxButtonViewModel HVAC
         {
-            get => GetHvac(_refHBObj.Properties.Energy?.Hvac);
-            set
-            {
-                _refHBObj.Properties.Energy.Hvac = value?.Identifier;
-                HVACName = value?.DisplayName ?? value?.Identifier;
-            }
+            get => _hvac;
+            set { this.Set(() => _hvac = value, nameof(HVAC)); }
         }
-        private HoneybeeSchema.Energy.IHvac GetHvac(string name)
-        {
-            return _libSource.Energy.Hvacs
-                .OfType<HoneybeeSchema.Energy.IHvac>()
-                .FirstOrDefault(_ => _.Identifier == name);
-        }
-
-        private string _HvacName = "Override";
-        public string HVACName
-        {
-            get => _isHVACVaries ? this.Varies : _HvacName;
-            private set
-            {
-                IsUnconditioned = _hvac == null;
-                IsHVACBtnEnabled = !IsUnconditioned;
-
-                _isHVACVaries = value == this.Varies;
-                if (_isHVACVaries)
-                    IsUnconditioned = false;
-
-                if (IsHVACBtnEnabled)
-                    this.Set(() => _HvacName = value, nameof(HVACName));
-            }
-        }
-
-        private bool _isHVACBtnEnabled;
-        public bool IsHVACBtnEnabled
-        {
-            get => _isHVACBtnEnabled;
-            private set { this.Set(() => _isHVACBtnEnabled = value, nameof(IsHVACBtnEnabled)); }
-        }
-
-        private bool _isUnconditioned;
-
-        public bool IsUnconditioned
-        {
-            get => _isUnconditioned;
-            private set
-            {
-                this.Set(() => _isUnconditioned = value, nameof(IsUnconditioned));
-                IsHVACBtnEnabled = !value;
-                if (_isUnconditioned)
-                    _refHBObj.Properties.Energy.Hvac = null;
-            }
-        }
-
 
         #endregion
 
 
         #region ModifierSet
 
-
-        private bool _isModifierSetVaries;
-        private ModifierSetAbridged _modifierSet
+        private CheckboxButtonViewModel _modifierSet;
+        public CheckboxButtonViewModel ModifierSet
         {
-            get => GetModifierSet(_refHBObj.Properties.Radiance?.ModifierSet);
-            set
-            {
-                _refHBObj.Properties.Radiance.ModifierSet = value?.Identifier;
-                ModifierSetName = value?.DisplayName ?? value?.Identifier;
-            }
-        }
-        private ModifierSetAbridged GetModifierSet(string name)
-        {
-            return _libSource.Radiance.ModifierSets
-               .OfType<ModifierSetAbridged>()
-               .FirstOrDefault(_ => _.Identifier == name);
-        }
-
-        private string _ModifierSetName = "Override";
-        public string ModifierSetName
-        {
-            get => _isModifierSetVaries ? this.Varies : _ModifierSetName;
-            private set
-            {
-                IsByGlobalModifierSet = _modifierSet == null;
-                IsModifierSetBtnEnabled = !IsByGlobalModifierSet;
-
-                _isModifierSetVaries = value == this.Varies;
-                if (_isModifierSetVaries)
-                    IsByGlobalModifierSet = false;
-
-                if (IsModifierSetBtnEnabled)
-                    this.Set(() => _ModifierSetName = value, nameof(ModifierSetName));
-            }
-        }
-
-        private bool _isModifierSetBtnEnabled;
-
-        public bool IsModifierSetBtnEnabled
-        {
-            get => _isModifierSetBtnEnabled;
-            private set { this.Set(() => _isModifierSetBtnEnabled = value, nameof(IsModifierSetBtnEnabled)); }
-        }
-
-        private bool _isByGlobalModifierSet;
-
-        public bool IsByGlobalModifierSet
-        {
-            get => _isByGlobalModifierSet;
-
-            private set
-            {
-                this.Set(() => _isByGlobalModifierSet = value, nameof(IsByGlobalModifierSet));
-                IsModifierSetBtnEnabled = !value;
-                if (_isByGlobalModifierSet)
-                    _refHBObj.Properties.Radiance.ModifierSet = null;
-            }
+            get => _modifierSet;
+            set { this.Set(() => _modifierSet = value, nameof(ModifierSet)); }
         }
 
         #endregion
 
 
-        #region Lighting
-        private bool _isLightingVaries;
-        public string LightingName
+        #region Loads
+        private CheckboxButtonViewModel _lighting;
+        public CheckboxButtonViewModel Lighting
         {
-            get => _refHBObj.DisplayName;
-            private set
-            {
-                _isDisplayNameVaries = value == this.Varies;
-                this.Set(() => _refHBObj.DisplayName = value, nameof(DisplayName));
-            }
+            get => _lighting;
+            set { this.Set(() => _lighting = value, nameof(Lighting)); }
+        }
+
+        private CheckboxButtonViewModel _equip;
+        public CheckboxButtonViewModel ElecEquipment
+        {
+            get => _equip;
+            set { this.Set(() => _equip = value, nameof(ElecEquipment)); }
+        }
+
+        private CheckboxButtonViewModel _gas;
+        public CheckboxButtonViewModel Gas
+        {
+            get => _gas;
+            set { this.Set(() => _gas = value, nameof(Gas)); }
+        }
+
+        private CheckboxButtonViewModel _people;
+        public CheckboxButtonViewModel People
+        {
+            get => _people;
+            set { this.Set(() => _people = value, nameof(People)); }
+        }
+
+        private CheckboxButtonViewModel _infiltration;
+        public CheckboxButtonViewModel Infiltration
+        {
+            get => _infiltration;
+            set { this.Set(() => _infiltration = value, nameof(Infiltration)); }
+        }
+
+        private CheckboxButtonViewModel _ventilation;
+        public CheckboxButtonViewModel Ventilation
+        {
+            get => _ventilation;
+            set { this.Set(() => _ventilation = value, nameof(Ventilation)); }
+        }
+
+        private CheckboxButtonViewModel _setpoint;
+        public CheckboxButtonViewModel Setpoint
+        {
+            get => _setpoint;
+            set { this.Set(() => _setpoint = value, nameof(Setpoint)); }
+        }
+
+        private CheckboxButtonViewModel _serviceHotWater;
+        public CheckboxButtonViewModel ServiceHotWater
+        {
+            get => _serviceHotWater;
+            set { this.Set(() => _serviceHotWater = value, nameof(ServiceHotWater)); }
         }
         #endregion
 
@@ -367,47 +204,166 @@ namespace Honeybee.UI
 
             if (rooms.Select(_ => _.Identifier).Distinct().Count() > 1)
                 this.Identifier = this.Varies;
+            else
+                this.Identifier = this._refHBObj.Identifier;
 
             if (rooms.Select(_ => _.DisplayName).Distinct().Count() > 1)
                 this.DisplayName = this.Varies;
+            else
+                this.DisplayName = this._refHBObj.DisplayName;
 
             if (rooms.Select(_ => _.Story).Distinct().Count() > 1)
                 this.Story = this.Varies;
+            else
+                this.Story = this._refHBObj.Story;
 
             if (rooms.Select(_ => _.Multiplier).Distinct().Count() > 1)
-                MultiplierText = this.Varies;
+                this.MultiplierText = this.Varies;
+            else
+                this.MultiplierText = this._refHBObj.Multiplier.ToString();
 
 
-         
+
+            var cSet = _libSource.Energy.ConstructionSets
+                .OfType<HoneybeeSchema.Energy.IBuildingConstructionset>()
+                .FirstOrDefault(_ => _.Identifier == _refHBObj.Properties.Energy.ConstructionSet); 
+            this.ConstructionSet = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.ConstructionSet = s?.Identifier);
+
+
             //construction
             if (rooms.Select(_ => _.Properties.Energy?.ConstructionSet).Distinct().Count() > 1)
-                this.ConstructionSetName = this.Varies;
+                this.ConstructionSet.SetBtnName(this.Varies);
             else
-                this._constructionSet = GetConstrutionSet(_refHBObj.Properties.Energy.ConstructionSet);
+                this.ConstructionSet.SetPropetyObj(cSet);
+
+
+            var pType = _libSource.Energy.ProgramTypes
+               .OfType<HoneybeeSchema.Energy.IProgramtype>()
+               .FirstOrDefault(_ => _.Identifier == _refHBObj.Properties.Energy.ProgramType); 
+            this.PropgramType = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.ProgramType = s?.Identifier);
+
 
             //program type
             if (rooms.Select(_ => _.Properties.Energy?.ProgramType).Distinct().Count() > 1)
-                this.ProgramTypeName = this.Varies;
+                this.PropgramType.SetBtnName(this.Varies);
             else
-                this._programType = GetProgramtype(_refHBObj.Properties.Energy.ProgramType);
+                this.PropgramType.SetPropetyObj(pType);
+
+
+            var hvac = _libSource.Energy.Hvacs
+                .OfType<HoneybeeSchema.Energy.IHvac>()
+                .FirstOrDefault(_ => _.Identifier == _refHBObj.Properties.Energy.Hvac); 
+            this.HVAC = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.Hvac = s?.Identifier);
 
             // hvac
             if (rooms.Select(_ => _.Properties.Energy?.Hvac).Distinct().Count() > 1)
-                this.HVACName = this.Varies;
+                this.HVAC.SetBtnName(this.Varies);
             else
-                this._hvac = GetHvac(_refHBObj.Properties.Energy.Hvac);
+                this.HVAC.SetPropetyObj(hvac);
+
+
+            var mSet = _libSource.Radiance.ModifierSets
+               .OfType<HoneybeeSchema.ModifierSetAbridged>()
+               .FirstOrDefault(_ => _.Identifier == _refHBObj.Properties.Radiance.ModifierSet);
+            this.ModifierSet = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Radiance.ModifierSet = s?.Identifier);
+
 
             // ModifierSet
             if (rooms.Select(_ => _.Properties.Radiance?.ModifierSet).Distinct().Count() > 1)
-                this.ModifierSetName = this.Varies;
+                this.ModifierSet.SetBtnName(this.Varies);
             else
-                this._modifierSet = GetModifierSet(_refHBObj.Properties.Radiance.ModifierSet);
+                this.ModifierSet.SetPropetyObj(mSet);
 
-            // Load
+
+  
+            this.Lighting = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.Lighting = s as LightingAbridged);
+
+            // Lighting
             if (rooms.Select(_ => _.Properties.Energy?.Lighting?.Identifier).Distinct().Count() > 1)
-                this.ModifierSetName = this.Varies;
+                this.Lighting.SetBtnName(this.Varies);
             else
-                this._modifierSet = GetModifierSet(_refHBObj.Properties.Radiance.ModifierSet);
+                this.Lighting.SetPropetyObj(_refHBObj.Properties.Energy?.Lighting);
+
+
+
+            this.ElecEquipment = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.ElectricEquipment = s as ElectricEquipmentAbridged);
+
+            // ElecEqp
+            if (rooms.Select(_ => _.Properties.Energy?.ElectricEquipment?.Identifier).Distinct().Count() > 1)
+                this.ElecEquipment.SetBtnName(this.Varies);
+            else
+                this.ElecEquipment.SetPropetyObj(_refHBObj.Properties.Energy?.ElectricEquipment);
+
+
+            this.Gas = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.GasEquipment = s as GasEquipmentAbridged);
+
+            // GasEqp
+            if (rooms.Select(_ => _.Properties.Energy?.GasEquipment?.Identifier).Distinct().Count() > 1)
+                this.Gas.SetBtnName(this.Varies);
+            else
+                this.Gas.SetPropetyObj(_refHBObj.Properties.Energy?.GasEquipment);
+
+
+            this.People = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.People = s as PeopleAbridged);
+
+            // People
+            if (rooms.Select(_ => _.Properties.Energy?.People?.Identifier).Distinct().Count() > 1)
+                this.People.SetBtnName(this.Varies);
+            else
+                this.People.SetPropetyObj(_refHBObj.Properties.Energy?.People);
+
+
+            this.Infiltration = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.Infiltration = s as InfiltrationAbridged);
+
+            // Infiltration
+            if (rooms.Select(_ => _.Properties.Energy?.Infiltration?.Identifier).Distinct().Count() > 1)
+                this.Infiltration.SetBtnName(this.Varies);
+            else
+                this.Infiltration.SetPropetyObj(_refHBObj.Properties.Energy?.Infiltration);
+
+
+            this.Ventilation = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.Ventilation = s as VentilationAbridged);
+
+            // Ventilation
+            if (rooms.Select(_ => _.Properties.Energy?.Ventilation?.Identifier).Distinct().Count() > 1)
+                this.Ventilation.SetBtnName(this.Varies);
+            else
+                this.Ventilation.SetPropetyObj(_refHBObj.Properties.Energy?.Ventilation);
+
+
+            this.Setpoint = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.Setpoint = s as SetpointAbridged);
+
+            // Setpoint
+            if (rooms.Select(_ => _.Properties.Energy?.Setpoint?.Identifier).Distinct().Count() > 1)
+                this.Setpoint.SetBtnName(this.Varies);
+            else
+                this.Setpoint.SetPropetyObj(_refHBObj.Properties.Energy?.Setpoint);
+
+
+            this.ServiceHotWater = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.ServiceHotWater = s as ServiceHotWaterAbridged);
+
+            // ServiceHotWater
+            if (rooms.Select(_ => _.Properties.Energy?.ServiceHotWater?.Identifier).Distinct().Count() > 1)
+                this.ServiceHotWater.SetBtnName(this.Varies);
+            else
+                this.ServiceHotWater.SetPropetyObj(_refHBObj.Properties.Energy?.ServiceHotWater);
+
+
+            //this.VentControl = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.WindowVentControl = s as VentilationControlAbridged);
+
+            //// VentControl
+            //if (rooms.Select(_ => _.Properties.Energy?.WindowVentControl).Distinct().Count() > 1)
+            //    this.VentControl.SetBtnName(this.Varies);
+            //else
+            //    this.VentControl.SetPropetyObj(_refHBObj.Properties.Energy?.WindowVentControl);
+
+            //this.DaylightingControl = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.DaylightingControl = s as DaylightingControl);
+
+            //// DaylightingControl
+            //if (rooms.Select(_ => _.Properties.Energy?.DaylightingControl).Distinct().Count() > 1)
+            //    this.DaylightingControl.SetBtnName(this.Varies);
+            //else
+            //    this.DaylightingControl.SetPropetyObj(_refHBObj.Properties.Energy?.DaylightingControl);
 
 
             this._hbObjs = rooms.Select(_ => _.DuplicateRoom()).ToList();
@@ -434,14 +390,21 @@ namespace Honeybee.UI
 
                 item.Properties.Energy = item.Properties.Energy ?? new RoomEnergyPropertiesAbridged();
 
-                if (!this._isConstructionSetVaries)
+                if (!this.ConstructionSet.IsVaries)
                     item.Properties.Energy.ConstructionSet = refObj.Properties.Energy.ConstructionSet;
 
-                if (!this._isProgramTypeVaries)
+                if (!this.PropgramType.IsVaries)
                     item.Properties.Energy.ProgramType = refObj.Properties.Energy.ProgramType;
 
-                if (!this._isHVACVaries)
+                if (!this.HVAC.IsVaries)
                     item.Properties.Energy.Hvac = refObj.Properties.Energy.Hvac;
+
+                if (!this.ModifierSet.IsVaries)
+                    item.Properties.Radiance.ModifierSet = refObj.Properties.Radiance.ModifierSet;
+
+                if (!this.Lighting.IsVaries)
+                    item.Properties.Energy.Lighting = refObj.Properties.Energy.Lighting;
+
             }
 
             return this._hbObjs;
@@ -454,7 +417,7 @@ namespace Honeybee.UI
             var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
             {
-                this._constructionSet = dialog_rc;
+                this.ConstructionSet.SetPropetyObj(dialog_rc);
             }
         });
 
@@ -465,7 +428,7 @@ namespace Honeybee.UI
             var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
             {
-                this._programType = dialog_rc;
+                this.PropgramType.SetPropetyObj(dialog_rc);
             }
         });
 
@@ -476,7 +439,7 @@ namespace Honeybee.UI
             var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
             {
-                this._hvac = dialog_rc;
+                this.HVAC.SetPropetyObj(dialog_rc);
             }
         });
 
@@ -487,7 +450,7 @@ namespace Honeybee.UI
             var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
             {
-                this._modifierSet = dialog_rc;
+                this.ModifierSet.SetPropetyObj(dialog_rc);
             }
         });
 
