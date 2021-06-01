@@ -8,9 +8,9 @@ namespace Honeybee.UI
     public abstract class ViewModelBase : INotifyPropertyChanged
     {
     
-        internal void Set(Action setAction, string memberName)
+        protected void Set(Action setAction, string memberName)
         {
-            setAction();
+            setAction?.Invoke();
             OnPropertyChanged(memberName);
         }
         void OnPropertyChanged([CallerMemberName] string memberName = null)
@@ -19,7 +19,12 @@ namespace Honeybee.UI
         }
         public event PropertyChangedEventHandler PropertyChanged;
 
-  
+
+        public void RefreshControl(string memberName)
+        {
+            OnPropertyChanged(memberName);
+        }
+
         public void RefreshControls(IEnumerable<string> memberNames)
         {
             foreach (var item in memberNames)
