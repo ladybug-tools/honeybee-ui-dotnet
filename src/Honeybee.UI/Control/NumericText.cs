@@ -17,10 +17,20 @@ namespace Honeybee.UI
             if (this.Text == ReservedText)
                 return;
             if (int.TryParse(this.Text, out var value))
-                this.TextColor = Eto.Drawing.Color.FromArgb(0, 0, 0);
+                this.TextColor = _blk;
             else
-                this.TextColor = Eto.Drawing.Color.FromArgb(255, 0, 0);
+                this.TextColor = _red;
 
+        }
+
+        private Eto.Drawing.Color _blk = Eto.Drawing.Color.FromArgb(0, 0, 0);
+        private Eto.Drawing.Color _gry = Eto.Drawing.Color.FromArgb(150, 150, 150);
+        private Eto.Drawing.Color _red = Eto.Drawing.Color.FromArgb(255, 0, 0);
+
+        protected override void OnEnabledChanged(EventArgs e)
+        {
+            base.OnEnabledChanged(e);
+            this.TextColor = this.Enabled ? _blk : _gry;
         }
 
     }
@@ -38,10 +48,20 @@ namespace Honeybee.UI
             if (this.Text == ReservedText)
                 return;
             if (double.TryParse(this.Text, out var value))
-                this.TextColor = Eto.Drawing.Color.FromArgb(0, 0, 0);
+                this.TextColor = _blk;
             else
-                this.TextColor = Eto.Drawing.Color.FromArgb(255, 0, 0);
+                this.TextColor = _red;
 
+        }
+
+        private Eto.Drawing.Color _blk = Eto.Drawing.Color.FromArgb(0, 0, 0);
+        private Eto.Drawing.Color _gry = Eto.Drawing.Color.FromArgb(150, 150, 150);
+        private Eto.Drawing.Color _red = Eto.Drawing.Color.FromArgb(255, 0, 0);
+
+        protected override void OnEnabledChanged(EventArgs e)
+        {
+            base.OnEnabledChanged(e);
+            this.TextColor = this.Enabled ? _blk : _gry;
         }
 
     }
