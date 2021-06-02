@@ -63,15 +63,12 @@ namespace Honeybee.UI
             {
                 _isMultiplierVaries = value == this.Varies;
                 if (_isMultiplierVaries) {
-                    _multiplierText = value;
-                    this.RefreshControl(nameof(MultiplierText));
-                    return;
+                    this.Set(() => _multiplierText = value, nameof(MultiplierText));
                 }
                 else if (int.TryParse(value, out var number))
                 {
                     _multiplierText = number.ToString();
                     this.Set(() => _refHBObj.Multiplier = number, nameof(MultiplierText));
-
                 }
 
             }
@@ -128,8 +125,8 @@ namespace Honeybee.UI
 
 
         #region Loads
-        private CheckboxButtonViewModel _lighting;
-        public CheckboxButtonViewModel Lighting
+        private LightingViewModel _lighting;
+        public LightingViewModel Lighting
         {
             get => _lighting;
             set { this.Set(() => _lighting = value, nameof(Lighting)); }
@@ -222,7 +219,7 @@ namespace Honeybee.UI
             else
                 this.MultiplierText = this._refHBObj.Multiplier.ToString();
 
-
+            
 
             var cSet = _libSource.Energy.ConstructionSets
                 .OfType<HoneybeeSchema.Energy.IBuildingConstructionset>()
@@ -275,15 +272,12 @@ namespace Honeybee.UI
                 this.ModifierSet.SetPropetyObj(mSet);
 
 
-  
-            this.Lighting = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.Lighting = s as LightingAbridged);
-
             // Lighting
-            if (rooms.Select(_ => _.Properties.Energy?.Lighting?.Identifier).Distinct().Count() > 1)
-                this.Lighting.SetBtnName(this.Varies);
-            else
-                this.Lighting.SetPropetyObj(_refHBObj.Properties.Energy?.Lighting);
+            var allLpds = rooms.Select(_ => _.Properties.Energy?.Lighting).Distinct().ToList();
+            this.Lighting = new LightingViewModel(libSource, allLpds, (s) => _refHBObj.Properties.Energy.Lighting = s as LightingAbridged);
 
+           
+            
 
 
             this.ElecEquipment = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.ElectricEquipment = s as ElectricEquipmentAbridged);
@@ -400,11 +394,15 @@ namespace Honeybee.UI
                     item.Properties.Energy.Hvac = refObj.Properties.Energy.Hvac;
 
                 if (!this.ModifierSet.IsVaries)
+                {
+                    item.Properties.Radiance = item.Properties.Radiance ?? new RoomRadiancePropertiesAbridged();
                     item.Properties.Radiance.ModifierSet = refObj.Properties.Radiance.ModifierSet;
+                }
+                
 
-                if (!this.Lighting.IsVaries)
-                    item.Properties.Energy.Lighting = refObj.Properties.Energy.Lighting;
-
+                // lighting
+                item.Properties.Energy.Lighting = this.Lighting.MatchObj(item.Properties.Energy.Lighting);
+            
             }
 
             return this._hbObjs;
@@ -455,8 +453,11 @@ namespace Honeybee.UI
         });
 
         public ICommand HBDataBtnClick => new RelayCommand(() => {
+
             Honeybee.UI.Dialog_Message.Show(this._control, this._refHBObj.ToJson(true), "Schema Data");
         });
+
+
 
     }
 

@@ -6,7 +6,7 @@ namespace Honeybee.UI
     public class CheckboxButtonViewModel : ViewModelBase
     {
         public string Varies => "<varies>";
-        public bool IsVaries;
+        public bool IsVaries { get; private set; }
         private HoneybeeSchema.IIDdBase _refObjProperty;
         private HoneybeeSchema.IIDdBase refObjProperty
         {
