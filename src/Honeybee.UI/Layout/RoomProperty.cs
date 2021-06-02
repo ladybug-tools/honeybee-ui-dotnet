@@ -422,8 +422,11 @@ namespace Honeybee.UI.View
             var visFraction = new DoubleText();
             visFraction.ReservedText = _vm.Varies;
             visFraction.TextBinding.Bind(vm, _ => _.People.LatentFraction.NumberText);
-            layout.AddRow("Latent Fraction:", visFraction);
-
+            visFraction.Bind(_ => _.Enabled, vm, _ => _.People.IsLatenFractionInputEnabled);
+            var autosize = new CheckBox() { Text = "Autosize" };
+            autosize.Bind(_ => _.Checked, vm, _ => _.People.IsLatentFractionAutosize);
+            layout.AddRow("Latent Fraction:", autosize);
+            layout.AddRow(null, visFraction);
 
             layout.AddRow(null);
 

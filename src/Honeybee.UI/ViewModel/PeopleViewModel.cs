@@ -59,9 +59,34 @@ namespace Honeybee.UI
             private set { this.Set(() => _latentFraction = value, nameof(LatentFraction)); }
         }
 
-      
+        private bool _isLatentFractionAutosize;
 
-     
+        public bool IsLatentFractionAutosize
+        {
+            get => _isLatentFractionAutosize;
+            private set {
+
+                if (value)
+                    this._refHBObj.LatentFraction = new Autocalculate();
+                else
+                    this.LatentFraction.SetNumberText(this.LatentFraction.NumberText);
+
+                IsLatenFractionInputEnabled = !value;
+                this.Set(() => _isLatentFractionAutosize = value, nameof(IsLatentFractionAutosize));
+            }
+        }
+
+        private bool _isLatenFractionInputEnabled;
+
+        public bool IsLatenFractionInputEnabled
+        {
+            get => _isLatenFractionInputEnabled && this.IsPanelEnabled;
+            private set { this.Set(() => _isLatenFractionInputEnabled = value, nameof(IsLatenFractionInputEnabled)); }
+        }
+
+
+
+
         public PeopleViewModel(ModelProperties libSource, List<PeopleAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
 
@@ -116,11 +141,21 @@ namespace Honeybee.UI
 
             //LatentFraction
             this.LatentFraction = new DoubleViewModel((n) => _refHBObj.LatentFraction = n);
-            if (loads.Select(_ => _?.LatentFraction).Distinct().Count() > 1)
+            var latFractions = loads.Select(_ => _?.LatentFraction).Distinct();
+            if (latFractions.Count() > 1)
+            {
+                this.IsLatentFractionAutosize = false;
                 this.LatentFraction.SetNumberText(this.Varies);
+            }
             else
-                this.LatentFraction.SetNumberText(_refHBObj.LatentFraction.ToString());
-
+            {
+                this.LatentFraction.SetNumberText("0");
+                this.IsLatentFractionAutosize = latFractions?.FirstOrDefault(_ => _?.Obj is Autocalculate) != null;
+                if (!IsLatentFractionAutosize)
+                {
+                    this.LatentFraction.SetNumberText(_refHBObj.LatentFraction.ToString());
+                }
+            }
 
         }
 
