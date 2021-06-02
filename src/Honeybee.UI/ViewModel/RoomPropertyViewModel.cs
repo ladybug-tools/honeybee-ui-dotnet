@@ -132,50 +132,50 @@ namespace Honeybee.UI
             set { this.Set(() => _lighting = value, nameof(Lighting)); }
         }
 
-        private CheckboxButtonViewModel _equip;
-        public CheckboxButtonViewModel ElecEquipment
+        private ElecEquipmentViewModel _equip;
+        public ElecEquipmentViewModel ElecEquipment
         {
             get => _equip;
             set { this.Set(() => _equip = value, nameof(ElecEquipment)); }
         }
 
-        private CheckboxButtonViewModel _gas;
-        public CheckboxButtonViewModel Gas
+        private GasEquipmentViewModel _gas;
+        public GasEquipmentViewModel Gas
         {
             get => _gas;
             set { this.Set(() => _gas = value, nameof(Gas)); }
         }
 
-        private CheckboxButtonViewModel _people;
-        public CheckboxButtonViewModel People
+        private PeopleViewModel _people;
+        public PeopleViewModel People
         {
             get => _people;
             set { this.Set(() => _people = value, nameof(People)); }
         }
 
-        private CheckboxButtonViewModel _infiltration;
-        public CheckboxButtonViewModel Infiltration
+        private InfiltrationViewModel _infiltration;
+        public InfiltrationViewModel Infiltration
         {
             get => _infiltration;
             set { this.Set(() => _infiltration = value, nameof(Infiltration)); }
         }
 
-        private CheckboxButtonViewModel _ventilation;
-        public CheckboxButtonViewModel Ventilation
+        private VentilationViewModel _ventilation;
+        public VentilationViewModel Ventilation
         {
             get => _ventilation;
             set { this.Set(() => _ventilation = value, nameof(Ventilation)); }
         }
 
-        private CheckboxButtonViewModel _setpoint;
-        public CheckboxButtonViewModel Setpoint
+        private SetpointViewModel _setpoint;
+        public SetpointViewModel Setpoint
         {
             get => _setpoint;
             set { this.Set(() => _setpoint = value, nameof(Setpoint)); }
         }
 
-        private CheckboxButtonViewModel _serviceHotWater;
-        public CheckboxButtonViewModel ServiceHotWater
+        private ServiceHotWaterViewModel _serviceHotWater;
+        public ServiceHotWaterViewModel ServiceHotWater
         {
             get => _serviceHotWater;
             set { this.Set(() => _serviceHotWater = value, nameof(ServiceHotWater)); }
@@ -276,71 +276,38 @@ namespace Honeybee.UI
             var allLpds = rooms.Select(_ => _.Properties.Energy?.Lighting).Distinct().ToList();
             this.Lighting = new LightingViewModel(libSource, allLpds, (s) => _refHBObj.Properties.Energy.Lighting = s as LightingAbridged);
 
-           
-            
-
-
-            this.ElecEquipment = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.ElectricEquipment = s as ElectricEquipmentAbridged);
 
             // ElecEqp
-            if (rooms.Select(_ => _.Properties.Energy?.ElectricEquipment?.Identifier).Distinct().Count() > 1)
-                this.ElecEquipment.SetBtnName(this.Varies);
-            else
-                this.ElecEquipment.SetPropetyObj(_refHBObj.Properties.Energy?.ElectricEquipment);
+            var allEqps = rooms.Select(_ => _.Properties.Energy?.ElectricEquipment).Distinct().ToList();
+            this.ElecEquipment = new ElecEquipmentViewModel(libSource, allEqps, (s) => _refHBObj.Properties.Energy.ElectricEquipment = s as ElectricEquipmentAbridged);
 
-
-            this.Gas = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.GasEquipment = s as GasEquipmentAbridged);
 
             // GasEqp
-            if (rooms.Select(_ => _.Properties.Energy?.GasEquipment?.Identifier).Distinct().Count() > 1)
-                this.Gas.SetBtnName(this.Varies);
-            else
-                this.Gas.SetPropetyObj(_refHBObj.Properties.Energy?.GasEquipment);
+            var allGas = rooms.Select(_ => _.Properties.Energy?.GasEquipment).Distinct().ToList();
+            this.Gas = new GasEquipmentViewModel(libSource, allGas, (s) => _refHBObj.Properties.Energy.GasEquipment = s as GasEquipmentAbridged);
 
-
-            this.People = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.People = s as PeopleAbridged);
 
             // People
-            if (rooms.Select(_ => _.Properties.Energy?.People?.Identifier).Distinct().Count() > 1)
-                this.People.SetBtnName(this.Varies);
-            else
-                this.People.SetPropetyObj(_refHBObj.Properties.Energy?.People);
+            var allPpls = rooms.Select(_ => _.Properties.Energy?.People).Distinct().ToList();
+            this.People = new PeopleViewModel(libSource, allPpls, (s) => _refHBObj.Properties.Energy.People = s as PeopleAbridged);
 
-
-            this.Infiltration = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.Infiltration = s as InfiltrationAbridged);
 
             // Infiltration
-            if (rooms.Select(_ => _.Properties.Energy?.Infiltration?.Identifier).Distinct().Count() > 1)
-                this.Infiltration.SetBtnName(this.Varies);
-            else
-                this.Infiltration.SetPropetyObj(_refHBObj.Properties.Energy?.Infiltration);
-
-
-            this.Ventilation = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.Ventilation = s as VentilationAbridged);
+            var allInfs = rooms.Select(_ => _.Properties.Energy?.Infiltration).Distinct().ToList();
+            this.Infiltration = new InfiltrationViewModel(libSource, allInfs, (s) => _refHBObj.Properties.Energy.Infiltration = s as InfiltrationAbridged);
 
             // Ventilation
-            if (rooms.Select(_ => _.Properties.Energy?.Ventilation?.Identifier).Distinct().Count() > 1)
-                this.Ventilation.SetBtnName(this.Varies);
-            else
-                this.Ventilation.SetPropetyObj(_refHBObj.Properties.Energy?.Ventilation);
-
-
-            this.Setpoint = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.Setpoint = s as SetpointAbridged);
+            var allVents = rooms.Select(_ => _.Properties.Energy?.Ventilation).Distinct().ToList();
+            this.Ventilation = new VentilationViewModel(libSource, allVents, (s) => _refHBObj.Properties.Energy.Ventilation = s as VentilationAbridged);
 
             // Setpoint
-            if (rooms.Select(_ => _.Properties.Energy?.Setpoint?.Identifier).Distinct().Count() > 1)
-                this.Setpoint.SetBtnName(this.Varies);
-            else
-                this.Setpoint.SetPropetyObj(_refHBObj.Properties.Energy?.Setpoint);
-
-
-            this.ServiceHotWater = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.ServiceHotWater = s as ServiceHotWaterAbridged);
+            var allStps = rooms.Select(_ => _.Properties.Energy?.Setpoint).Distinct().ToList();
+            this.Setpoint = new SetpointViewModel(libSource, allStps, (s) => _refHBObj.Properties.Energy.Setpoint = s as SetpointAbridged);
 
             // ServiceHotWater
-            if (rooms.Select(_ => _.Properties.Energy?.ServiceHotWater?.Identifier).Distinct().Count() > 1)
-                this.ServiceHotWater.SetBtnName(this.Varies);
-            else
-                this.ServiceHotWater.SetPropetyObj(_refHBObj.Properties.Energy?.ServiceHotWater);
+            var allSHW = rooms.Select(_ => _.Properties.Energy?.ServiceHotWater).Distinct().ToList();
+            this.ServiceHotWater = new ServiceHotWaterViewModel(libSource, allSHW, (s) => _refHBObj.Properties.Energy.ServiceHotWater = s as ServiceHotWaterAbridged);
+
 
 
             //this.VentControl = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.WindowVentControl = s as VentilationControlAbridged);
@@ -400,9 +367,16 @@ namespace Honeybee.UI
                 }
                 
 
-                // lighting
+                // loads
                 item.Properties.Energy.Lighting = this.Lighting.MatchObj(item.Properties.Energy.Lighting);
-            
+                item.Properties.Energy.ElectricEquipment = this.ElecEquipment.MatchObj(item.Properties.Energy.ElectricEquipment);
+                item.Properties.Energy.GasEquipment = this.Gas.MatchObj(item.Properties.Energy.GasEquipment);
+                item.Properties.Energy.People = this.People.MatchObj(item.Properties.Energy.People);
+                item.Properties.Energy.Infiltration = this.Infiltration.MatchObj(item.Properties.Energy.Infiltration);
+                item.Properties.Energy.Ventilation = this.Ventilation.MatchObj(item.Properties.Energy.Ventilation);
+                item.Properties.Energy.Setpoint = this.Setpoint.MatchObj(item.Properties.Energy.Setpoint);
+                item.Properties.Energy.ServiceHotWater = this.ServiceHotWater.MatchObj(item.Properties.Energy.ServiceHotWater);
+
             }
 
             return this._hbObjs;
@@ -410,7 +384,6 @@ namespace Honeybee.UI
 
         public ICommand RoomConstructionSetCommand => new RelayCommand(() =>
         {
-            //var lib = _libSource.Energy;
             var dialog = new Dialog_ConstructionSetSelector(_libSource.Energy);
             var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
@@ -421,7 +394,6 @@ namespace Honeybee.UI
 
         public ICommand RoomProgramTypeCommand => new RelayCommand(() =>
         {
-            //var lib = _libSource.Energy;
             var dialog = new Dialog_ProgramTypeSelector(_libSource.Energy);
             var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
@@ -432,7 +404,6 @@ namespace Honeybee.UI
 
         public ICommand RoomHVACCommand => new RelayCommand(() =>
         {
-            //var lib = _libSource.Energy;
             var dialog = new Dialog_HVACSelector(_libSource.Energy);
             var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
@@ -443,7 +414,6 @@ namespace Honeybee.UI
 
         public ICommand ModifierSetCommand => new RelayCommand(() =>
         {
-            //var lib = _libSource.Energy;
             var dialog = new Dialog_ModifierSetSelector(_libSource.Radiance);
             var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)

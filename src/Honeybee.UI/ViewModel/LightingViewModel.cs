@@ -11,13 +11,13 @@ namespace Honeybee.UI
         private LightingAbridged _refHBObj => this.refObjProperty as LightingAbridged;
 
         // WattsPerArea
-        private DoubleViewModel _isWattsPerArea;
+        private DoubleViewModel _wattsPerArea;
 
         public DoubleViewModel WattsPerArea
         {
-            get => _isWattsPerArea;
+            get => _wattsPerArea;
             private set {
-                this.Set(() => _isWattsPerArea = value, nameof(WattsPerArea)); 
+                this.Set(() => _wattsPerArea = value, nameof(WattsPerArea)); 
             }
         }
         
@@ -32,39 +32,39 @@ namespace Honeybee.UI
         }
 
         // RadiantFractionText
-        private DoubleViewModel _isRadiantFraction;
+        private DoubleViewModel _radiantFraction;
 
         public DoubleViewModel RadiantFraction
         {
-            get => _isRadiantFraction;
-            private set { this.Set(() => _isRadiantFraction = value, nameof(RadiantFraction)); }
+            get => _radiantFraction;
+            private set { this.Set(() => _radiantFraction = value, nameof(RadiantFraction)); }
         }
 
         // VisibleFraction
-        private DoubleViewModel _isVisibleFraction;
+        private DoubleViewModel _visibleFraction;
 
         public DoubleViewModel VisibleFraction
         {
-            get => _isVisibleFraction;
-            private set { this.Set(() => _isVisibleFraction = value, nameof(VisibleFraction)); }
+            get => _visibleFraction;
+            private set { this.Set(() => _visibleFraction = value, nameof(VisibleFraction)); }
         }
 
         // BaselineWattsPerArea
-        private DoubleViewModel _isBaselineWattsPerArea;
+        private DoubleViewModel _baselineWattsPerArea;
 
         public DoubleViewModel BaselineWattsPerArea
         {
-            get => _isBaselineWattsPerArea;
-            private set { this.Set(() => _isBaselineWattsPerArea = value, nameof(BaselineWattsPerArea)); }
+            get => _baselineWattsPerArea;
+            private set { this.Set(() => _baselineWattsPerArea = value, nameof(BaselineWattsPerArea)); }
         }
 
         // BaselineWattsPerArea
-        private DoubleViewModel _isReturnAirFraction;
+        private DoubleViewModel _returnAirFraction;
 
         public DoubleViewModel ReturnAirFraction
         {
-            get => _isReturnAirFraction;
-            private set { this.Set(() => _isReturnAirFraction = value, nameof(ReturnAirFraction)); }
+            get => _returnAirFraction;
+            private set { this.Set(() => _returnAirFraction = value, nameof(ReturnAirFraction)); }
         }
 
 
