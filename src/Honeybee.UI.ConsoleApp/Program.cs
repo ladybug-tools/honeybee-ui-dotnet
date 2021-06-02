@@ -29,9 +29,13 @@ namespace Honeybee.UI.ConsoleApp
 
                 var panel = new DynamicLayout();
 
+                var ltn = new LightingAbridged("lnt", 12, "Always On");
+                var ltn2 = new LightingAbridged("lnt", 15, "Always On");
+                var dlightCtrl = new DaylightingControl(new List<double>() { 0.5, 0.1, 0.5 }, offAtMinimum: true);
+                var ppl = new PeopleAbridged("ppl", 0.1, "Always On", "Always On", latentFraction: new Autocalculate());
                 var RoomPropertybtn = new Button() { Text = "2 Rooms Property" };
-                var rm1 = new Room("id1", new List<Face>(), new RoomPropertiesAbridged(), "name1", multiplier: 1, story: "11");
-                var rm2 = new Room("id2", new List<Face>(), new RoomPropertiesAbridged(new RoomEnergyPropertiesAbridged("aaa")), "name2", multiplier: 2, story: "22");
+                var rm1 = new Room("id1", new List<Face>(), new RoomPropertiesAbridged(new RoomEnergyPropertiesAbridged("aaa", lighting: ltn)), "name1", multiplier: 1, story: "11");
+                var rm2 = new Room("id2", new List<Face>(), new RoomPropertiesAbridged(new RoomEnergyPropertiesAbridged("bbb", lighting: ltn2, people:ppl, daylightingControl: dlightCtrl)), "name2", multiplier: 2, story: "22");
                 var rms = new List<Room>() { rm1, rm2 };
                 RoomPropertybtn.Click += (s, e) =>
                 {
@@ -54,8 +58,7 @@ namespace Honeybee.UI.ConsoleApp
 
                 RoomPropertybtn2.Click += (s, e) =>
                 {
-                    var rm = new Room("id2", new List<Face>(), new RoomPropertiesAbridged(new RoomEnergyPropertiesAbridged(programType: "Plenum")), "name2", multiplier: 2, story: "22");
-                    var dialog = new Honeybee.UI.View.RoomPropertyDialog(md.Properties, new List<Room>() { rm });
+                    var dialog = new Honeybee.UI.View.RoomPropertyDialog(md.Properties, new List<Room>() { rm2 });
                     var dialog_rc = dialog.ShowModal();
                     if (dialog_rc != null)
                     {
