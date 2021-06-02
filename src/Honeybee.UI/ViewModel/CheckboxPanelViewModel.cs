@@ -4,12 +4,21 @@ using System;
 
 namespace Honeybee.UI
 {
-    public class CheckboxPanelViewModel : ViewModelBase
+    public class CheckboxPanelViewModel : CheckboxPanelViewModel<IIDdBase>
+    {
+        public CheckboxPanelViewModel(ModelProperties libSource, Action<IIDdBase> setAction):base(libSource, setAction)
+        {
+        }
+
+    }
+
+    public class CheckboxPanelViewModel<T> : ViewModelBase 
+        where T: IHoneybeeObject
     {
         public string Varies => "<varies>";
         //public bool IsVaries { get; private set; }
-        private HoneybeeSchema.IIDdBase _refObjProperty;
-        protected HoneybeeSchema.IIDdBase refObjProperty
+        private T _refObjProperty;
+        protected T refObjProperty
         {
             get => _refObjProperty;
             set
@@ -18,10 +27,10 @@ namespace Honeybee.UI
                 SetHBProperty(value);
             }
         }
-        public Action<HoneybeeSchema.IIDdBase> SetHBProperty { get; private set; }
+        public Action<T> SetHBProperty { get; private set; }
 
 
-        private bool _isPanelEnabled;
+        private bool _isPanelEnabled = true;
 
         public bool IsPanelEnabled
         {
@@ -40,7 +49,7 @@ namespace Honeybee.UI
                 this.Set(() => _isCheckboxChecked = value, nameof(IsCheckboxChecked));
                 IsPanelEnabled = !value;
                 if (_isCheckboxChecked)
-                    SetHBProperty(null);
+                    SetHBProperty(default(T));
                 else
                 {
                     SetHBProperty(_refObjProperty);
@@ -50,19 +59,18 @@ namespace Honeybee.UI
 
         internal ModelProperties _libSource { get; set; }
 
-        public CheckboxPanelViewModel(ModelProperties libSource, Action<HoneybeeSchema.IIDdBase> setAction)
+        public CheckboxPanelViewModel(ModelProperties libSource, Action<T> setAction)
         {
             this._libSource = libSource;
             this.SetHBProperty = setAction;
         }
 
 
-        public void SetPropetyObj(HoneybeeSchema.IIDdBase obj)
+        public void SetPropetyObj(T obj)
         {
             this.refObjProperty = obj;
         }
 
     }
-
 
 }

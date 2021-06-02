@@ -98,8 +98,10 @@ namespace Honeybee.UI.View
             tb.Pages.Add(new TabPage(basis) { Text = "Basis" });
 
             var loads = GenLoadsPanel();
-            //layout.AddSeparateRow(loads);
             tb.Pages.Add(new TabPage(loads) { Text= "Room Loads"});
+
+            var ctrls = GenControlPanel();
+            tb.Pages.Add(new TabPage(ctrls) { Text = "Room Controls" });
 
             layout.AddRow(tb);
 
@@ -195,7 +197,6 @@ namespace Honeybee.UI.View
         private DynamicLayout GenLoadsPanel()
         {
             var layout = new DynamicLayout() { Height = 350 };
-            var vm = this._vm;
 
             layout.DefaultSpacing = new Size(4, 4);
             layout.DefaultPadding = new Padding(4);
@@ -231,6 +232,22 @@ namespace Honeybee.UI.View
             layout.EndScrollable();
             return layout;
         }
+
+        private DynamicLayout GenControlPanel()
+        {
+            var layout = new DynamicLayout() { Height = 350 };
+
+            layout.DefaultSpacing = new Size(4, 4);
+            layout.DefaultPadding = new Padding(4);
+            layout.BeginScrollable(BorderType.None);
+
+            layout.AddRow(GenVentCtrlPanel());
+            layout.AddRow(GenDlightCtrlPanel());
+            layout.AddRow(null);
+
+            layout.EndScrollable();
+            return layout;
+        }
     
         private GroupBox GenLightingPanel()
         {
@@ -238,8 +255,8 @@ namespace Honeybee.UI.View
 
             var layout = new DynamicLayout();
             layout.Bind((t) => t.Enabled, vm, v => v.Lighting.IsPanelEnabled);
+            layout.Bind((t) => t.Visible, vm, v => v.Lighting.IsPanelEnabled);
 
-         
             layout.DefaultSpacing = new Size(4, 4);
             layout.DefaultPadding = new Padding(4);
 
@@ -292,7 +309,7 @@ namespace Honeybee.UI.View
 
             var layout = new DynamicLayout();
             layout.Bind((t) => t.Enabled, vm, v => v.ElecEquipment.IsPanelEnabled);
-
+            layout.Bind((t) => t.Visible, vm, v => v.ElecEquipment.IsPanelEnabled);
 
             layout.DefaultSpacing = new Size(4, 4);
             layout.DefaultPadding = new Padding(4);
@@ -342,6 +359,7 @@ namespace Honeybee.UI.View
 
             var layout = new DynamicLayout();
             layout.Bind((t) => t.Enabled, vm, v => v.Gas.IsPanelEnabled);
+            layout.Bind((t) => t.Visible, vm, v => v.Gas.IsPanelEnabled);
 
 
             layout.DefaultSpacing = new Size(4, 4);
@@ -392,7 +410,7 @@ namespace Honeybee.UI.View
 
             var layout = new DynamicLayout();
             layout.Bind((t) => t.Enabled, vm, v => v.People.IsPanelEnabled);
-
+            layout.Bind((t) => t.Visible, vm, v => v.People.IsPanelEnabled);
 
             layout.DefaultSpacing = new Size(4, 4);
             layout.DefaultPadding = new Padding(4);
@@ -429,6 +447,7 @@ namespace Honeybee.UI.View
             layout.AddRow(null, visFraction);
 
             layout.AddRow(null);
+        
 
 
             var ltnByProgram = new CheckBox() { Text = vm.ByProgramType };
@@ -446,7 +465,7 @@ namespace Honeybee.UI.View
 
             var layout = new DynamicLayout();
             layout.Bind((t) => t.Enabled, vm, v => v.Infiltration.IsPanelEnabled);
-
+            layout.Bind((t) => t.Visible, vm, v => v.Infiltration.IsPanelEnabled);
 
             layout.DefaultSpacing = new Size(4, 4);
             layout.DefaultPadding = new Padding(4);
@@ -496,6 +515,7 @@ namespace Honeybee.UI.View
 
             var layout = new DynamicLayout();
             layout.Bind((t) => t.Enabled, vm, v => v.Ventilation.IsPanelEnabled);
+            layout.Bind((t) => t.Visible, vm, v => v.Ventilation.IsPanelEnabled);
 
 
             layout.DefaultSpacing = new Size(4, 4);
@@ -546,6 +566,7 @@ namespace Honeybee.UI.View
 
             var layout = new DynamicLayout();
             layout.Bind((t) => t.Enabled, vm, v => v.Setpoint.IsPanelEnabled);
+            layout.Bind((t) => t.Visible, vm, v => v.Setpoint.IsPanelEnabled);
 
 
             layout.DefaultSpacing = new Size(4, 4);
@@ -590,6 +611,7 @@ namespace Honeybee.UI.View
 
             var layout = new DynamicLayout();
             layout.Bind((t) => t.Enabled, vm, v => v.ServiceHotWater.IsPanelEnabled);
+            layout.Bind((t) => t.Visible, vm, v => v.ServiceHotWater.IsPanelEnabled);
 
 
             layout.DefaultSpacing = new Size(4, 4);
@@ -631,6 +653,128 @@ namespace Honeybee.UI.View
             ltnByProgram.CheckedBinding.Bind(vm, _ => _.ServiceHotWater.IsCheckboxChecked);
 
             var gp = new GroupBox() { Text = "Service Hot Water" };
+            gp.Content = new StackLayout(ltnByProgram, layout) { Spacing = 4, Padding = new Padding(4) };
+
+            return gp;
+        }
+
+
+        private GroupBox GenVentCtrlPanel()
+        {
+            var vm = this._vm;
+
+            var layout = new DynamicLayout();
+            layout.Bind((t) => t.Enabled, vm, v => v.VentilationControl.IsPanelEnabled);
+            layout.Bind((t) => t.Visible, vm, v => v.VentilationControl.IsPanelEnabled);
+
+
+            layout.DefaultSpacing = new Size(4, 4);
+            layout.DefaultPadding = new Padding(4);
+
+            var wPerArea = new DoubleText();
+            wPerArea.Width = 250;
+            wPerArea.ReservedText = _vm.Varies;
+            wPerArea.TextBinding.Bind(vm, _ => _.VentilationControl.MinIndoorTemperature.NumberText);
+            layout.AddRow("MinIndoorTemperature:");
+            layout.AddRow( wPerArea);
+
+            var radFraction = new DoubleText();
+            radFraction.ReservedText = _vm.Varies;
+            radFraction.TextBinding.Bind(vm, _ => _.VentilationControl.MaxIndoorTemperature.NumberText);
+            layout.AddRow("MaxIndoorTemperature:");
+            layout.AddRow( radFraction);
+
+            var visFraction = new DoubleText();
+            visFraction.ReservedText = _vm.Varies;
+            visFraction.TextBinding.Bind(vm, _ => _.VentilationControl.MinOutdoorTemperature.NumberText);
+            layout.AddRow("MinOutdoorTemperature:");
+            layout.AddRow( visFraction);
+
+            var airFraction = new DoubleText();
+            airFraction.ReservedText = _vm.Varies;
+            airFraction.TextBinding.Bind(vm, _ => _.VentilationControl.MaxOutdoorTemperature.NumberText);
+            layout.AddRow("MaxOutdoorTemperature:");
+            layout.AddRow(airFraction);
+
+            var delta = new DoubleText();
+            delta.ReservedText = _vm.Varies;
+            delta.TextBinding.Bind(vm, _ => _.VentilationControl.DeltaTemperature.NumberText);
+            layout.AddRow("Delta Temperature:");
+            layout.AddRow(delta);
+
+            var sch = new Button();
+            sch.TextBinding.Bind(vm, _ => _.VentilationControl.Schedule.BtnName);
+            sch.Bind(_ => _.Command, vm, _ => _.VentilationControl.ScheduleCommand);
+            layout.AddRow("Schedule:");
+            layout.AddRow(sch);
+
+            layout.AddRow(null);
+
+
+            var ltnByProgram = new CheckBox() { Text = vm.NoControl };
+            ltnByProgram.CheckedBinding.Bind(vm, _ => _.VentilationControl.IsCheckboxChecked);
+
+            var gp = new GroupBox() { Text = "Ventilation Controls" };
+            gp.Content = new StackLayout(ltnByProgram, layout) { Spacing = 4, Padding = new Padding(4) };
+
+            return gp;
+        }
+
+
+        private GroupBox GenDlightCtrlPanel()
+        {
+            var vm = this._vm;
+
+            var layout = new DynamicLayout();
+            layout.Bind((t) => t.Enabled, vm, v => v.DaylightingControl.IsPanelEnabled);
+            layout.Bind((t) => t.Visible, vm, v => v.DaylightingControl.IsPanelEnabled);
+
+
+            layout.DefaultSpacing = new Size(4, 4);
+            layout.DefaultPadding = new Padding(4);
+
+            var sch = new Button();
+            sch.TextBinding.Bind(vm, _ => _.DaylightingControl.SensorPosition.BtnName);
+            sch.Bind(_ => _.Command, vm, _ => _.DaylightingControl.SensorPositionCommand);
+            layout.AddRow("Sensor Position:");
+            layout.AddRow(sch);
+
+            var wPerArea = new DoubleText();
+            wPerArea.Width = 250;
+            wPerArea.ReservedText = _vm.Varies;
+            wPerArea.TextBinding.Bind(vm, _ => _.DaylightingControl.IlluminanceSetpoint.NumberText);
+            layout.AddRow("Illuminance Setpoint:");
+            layout.AddRow(wPerArea);
+
+            var visFraction = new DoubleText();
+            visFraction.ReservedText = _vm.Varies;
+            visFraction.TextBinding.Bind(vm, _ => _.DaylightingControl.ControlFraction.NumberText);
+            layout.AddRow("Control Fraction:");
+            layout.AddRow(visFraction);
+
+            var airFraction = new DoubleText();
+            airFraction.ReservedText = _vm.Varies;
+            airFraction.TextBinding.Bind(vm, _ => _.DaylightingControl.MinPowerInput.NumberText);
+            layout.AddRow("MinPower Input:");
+            layout.AddRow(airFraction);
+
+            var delta = new DoubleText();
+            delta.ReservedText = _vm.Varies;
+            delta.TextBinding.Bind(vm, _ => _.DaylightingControl.MinLightOutput.NumberText);
+            layout.AddRow("MinLight Output:");
+            layout.AddRow( delta);
+
+            var offAtMin = new CheckBox();
+            offAtMin.CheckedBinding.Bind(vm, _ => _.DaylightingControl.OffAtMinimum);
+            layout.AddRow("Off At Minimum:");
+            layout.AddRow(offAtMin);
+            layout.AddRow(null);
+
+
+            var ltnByProgram = new CheckBox() { Text = vm.NoControl };
+            ltnByProgram.CheckedBinding.Bind(vm, _ => _.DaylightingControl.IsCheckboxChecked);
+
+            var gp = new GroupBox() { Text = "Daylighting Controls" };
             gp.Content = new StackLayout(ltnByProgram, layout) { Spacing = 4, Padding = new Padding(4) };
 
             return gp;

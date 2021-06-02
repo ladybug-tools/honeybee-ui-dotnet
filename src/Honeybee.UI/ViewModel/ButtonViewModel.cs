@@ -1,24 +1,46 @@
 ﻿using Eto.Forms;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Honeybee.UI
 {
-    public class ButtonViewModel : ViewModelBase
+    public class ButtonViewModel: ButtonViewModel<HoneybeeSchema.IIDdBase>
+    {
+        public ButtonViewModel(Action<HoneybeeSchema.IIDdBase> setAction): base(setAction)
+        {
+        }
+    }
+
+    public class ButtonViewModel<T> : ViewModelBase
     {
         public string Varies => "<varies>";
         public bool IsVaries;
-        private HoneybeeSchema.IIDdBase _refObjProperty;
-        private HoneybeeSchema.IIDdBase refObjProperty
+        private T _refObjProperty;
+        private T refObjProperty
         {
             get => _refObjProperty;
             set
             {
                 _refObjProperty = value;
                 SetHBProperty(value);
-                BtnName = value?.DisplayName ?? value?.Identifier;
+
+                if (value == null)
+                {
+                    BtnName = null;
+                    return;
+                }
+
+                if (value is HoneybeeSchema.IIDdBase idd)
+                    BtnName = idd?.DisplayName ?? idd?.Identifier;
+                else if (value is List<double> point)
+                    BtnName = $"({string.Join(",", point.Take(3))})";
+                else
+                    BtnName = value.GetType().Name;
+
             }
         }
-        public Action<HoneybeeSchema.IIDdBase> SetHBProperty { get; private set; }
+        public Action<T> SetHBProperty { get; private set; }
 
 
         private string _btnName;
@@ -33,7 +55,7 @@ namespace Honeybee.UI
         }
 
       
-        public ButtonViewModel(Action<HoneybeeSchema.IIDdBase> setAction)
+        public ButtonViewModel(Action<T> setAction)
         {
             this.SetHBProperty = setAction;
         }
@@ -43,11 +65,12 @@ namespace Honeybee.UI
             this.BtnName = name;
         }
 
-        public void SetPropetyObj(HoneybeeSchema.IIDdBase obj)
+        public void SetPropetyObj(T obj)
         {
             this.refObjProperty = obj;
         }
     }
+
     public class DoubleViewModel : ViewModelBase
     {
         public string Varies => "<varies>";

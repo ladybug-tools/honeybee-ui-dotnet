@@ -18,6 +18,7 @@ namespace Honeybee.UI
         public string ByGlobalConstructionSet => "By Global Construction Set";
         public string ByProgramType => "By Room Program Type";
         public string ByGlobalModifierSet => "By Global Modifier Set";
+        public string NoControl => "No Control";
 
         private Room _refHBObj;
   
@@ -180,6 +181,20 @@ namespace Honeybee.UI
             get => _serviceHotWater;
             set { this.Set(() => _serviceHotWater = value, nameof(ServiceHotWater)); }
         }
+
+        private VentilationControlViewModel _ventilationControl;
+        public VentilationControlViewModel VentilationControl
+        {
+            get => _ventilationControl;
+            set { this.Set(() => _ventilationControl = value, nameof(VentilationControl)); }
+        }
+
+        private DaylightingControlViewModel _daylightingControl;
+        public DaylightingControlViewModel DaylightingControl
+        {
+            get => _daylightingControl;
+            set { this.Set(() => _daylightingControl = value, nameof(DaylightingControl)); }
+        }
         #endregion
 
 
@@ -276,21 +291,17 @@ namespace Honeybee.UI
             var allLpds = rooms.Select(_ => _.Properties.Energy?.Lighting).Distinct().ToList();
             this.Lighting = new LightingViewModel(libSource, allLpds, (s) => _refHBObj.Properties.Energy.Lighting = s as LightingAbridged);
 
-
             // ElecEqp
             var allEqps = rooms.Select(_ => _.Properties.Energy?.ElectricEquipment).Distinct().ToList();
             this.ElecEquipment = new ElecEquipmentViewModel(libSource, allEqps, (s) => _refHBObj.Properties.Energy.ElectricEquipment = s as ElectricEquipmentAbridged);
-
 
             // GasEqp
             var allGas = rooms.Select(_ => _.Properties.Energy?.GasEquipment).Distinct().ToList();
             this.Gas = new GasEquipmentViewModel(libSource, allGas, (s) => _refHBObj.Properties.Energy.GasEquipment = s as GasEquipmentAbridged);
 
-
             // People
             var allPpls = rooms.Select(_ => _.Properties.Energy?.People).Distinct().ToList();
             this.People = new PeopleViewModel(libSource, allPpls, (s) => _refHBObj.Properties.Energy.People = s as PeopleAbridged);
-
 
             // Infiltration
             var allInfs = rooms.Select(_ => _.Properties.Energy?.Infiltration).Distinct().ToList();
@@ -310,22 +321,13 @@ namespace Honeybee.UI
 
 
 
-            //this.VentControl = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.WindowVentControl = s as VentilationControlAbridged);
+            // VentControl
+            var allVentCtrls = rooms.Select(_ => _.Properties.Energy?.WindowVentControl).Distinct().ToList();
+            this.VentilationControl = new VentilationControlViewModel(libSource, allVentCtrls, (s) => _refHBObj.Properties.Energy.WindowVentControl = s);
 
-            //// VentControl
-            //if (rooms.Select(_ => _.Properties.Energy?.WindowVentControl).Distinct().Count() > 1)
-            //    this.VentControl.SetBtnName(this.Varies);
-            //else
-            //    this.VentControl.SetPropetyObj(_refHBObj.Properties.Energy?.WindowVentControl);
-
-            //this.DaylightingControl = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.DaylightingControl = s as DaylightingControl);
-
-            //// DaylightingControl
-            //if (rooms.Select(_ => _.Properties.Energy?.DaylightingControl).Distinct().Count() > 1)
-            //    this.DaylightingControl.SetBtnName(this.Varies);
-            //else
-            //    this.DaylightingControl.SetPropetyObj(_refHBObj.Properties.Energy?.DaylightingControl);
-
+            // DaylightingControl
+            var allDltCtrls = rooms.Select(_ => _.Properties.Energy?.DaylightingControl).Distinct().ToList();
+            this.DaylightingControl = new DaylightingControlViewModel(libSource, allDltCtrls, (s) => _refHBObj.Properties.Energy.DaylightingControl = s);
 
             this._hbObjs = rooms.Select(_ => _.DuplicateRoom()).ToList();
 
@@ -376,6 +378,10 @@ namespace Honeybee.UI
                 item.Properties.Energy.Ventilation = this.Ventilation.MatchObj(item.Properties.Energy.Ventilation);
                 item.Properties.Energy.Setpoint = this.Setpoint.MatchObj(item.Properties.Energy.Setpoint);
                 item.Properties.Energy.ServiceHotWater = this.ServiceHotWater.MatchObj(item.Properties.Energy.ServiceHotWater);
+
+                // controls
+                item.Properties.Energy.WindowVentControl = this.VentilationControl.MatchObj(item.Properties.Energy.WindowVentControl);
+                item.Properties.Energy.DaylightingControl = this.DaylightingControl.MatchObj(item.Properties.Energy.DaylightingControl);
 
             }
 
