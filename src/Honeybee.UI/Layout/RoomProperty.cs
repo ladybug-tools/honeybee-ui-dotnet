@@ -15,6 +15,10 @@ namespace Honeybee.UI.View
         {
             try
             {
+                Title = $"Room Properties - {DialogHelper.PluginName}";
+                WindowStyle = WindowStyle.Default;
+                this.Icon = DialogHelper.HoneybeeIcon;
+
                 var p = new DynamicLayout();
                 p.DefaultSpacing = new Size(4, 4);
                 p.DefaultPadding = new Padding(4);
@@ -264,33 +268,38 @@ namespace Honeybee.UI.View
             wPerArea.Width = 250;
             wPerArea.ReservedText = _vm.Varies;
             wPerArea.TextBinding.Bind(vm, _ => _.Lighting.WattsPerArea.NumberText);
-            layout.AddRow("Watts/m2:", wPerArea);
+            layout.AddRow("Watts/Area:");
+            layout.AddRow(wPerArea);
 
             var sch = new Button();
             sch.TextBinding.Bind(vm, _ => _.Lighting.Schedule.BtnName);
             sch.Bind(_=>_.Command, vm, _ => _.Lighting.ScheduleCommand);
-            layout.AddRow("Schedule:", sch);
+            layout.AddRow("Schedule:");
+            layout.AddRow(sch);
 
             var radFraction = new DoubleText();
             radFraction.ReservedText = _vm.Varies;
             radFraction.TextBinding.Bind(vm, _ => _.Lighting.RadiantFraction.NumberText);
-            layout.AddRow("Radiant Fraction:", radFraction);
+            layout.AddRow("Radiant Fraction:");
+            layout.AddRow(radFraction);
 
             var visFraction = new DoubleText();
             visFraction.ReservedText = _vm.Varies;
             visFraction.TextBinding.Bind(vm, _ => _.Lighting.VisibleFraction.NumberText);
-            layout.AddRow("Visible Fraction:", visFraction);
+            layout.AddRow("Visible Fraction:");
+            layout.AddRow(visFraction);
 
             var airFraction = new DoubleText();
             airFraction.ReservedText = _vm.Varies;
             airFraction.TextBinding.Bind(vm, _ => _.Lighting.ReturnAirFraction.NumberText);
-            layout.AddRow("Return Air Fraction:", airFraction);
+            layout.AddRow("Return Air Fraction:");
+            layout.AddRow(airFraction);
 
             var baseline = new DoubleText();
             baseline.ReservedText = _vm.Varies;
             baseline.TextBinding.Bind(vm, _ => _.Lighting.BaselineWattsPerArea.NumberText);
-            layout.AddRow("Baseline Watts/m2:", baseline);
-
+            layout.AddRow("Baseline Watts/Area:");
+            layout.AddRow(baseline);
             layout.AddRow(null);
 
 
@@ -318,28 +327,32 @@ namespace Honeybee.UI.View
             wPerArea.Width = 250;
             wPerArea.ReservedText = _vm.Varies;
             wPerArea.TextBinding.Bind(vm, _ => _.ElecEquipment.WattsPerArea.NumberText);
-            layout.AddRow("Watts/m2:", wPerArea);
+            layout.AddRow("Watts/m2:");
+            layout.AddRow(wPerArea);
 
             var sch = new Button();
             sch.TextBinding.Bind(vm, _ => _.ElecEquipment.Schedule.BtnName);
             sch.Bind(_ => _.Command, vm, _ => _.ElecEquipment.ScheduleCommand);
-            layout.AddRow("Schedule:", sch);
+            layout.AddRow("Schedule:");
+            layout.AddRow( sch);
 
             var radFraction = new DoubleText();
             radFraction.ReservedText = _vm.Varies;
             radFraction.TextBinding.Bind(vm, _ => _.ElecEquipment.RadiantFraction.NumberText);
-            layout.AddRow("Radiant Fraction:", radFraction);
+            layout.AddRow("Radiant Fraction:");
+            layout.AddRow(radFraction);
 
             var visFraction = new DoubleText();
             visFraction.ReservedText = _vm.Varies;
             visFraction.TextBinding.Bind(vm, _ => _.ElecEquipment.LatentFraction.NumberText);
-            layout.AddRow("Latent Fraction:", visFraction);
+            layout.AddRow("Latent Fraction:");
+            layout.AddRow( visFraction);
 
             var airFraction = new DoubleText();
             airFraction.ReservedText = _vm.Varies;
             airFraction.TextBinding.Bind(vm, _ => _.ElecEquipment.LostFraction.NumberText);
-            layout.AddRow("Lost Fraction:", airFraction);
-             
+            layout.AddRow("Lost Fraction:");
+            layout.AddRow( airFraction);
 
             layout.AddRow(null);
 
@@ -369,28 +382,32 @@ namespace Honeybee.UI.View
             wPerArea.Width = 250;
             wPerArea.ReservedText = _vm.Varies;
             wPerArea.TextBinding.Bind(vm, _ => _.Gas.WattsPerArea.NumberText);
-            layout.AddRow("Watts/m2:", wPerArea);
+            layout.AddRow("Watts/Area:");
+            layout.AddRow(wPerArea);
 
             var sch = new Button();
             sch.TextBinding.Bind(vm, _ => _.Gas.Schedule.BtnName);
             sch.Bind(_ => _.Command, vm, _ => _.Gas.ScheduleCommand);
-            layout.AddRow("Schedule:", sch);
+            layout.AddRow("Schedule:");
+            layout.AddRow(sch);
 
             var radFraction = new DoubleText();
             radFraction.ReservedText = _vm.Varies;
             radFraction.TextBinding.Bind(vm, _ => _.Gas.RadiantFraction.NumberText);
-            layout.AddRow("Radiant Fraction:", radFraction);
+            layout.AddRow("Radiant Fraction:");
+            layout.AddRow( radFraction);
 
             var visFraction = new DoubleText();
             visFraction.ReservedText = _vm.Varies;
             visFraction.TextBinding.Bind(vm, _ => _.Gas.LatentFraction.NumberText);
-            layout.AddRow("Latent Fraction:", visFraction);
+            layout.AddRow("Latent Fraction:");
+            layout.AddRow(visFraction);
 
             var airFraction = new DoubleText();
             airFraction.ReservedText = _vm.Varies;
             airFraction.TextBinding.Bind(vm, _ => _.Gas.LostFraction.NumberText);
-            layout.AddRow("Lost Fraction:", airFraction);
-
+            layout.AddRow("Lost Fraction:");
+            layout.AddRow(airFraction);
 
             layout.AddRow(null);
 
@@ -419,23 +436,26 @@ namespace Honeybee.UI.View
             wPerArea.Width = 250;
             wPerArea.ReservedText = _vm.Varies;
             wPerArea.TextBinding.Bind(vm, _ => _.People.PeoplePerArea.NumberText);
-            layout.AddRow("People/m2:", wPerArea);
+            layout.AddRow("People/Area:");
+            layout.AddRow(wPerArea);
 
             var sch = new Button();
             sch.TextBinding.Bind(vm, _ => _.People.OccupancySchedule.BtnName);
             sch.Bind(_ => _.Command, vm, _ => _.People.ScheduleCommand);
-            layout.AddRow("Occupancy Schedule:", sch);
+            layout.AddRow("Occupancy Schedule:");
+            layout.AddRow(sch);
 
             var sch2 = new Button();
             sch2.TextBinding.Bind(vm, _ => _.People.ActivitySchedule.BtnName);
             sch2.Bind(_ => _.Command, vm, _ => _.People.ActivityScheduleCommand);
-            layout.AddRow("Activity Schedule:", sch2);
-
+            layout.AddRow("Activity Schedule:");
+            layout.AddRow(sch2);
 
             var radFraction = new DoubleText();
             radFraction.ReservedText = _vm.Varies;
             radFraction.TextBinding.Bind(vm, _ => _.People.RadiantFraction.NumberText);
-            layout.AddRow("Radiant Fraction:", radFraction);
+            layout.AddRow("Radiant Fraction:");
+            layout.AddRow(radFraction);
 
             var visFraction = new DoubleText();
             visFraction.ReservedText = _vm.Varies;
@@ -443,8 +463,9 @@ namespace Honeybee.UI.View
             visFraction.Bind(_ => _.Enabled, vm, _ => _.People.IsLatenFractionInputEnabled);
             var autosize = new CheckBox() { Text = "Autosize" };
             autosize.Bind(_ => _.Checked, vm, _ => _.People.IsLatentFractionAutosize);
-            layout.AddRow("Latent Fraction:", autosize);
-            layout.AddRow(null, visFraction);
+            layout.AddRow("Latent Fraction:");
+            layout.AddRow(autosize);
+            layout.AddRow(visFraction);
 
             layout.AddRow(null);
         
@@ -474,28 +495,32 @@ namespace Honeybee.UI.View
             wPerArea.Width = 250;
             wPerArea.ReservedText = _vm.Varies;
             wPerArea.TextBinding.Bind(vm, _ => _.Infiltration.FlowPerExteriorArea.NumberText);
-            layout.AddRow("Flow/m2(exterior):", wPerArea);
+            layout.AddRow("Flow/Area(exterior):");
+            layout.AddRow(wPerArea);
 
             var sch = new Button();
             sch.TextBinding.Bind(vm, _ => _.Infiltration.Schedule.BtnName);
             sch.Bind(_ => _.Command, vm, _ => _.Infiltration.ScheduleCommand);
-            layout.AddRow("Schedule:", sch);
+            layout.AddRow("Schedule:");
+            layout.AddRow(sch);
 
             var radFraction = new DoubleText();
             radFraction.ReservedText = _vm.Varies;
             radFraction.TextBinding.Bind(vm, _ => _.Infiltration.ConstantCoefficient.NumberText);
-            layout.AddRow("Constant Coefficient:", radFraction);
+            layout.AddRow("Constant Coefficient:");
+            layout.AddRow( radFraction);
 
             var visFraction = new DoubleText();
             visFraction.ReservedText = _vm.Varies;
             visFraction.TextBinding.Bind(vm, _ => _.Infiltration.TemperatureCoefficient.NumberText);
-            layout.AddRow("Temperature Coefficient:", visFraction);
+            layout.AddRow("Temperature Coefficient:");
+            layout.AddRow( visFraction);
 
             var airFraction = new DoubleText();
             airFraction.ReservedText = _vm.Varies;
             airFraction.TextBinding.Bind(vm, _ => _.Infiltration.VelocityCoefficient.NumberText);
-            layout.AddRow("Velocity Coefficient:", airFraction);
-
+            layout.AddRow("Velocity Coefficient:");
+            layout.AddRow(airFraction);
 
             layout.AddRow(null);
 
@@ -525,28 +550,32 @@ namespace Honeybee.UI.View
             wPerArea.Width = 250;
             wPerArea.ReservedText = _vm.Varies;
             wPerArea.TextBinding.Bind(vm, _ => _.Ventilation.FlowPerArea.NumberText);
-            layout.AddRow("Flow/m2:", wPerArea);
+            layout.AddRow("Flow/Area:");
+            layout.AddRow(wPerArea);
 
             var sch = new Button();
             sch.TextBinding.Bind(vm, _ => _.Ventilation.Schedule.BtnName);
             sch.Bind(_ => _.Command, vm, _ => _.Ventilation.ScheduleCommand);
-            layout.AddRow("Schedule:", sch);
+            layout.AddRow("Schedule:");
+            layout.AddRow(sch);
 
             var radFraction = new DoubleText();
             radFraction.ReservedText = _vm.Varies;
             radFraction.TextBinding.Bind(vm, _ => _.Ventilation.FlowPerPerson.NumberText);
-            layout.AddRow("Flow/Person:", radFraction);
+            layout.AddRow("Flow/Person:");
+            layout.AddRow(radFraction);
 
             var visFraction = new DoubleText();
             visFraction.ReservedText = _vm.Varies;
             visFraction.TextBinding.Bind(vm, _ => _.Ventilation.FlowPerZone.NumberText);
-            layout.AddRow("Flow/Zone:", visFraction);
+            layout.AddRow("Flow/Zone:");
+            layout.AddRow(visFraction);
 
             var airFraction = new DoubleText();
             airFraction.ReservedText = _vm.Varies;
             airFraction.TextBinding.Bind(vm, _ => _.Ventilation.AirChangesPerHour.NumberText);
-            layout.AddRow("AirChanges/Hour:", airFraction);
-
+            layout.AddRow("AirChanges/Hour:");
+            layout.AddRow(airFraction);
 
             layout.AddRow(null);
 
@@ -576,22 +605,26 @@ namespace Honeybee.UI.View
             var sch = new Button();
             sch.TextBinding.Bind(vm, _ => _.Setpoint.CoolingSchedule.BtnName);
             sch.Bind(_ => _.Command, vm, _ => _.Setpoint.CoolingScheduleCommand);
-            layout.AddRow("Cooling Schedule:", sch);
+            layout.AddRow("Cooling Schedule:");
+            layout.AddRow(sch);
 
             var sch2 = new Button();
             sch2.TextBinding.Bind(vm, _ => _.Setpoint.HeatingSchedule.BtnName);
             sch2.Bind(_ => _.Command, vm, _ => _.Setpoint.HeatingScheduleCommand);
-            layout.AddRow("Heating Schedule:", sch2);
+            layout.AddRow("Heating Schedule:");
+            layout.AddRow(sch2);
 
             var sch3 = new Button();
             sch3.TextBinding.Bind(vm, _ => _.Setpoint.HumidifyingSchedule.BtnName);
             sch3.Bind(_ => _.Command, vm, _ => _.Setpoint.HumidifyingScheduleCommand);
-            layout.AddRow("Humidifying Schedule:", sch3);
+            layout.AddRow("Humidifying Schedule:");
+            layout.AddRow(sch3);
 
             var sch4 = new Button();
             sch4.TextBinding.Bind(vm, _ => _.Setpoint.DehumidifyingSchedule.BtnName);
             sch4.Bind(_ => _.Command, vm, _ => _.Setpoint.DehumidifyingScheduleCommand);
-            layout.AddRow("Dehumidifying Schedule:", sch4);
+            layout.AddRow("Dehumidifying Schedule:");
+            layout.AddRow(sch4);
 
             layout.AddRow(null);
 
@@ -621,30 +654,33 @@ namespace Honeybee.UI.View
             wPerArea.Width = 250;
             wPerArea.ReservedText = _vm.Varies;
             wPerArea.TextBinding.Bind(vm, _ => _.ServiceHotWater.FlowPerArea.NumberText);
-            layout.AddRow("Flow/m2:", wPerArea);
+            layout.AddRow("Flow/Area:");
+            layout.AddRow(wPerArea);
 
             var sch = new Button();
             sch.TextBinding.Bind(vm, _ => _.ServiceHotWater.Schedule.BtnName);
             sch.Bind(_ => _.Command, vm, _ => _.ServiceHotWater.ScheduleCommand);
-            layout.AddRow("Schedule:", sch);
+            layout.AddRow("Schedule:");
+            layout.AddRow(sch);
 
             var airFraction = new DoubleText();
             airFraction.ReservedText = _vm.Varies;
             airFraction.TextBinding.Bind(vm, _ => _.ServiceHotWater.TargetTemperature.NumberText);
-            layout.AddRow("Target Temperature:", airFraction);
-
+            layout.AddRow("Target Temperature:");
+            layout.AddRow(airFraction);
 
             var radFraction = new DoubleText();
             radFraction.ReservedText = _vm.Varies;
             radFraction.TextBinding.Bind(vm, _ => _.ServiceHotWater.SensibleFraction.NumberText);
-            layout.AddRow("Sensible Fraction:", radFraction);
+            layout.AddRow("Sensible Fraction:");
+            layout.AddRow(radFraction);
 
             var visFraction = new DoubleText();
             visFraction.ReservedText = _vm.Varies;
             visFraction.TextBinding.Bind(vm, _ => _.ServiceHotWater.LatentFraction.NumberText);
-            layout.AddRow("Latent Fraction:", visFraction);
+            layout.AddRow("Latent Fraction:");
+            layout.AddRow(visFraction);
 
-       
 
             layout.AddRow(null);
 
