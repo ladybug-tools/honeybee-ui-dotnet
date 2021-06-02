@@ -13,24 +13,42 @@ namespace Honeybee.UI.View
     {
         public RoomPropertyDialog(HB.ModelProperties libSource, List<HB.Room> rooms)
         {
-            var p = new DynamicLayout();
-            p.DefaultSpacing = new Size(4, 4);
-            p.DefaultPadding = new Padding(4);
-
-            p.AddRow(RoomProperty.Instance);
-            RoomProperty.Instance.UpdatePanel(libSource, rooms);
-
-            var OKButton = new Button() { Text = "OK" };
-            OKButton.Click += (s, e) =>
+            try
             {
-                this.Close(RoomProperty.Instance.GetRooms());
-            };
+                var p = new DynamicLayout();
+                p.DefaultSpacing = new Size(4, 4);
+                p.DefaultPadding = new Padding(4);
 
-            AbortButton = new Button { Text = "Cancel" };
-            AbortButton.Click += (sender, e) => Close();
+                p.AddRow(RoomProperty.Instance);
+                RoomProperty.Instance.UpdatePanel(libSource, rooms);
 
-            p.AddSeparateRow(null, OKButton, this.AbortButton, null);
-            this.Content = p;
+                var OKButton = new Button() { Text = "OK" };
+                OKButton.Click += (s, e) =>
+                {
+                    try
+                    {
+                        this.Close(RoomProperty.Instance.GetRooms());
+                    }
+                    catch (Exception er)
+                    {
+                        MessageBox.Show(er.Message);
+                        //throw;
+                    }
+                 
+                };
+
+                AbortButton = new Button { Text = "Cancel" };
+                AbortButton.Click += (sender, e) => Close();
+
+                p.AddSeparateRow(null, OKButton, this.AbortButton, null);
+                this.Content = p;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+                //throw;
+            }
+
         }
     }
 
@@ -62,6 +80,7 @@ namespace Honeybee.UI.View
         public List<HB.Room> GetRooms()
         {
             return this._vm.GetRooms();
+           
         }
 
         private void Initialize()
@@ -80,7 +99,7 @@ namespace Honeybee.UI.View
 
             var loads = GenLoadsPanel();
             //layout.AddSeparateRow(loads);
-            tb.Pages.Add(new TabPage(loads) { Text= "Override Room Program Loads"});
+            tb.Pages.Add(new TabPage(loads) { Text= "Room Loads"});
 
             layout.AddRow(tb);
 
@@ -114,7 +133,7 @@ namespace Honeybee.UI.View
             storyTB.TextBinding.Bind(vm, (_) => _.Story);
             layout.AddRow("Story:", storyTB);
 
-            var multiplier_NS = new NumericText();
+            var multiplier_NS = new IntText();
             multiplier_NS.ReservedText = _vm.Varies;
             multiplier_NS.TextBinding.Bind(vm, _ => _.MultiplierText);
             layout.AddRow("Multiplier:", multiplier_NS);
@@ -183,106 +202,153 @@ namespace Honeybee.UI.View
             layout.BeginScrollable( BorderType.None);
 
             //Get lighting
-            var ltnDP = new Button();
-            ltnDP.Width = 250;
-            ltnDP.Bind((t) => t.Enabled, vm, v => v.Lighting.IsBtnEnabled);
-            ltnDP.TextBinding.Bind(vm, _ => _.Lighting.BtnName);
-            ltnDP.Command = vm.RoomHVACCommand;
-            var ltnByProgram = new CheckBox() { Text = vm.ByProgramType };
-            ltnByProgram.CheckedBinding.Bind(vm, _ => _.Lighting.IsCheckboxChecked);
+            var ltn = GenLightingPanel();
+            layout.AddRow(ltn);
 
-            layout.AddRow("Lighting:", ltnByProgram);
-            layout.AddRow(null, ltnDP);
+            ////Get People
+            //var pplDP = new Button();
+            //pplDP.Bind((t) => t.Enabled, vm, v => v.People.IsBtnEnabled);
+            //pplDP.TextBinding.Bind(vm, _ => _.People.BtnName);
+            //pplDP.Command = vm.RoomHVACCommand;
+            //var pplByProgram = new CheckBox() { Text = vm.ByProgramType };
+            //pplByProgram.CheckedBinding.Bind(vm, _ => _.People.IsCheckboxChecked);
 
-
-            //Get People
-            var pplDP = new Button();
-            pplDP.Bind((t) => t.Enabled, vm, v => v.People.IsBtnEnabled);
-            pplDP.TextBinding.Bind(vm, _ => _.People.BtnName);
-            pplDP.Command = vm.RoomHVACCommand;
-            var pplByProgram = new CheckBox() { Text = vm.ByProgramType };
-            pplByProgram.CheckedBinding.Bind(vm, _ => _.People.IsCheckboxChecked);
-
-            layout.AddRow("People:", pplByProgram);
-            layout.AddRow(null, pplDP);
+            //layout.AddRow("People:", pplByProgram);
+            //layout.AddRow(null, pplDP);
 
 
-            //Get ElecEquipment
-            var eqpDP = new Button();
-            eqpDP.Bind((t) => t.Enabled, vm, v => v.ElecEquipment.IsBtnEnabled);
-            eqpDP.TextBinding.Bind(vm, _ => _.ElecEquipment.BtnName);
-            eqpDP.Command = vm.RoomHVACCommand;
-            var eqpByProgram = new CheckBox() { Text = vm.ByProgramType };
-            eqpByProgram.CheckedBinding.Bind(vm, _ => _.ElecEquipment.IsCheckboxChecked);
+            ////Get ElecEquipment
+            //var eqpDP = new Button();
+            //eqpDP.Bind((t) => t.Enabled, vm, v => v.ElecEquipment.IsBtnEnabled);
+            //eqpDP.TextBinding.Bind(vm, _ => _.ElecEquipment.BtnName);
+            //eqpDP.Command = vm.RoomHVACCommand;
+            //var eqpByProgram = new CheckBox() { Text = vm.ByProgramType };
+            //eqpByProgram.CheckedBinding.Bind(vm, _ => _.ElecEquipment.IsCheckboxChecked);
 
-            layout.AddRow("ElecEquipment:", eqpByProgram);
-            layout.AddRow(null, eqpDP);
-
-
-            //Get gas Equipment
-            var gasDP = new Button();
-            gasDP.Bind((t) => t.Enabled, vm, v => v.Gas.IsBtnEnabled);
-            gasDP.TextBinding.Bind(vm, _ => _.Gas.BtnName);
-            gasDP.Command = vm.RoomHVACCommand;
-            var gasByProgram = new CheckBox() { Text = vm.ByProgramType };
-            gasByProgram.CheckedBinding.Bind(vm, _ => _.Gas.IsCheckboxChecked);
-
-            layout.AddRow("GasEquipment:", gasByProgram);
-            layout.AddRow(null, gasDP);
+            //layout.AddRow("ElecEquipment:", eqpByProgram);
+            //layout.AddRow(null, eqpDP);
 
 
-            //Get Ventilation
-            var ventDP = new Button();
-            ventDP.Bind((t) => t.Enabled, vm, v => v.Ventilation.IsBtnEnabled);
-            ventDP.TextBinding.Bind(vm, _ => _.Ventilation.BtnName);
-            ventDP.Command = vm.RoomHVACCommand;
-            var ventByProgram = new CheckBox() { Text = vm.ByProgramType };
-            ventByProgram.CheckedBinding.Bind(vm, _ => _.Ventilation.IsCheckboxChecked);
+            ////Get gas Equipment
+            //var gasDP = new Button();
+            //gasDP.Bind((t) => t.Enabled, vm, v => v.Gas.IsBtnEnabled);
+            //gasDP.TextBinding.Bind(vm, _ => _.Gas.BtnName);
+            //gasDP.Command = vm.RoomHVACCommand;
+            //var gasByProgram = new CheckBox() { Text = vm.ByProgramType };
+            //gasByProgram.CheckedBinding.Bind(vm, _ => _.Gas.IsCheckboxChecked);
 
-            layout.AddRow("Ventilation:", ventByProgram);
-            layout.AddRow(null, ventDP);
-
-
-            //Get Infiltration
-            var infDP = new Button();
-            infDP.Bind((t) => t.Enabled, vm, v => v.Infiltration.IsBtnEnabled);
-            infDP.TextBinding.Bind(vm, _ => _.Infiltration.BtnName);
-            infDP.Command = vm.RoomHVACCommand;
-            var infByProgram = new CheckBox() { Text = vm.ByProgramType };
-            infByProgram.CheckedBinding.Bind(vm, _ => _.Infiltration.IsCheckboxChecked);
-
-            layout.AddRow("Infiltration:", infByProgram);
-            layout.AddRow(null, infDP);
+            //layout.AddRow("GasEquipment:", gasByProgram);
+            //layout.AddRow(null, gasDP);
 
 
-            //Get Setpoint
-            var stpDP = new Button();
-            stpDP.Bind((t) => t.Enabled, vm, v => v.Setpoint.IsBtnEnabled);
-            stpDP.TextBinding.Bind(vm, _ => _.Setpoint.BtnName);
-            stpDP.Command = vm.RoomHVACCommand;
-            var stpByProgram = new CheckBox() { Text = vm.ByProgramType };
-            stpByProgram.CheckedBinding.Bind(vm, _ => _.Setpoint.IsCheckboxChecked);
+            ////Get Ventilation
+            //var ventDP = new Button();
+            //ventDP.Bind((t) => t.Enabled, vm, v => v.Ventilation.IsBtnEnabled);
+            //ventDP.TextBinding.Bind(vm, _ => _.Ventilation.BtnName);
+            //ventDP.Command = vm.RoomHVACCommand;
+            //var ventByProgram = new CheckBox() { Text = vm.ByProgramType };
+            //ventByProgram.CheckedBinding.Bind(vm, _ => _.Ventilation.IsCheckboxChecked);
 
-            layout.AddRow("Setpoint:", stpByProgram);
-            layout.AddRow(null, stpDP);
+            //layout.AddRow("Ventilation:", ventByProgram);
+            //layout.AddRow(null, ventDP);
 
 
-            //Get ServiceHotWater
-            var shwDP = new Button();
-            shwDP.Bind((t) => t.Enabled, vm, v => v.ServiceHotWater.IsBtnEnabled);
-            shwDP.TextBinding.Bind(vm, _ => _.ServiceHotWater.BtnName);
-            shwDP.Command = vm.RoomHVACCommand;
-            var shwByProgram = new CheckBox() { Text = vm.ByProgramType };
-            shwByProgram.CheckedBinding.Bind(vm, _ => _.ServiceHotWater.IsCheckboxChecked);
+            ////Get Infiltration
+            //var infDP = new Button();
+            //infDP.Bind((t) => t.Enabled, vm, v => v.Infiltration.IsBtnEnabled);
+            //infDP.TextBinding.Bind(vm, _ => _.Infiltration.BtnName);
+            //infDP.Command = vm.RoomHVACCommand;
+            //var infByProgram = new CheckBox() { Text = vm.ByProgramType };
+            //infByProgram.CheckedBinding.Bind(vm, _ => _.Infiltration.IsCheckboxChecked);
 
-            layout.AddRow("ServiceHotWater:", shwByProgram);
-            layout.AddRow(null, shwDP);
+            //layout.AddRow("Infiltration:", infByProgram);
+            //layout.AddRow(null, infDP);
+
+
+            ////Get Setpoint
+            //var stpDP = new Button();
+            //stpDP.Bind((t) => t.Enabled, vm, v => v.Setpoint.IsBtnEnabled);
+            //stpDP.TextBinding.Bind(vm, _ => _.Setpoint.BtnName);
+            //stpDP.Command = vm.RoomHVACCommand;
+            //var stpByProgram = new CheckBox() { Text = vm.ByProgramType };
+            //stpByProgram.CheckedBinding.Bind(vm, _ => _.Setpoint.IsCheckboxChecked);
+
+            //layout.AddRow("Setpoint:", stpByProgram);
+            //layout.AddRow(null, stpDP);
+
+
+            ////Get ServiceHotWater
+            //var shwDP = new Button();
+            //shwDP.Bind((t) => t.Enabled, vm, v => v.ServiceHotWater.IsBtnEnabled);
+            //shwDP.TextBinding.Bind(vm, _ => _.ServiceHotWater.BtnName);
+            //shwDP.Command = vm.RoomHVACCommand;
+            //var shwByProgram = new CheckBox() { Text = vm.ByProgramType };
+            //shwByProgram.CheckedBinding.Bind(vm, _ => _.ServiceHotWater.IsCheckboxChecked);
+
+            //layout.AddRow("ServiceHotWater:", shwByProgram);
+            //layout.AddRow(null, shwDP);
 
             layout.AddRow(null);
 
             layout.EndScrollable();
             return layout;
         }
+    
+        private GroupBox GenLightingPanel()
+        {
+            var vm = this._vm;
+
+            var layout = new DynamicLayout();
+            layout.Bind((t) => t.Enabled, vm, v => v.Lighting.IsPanelEnabled);
+
+         
+            layout.DefaultSpacing = new Size(4, 4);
+            layout.DefaultPadding = new Padding(4);
+
+            var wPerArea = new DoubleText();
+            wPerArea.Width = 250;
+            wPerArea.ReservedText = _vm.Varies;
+            wPerArea.TextBinding.Bind(vm, _ => _.Lighting.WattsPerArea.NumberText);
+            layout.AddRow("Watts/m2:", wPerArea);
+
+            var sch = new Button();
+            sch.TextBinding.Bind(vm, _ => _.Lighting.Schedule.BtnName);
+            sch.Bind(_=>_.Command, vm, _ => _.Lighting.ScheduleCommand);
+            layout.AddRow("Schedule:", sch);
+
+            var radFraction = new DoubleText();
+            radFraction.ReservedText = _vm.Varies;
+            radFraction.TextBinding.Bind(vm, _ => _.Lighting.RadiantFraction.NumberText);
+            layout.AddRow("Radiant Fraction:", radFraction);
+
+            var visFraction = new DoubleText();
+            visFraction.ReservedText = _vm.Varies;
+            visFraction.TextBinding.Bind(vm, _ => _.Lighting.VisibleFraction.NumberText);
+            layout.AddRow("Visible Fraction:", visFraction);
+
+            var airFraction = new DoubleText();
+            airFraction.ReservedText = _vm.Varies;
+            airFraction.TextBinding.Bind(vm, _ => _.Lighting.ReturnAirFraction.NumberText);
+            layout.AddRow("Return Air Fraction:", airFraction);
+
+            var baseline = new DoubleText();
+            baseline.ReservedText = _vm.Varies;
+            baseline.TextBinding.Bind(vm, _ => _.Lighting.BaselineWattsPerArea.NumberText);
+            layout.AddRow("Baseline Watts/m2:", baseline);
+
+            layout.AddRow(null);
+
+
+            var ltnByProgram = new CheckBox() { Text = vm.ByProgramType };
+            ltnByProgram.CheckedBinding.Bind(vm, _ => _.Lighting.IsCheckboxChecked);
+
+            var gp = new GroupBox() { Text = "Lighting" };
+            gp.Content = new StackLayout(ltnByProgram, layout) { Spacing = 4, Padding = new Padding(4) };
+
+            return gp;
+        }
+    
+    
     }
 
 
