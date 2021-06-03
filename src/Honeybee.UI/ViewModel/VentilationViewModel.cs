@@ -144,11 +144,11 @@ namespace Honeybee.UI
 
         public RelayCommand ScheduleCommand => new RelayCommand(() =>
         {
-            var dialog = new Dialog_ScheduleRulesetSelector(_libSource.Energy);
+            var dialog = new Dialog_ScheduleRulesetManager(_libSource.Energy, true);
             var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
             {
-                this.Schedule.SetPropetyObj(dialog_rc);
+                this.Schedule.SetPropetyObj(dialog_rc[0]);
             }
         });
 

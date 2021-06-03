@@ -146,44 +146,45 @@ namespace Honeybee.UI
 
         public RelayCommand CoolingScheduleCommand => new RelayCommand(() =>
         {
-            var dialog = new Dialog_ScheduleRulesetSelector(_libSource.Energy);
+            var dialog = new Dialog_ScheduleRulesetManager(_libSource.Energy, true);
             var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
             {
-                this.CoolingSchedule.SetPropetyObj(dialog_rc);
+                this.CoolingSchedule.SetPropetyObj(dialog_rc[0]);
             }
         });
 
         public RelayCommand HeatingScheduleCommand => new RelayCommand(() =>
         {
-            var dialog = new Dialog_ScheduleRulesetSelector(_libSource.Energy);
+            var dialog = new Dialog_ScheduleRulesetManager(_libSource.Energy, true);
             var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
             {
-                this.HeatingSchedule.SetPropetyObj(dialog_rc);
+                this.HeatingSchedule.SetPropetyObj(dialog_rc[0]);
             }
         });
 
         public RelayCommand HumidifyingScheduleCommand => new RelayCommand(() =>
         {
-            var dialog = new Dialog_ScheduleRulesetSelector(_libSource.Energy);
+            var dialog = new Dialog_ScheduleRulesetManager(_libSource.Energy, true);
             var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
             {
-                this.HumidifyingSchedule.SetPropetyObj(dialog_rc);
+                this.HumidifyingSchedule.SetPropetyObj(dialog_rc[0]);
             }
         });
 
         public RelayCommand DehumidifyingScheduleCommand => new RelayCommand(() =>
         {
-            var dialog = new Dialog_ScheduleRulesetSelector(_libSource.Energy);
+            var dialog = new Dialog_ScheduleRulesetManager(_libSource.Energy, true);
             var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
             {
-                this.DehumidifyingSchedule.SetPropetyObj(dialog_rc);
+                this.DehumidifyingSchedule.SetPropetyObj(dialog_rc[0]);
             }
         });
 
+       
     }
 
 

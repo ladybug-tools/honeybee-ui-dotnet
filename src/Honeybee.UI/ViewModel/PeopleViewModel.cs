@@ -188,24 +188,24 @@ namespace Honeybee.UI
 
         public RelayCommand ScheduleCommand => new RelayCommand(() =>
         {
-            var dialog = new Dialog_ScheduleRulesetSelector(_libSource.Energy);
+            var dialog = new Dialog_ScheduleRulesetManager(_libSource.Energy, true);
             var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
             {
-                this.OccupancySchedule.SetPropetyObj(dialog_rc);
+                this.OccupancySchedule.SetPropetyObj(dialog_rc[0]);
             }
         });
 
         public RelayCommand ActivityScheduleCommand => new RelayCommand(() =>
         {
-            var dialog = new Dialog_ScheduleRulesetSelector(_libSource.Energy);
+            var dialog = new Dialog_ScheduleRulesetManager(_libSource.Energy, true);
             var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
             {
-                this.ActivitySchedule.SetPropetyObj(dialog_rc);
+                this.ActivitySchedule.SetPropetyObj(dialog_rc[0]);
             }
         });
-
+      
     }
 
 
