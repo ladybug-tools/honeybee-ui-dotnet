@@ -35,12 +35,12 @@ namespace Honeybee.UI.ConsoleApp
                 var ppl = new PeopleAbridged("ppl", 0.1, "Always On", "Always On", latentFraction: new Autocalculate());
                 var RoomPropertybtn = new Button() { Text = "2 Rooms Property" };
                 var rm1 = new Room("id1", new List<Face>(), new RoomPropertiesAbridged(new RoomEnergyPropertiesAbridged("aaa", lighting: ltn)), "name1", multiplier: 1, story: "11");
-                var rm2 = new Room("id2", new List<Face>(), new RoomPropertiesAbridged(new RoomEnergyPropertiesAbridged("bbb", lighting: ltn2, people:ppl, daylightingControl: dlightCtrl)), "name2", multiplier: 2, story: "22");
+                var rm2 = new Room($"Room_{Guid.NewGuid()}", new List<Face>(), new RoomPropertiesAbridged(new RoomEnergyPropertiesAbridged("bbb", lighting: ltn2, people:ppl, daylightingControl: dlightCtrl)), "name2", multiplier: 2, story: "22");
                 var rms = new List<Room>() { rm1, rm2 };
                 RoomPropertybtn.Click += (s, e) =>
                 {
                 
-                    var dialog = new Honeybee.UI.View.RoomPropertyDialog(md.Properties ,rms);
+                    var dialog = new Honeybee.UI.Dialog_RoomProperty(md.Properties ,rms);
                     var dialog_rc = dialog.ShowModal();
                     if (dialog_rc != null)
                     {
@@ -58,7 +58,7 @@ namespace Honeybee.UI.ConsoleApp
 
                 RoomPropertybtn2.Click += (s, e) =>
                 {
-                    var dialog = new Honeybee.UI.View.RoomPropertyDialog(md.Properties, new List<Room>() { rm2 });
+                    var dialog = new Honeybee.UI.Dialog_RoomProperty(md.Properties, new List<Room>() { rm2 });
                     var dialog_rc = dialog.ShowModal();
                     if (dialog_rc != null)
                     {
@@ -277,10 +277,25 @@ namespace Honeybee.UI.ConsoleApp
                     dialog.ShowModal(this);
                 };
 
+                var cSetSel_btn = new Button() { Text = "CSetSelector" };
+                cSetSel_btn.Click += (s, e) =>
+                {
+                    var cSetSel = new Dialog_ConstructionSetManager(md.Properties.Energy, true);
+                    var cSetSel_rc = cSetSel.ShowModal(Config.Owner);
+                    if (cSetSel_rc != null)
+                    {
+                        foreach (var item in md.Properties.Energy.ConstructionSets)
+                        {
+                            Console.WriteLine(item.Obj);
+                        }
+                    }
+                };
+              
+
                 panel.AddSeparateRow(RoomPropertybtn, RoomPropertybtn2, null);
                 panel.AddSeparateRow(btn);
                 panel.AddSeparateRow(Messagebtn);
-                panel.AddSeparateRow(conbtn, cSetbtn, cSetManager, null);
+                panel.AddSeparateRow(conbtn, cSetbtn, cSetManager, cSetSel_btn, null);
                 panel.AddSeparateRow(pTypebtn, pTypeMngbtn, null);
                 panel.AddSeparateRow(schbtn);
                 panel.AddSeparateRow(simuParam);

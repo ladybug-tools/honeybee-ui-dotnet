@@ -8,8 +8,13 @@ using HoneybeeSchema;
 
 namespace Honeybee.UI
 {
-    public class Dialog_ScheduleRulesetManager : Dialog<(List< HB.ScheduleRulesetAbridged> scheduleRulesets, List<HB.ScheduleTypeLimit> scheduleTypeLimits)>
+    public class Dialog_ScheduleRulesetManager : Dialog<List<HB.ScheduleRulesetAbridged>>
     {
+        private GridView _gd;
+        private bool _returnSelectedOnly;
+        private ModelEnergyProperties _modelEnergyProperties;
+
+
         private List<ScheduleTypeLimit> _typeLimits;
         private ScheduleRuleset AbridgedToReal (ScheduleRulesetAbridged obj)
         {
@@ -22,199 +27,80 @@ namespace Honeybee.UI
         }
         private ScheduleRulesetAbridged ToAbridged(ScheduleRuleset obj)
         {
-            //var ifTypeLimitExist = _typeLimits.Any(_ => _
-            //== obj.ScheduleTypeLimit.ToJson());
-            //var typeLimit = obj.ScheduleTypeLimit;
-            //if (!ifTypeLimitExist)
-            //{
-            //    typeLimit = ScheduleTypeLimit.FromJson(obj.ScheduleTypeLimit.ToJson());
-            //    var id = Guid.NewGuid().ToString();
-            //    typeLimit.Identifier = id;
-            //    typeLimit.DisplayName = typeLimit.DisplayName ?? $"TypeLimit {id.Substring(0, 5)} [{typeLimit.LowerLimit},{typeLimit.UpperLimit}]";
-            //    _typeLimits.Add(typeLimit);
-            //}
             var abridged = new ScheduleRulesetAbridged(obj.Identifier, obj.DaySchedules, obj.DefaultDaySchedule, obj.DisplayName,
                obj.ScheduleRules, obj.HolidaySchedule, obj.SummerDesigndaySchedule, obj.WinterDesigndaySchedule, obj.ScheduleTypeLimit.Identifier);
 
             return abridged;
         }
 
-        public Dialog_ScheduleRulesetManager(List<HB.ScheduleRulesetAbridged> scheduleRulesets, List<HB.ScheduleTypeLimit> scheduleTypeLimits)
+        private Dialog_ScheduleRulesetManager()
         {
-            try
-            {
-                //var md = model;
-                var allSches = scheduleRulesets;
-                _typeLimits = scheduleTypeLimits;
-                
-                //var convertedReal = schAbridgeds.Select(_ => AbridgedToReal(_));
-                //var sches = md.Properties.Energy.Schedules.Where(_=> _.Obj is HB.ScheduleRuleset).Select(_=>_.Obj as HB.ScheduleRuleset);
-                
+            Padding = new Padding(5);
+            Resizable = true;
+            Title = $"Schedule Ruleset Manager - {DialogHelper.PluginName}";
+            WindowStyle = WindowStyle.Default;
+            MinimumSize = new Size(600, 400);
+            this.Icon = DialogHelper.HoneybeeIcon;
+        }
 
-                Padding = new Padding(5);
-                Resizable = true;
-                Title = $"Schedule Ruleset Manager - {DialogHelper.PluginName}";
-                WindowStyle = WindowStyle.Default;
-                MinimumSize = new Size(600, 400);
-                this.Icon = DialogHelper.HoneybeeIcon;
+        [Obsolete("This is deprecated", false)]
+        public Dialog_ScheduleRulesetManager(List<HB.ScheduleRulesetAbridged> scheduleRulesets, List<HB.ScheduleTypeLimit> scheduleTypeLimits):this()
+        {
+            _typeLimits = scheduleTypeLimits;
+            Content = Init(scheduleRulesets);
+        }
 
-                var layout = new DynamicLayout();
-                layout.DefaultSpacing = new Size(5, 5);
-                layout.DefaultPadding = new Padding(10, 5);
+        public Dialog_ScheduleRulesetManager(ModelEnergyProperties libSource, bool returnSelectedOnly = false) : this()
+        {
+            this._returnSelectedOnly = returnSelectedOnly;
+            this._modelEnergyProperties = libSource;
 
-                var addNew = new Button { Text = "Add" };
-                var duplicate = new Button { Text = "Duplicate" };
-                var edit = new Button { Text = "Edit" };
-                var remove = new Button { Text = "Remove" };
+            var allSches = libSource.Schedules
+               .OfType<ScheduleRulesetAbridged>()
+               .ToList();
+            var schTypes = libSource.ScheduleTypeLimits.ToList();
 
+            _typeLimits = schTypes;
+            Content = Init(allSches);
+        }
 
-                layout.AddSeparateRow("Schedule Rulesets:", null, addNew, duplicate, edit, remove);
-                var gd = GenGridView(allSches);
-                layout.AddSeparateRow(gd);
+        private DynamicLayout Init(List<HB.ScheduleRulesetAbridged> allSches)
+        {
+            var layout = new DynamicLayout();
+            layout.DefaultSpacing = new Size(5, 5);
+            layout.DefaultPadding = new Padding(10, 5);
 
-                addNew.Click += (s, e) =>
-                {
-                    var dayId = Guid.NewGuid().ToString();
-                    var dayName = $"New Schedule Day {dayId.Substring(0, 5)}";
-                    var newDay = new ScheduleDay(
-                        dayId,
-                        new List<double> { 0.3 },
-                        dayName,
-                        new List<List<int>>() { new List<int> { 0, 0 } }
-                        );
+            var addNew = new Button { Text = "Add" };
+            addNew.Command = AddCommand;
 
-                    var id = Guid.NewGuid().ToString();
-                    var newSch = new ScheduleRuleset(
-                        id,
-                        new List<ScheduleDay> { newDay },
-                        dayId,
-                        $"New Schedule Ruleset {id.Substring(0, 5)}"
-                        );
-                    //TODO: needs to create type limit library.
-                    newSch.ScheduleTypeLimit = new ScheduleTypeLimit("Fractional", "", 0, 1);
-                    var dialog = new Honeybee.UI.Dialog_Schedule(newSch);
-                    var dialog_rc = dialog.ShowModal(this);
-                    if (dialog_rc != null)
-                    {
-                        var d = gd.DataStore.Select(_ => _ as HB.ScheduleRulesetAbridged).ToList();
-                        d.Add(ToAbridged(dialog_rc));
-                        gd.DataStore = d;
+            var duplicate = new Button { Text = "Duplicate" };
+            duplicate.Command = DuplicateCommand;
+
+            var edit = new Button { Text = "Edit" };
+            edit.Command = EditCommand;
+
+            var remove = new Button { Text = "Remove" };
+            remove.Command = RemoveCommand;
 
 
-                    }
-                };
-                duplicate.Click += (s, e) =>
-                {
-                    if (gd.SelectedRow == -1)
-                    {
-                        MessageBox.Show(this, "Nothing is selected to duplicate!");
-                        return;
-                    }
-                    
-                    var id = Guid.NewGuid().ToString();
-
-                    var newDup = (gd.SelectedItem as ScheduleRulesetAbridged).DuplicateScheduleRulesetAbridged();
-                    newDup.Identifier = id;
-                    newDup.DisplayName = string.IsNullOrEmpty( newDup.DisplayName) ? $"New Duplicate {id.Substring(0, 5)}": $"{newDup.DisplayName}_dup";
-                    //var rules = newDup.ScheduleRules;
-                    //foreach (var rule in rules)
-                    //{
-                    //    var dayname = rule.ScheduleDay
-
-                    //}
-                    var realObj = AbridgedToReal(newDup);
-                    var dialog = new Honeybee.UI.Dialog_Schedule(realObj);
-                    var dialog_rc = dialog.ShowModal(this);
-                    if (dialog_rc != null)
-                    {
-                        var d = gd.DataStore.Select(_=>_ as ScheduleRulesetAbridged).ToList();
-                        d.Add(ToAbridged(dialog_rc));
-                        gd.DataStore = d;
-
-                    }
-                };
-
-                Action editAction = () =>
-                {
-                    var selected = gd.SelectedItem as ScheduleRulesetAbridged;
-                    if (selected == null)
-                    {
-                        MessageBox.Show(this, "Nothing is selected to edit!");
-                        return;
-                    }
-                   
-                    var newDup = selected.DuplicateScheduleRulesetAbridged();
-                    var realObj = AbridgedToReal(newDup);
-                    var dialog = new Honeybee.UI.Dialog_Schedule(realObj);
-                    var dialog_rc = dialog.ShowModal(this);
-                    if (dialog_rc != null)
-                    {
-                        var index = gd.SelectedRow;
-                        var newDataStore = gd.DataStore.Select(_ => _ as ScheduleRulesetAbridged).ToList();
-                        newDataStore.RemoveAt(index);
-                        newDataStore.Insert(index, ToAbridged(dialog_rc));
-
-                        gd.DataStore = newDataStore;
-
-                    }
-                };
-                edit.Click += (s, e) =>
-                {
-                    editAction();
-                };
-                remove.Click += (s, e) =>
-                {
-                    
-                    if (gd.SelectedRow == -1)
-                    {
-                        MessageBox.Show(this, "Nothing is selected to edit!");
-                        return;
-                    }
-                    if (gd.SelectedItem is ScheduleRulesetAbridged obj)
-                    {
-                        var index = gd.SelectedRow;
-                        var res = MessageBox.Show(this, $"Are you sure you want to delete:\n {obj.DisplayName ?? obj.Identifier }", MessageBoxButtons.YesNo);
-                        if (res == DialogResult.Yes)
-                        {
-                            var newDataStore = gd.DataStore.ToList();
-                            newDataStore.RemoveAt(index);
-                            gd.DataStore = newDataStore;
-                        }
-                    }
-                  
-                };
-
-                gd.CellDoubleClick += (s, e) =>
-                {
-                    editAction();
-
-                };
-
-                DefaultButton = new Button { Text = "OK" };
-                DefaultButton.Click += (sender, e) => 
-                {
-                    var d = gd.DataStore.OfType<ScheduleRulesetAbridged>().ToList();
-                    Close((d, _typeLimits));
-                };
-
-                AbortButton = new Button { Text = "Cancel" };
-                AbortButton.Click += (sender, e) => Close();
-                layout.AddSeparateRow(null);
-                layout.AddSeparateRow(null, DefaultButton, AbortButton, null);
-                
-
-                //Create layout
-                Content = layout;
+            layout.AddSeparateRow("Schedule Rulesets:", null, addNew, duplicate, edit, remove);
+            var gd = GenGridView(allSches);
+            _gd = gd;
+            layout.AddSeparateRow(gd);
 
 
-            }
-            catch (Exception e)
-            {
 
-                throw e;
-            }
-            
-            
+            gd.CellDoubleClick += (s, e) => EditCommand.Execute(null);
+
+            DefaultButton = new Button { Text = "OK" };
+            DefaultButton.Click += (sender, e) => OkCommand.Execute(null);
+
+
+            AbortButton = new Button { Text = "Cancel" };
+            AbortButton.Click += (sender, e) => Close();
+            layout.AddSeparateRow(null);
+            layout.AddSeparateRow(null, DefaultButton, AbortButton, null);
+            return layout;
         }
 
         private GridView GenGridView(IEnumerable<object> items)
@@ -244,6 +130,152 @@ namespace Honeybee.UI
         }
 
 
+
+        public RelayCommand AddCommand => new RelayCommand(() =>
+        {
+            var gd = this._gd;
+            var dayId = Guid.NewGuid().ToString();
+            var dayName = $"New Schedule Day {dayId.Substring(0, 5)}";
+            var newDay = new ScheduleDay(
+                dayId,
+                new List<double> { 0.3 },
+                dayName,
+                new List<List<int>>() { new List<int> { 0, 0 } }
+                );
+
+            var id = Guid.NewGuid().ToString();
+            var newSch = new ScheduleRuleset(
+                id,
+                new List<ScheduleDay> { newDay },
+                dayId,
+                $"New Schedule Ruleset {id.Substring(0, 5)}"
+                );
+            //TODO: needs to create type limit library.
+            newSch.ScheduleTypeLimit = new ScheduleTypeLimit("Fractional", "", 0, 1);
+            var dialog = new Honeybee.UI.Dialog_Schedule(newSch);
+            var dialog_rc = dialog.ShowModal(this);
+            if (dialog_rc != null)
+            {
+                var d = gd.DataStore.Select(_ => _ as HB.ScheduleRulesetAbridged).ToList();
+                d.Add(ToAbridged(dialog_rc));
+                gd.DataStore = d;
+
+
+            }
+        });
+
+        public RelayCommand DuplicateCommand => new RelayCommand(() =>
+        {
+            var gd = this._gd;
+            if (gd.SelectedRow == -1)
+            {
+                MessageBox.Show(this, "Nothing is selected to duplicate!");
+                return;
+            }
+
+            var id = Guid.NewGuid().ToString();
+
+            var newDup = (gd.SelectedItem as ScheduleRulesetAbridged).DuplicateScheduleRulesetAbridged();
+            newDup.Identifier = id;
+            newDup.DisplayName = string.IsNullOrEmpty(newDup.DisplayName) ? $"New Duplicate {id.Substring(0, 5)}" : $"{newDup.DisplayName}_dup";
+            //var rules = newDup.ScheduleRules;
+            //foreach (var rule in rules)
+            //{
+            //    var dayname = rule.ScheduleDay
+
+            //}
+            var realObj = AbridgedToReal(newDup);
+            var dialog = new Honeybee.UI.Dialog_Schedule(realObj);
+            var dialog_rc = dialog.ShowModal(this);
+            if (dialog_rc != null)
+            {
+                var d = gd.DataStore.Select(_ => _ as ScheduleRulesetAbridged).ToList();
+                d.Add(ToAbridged(dialog_rc));
+                gd.DataStore = d;
+
+            }
+        });
+
+        public RelayCommand EditCommand => new RelayCommand(() =>
+        {
+            var gd = this._gd;
+            var selected = gd.SelectedItem as ScheduleRulesetAbridged;
+            if (selected == null)
+            {
+                MessageBox.Show(this, "Nothing is selected to edit!");
+                return;
+            }
+
+            var newDup = selected.DuplicateScheduleRulesetAbridged();
+            var realObj = AbridgedToReal(newDup);
+            var dialog = new Honeybee.UI.Dialog_Schedule(realObj);
+            var dialog_rc = dialog.ShowModal(this);
+            if (dialog_rc != null)
+            {
+                var index = gd.SelectedRow;
+                var newDataStore = gd.DataStore.Select(_ => _ as ScheduleRulesetAbridged).ToList();
+                newDataStore.RemoveAt(index);
+                newDataStore.Insert(index, ToAbridged(dialog_rc));
+
+                gd.DataStore = newDataStore;
+
+            }
+        });
+
+        public RelayCommand RemoveCommand => new RelayCommand(() =>
+        {
+            var gd = this._gd;
+            var selected = gd.SelectedItem as ModifierSetAbridged;
+            if (selected == null)
+            {
+                MessageBox.Show(this, "Nothing is selected to edit!");
+                return;
+            }
+
+            var index = gd.SelectedRow;
+            if (selected.Identifier.StartsWith("Generic_"))
+            {
+                MessageBox.Show(this, $"{selected.DisplayName ?? selected.Identifier } cannot be removed, because it is Honeybee default modifier set.");
+                return;
+            }
+
+            var res = MessageBox.Show(this, $"Are you sure you want to delete:\n {selected.DisplayName ?? selected.Identifier }", MessageBoxButtons.YesNo);
+            if (res == DialogResult.Yes)
+            {
+                var newDataStore = gd.DataStore.ToList();
+                newDataStore.RemoveAt(index);
+                gd.DataStore = newDataStore;
+            }
+        });
+
+        public RelayCommand OkCommand => new RelayCommand(() =>
+        {
+            var gd = this._gd;
+
+            var allItems = gd.DataStore.OfType<ScheduleRulesetAbridged>().ToList();
+            var itemsToReturn = allItems;
+
+            if (this._returnSelectedOnly)
+            {
+                var d = gd.SelectedItem as ScheduleRulesetAbridged;
+                if (d == null)
+                {
+                    MessageBox.Show(this, "Nothing is selected!");
+                    return;
+                }
+                itemsToReturn = new List<ScheduleRulesetAbridged>() { d };
+            }
+
+      
+            this._modelEnergyProperties.ScheduleTypeLimits.Clear();
+            this._modelEnergyProperties.AddScheduleTypeLimits(_typeLimits);
+
+            this._modelEnergyProperties.Schedules.Clear();
+            var schs = allItems.OfType<IDdEnergyBaseModel>().ToList();
+            this._modelEnergyProperties.AddSchedules(schs);
+
+            Close(itemsToReturn);
+        });
 
 
 

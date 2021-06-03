@@ -116,25 +116,14 @@ namespace Honeybee.UI
                     MessageBox.Show(this, "Invalid model");
                     return;
                 }
-                var allSches = _model.Properties.Energy.Schedules
-                .Where(_ => _.Obj is HB.ScheduleRulesetAbridged)
-                .Select(_ => _.Obj as HB.ScheduleRulesetAbridged)
-                .ToList();
+                var lib = _model.Properties.Energy;
 
-                var schTypes = _model.Properties.Energy.ScheduleTypeLimits.Select(_=>_).ToList();
-              
-                var dialog = new Dialog_ScheduleRulesetManager(allSches, schTypes);
+                var dialog = new Dialog_ScheduleRulesetManager(lib);
                 var dialog_rc = dialog.ShowModal(this);
-                if (dialog_rc.scheduleRulesets != null)
+                if (dialog_rc != null)
                 {
-                    var schs = dialog_rc.scheduleRulesets.OfType<HB.IDdEnergyBaseModel>().ToList();
-                    _model.Properties.Energy.Schedules.Clear();
-                    _model.AddSchedules(schs);
-                    _model.Properties.Energy.ScheduleTypeLimits.Clear();
-                    _model.AddScheduleTypeLimits(dialog_rc.scheduleTypeLimits);
-
+                    // sch list
                 }
-                //MessageBox.Show(this, "Working in progress");
             };
             programTypeBtn.Click += (s, e) =>
             {

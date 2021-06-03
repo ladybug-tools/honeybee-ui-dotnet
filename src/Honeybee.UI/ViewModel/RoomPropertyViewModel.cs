@@ -390,41 +390,41 @@ namespace Honeybee.UI
 
         public ICommand RoomConstructionSetCommand => new RelayCommand(() =>
         {
-            var dialog = new Dialog_ConstructionSetSelector(_libSource.Energy);
+            var dialog = new Dialog_ConstructionSetManager(_libSource.Energy, true);
             var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
             {
-                this.ConstructionSet.SetPropetyObj(dialog_rc);
+                this.ConstructionSet.SetPropetyObj(dialog_rc[0]);
             }
         });
 
         public ICommand RoomProgramTypeCommand => new RelayCommand(() =>
         {
-            var dialog = new Dialog_ProgramTypeSelector(_libSource.Energy);
+            var dialog = new Dialog_ProgramTypeManager(_libSource.Energy, true);
             var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
             {
-                this.PropgramType.SetPropetyObj(dialog_rc);
+                this.PropgramType.SetPropetyObj(dialog_rc[0]);
             }
         });
 
         public ICommand RoomHVACCommand => new RelayCommand(() =>
         {
-            var dialog = new Dialog_HVACSelector(_libSource.Energy);
+            var dialog = new Dialog_HVACManager(_libSource.Energy, true);
             var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
             {
-                this.HVAC.SetPropetyObj(dialog_rc);
+                this.HVAC.SetPropetyObj(dialog_rc[0]);
             }
         });
 
         public ICommand ModifierSetCommand => new RelayCommand(() =>
         {
-            var dialog = new Dialog_ModifierSetSelector(_libSource.Radiance);
+            var dialog = new Dialog_ModifierSetManager(_libSource.Radiance, true);
             var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
             {
-                this.ModifierSet.SetPropetyObj(dialog_rc);
+                this.ModifierSet.SetPropetyObj(dialog_rc[0]);
             }
         });
 

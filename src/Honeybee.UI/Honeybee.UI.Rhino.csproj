@@ -11,7 +11,7 @@
     <Copyright>Copyright © 2020 Ladybug Tools LLC</Copyright>
     <PackageProjectUrl>https://github.com/ladybug-tools/honeybee-ui-dotnet</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ladybug-tools/honeybee-ui-dotnet</RepositoryUrl>
-    <Version>0.0.0.52-dev</Version>
+    <Version>0.0.0.54-dev</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

@@ -10,165 +10,74 @@ namespace Honeybee.UI
 {
     public class Dialog_ProgramTypeManager : Dialog<List<HB.Energy.IProgramtype>>
     {
-     
-        private ModelEnergyProperties ModelEnergyProperties { get; set; }
-        public Dialog_ProgramTypeManager(ModelEnergyProperties libSource, List<HB.ProgramTypeAbridged> programTypes)
+        private GridView _gd;
+        private bool _returnSelectedOnly;
+        private ModelEnergyProperties _modelEnergyProperties { get; set; }
+
+        private Dialog_ProgramTypeManager()
         {
-            try
-            {
-                //var md = model;
-                this.ModelEnergyProperties = libSource;
-                var pTypes = programTypes;
+            Padding = new Padding(5);
+            Title = $"Program Type Manager - {DialogHelper.PluginName}";
+            WindowStyle = WindowStyle.Default;
+            Width = 900;
 
-                Padding = new Padding(5);
-                Title = $"Program Type Manager - {DialogHelper.PluginName}";
-                WindowStyle = WindowStyle.Default;
-                Width = 900;
-
-                this.Icon = DialogHelper.HoneybeeIcon;
-
-                var layout = new DynamicLayout();
-                layout.DefaultSpacing = new Size(5, 5);
-                layout.DefaultPadding = new Padding(10, 5);
-
-                var addNew = new Button { Text = "Add" };
-                //var import = new Button { Text = "Import" };
-                var duplicate = new Button { Text = "Duplicate" };
-                var edit = new Button { Text = "Edit" };
-                var remove = new Button { Text = "Remove" };
+            this.Icon = DialogHelper.HoneybeeIcon;
+        }
 
 
-                layout.AddSeparateRow("Program Types:", null, addNew, duplicate, edit, remove);
-                var gd = GenProgramType_GV(pTypes);
-                layout.AddSeparateRow(gd);
-
-                addNew.Click += (s, e) =>
-                {
-                    var dialog = new Honeybee.UI.Dialog_OpsProgramTypes(this.ModelEnergyProperties);
-                    var dialog_rc = dialog.ShowModal(this);
-
-                    var type = dialog_rc.programType;
-                    var sches = dialog_rc.schedules;
-                    if (type != null)
-                    {
-                        // add schedules
-                        var existingScheduleIds = this.ModelEnergyProperties.Schedules.Select(_ => (_.Obj as HB.IDdEnergyBaseModel).Identifier);
-                        foreach (var sch in sches)
-                        {
-                            if (existingScheduleIds.Any(_ => _ == sch.Identifier))
-                                continue;
-                            this.ModelEnergyProperties.Schedules.Add(sch);
-                        }
-
-                        // add program type
-                        var d = gd.DataStore.Select(_ => _ as ProgramTypeAbridged).ToList();
-                        d.Add(type);
-                        gd.DataStore = d;
-
-                    }
-
-                };
-
-                
-
-                duplicate.Click += (s, e) =>
-                {
-                    if (gd.SelectedItem == null)
-                    {
-                        MessageBox.Show(this, "Nothing is selected to duplicate!");
-                        return;
-                    }
-                    
-                    var id = Guid.NewGuid().ToString();
-                    var newPType = (gd.SelectedItem as ProgramTypeAbridged).DuplicateProgramTypeAbridged();
-                    newPType.Identifier = id;
-                    newPType.DisplayName = string.IsNullOrEmpty( newPType.DisplayName) ? $"New Duplicate {id.Substring(0, 5)}": $"{newPType.DisplayName}_dup";
-                    var dialog = new Honeybee.UI.Dialog_ProgramType(this.ModelEnergyProperties, newPType);
-                    var dialog_rc = dialog.ShowModal(this);
-                    if (dialog_rc != null)
-                    {
-                        var d = gd.DataStore.Select(_=>_ as ProgramTypeAbridged).ToList();
-                        d.Add(dialog_rc);
-                        gd.DataStore = d;
-
-                    }
-                };
-                Action editAction = () =>
-                {
-                    var selected = gd.SelectedItem;
-                    if (selected == null)
-                    {
-                        MessageBox.Show(this, "Nothing is selected to edit!");
-                        return;
-                    }
-
-                    var newPType = (selected as ProgramTypeAbridged).DuplicateProgramTypeAbridged();
-                    var dialog = new Honeybee.UI.Dialog_ProgramType(this.ModelEnergyProperties, newPType);
-                    var dialog_rc = dialog.ShowModal(this);
-                    if (dialog_rc != null)
-                    {
-                        var index = gd.SelectedRow;
-                        var newDataStore = gd.DataStore.Select(_ => _ as ProgramTypeAbridged).ToList();
-                        newDataStore.RemoveAt(index);
-                        newDataStore.Insert(index, dialog_rc);
-                        gd.DataStore = newDataStore;
-
-                    }
-                };
-                edit.Click += (s, e) =>
-                {
-                    editAction();
-                };
-                remove.Click += (s, e) =>
-                {
-                    var selected = gd.SelectedItem as ProgramTypeAbridged;
-                    if (selected == null)
-                    {
-                        MessageBox.Show(this, "Nothing is selected to edit!");
-                        return;
-                    }
-
-                    var index = gd.SelectedRow;
-                    var res = MessageBox.Show(this, $"Are you sure you want to delete:\n {selected.DisplayName ?? selected.Identifier }", MessageBoxButtons.YesNo);
-                    if (res == DialogResult.Yes)
-                    {
-                        var newDataStore = gd.DataStore.ToList();
-                        newDataStore.RemoveAt(index);
-                        gd.DataStore = newDataStore;
-                    }
-                    
-                };
-
-                gd.CellDoubleClick += (s, e) =>
-                {
-                    editAction();
-                };
-
-                DefaultButton = new Button { Text = "OK" };
-                DefaultButton.Click += (sender, e) => 
-                {
-                    var d = gd.DataStore.OfType<HB.Energy.IProgramtype>().ToList();
-                    Close(d);
-                };
-
-                AbortButton = new Button { Text = "Cancel" };
-                AbortButton.Click += (sender, e) => Close();
-                layout.AddSeparateRow(null);
-                layout.AddSeparateRow(null, DefaultButton, AbortButton, null);
-                layout.AddSeparateRow(null);
-
-                //Create layout
-                Content = layout;
+        [Obsolete("This is deprecated", false)]
+        public Dialog_ProgramTypeManager(ModelEnergyProperties libSource, List<HB.ProgramTypeAbridged> programTypes) : this()
+        {
+            this._modelEnergyProperties = libSource;
+            Content = Init(libSource, programTypes);
+        }
 
 
-            }
-            catch (Exception e)
-            {
+        public Dialog_ProgramTypeManager(ModelEnergyProperties libSource, bool returnSelectedOnly = false):this()
+        {
+            this._returnSelectedOnly = returnSelectedOnly;
+            this._modelEnergyProperties = libSource;
+            var pTypes = libSource.ProgramTypes.OfType<ProgramTypeAbridged>().ToList();
 
-                throw e;
-            }
-            
-            
+            Content = Init(libSource, pTypes);
+        }
+
+        private DynamicLayout Init(ModelEnergyProperties libSource, List<HB.ProgramTypeAbridged> pTypes)
+        {
+            var layout = new DynamicLayout();
+            layout.DefaultSpacing = new Size(5, 5);
+            layout.DefaultPadding = new Padding(10, 5);
+
+            var addNew = new Button { Text = "Add" };
+            addNew.Command = AddCommand;
+
+            var duplicate = new Button { Text = "Duplicate" };
+            duplicate.Command = DuplicateCommand;
+
+            var edit = new Button { Text = "Edit" };
+            edit.Command = EditCommand;
+
+            var remove = new Button { Text = "Remove" };
+            remove.Command = RemoveCommand;
+
+            layout.AddSeparateRow("Program Types:", null, addNew, duplicate, edit, remove);
+            var gd = GenProgramType_GV(pTypes);
+            _gd = gd;
+            layout.AddSeparateRow(gd);
+
+
+            gd.CellDoubleClick += (s, e) => EditCommand.Execute(null);
+
+            DefaultButton = new Button { Text = "OK" };
+            DefaultButton.Click += (sender, e) => OkCommand.Execute(null);
+
+            AbortButton = new Button { Text = "Cancel" };
+            AbortButton.Click += (sender, e) => Close();
+            layout.AddSeparateRow(null);
+            layout.AddSeparateRow(null, DefaultButton, AbortButton, null);
+            layout.AddSeparateRow(null);
+
+            return layout;
         }
 
         private GridView GenProgramType_GV(IEnumerable<object> items)
@@ -234,8 +143,122 @@ namespace Honeybee.UI
         }
 
 
+        public RelayCommand AddCommand => new RelayCommand(() =>
+        {
+            var gd = this._gd;
+            var dialog = new Honeybee.UI.Dialog_OpsProgramTypes(this._modelEnergyProperties);
+            var dialog_rc = dialog.ShowModal(this);
 
+            var type = dialog_rc.programType;
+            var sches = dialog_rc.schedules;
+            if (type != null)
+            {
+                // add schedules
+                var existingScheduleIds = this._modelEnergyProperties.Schedules.Select(_ => (_.Obj as HB.IDdEnergyBaseModel).Identifier);
+                foreach (var sch in sches)
+                {
+                    if (existingScheduleIds.Any(_ => _ == sch.Identifier))
+                        continue;
+                    this._modelEnergyProperties.Schedules.Add(sch);
+                }
 
+                this._modelEnergyProperties.AddProgramType(type);
 
+                // add program type
+                gd.DataStore = this._modelEnergyProperties.ProgramTypes.OfType<ProgramTypeAbridged>().ToList();
+
+            }
+        });
+
+        public RelayCommand DuplicateCommand => new RelayCommand(() =>
+        {
+            var gd = this._gd;
+            if (gd.SelectedItem == null)
+            {
+                MessageBox.Show(this, "Nothing is selected to duplicate!");
+                return;
+            }
+
+            var id = Guid.NewGuid().ToString();
+            var newPType = (gd.SelectedItem as ProgramTypeAbridged).DuplicateProgramTypeAbridged();
+            newPType.Identifier = id;
+            newPType.DisplayName = string.IsNullOrEmpty(newPType.DisplayName) ? $"New Duplicate {id.Substring(0, 5)}" : $"{newPType.DisplayName}_dup";
+            var dialog = new Honeybee.UI.Dialog_ProgramType(this._modelEnergyProperties, newPType);
+            var dialog_rc = dialog.ShowModal(this);
+            if (dialog_rc != null)
+            {
+                var d = gd.DataStore.Select(_ => _ as ProgramTypeAbridged).ToList();
+                d.Add(dialog_rc);
+                gd.DataStore = d;
+            }
+        });
+
+        public RelayCommand EditCommand => new RelayCommand(() =>
+        {
+            var gd = this._gd;
+            var selected = gd.SelectedItem;
+            if (selected == null)
+            {
+                MessageBox.Show(this, "Nothing is selected to edit!");
+                return;
+            }
+
+            var newPType = (selected as ProgramTypeAbridged).DuplicateProgramTypeAbridged();
+            var dialog = new Honeybee.UI.Dialog_ProgramType(this._modelEnergyProperties, newPType);
+            var dialog_rc = dialog.ShowModal(this);
+            if (dialog_rc != null)
+            {
+                var index = gd.SelectedRow;
+                var newDataStore = gd.DataStore.Select(_ => _ as ProgramTypeAbridged).ToList();
+                newDataStore.RemoveAt(index);
+                newDataStore.Insert(index, dialog_rc);
+                gd.DataStore = newDataStore;
+
+            }
+        });
+
+        public RelayCommand RemoveCommand => new RelayCommand(() =>
+        {
+            var gd = this._gd;
+            var selected = gd.SelectedItem as ProgramTypeAbridged;
+            if (selected == null)
+            {
+                MessageBox.Show(this, "Nothing is selected to edit!");
+                return;
+            }
+
+            var index = gd.SelectedRow;
+            var res = MessageBox.Show(this, $"Are you sure you want to delete:\n {selected.DisplayName ?? selected.Identifier }", MessageBoxButtons.YesNo);
+            if (res == DialogResult.Yes)
+            {
+                var newDataStore = gd.DataStore.ToList();
+                newDataStore.RemoveAt(index);
+                gd.DataStore = newDataStore;
+            }
+        });
+
+        public RelayCommand OkCommand => new RelayCommand(() =>
+        {
+            var gd = this._gd;
+            var allPTypes = gd.DataStore.OfType<HB.Energy.IProgramtype>().ToList();
+            var pTypesToReturn = allPTypes;
+
+            if (this._returnSelectedOnly)
+            {
+                var d = gd.SelectedItem as HB.Energy.IProgramtype;
+                if (d == null)
+                {
+                    MessageBox.Show(this, "Nothing is selected!");
+                    return;
+                }
+                pTypesToReturn = new List<HB.Energy.IProgramtype>() { d };
+            }
+
+            this._modelEnergyProperties.ProgramTypes.Clear();
+            this._modelEnergyProperties.AddProgramTypes(allPTypes);
+            Close(pTypesToReturn);
+        });
+    
+    
     }
 }
