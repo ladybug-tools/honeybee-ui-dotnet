@@ -59,12 +59,12 @@ namespace Honeybee.UI
             private set { this.Set(() => _velocityCoefficient = value, nameof(VelocityCoefficient)); }
         }
 
-     
+        public InfiltrationAbridged Default { get; private set; }
         public InfiltrationViewModel(ModelProperties libSource, List<InfiltrationAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-
+            this.Default = new InfiltrationAbridged(Guid.NewGuid().ToString(), 0, "");
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateInfiltrationAbridged();
-            this.refObjProperty = this._refHBObj ?? new InfiltrationAbridged(Guid.NewGuid().ToString(), 0, "");
+            this.refObjProperty = this._refHBObj ?? this.Default.DuplicateInfiltrationAbridged();
 
 
             if (loads.Count == 1 && loads.FirstOrDefault() == null)

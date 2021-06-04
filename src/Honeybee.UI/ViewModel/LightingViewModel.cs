@@ -67,12 +67,14 @@ namespace Honeybee.UI
             private set { this.Set(() => _returnAirFraction = value, nameof(ReturnAirFraction)); }
         }
 
+        public LightingAbridged Default { get; private set; }
 
         public LightingViewModel(ModelProperties libSource, List<LightingAbridged> lights, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-           
+            this.Default = new LightingAbridged(Guid.NewGuid().ToString(), 0, "");
             this.refObjProperty = lights.FirstOrDefault()?.DuplicateLightingAbridged();
-            this.refObjProperty = this._refHBObj ?? new LightingAbridged(Guid.NewGuid().ToString(), 0, "");
+            this.refObjProperty = this._refHBObj ?? this.Default.DuplicateLightingAbridged();
+
 
 
             if (lights.Count == 1 && lights.FirstOrDefault() == null)

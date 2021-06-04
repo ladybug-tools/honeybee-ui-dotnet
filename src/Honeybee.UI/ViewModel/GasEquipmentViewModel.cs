@@ -59,12 +59,12 @@ namespace Honeybee.UI
             private set { this.Set(() => _lostFraction = value, nameof(LostFraction)); }
         }
 
-     
+        public GasEquipmentAbridged Default { get; private set; }
         public GasEquipmentViewModel(ModelProperties libSource, List<GasEquipmentAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-
+            this.Default = new GasEquipmentAbridged(Guid.NewGuid().ToString(), 0, "");
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateGasEquipmentAbridged();
-            this.refObjProperty = this._refHBObj ?? new GasEquipmentAbridged(Guid.NewGuid().ToString(), 0, "");
+            this.refObjProperty = this._refHBObj ?? this.Default.DuplicateGasEquipmentAbridged();
 
 
             if (loads.Count == 1 && loads.FirstOrDefault() == null)

@@ -50,13 +50,13 @@ namespace Honeybee.UI
             private set { this.Set(() => _dehumidifyingSchedule = value, nameof(DehumidifyingSchedule)); }
         }
 
-      
-     
+
+        public SetpointAbridged Default { get; private set; }
         public SetpointViewModel(ModelProperties libSource, List<SetpointAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-
+            this.Default = new SetpointAbridged(Guid.NewGuid().ToString(), "", "");
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateSetpointAbridged();
-            this.refObjProperty = this._refHBObj ?? new SetpointAbridged(Guid.NewGuid().ToString(), "", "");
+            this.refObjProperty = this._refHBObj ?? this.Default.DuplicateSetpointAbridged();
 
 
             if (loads.Count == 1 && loads.FirstOrDefault() == null)

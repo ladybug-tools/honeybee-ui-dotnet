@@ -59,12 +59,12 @@ namespace Honeybee.UI
             private set { this.Set(() => _flowPerZone = value, nameof(FlowPerZone)); }
         }
 
-     
+        public VentilationAbridged Default { get; private set; }
         public VentilationViewModel(ModelProperties libSource, List<VentilationAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-
+            this.Default = new VentilationAbridged(Guid.NewGuid().ToString());
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateVentilationAbridged();
-            this.refObjProperty = this._refHBObj ?? new VentilationAbridged(Guid.NewGuid().ToString());
+            this.refObjProperty = this._refHBObj ?? this.Default.DuplicateVentilationAbridged();
 
 
             if (loads.Count == 1 && loads.FirstOrDefault() == null)

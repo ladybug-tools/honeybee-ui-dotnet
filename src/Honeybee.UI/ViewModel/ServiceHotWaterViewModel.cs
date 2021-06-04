@@ -59,12 +59,12 @@ namespace Honeybee.UI
             private set { this.Set(() => _isSensibleFraction = value, nameof(SensibleFraction)); }
         }
 
-     
+        public ServiceHotWaterAbridged Default { get; private set; }
         public ServiceHotWaterViewModel(ModelProperties libSource, List<ServiceHotWaterAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-
+            this.Default = new ServiceHotWaterAbridged(Guid.NewGuid().ToString(), 0, "");
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateServiceHotWaterAbridged();
-            this.refObjProperty = this._refHBObj ?? new ServiceHotWaterAbridged(Guid.NewGuid().ToString(), 0, "");
+            this.refObjProperty = this._refHBObj ?? this.Default.DuplicateServiceHotWaterAbridged();
 
 
             if (loads.Count == 1 && loads.FirstOrDefault() == null)

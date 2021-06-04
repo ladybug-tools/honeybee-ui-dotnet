@@ -73,11 +73,12 @@ namespace Honeybee.UI
             }
         }
 
+        public DaylightingControl Default { get; private set; }
         public DaylightingControlViewModel(ModelProperties libSource, List<DaylightingControl> loads, Action<DaylightingControl> setAction):base(libSource, setAction)
         {
-
+            this.Default = new DaylightingControl(new List<double>());
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateDaylightingControl();
-            this.refObjProperty = this._refHBObj ?? new DaylightingControl(new List<double>());
+            this.refObjProperty = this._refHBObj ?? this.Default.DuplicateDaylightingControl();
 
 
             if (loads.Count == 1 && loads.FirstOrDefault() == null)
