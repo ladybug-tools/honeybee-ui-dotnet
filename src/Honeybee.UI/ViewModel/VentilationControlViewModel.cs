@@ -68,11 +68,12 @@ namespace Honeybee.UI
             private set { this.Set(() => _deltaTemperature = value, nameof(DeltaTemperature)); }
         }
 
+        public VentilationControlAbridged Default { get; private set; }
         public VentilationControlViewModel(ModelProperties libSource, List<VentilationControlAbridged> loads, Action<VentilationControlAbridged> setAction):base(libSource, setAction)
         {
-
+            this.Default = new VentilationControlAbridged();
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateVentilationControlAbridged();
-            this.refObjProperty = this._refHBObj ?? new VentilationControlAbridged();
+            this.refObjProperty = this._refHBObj ?? this.Default.DuplicateVentilationControlAbridged();
 
 
             if (loads.Count == 1 && loads.FirstOrDefault() == null)

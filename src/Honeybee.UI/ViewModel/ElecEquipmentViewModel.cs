@@ -58,13 +58,13 @@ namespace Honeybee.UI
             get => _lostFraction;
             private set { this.Set(() => _lostFraction = value, nameof(LostFraction)); }
         }
+        public ElectricEquipmentAbridged Default { get; private set; }
 
-     
         public ElecEquipmentViewModel(ModelProperties libSource, List<ElectricEquipmentAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-
+            this.Default = new ElectricEquipmentAbridged(Guid.NewGuid().ToString(), 0, "");
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateElectricEquipmentAbridged();
-            this.refObjProperty = this._refHBObj ?? new ElectricEquipmentAbridged(Guid.NewGuid().ToString(), 0, "");
+            this.refObjProperty = this._refHBObj ?? this.Default.DuplicateElectricEquipmentAbridged();
 
 
             if (loads.Count == 1 && loads.FirstOrDefault() == null)

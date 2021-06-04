@@ -7,7 +7,7 @@ using System.Windows.Input;
 
 
 
-namespace Honeybee.UI
+namespace Honeybee.UI.ViewModel
 {
 
     public class RoomPropertyViewModel : ViewModelBase
@@ -199,20 +199,25 @@ namespace Honeybee.UI
 
 
         private View.RoomProperty _control;
-        private ModelProperties _libSource { get; set; } 
+        private ModelProperties _libSource { get; set; }
+        public Room Default { get; private set; }
         internal RoomPropertyViewModel(View.RoomProperty roomPanel)
         {
-            _refHBObj = new Room("", new List<Face>(), new RoomPropertiesAbridged());
+            this.Default = new Room("", new List<Face>(), new RoomPropertiesAbridged());
+            _refHBObj = this.Default.DuplicateRoom();
             _libSource = new ModelProperties(ModelEnergyProperties.Default, ModelRadianceProperties.Default);
             this._control = roomPanel;
+            Update(_libSource, new List<Room>() { _refHBObj });
         }
         
         public void Update(ModelProperties libSource, List<Room> rooms)
         {
             this._libSource = libSource;
             this._refHBObj = rooms.FirstOrDefault().DuplicateRoom();
-            _refHBObj.Properties.Energy = _refHBObj.Properties.Energy ?? new RoomEnergyPropertiesAbridged();
-            _refHBObj.Properties.Radiance = _refHBObj.Properties.Radiance ?? new RoomRadiancePropertiesAbridged();
+            var defaultEnergy = new RoomEnergyPropertiesAbridged();
+            var defaultRadiance = new RoomRadiancePropertiesAbridged();
+            _refHBObj.Properties.Energy = _refHBObj.Properties.Energy ?? defaultEnergy;
+            _refHBObj.Properties.Radiance = _refHBObj.Properties.Radiance ?? defaultRadiance;
 
             if (rooms.Select(_ => _.Identifier).Distinct().Count() > 1)
                 this.Identifier = this.Varies;
@@ -288,6 +293,7 @@ namespace Honeybee.UI
 
 
             // Lighting
+   
             var allLpds = rooms.Select(_ => _.Properties.Energy?.Lighting).Distinct().ToList();
             this.Lighting = new LightingViewModel(libSource, allLpds, (s) => _refHBObj.Properties.Energy.Lighting = s as LightingAbridged);
 
