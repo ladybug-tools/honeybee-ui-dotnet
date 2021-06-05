@@ -29,7 +29,7 @@ namespace Honeybee.UI
         public Dialog_ProgramTypeManager(ModelEnergyProperties libSource, List<HB.ProgramTypeAbridged> programTypes) : this()
         {
             this._modelEnergyProperties = libSource;
-            Content = Init(libSource, programTypes);
+            Content = Init(programTypes);
         }
 
 
@@ -39,10 +39,10 @@ namespace Honeybee.UI
             this._modelEnergyProperties = libSource;
             var pTypes = libSource.ProgramTypes.OfType<ProgramTypeAbridged>().ToList();
 
-            Content = Init(libSource, pTypes);
+            Content = Init(pTypes);
         }
 
-        private DynamicLayout Init(ModelEnergyProperties libSource, List<HB.ProgramTypeAbridged> pTypes)
+        private DynamicLayout Init(List<HB.ProgramTypeAbridged> pTypes)
         {
             var layout = new DynamicLayout();
             layout.DefaultSpacing = new Size(5, 5);
