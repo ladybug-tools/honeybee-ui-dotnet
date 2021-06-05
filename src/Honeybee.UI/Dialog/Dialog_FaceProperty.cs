@@ -29,7 +29,7 @@ namespace Honeybee.UI
                 {
                     try
                     {
-                        this.Close();
+                        this.Close(FaceProperty.Instance.GetFaces());
                     }
                     catch (Exception er)
                     {
