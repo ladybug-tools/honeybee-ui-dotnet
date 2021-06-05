@@ -10,7 +10,7 @@ namespace Honeybee.UI.ViewModel
     public class FacePropertyViewModel : ViewModelBase
     {
         public string Varies => "<varies>";
-        public string ByRoomConstructionSet => "By Room Setting";
+        public string ByRoomSetting => "By Room Setting";
         private Face _refHBObj;
 
         private List<Face> _hbObjs;
@@ -141,6 +141,17 @@ namespace Honeybee.UI.ViewModel
             get { return _bcOutdoor; }
             set { this.Set(() => _bcOutdoor = value, nameof(BCOutdoor)); }
         }
+
+
+
+        // AFNCrack
+        private AFNCrackViewModel _AFNCrack;
+
+        public AFNCrackViewModel AFNCrack
+        {
+            get => _AFNCrack;
+            private set => this.Set(() => _AFNCrack = value, nameof(AFNCrack));
+        }
         #endregion
 
 
@@ -237,6 +248,8 @@ namespace Honeybee.UI.ViewModel
                 this.BCOutdoor = new BoundaryConditionOutdoorViewModel(outdoors, (o)=> _refHBObj.BoundaryCondition = o);
             }
          
+            var afns = objs.Select(_ => _.Properties.Energy?.VentCrack).Distinct().ToList();
+            this.AFNCrack = new AFNCrackViewModel(libSource, afns, _ => _refHBObj.Properties.Energy.VentCrack = _);
             
             this._hbObjs = objs.Select(_ => _.DuplicateFace()).ToList();
         }
