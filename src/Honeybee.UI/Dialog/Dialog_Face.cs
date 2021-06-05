@@ -5,6 +5,7 @@ using System;
 
 namespace Honeybee.UI
 {
+    [Obsolete("This is deprecated", false)]
     public class Dialog_Face: Dialog<Face>
     {
         public ModelProperties ModelProperties { get; set; }
@@ -18,7 +19,7 @@ namespace Honeybee.UI
 
                 Padding = new Padding(5);
                 Resizable = true;
-                Title = $"Door Energy Properties - {DialogHelper.PluginName}";
+                Title = $"Face Properties - {DialogHelper.PluginName}";
                 WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(450, 650);
                 this.Icon = DialogHelper.HoneybeeIcon;
