@@ -59,11 +59,11 @@ namespace Honeybee.UI
             private set { this.Set(() => _latentFraction = value, nameof(LatentFraction)); }
         }
 
-        private bool _isLatentFractionAutosize;
+        private bool _isLatentFractionAutocalculate;
 
-        public bool IsLatentFractionAutosize
+        public bool IsLatentFractionAutocalculate
         {
-            get => _isLatentFractionAutosize;
+            get => _isLatentFractionAutocalculate;
             private set {
 
                 if (value)
@@ -72,7 +72,7 @@ namespace Honeybee.UI
                     this.LatentFraction.SetNumberText(this.LatentFraction.NumberText);
 
                 IsLatenFractionInputEnabled = !value;
-                this.Set(() => _isLatentFractionAutosize = value, nameof(IsLatentFractionAutosize));
+                this.Set(() => _isLatentFractionAutocalculate = value, nameof(IsLatentFractionAutocalculate));
             }
         }
 
@@ -144,14 +144,14 @@ namespace Honeybee.UI
             var latFractions = loads.Select(_ => _?.LatentFraction).Distinct();
             if (latFractions.Count() > 1)
             {
-                this.IsLatentFractionAutosize = false;
+                this.IsLatentFractionAutocalculate = false;
                 this.LatentFraction.SetNumberText(this.Varies);
             }
             else
             {
                 this.LatentFraction.SetNumberText("0");
-                this.IsLatentFractionAutosize = latFractions?.FirstOrDefault(_ => _?.Obj is Autocalculate) != null;
-                if (!IsLatentFractionAutosize)
+                this.IsLatentFractionAutocalculate = latFractions?.FirstOrDefault(_ => _?.Obj is Autocalculate) != null;
+                if (!IsLatentFractionAutocalculate)
                 {
                     this.LatentFraction.SetNumberText(_refHBObj.LatentFraction.ToString());
                 }
