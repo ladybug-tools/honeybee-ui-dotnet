@@ -54,7 +54,7 @@ namespace Honeybee.UI.View
             tb.Pages.Add(new TabPage(basis) { Text = "General" });
 
             var loads = GenLoadsPanel();
-            tb.Pages.Add(new TabPage(loads) { Text= "Loads"});
+            tb.Pages.Add(new TabPage(loads) { Text = "Loads" });
 
             var ctrls = GenControlPanel();
             tb.Pages.Add(new TabPage(ctrls) { Text = "Controls" });
@@ -429,8 +429,8 @@ namespace Honeybee.UI.View
             visFraction.SetDefault(_vm.People.Default.LatentFraction);
             visFraction.TextBinding.Bind(vm, _ => _.People.LatentFraction.NumberText);
             visFraction.Bind(_ => _.Enabled, vm, _ => _.People.IsLatenFractionInputEnabled);
-            var autosize = new CheckBox() { Text = "Autosize" };
-            autosize.Bind(_ => _.Checked, vm, _ => _.People.IsLatentFractionAutosize);
+            var autosize = new CheckBox() { Text = "Autocalculate" };
+            autosize.Bind(_ => _.Checked, vm, _ => _.People.IsLatentFractionAutocalculate);
             layout.AddRow("Latent Fraction:");
             layout.AddRow(autosize);
             layout.AddRow(visFraction);
