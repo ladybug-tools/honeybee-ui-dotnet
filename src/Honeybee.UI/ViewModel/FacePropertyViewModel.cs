@@ -253,7 +253,7 @@ namespace Honeybee.UI.ViewModel
                 if (!this._isFaceTypeVaries)
                     item.FaceType = refObj.FaceType;
 
-
+                // energy
                 item.Properties.Energy = item.Properties.Energy ?? new FaceEnergyPropertiesAbridged();
 
                 if (!this.Construction.IsVaries)
@@ -271,10 +271,13 @@ namespace Honeybee.UI.ViewModel
                     }
                     
                 }
-                  
+
                 // radiance 
+                item.Properties.Radiance = item.Properties.Radiance ?? new FaceRadiancePropertiesAbridged();
+
                 if (!this.Modifier.IsVaries)
                     item.Properties.Radiance.Modifier = refObj.Properties.Radiance.Modifier;
+
 
                 if (!this.ModifierBlk.IsVaries)
                     item.Properties.Radiance.ModifierBlk = refObj.Properties.Radiance.ModifierBlk;
@@ -286,68 +289,35 @@ namespace Honeybee.UI.ViewModel
 
         public ICommand ModifierCommand => new RelayCommand(() =>
         {
-            //var dialog = new Dialog_ModifierManager(_libSource.Energy, true);
-            //var dialog_rc = dialog.ShowModal(Config.Owner);
-            //if (dialog_rc != null)
-            //{
-            //    this.ConstructionSet.SetPropetyObj(dialog_rc[0]);
-            //}
+            var dialog = new Dialog_ModifierManager(_libSource.Radiance, true);
+            var dialog_rc = dialog.ShowModal(Config.Owner);
+            if (dialog_rc != null)
+            {
+                this.Modifier.SetPropetyObj(dialog_rc[0]);
+            }
+        });
+
+        public ICommand ModifierBlkCommand => new RelayCommand(() =>
+        {
+            var dialog = new Dialog_ModifierManager(_libSource.Radiance, true);
+            var dialog_rc = dialog.ShowModal(Config.Owner);
+            if (dialog_rc != null)
+            {
+                this.ModifierBlk.SetPropetyObj(dialog_rc[0]);
+            }
         });
 
         public ICommand ConstructionCommand => new RelayCommand(() =>
         {
-            //var dialog = new Dialog_ModifierManager(_libSource.Energy, true);
-            //var dialog_rc = dialog.ShowModal(Config.Owner);
-            //if (dialog_rc != null)
-            //{
-            //    this.ConstructionSet.SetPropetyObj(dialog_rc[0]);
-            //}
+            var dialog = new Dialog_ConstructionManager(_libSource.Energy, true);
+            var dialog_rc = dialog.ShowModal(Config.Owner);
+            if (dialog_rc != null)
+            {
+                this.Construction.SetPropetyObj(dialog_rc[0]);
+            }
         });
 
-        //public ICommand FaceEnergyPropertyBtnClick => new RelayCommand(() => {
-        //    var energyProp = this.HoneybeeObject.Properties.Energy ?? new FaceEnergyPropertiesAbridged();
-        //    energyProp = energyProp.DuplicateFaceEnergyPropertiesAbridged();
-        //    var dialog = new Dialog_FaceEnergyProperty(_libSource.Energy, energyProp);
-        //    var dialog_rc = dialog.ShowModal(Config.Owner);
-        //    if (dialog_rc != null)
-        //    {
-        //        this.HoneybeeObject.Properties.Energy = dialog_rc;
-        //        this.ActionWhenChanged?.Invoke($"Set {this.HoneybeeObject.Identifier} Energy Properties ");
-        //    }
-        //});
-
-        //public ICommand FaceRadiancePropertyBtnClick => new RelayCommand(() => {
-        //    var prop = this.HoneybeeObject.Properties.Radiance ?? new FaceRadiancePropertiesAbridged();
-        //    prop = prop.DuplicateFaceRadiancePropertiesAbridged();
-        //    var dialog = new Dialog_FaceRadianceProperty(this._libSource.Radiance, prop);
-        //    var dialog_rc = dialog.ShowModal(Config.Owner);
-        //    if (dialog_rc != null)
-        //    {
-        //        this.HoneybeeObject.Properties.Radiance = dialog_rc;
-        //        this.ActionWhenChanged?.Invoke($"Set {this.HoneybeeObject.Identifier} Radiance Properties ");
-        //    }
-        //});
-
-        //public ICommand EditFaceBoundaryConditionBtnClick => new RelayCommand(() =>
-        //{
-        //    if (this.HoneybeeObject.BoundaryCondition.Obj is Outdoors outdoors)
-        //    {
-        //        var od = outdoors.DuplicateOutdoors();
-        //        var dialog = new UI.Dialog_BoundaryCondition_Outdoors(od);
-        //        var dialog_rc = dialog.ShowModal(Config.Owner);
-        //        if (dialog_rc != null)
-        //        {
-        //            this.HoneybeeObject.BoundaryCondition = dialog_rc;
-        //            this.ActionWhenChanged?.Invoke($"Set Face Boundary Condition");
-        //        }
-        //    }
-        //    else
-        //    {
-        //        MessageBox.Show(Config.Owner, "Only Outdoors type has additional properties to edit!");
-        //    }
-        //});
-
-
+       
         public ICommand HBDataBtnClick => new RelayCommand(() => {
 
             Honeybee.UI.Dialog_Message.Show(this._control, this._refHBObj.ToJson(true), "Schema Data");

@@ -31,6 +31,11 @@ namespace Honeybee.UI.View
         {
             this._vm.Update(libSource, objs);
         }
+        public List<HB.Face> GetFaces()
+        {
+            return this._vm.GetFaces();
+
+        }
 
         private void Initialize()
         {
@@ -113,7 +118,7 @@ namespace Honeybee.UI.View
             var mb = new Button();
             mb.Bind(_ => _.Enabled, _vm, v => v.ModifierBlk.IsBtnEnabled);
             mb.TextBinding.Bind(_vm, _ => _.ModifierBlk.BtnName);
-            mb.Command = this._vm.ModifierCommand;
+            mb.Command = this._vm.ModifierBlkCommand;
             var mbByRoom = new CheckBox() { Text = _vm.ByRoomConstructionSet };
             mbByRoom.CheckedBinding.Bind(_vm, _ => _.ModifierBlk.IsCheckboxChecked);
             layout.AddRow("Modifier Blk:", mbByRoom);
