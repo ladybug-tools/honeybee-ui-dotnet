@@ -3,9 +3,11 @@ using System;
 
 namespace Honeybee.UI
 {
+   
     public class CheckboxButtonViewModel : ViewModelBase
     {
-        public string Varies => "<varies>";
+        private string Varies => "<varies>";
+        private static string None => "<None>";
         public bool IsVaries { get; private set; }
         private HoneybeeSchema.IIDdBase _refObjProperty;
         private HoneybeeSchema.IIDdBase refObjProperty
@@ -21,7 +23,7 @@ namespace Honeybee.UI
         public Action<HoneybeeSchema.IIDdBase> SetHBProperty { get; private set; }
 
 
-        private string _btnName = "Override";
+        private string _btnName = None;
         public string BtnName
         {
             get => IsVaries ? this.Varies : _btnName;
@@ -34,7 +36,10 @@ namespace Honeybee.UI
                 if (IsVaries)
                     IsCheckboxChecked = false;
 
-                if (IsBtnEnabled)
+                if (string.IsNullOrEmpty(value))
+                    value = None;
+
+                if (IsBtnEnabled || string.IsNullOrEmpty(_btnName))
                     this.Set(() => _btnName = value, nameof(BtnName));
             }
         }
@@ -82,6 +87,5 @@ namespace Honeybee.UI
             this.refObjProperty = obj;
         }
     }
-
 
 }
