@@ -27,7 +27,7 @@ namespace Honeybee.UI
         public Dialog_ModifierSetManager(ModelRadianceProperties libSource, List<ModifierSetAbridged> modifierSets) : this()
         {
             this.ModelRadianceProperties = libSource;
-            Content = Init(libSource, modifierSets);
+            Content = Init(modifierSets);
         }
 
         public Dialog_ModifierSetManager(ModelRadianceProperties libSource, bool returnSelectedOnly = false) : this()
@@ -38,10 +38,10 @@ namespace Honeybee.UI
                   .OfType<ModifierSetAbridged>()
                   .ToList();
 
-            Content = Init(libSource, modifierSets);
+            Content = Init(modifierSets);
         }
 
-        public DynamicLayout Init(ModelRadianceProperties libSource, List<ModifierSetAbridged> modifierSets)
+        private DynamicLayout Init(List<ModifierSetAbridged> modifierSets)
         {
             var layout = new DynamicLayout();
             layout.DefaultPadding = new Padding(10);
