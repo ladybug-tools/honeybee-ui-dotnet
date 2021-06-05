@@ -84,12 +84,27 @@ namespace Honeybee.UI.ConsoleApp
                     }
                 };
 
+                var facePropertybtn = new Button() { Text = "2 Faces Property" };
+                var face = new Face("faceId", new Face3D(new List<List<double>>()), FaceType.Floor, new Ground(), new FacePropertiesAbridged(new FaceEnergyPropertiesAbridged("aa"), new FaceRadiancePropertiesAbridged("bb", "cc")));
+                var face2 = new Face($"Face_{Guid.NewGuid()}", new Face3D(new List<List<double>>()), FaceType.Wall, new Outdoors(), new FacePropertiesAbridged(new FaceEnergyPropertiesAbridged("Generic Exterior Wall")), "Face name");
+                facePropertybtn.Click += (s, e) =>
+                {
+                    var dialog = new Honeybee.UI.Dialog_FaceProperty(md.Properties, new List<Face>() { face, face2 });
+                    var dialog_rc = dialog.ShowModal();
+                    if (dialog_rc != null)
+                    {
+                        foreach (var item in dialog_rc)
+                        {
+                            Console.WriteLine(item.ToJson(true));
+                        }
+
+                    }
+                };
 
                 var facePropertybtn2 = new Button() { Text = "1 Face Property" };
-                var face = new Face("faceId", new Face3D(new List<List<double>>()), FaceType.Wall, new Outdoors(), new FacePropertiesAbridged());
                 facePropertybtn2.Click += (s, e) =>
                 {
-                    var dialog = new Honeybee.UI.Dialog_FaceProperty(md.Properties, new List<Face>() { face });
+                    var dialog = new Honeybee.UI.Dialog_FaceProperty(md.Properties, new List<Face>() { face2 });
                     var dialog_rc = dialog.ShowModal();
                     if (dialog_rc != null)
                     {
@@ -218,12 +233,7 @@ namespace Honeybee.UI.ConsoleApp
                 var modifierBtn = new Button() { Text = "Modifier Manager" };
                 modifierBtn.Click += (s, e) =>
                 {
-                    var existingItems = md.Properties.Radiance.Modifiers
-                        .OfType<HoneybeeSchema.ModifierBase>()
-                        .ToList();
-
-                    var dup = existingItems.Select(_ => _.Duplicate()).OfType<HoneybeeSchema.ModifierBase>().ToList();
-                    var dialog = new Honeybee.UI.Dialog_ModifierManager(dup);
+                    var dialog = new Honeybee.UI.Dialog_ModifierManager(md.Properties.Radiance);
 
                     var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
@@ -310,7 +320,7 @@ namespace Honeybee.UI.ConsoleApp
               
 
                 panel.AddSeparateRow(RoomPropertybtn, RoomPropertybtn2, RmEngPropbtn, null);
-                panel.AddSeparateRow(facePropertybtn2, null);
+                panel.AddSeparateRow(facePropertybtn, facePropertybtn2, null);
                 panel.AddSeparateRow(Messagebtn);
                 panel.AddSeparateRow(conbtn, cSetbtn, cSetManager, cSetSel_btn, null);
                 panel.AddSeparateRow(pTypebtn, pTypeMngbtn, null);
