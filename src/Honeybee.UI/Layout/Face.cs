@@ -11,6 +11,7 @@ namespace Honeybee.UI.View
     /// If input HoneybeeObj is a duplicated object, geometryReset action must be provided, 
     /// otherwise no changes would be applied to original honeybee object.
     /// </summary>
+    [Obsolete("This is deprecated, please use FaceProperty instead", false)]
     public class Face: Panel
     {
         private FaceViewModel ViewModel { get; set; }

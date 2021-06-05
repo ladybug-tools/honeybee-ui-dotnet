@@ -34,18 +34,17 @@ namespace Honeybee.UI
 
         public ValidableText()
         {
-            this._defaultBackground = this.BackgroundColor;
             this._defaultTextColor = this.TextColor;
         }
         public void SetDefault(object value)
         {
             this._defaultText = value?.ToString();
-           
         }
 
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
+            this._defaultBackground = this.BackgroundColor;
             this.TextColor = _defaultText == this.Text ? _gry : _defaultTextColor;
         }
         protected override void OnTextChanged(EventArgs e)
@@ -53,6 +52,9 @@ namespace Honeybee.UI
             base.OnTextChanged(e);
 
             if (this.Text == ReservedText)
+                return;
+
+            if (!this.Loaded)
                 return;
 
             this.TextColor = _defaultText == this.Text ? _gry : _defaultTextColor;
@@ -69,7 +71,7 @@ namespace Honeybee.UI
         protected override void OnEnabledChanged(EventArgs e)
         {
             base.OnEnabledChanged(e);
-            this.TextColor = this.Enabled ? _blk : _gry;
+            this.TextColor = this.Enabled ? _defaultTextColor : _gry;
         }
     }
 
