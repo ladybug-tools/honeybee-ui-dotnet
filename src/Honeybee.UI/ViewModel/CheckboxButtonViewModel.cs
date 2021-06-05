@@ -8,7 +8,8 @@ namespace Honeybee.UI
     {
         private string Varies => "<varies>";
         private static string None => "<None>";
-        public bool IsVaries { get; private set; }
+        public bool IsVaries => _isVaries && !_isCheckboxChecked;
+        private bool _isVaries;
         private HoneybeeSchema.IIDdBase _refObjProperty;
         private HoneybeeSchema.IIDdBase refObjProperty
         {
@@ -26,14 +27,14 @@ namespace Honeybee.UI
         private string _btnName = None;
         public string BtnName
         {
-            get => IsVaries ? this.Varies : _btnName;
+            get => _isVaries ? this.Varies : _btnName;
             private set
             {
                 IsCheckboxChecked = refObjProperty == null;
                 IsBtnEnabled = !IsCheckboxChecked;
 
-                IsVaries = value == this.Varies;
-                if (IsVaries)
+                _isVaries = value == this.Varies;
+                if (_isVaries)
                     IsCheckboxChecked = false;
 
                 if (string.IsNullOrEmpty(value))
