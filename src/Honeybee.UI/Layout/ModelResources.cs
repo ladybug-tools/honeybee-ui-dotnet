@@ -54,9 +54,7 @@ namespace Honeybee.UI
                     MessageBox.Show(this, "Invalid model");
                     return;
                 }
-                var materialsInModel = _model.Properties.Energy.Materials.Select(_ => _.Obj as HB.Energy.IMaterial).ToList();
-
-                var dialog = new Dialog_MaterialManager(materialsInModel);
+                var dialog = new Dialog_MaterialManager(_model.Properties.Energy);
                 var dialog_rc = dialog.ShowModal(this);
                 if (dialog_rc != null)
                 {

@@ -210,9 +210,7 @@ namespace Honeybee.UI.ConsoleApp
                 var materialBtn = new Button() { Text = "Material Manager" };
                 materialBtn.Click += (s, e) =>
                 {
-                    var materialsInModel = md.Properties.Energy.Materials.OfType<HoneybeeSchema.Energy.IMaterial>().ToList();
-
-                    var dialog = new Honeybee.UI.Dialog_MaterialManager(materialsInModel);
+                    var dialog = new Honeybee.UI.Dialog_MaterialManager(md.Properties.Energy);
                     var newMaterials = dialog.ShowModal(this);
                     if (newMaterials != null)
                     {
