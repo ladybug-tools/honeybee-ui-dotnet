@@ -7,6 +7,7 @@ using Honeybee.UI.ViewModel;
 
 namespace Honeybee.UI.View
 {
+    [Obsolete("This is deprecated, please use RoomProperty instead", false)]
     public class Room: Panel
     {
         private RoomViewModel ViewModel { get; set; }
