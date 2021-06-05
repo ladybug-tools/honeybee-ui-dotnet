@@ -109,7 +109,7 @@ namespace Honeybee.UI.View
             c.Bind(_ => _.Enabled, _vm, v => v.Modifier.IsBtnEnabled);
             c.TextBinding.Bind(_vm, _ => _.Modifier.BtnName);
             c.Command = this._vm.ModifierCommand;
-            var cByRoom = new CheckBox() { Text = _vm.ByRoomConstructionSet };
+            var cByRoom = new CheckBox() { Text = _vm.ByRoomSetting };
             cByRoom.CheckedBinding.Bind(_vm, _ => _.Modifier.IsCheckboxChecked);
 
             layout.AddRow("Modifier:", cByRoom);
@@ -119,7 +119,7 @@ namespace Honeybee.UI.View
             mb.Bind(_ => _.Enabled, _vm, v => v.ModifierBlk.IsBtnEnabled);
             mb.TextBinding.Bind(_vm, _ => _.ModifierBlk.BtnName);
             mb.Command = this._vm.ModifierBlkCommand;
-            var mbByRoom = new CheckBox() { Text = _vm.ByRoomConstructionSet };
+            var mbByRoom = new CheckBox() { Text = _vm.ByRoomSetting };
             mbByRoom.CheckedBinding.Bind(_vm, _ => _.ModifierBlk.IsCheckboxChecked);
             layout.AddRow("Modifier Blk:", mbByRoom);
             layout.AddRow(null, mb);
@@ -142,7 +142,7 @@ namespace Honeybee.UI.View
             c.Bind(_ => _.Enabled, _vm, v => v.Construction.IsBtnEnabled);
             c.TextBinding.Bind(_vm, _ => _.Construction.BtnName);
             c.Command = this._vm.ConstructionCommand;
-            var cByRoom = new CheckBox() { Text = _vm.ByRoomConstructionSet };
+            var cByRoom = new CheckBox() { Text = _vm.ByRoomSetting };
             cByRoom.CheckedBinding.Bind(_vm, _ => _.Construction.IsCheckboxChecked);
 
             layout.AddRow("Construction:", cByRoom);
@@ -175,7 +175,18 @@ namespace Honeybee.UI.View
             var outdoorBc = CreateOutdoorLayout();
             layout.AddRow(null, outdoorBc);
 
-            gp.Content = layout;
+
+            //AFN
+            var afnByProgram = new CheckBox() { Text = _vm.ByRoomSetting };
+            afnByProgram.CheckedBinding.Bind(_vm, _ => _.AFNCrack.IsCheckboxChecked);
+            layout.AddRow("AFNCrack:", afnByProgram);
+            var afn = GenAFNPanel();
+
+            var masterlayout = new DynamicLayout();
+            masterlayout.AddRow(layout);
+            masterlayout.AddRow(afn);
+
+            gp.Content = masterlayout;
             return gp;
         }
 
@@ -212,6 +223,39 @@ namespace Honeybee.UI.View
 
             return layout;
         }
+
+        private DynamicLayout GenAFNPanel()
+        {
+            var vm = this._vm;
+
+            var layout = new DynamicLayout();
+            layout.Bind((t) => t.Enabled, vm, v => v.AFNCrack.IsPanelEnabled);
+            //layout.Bind((t) => t.Visible, vm, v => v.AFNCrack.IsPanelEnabled);
+
+            layout.DefaultSpacing = new Size(4, 4);
+            layout.DefaultPadding = new Padding(4);
+
+            var wPerArea = new DoubleText();
+            wPerArea.Width = 250;
+            wPerArea.ReservedText = _vm.Varies;
+            wPerArea.SetDefault(_vm.AFNCrack.Default.FlowCoefficient);
+            wPerArea.TextBinding.Bind(vm, _ => _.AFNCrack.FlowCoefficient.NumberText);
+            layout.AddRow("Flow Coefficient:", wPerArea);
+
+       
+            var radFraction = new DoubleText();
+            radFraction.ReservedText = _vm.Varies;
+            radFraction.SetDefault(_vm.AFNCrack.Default.FlowExponent);
+            radFraction.TextBinding.Bind(vm, _ => _.AFNCrack.FlowExponent.NumberText);
+            layout.AddRow("Flow Exponent:", radFraction);
+
+            layout.AddRow(null);
+
+            return layout;
+        }
+
+
+
     }
-    
+
 }
