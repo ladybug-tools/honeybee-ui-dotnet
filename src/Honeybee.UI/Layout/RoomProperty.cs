@@ -791,7 +791,7 @@ namespace Honeybee.UI.View
             layout.AddRow( delta);
 
             var offAtMin = new CheckBox();
-            offAtMin.CheckedBinding.Bind(vm, _ => _.DaylightingControl.OffAtMinimum);
+            offAtMin.CheckedBinding.Bind(vm, _ => _.DaylightingControl.OffAtMinimum.IsChecked);
             layout.AddRow("Off At Minimum:");
             layout.AddRow(offAtMin);
             layout.AddRow(null);

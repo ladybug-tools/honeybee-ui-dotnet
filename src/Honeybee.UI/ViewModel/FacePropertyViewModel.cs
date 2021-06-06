@@ -18,7 +18,7 @@ namespace Honeybee.UI.ViewModel
         public string Identifier
         {
             get => _refHBObj.Identifier;
-            private set { this.Set(() => _refHBObj.Identifier = value, nameof(_refHBObj.Identifier)); }
+            private set => this.Set(() => _refHBObj.Identifier = value, nameof(_refHBObj.Identifier)); 
         }
 
 
@@ -61,14 +61,14 @@ namespace Honeybee.UI.ViewModel
         public CheckboxButtonViewModel Modifier
         {
             get => _modifier;
-            set { this.Set(() => _modifier = value, nameof(Modifier)); }
+            private set { this.Set(() => _modifier = value, nameof(Modifier)); }
         }
 
         private CheckboxButtonViewModel _modifierBlk;
         public CheckboxButtonViewModel ModifierBlk
         {
             get => _modifierBlk;
-            set { this.Set(() => _modifierBlk = value, nameof(ModifierBlk)); }
+            private set => this.Set(() => _modifierBlk = value, nameof(ModifierBlk)); 
         }
 
         #endregion
@@ -81,7 +81,7 @@ namespace Honeybee.UI.ViewModel
         public CheckboxButtonViewModel Construction
         {
             get => _construction;
-            set { this.Set(() => _construction = value, nameof(Construction)); }
+            private set => this.Set(() => _construction = value, nameof(Construction)); 
         }
 
         public static Dictionary<string, AnyOf<Ground, Outdoors, Adiabatic, Surface>> Bcs =>
@@ -131,15 +131,15 @@ namespace Honeybee.UI.ViewModel
         private bool _isOutdoorBoundary = true;
         public bool IsOutdoorBoundary
         {
-            get { return _isOutdoorBoundary; }
-            set { this.Set(() => _isOutdoorBoundary = value, nameof(IsOutdoorBoundary)); }
+            get => _isOutdoorBoundary;
+            private set => this.Set(() => _isOutdoorBoundary = value, nameof(IsOutdoorBoundary)); 
         }
 
         private BoundaryConditionOutdoorViewModel _bcOutdoor;
         public BoundaryConditionOutdoorViewModel BCOutdoor
         {
-            get { return _bcOutdoor; }
-            set { this.Set(() => _bcOutdoor = value, nameof(BCOutdoor)); }
+            get => _bcOutdoor;
+            private set => this.Set(() => _bcOutdoor = value, nameof(BCOutdoor)); 
         }
 
 
@@ -244,7 +244,7 @@ namespace Honeybee.UI.ViewModel
 
             if (this.IsOutdoorBoundary)
             {
-                var outdoors = objs.Select(_ => _.BoundaryCondition).OfType<Outdoors>().ToList();
+                var outdoors = objs.Select(_ => _.BoundaryCondition).OfType<Outdoors>().Distinct().ToList();
                 this.BCOutdoor = new BoundaryConditionOutdoorViewModel(outdoors, (o)=> _refHBObj.BoundaryCondition = o);
             }
          

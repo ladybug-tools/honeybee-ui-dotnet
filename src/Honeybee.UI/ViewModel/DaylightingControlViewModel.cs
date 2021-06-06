@@ -60,17 +60,12 @@ namespace Honeybee.UI
         }
 
         // OffAtMinimum
-        private bool? _offAtMinimum;
+        private CheckboxViewModel _offAtMinimum;
 
-        public bool? OffAtMinimum
+        public CheckboxViewModel OffAtMinimum
         {
             get => _offAtMinimum;
-            private set {
-
-                if (value.HasValue)
-                    this._refHBObj.OffAtMinimum = value.Value;
-                this.Set(() => _offAtMinimum = value, nameof(OffAtMinimum)); 
-            }
+            private set => this.Set(() => _offAtMinimum = value, nameof(OffAtMinimum)); 
         }
 
         public DaylightingControl Default { get; private set; }
@@ -128,10 +123,11 @@ namespace Honeybee.UI
 
 
             //OffAtMinimum
+            this.OffAtMinimum = new CheckboxViewModel(_ => _refHBObj.OffAtMinimum = _);
             if (loads.Select(_ => _?.OffAtMinimum).Distinct().Count() > 1)
-                this.OffAtMinimum = null;
+                this.OffAtMinimum.SetCheckboxVaries();
             else
-                this.OffAtMinimum = _refHBObj.OffAtMinimum;
+                this.OffAtMinimum.SetCheckboxChecked(_refHBObj.OffAtMinimum);
         }
 
         public DaylightingControl MatchObj(DaylightingControl obj)
@@ -157,7 +153,7 @@ namespace Honeybee.UI
                 obj.MinPowerInput = this._refHBObj.MinPowerInput;
             if (!this.MinLightOutput.IsVaries)
                 obj.MinLightOutput = this._refHBObj.MinLightOutput;
-            if (this.OffAtMinimum.HasValue)
+            if (!this.OffAtMinimum.IsVaries)
                 obj.OffAtMinimum = this._refHBObj.OffAtMinimum;
             return obj;
         }

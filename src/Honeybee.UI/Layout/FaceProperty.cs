@@ -198,10 +198,10 @@ namespace Honeybee.UI.View
             layout.Bind(_ => _.Enabled, _vm, _ => _.IsOutdoorBoundary);
 
             var sun_CB = new CheckBox() { Text = "Sun Exposure" };
-            sun_CB.CheckedBinding.Bind(_vm, _ => _.BCOutdoor.SunExposure);
+            sun_CB.CheckedBinding.Bind(_vm, _ => _.BCOutdoor.SunExposure.IsChecked);
        
             var wind_CB = new CheckBox() { Text = "Wind Exposure" };
-            wind_CB.CheckedBinding.Bind(_vm, _ => _.BCOutdoor.WindExposure);
+            wind_CB.CheckedBinding.Bind(_vm, _ => _.BCOutdoor.WindExposure.IsChecked);
 
             layout.AddRow(sun_CB);
             layout.AddRow(wind_CB);
