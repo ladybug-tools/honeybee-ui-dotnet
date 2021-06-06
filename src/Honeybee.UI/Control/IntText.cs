@@ -1,12 +1,12 @@
 ﻿namespace Honeybee.UI
 {
-    public class DoubleText : ValidableText
+    public class IntText : ValidableText
     {
-        public DoubleText()
+        public IntText()
         {
         }
 
-        public override bool IsTextValid(string text) => double.TryParse(this.Text, out var value);
+        public override bool IsTextValid(string text) => int.TryParse(this.Text, out var value);
         public override void SetDefault(object value)
         {
             if (value == null)
