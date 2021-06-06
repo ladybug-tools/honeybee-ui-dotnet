@@ -12,27 +12,19 @@ namespace Honeybee.UI
         private Outdoors _refHBObj;
 
         // SunExposure
-        private bool? _sunExposure;
-        public bool? SunExposure
+        private CheckboxViewModel _sunExposure;
+        public CheckboxViewModel SunExposure
         {
             get => _sunExposure;
-            private set {
-                if (value.HasValue)
-                    _refHBObj.SunExposure = value.Value;
-                this.Set(() => _sunExposure = value, nameof(SunExposure)); 
-            }  
+            private set => this.Set(() => _sunExposure = value, nameof(SunExposure)); 
         }
 
         // WindExposure
-        private bool? _windExposure;
-        public bool? WindExposure
+        private CheckboxViewModel _windExposure;
+        public CheckboxViewModel WindExposure
         {
             get => _windExposure;
-            private set {
-                if (value.HasValue)
-                    _refHBObj.WindExposure = value.Value;
-                this.Set(() => _windExposure = value, nameof(WindExposure)); 
-            }
+            private set => this.Set(() => _windExposure = value, nameof(WindExposure)); 
         }
 
         // ViewFactor
@@ -78,20 +70,22 @@ namespace Honeybee.UI
             this.Default = new Outdoors();
             this._refHBObj = objs.FirstOrDefault()?.DuplicateOutdoors();
             this._refHBObj = this._refHBObj ?? this.Default.DuplicateOutdoors();
-          
+
 
             //SunExposure
+            this.SunExposure = new CheckboxViewModel(_ => _refHBObj.SunExposure = _);
             if (objs.Select(_ => _?.SunExposure).Distinct().Count() > 1)
-                this.SunExposure = null;
+                this.SunExposure.SetCheckboxVaries();
             else
-                this.SunExposure = _refHBObj.SunExposure;
+                this.SunExposure.SetCheckboxChecked(this._refHBObj.SunExposure);
 
 
             //WindExposure
+            this.WindExposure = new CheckboxViewModel(_ => _refHBObj.WindExposure = _);
             if (objs.Select(_ => _?.WindExposure).Distinct().Count() > 1)
-                this.WindExposure = null;
+                this.WindExposure.SetCheckboxVaries();
             else
-                this.WindExposure = _refHBObj.WindExposure;
+                this.WindExposure.SetCheckboxChecked(this._refHBObj.WindExposure);
 
 
             //ViewFactor
@@ -120,9 +114,9 @@ namespace Honeybee.UI
         {
             obj = obj?.DuplicateOutdoors() ?? new Outdoors();
 
-            if (this.SunExposure.HasValue)
+            if (!this.SunExposure.IsVaries)
                 obj.SunExposure = this._refHBObj.SunExposure;
-            if (this.WindExposure.HasValue)
+            if (!this.WindExposure.IsVaries)
                 obj.WindExposure = this._refHBObj.WindExposure;
             if (!this.ViewFactor.IsVaries)
                 obj.ViewFactor = this._refHBObj.ViewFactor;
