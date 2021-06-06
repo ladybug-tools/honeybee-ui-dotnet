@@ -7,6 +7,7 @@ using System;
 
 namespace Honeybee.UI
 {
+    [Obsolete("This is deprecated", false)]
     public class Dialog_FaceEnergyProperty: Dialog<FaceEnergyPropertiesAbridged>
     {
         private ModelEnergyProperties ModelEnergyProperties { get; set; }
