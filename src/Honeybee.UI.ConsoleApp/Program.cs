@@ -117,10 +117,24 @@ namespace Honeybee.UI.ConsoleApp
                 };
 
 
-                var aptPropertybtn = new Button() { Text = "2 Apts Property" };
+                var aptPropertybtn = new Button() { Text = "1 Apt Property" };
                 var apt = new Aperture("aptId", new Face3D(new List<List<double>>()), new Outdoors(), new AperturePropertiesAbridged(new ApertureEnergyPropertiesAbridged("aa"), new ApertureRadiancePropertiesAbridged("bb", "cc")));
                 var apt2 = new Aperture($"Apt_{Guid.NewGuid()}", new Face3D(new List<List<double>>()), new Outdoors(), new AperturePropertiesAbridged(new ApertureEnergyPropertiesAbridged("Generic Exterior Wall")), "apt name", isOperable: true);
                 aptPropertybtn.Click += (s, e) =>
+                {
+                    var dialog = new Honeybee.UI.Dialog_ApertureProperty(md.Properties, new List<Aperture>() { apt2 });
+                    var dialog_rc = dialog.ShowModal();
+                    if (dialog_rc != null)
+                    {
+                        foreach (var item in dialog_rc)
+                        {
+                            Console.WriteLine(item.ToJson(true));
+                        }
+
+                    }
+                };
+                var aptPropertybtn2 = new Button() { Text = "2 Apts Property" };
+                aptPropertybtn2.Click += (s, e) =>
                 {
                     var dialog = new Honeybee.UI.Dialog_ApertureProperty(md.Properties, new List<Aperture>() { apt, apt2 });
                     var dialog_rc = dialog.ShowModal();
@@ -131,6 +145,36 @@ namespace Honeybee.UI.ConsoleApp
                             Console.WriteLine(item.ToJson(true));
                         }
 
+                    }
+                };
+
+
+                var shdPropertybtn = new Button() { Text = "1 Shade Property" };
+                var shd = new Shade("shdId", new Face3D(new List<List<double>>()),  new ShadePropertiesAbridged(new ShadeEnergyPropertiesAbridged("aa"), new ShadeRadiancePropertiesAbridged("bb", "cc")));
+                var shd2 = new Shade($"Shade_{Guid.NewGuid()}", new Face3D(new List<List<double>>()), new ShadePropertiesAbridged(new ShadeEnergyPropertiesAbridged("Generic Exterior Wall")), "shd name", isDetached: true);
+                shdPropertybtn.Click += (s, e) =>
+                {
+                    var dialog = new Honeybee.UI.Dialog_ShadeProperty(md.Properties, new List<Shade>() { shd2 });
+                    var dialog_rc = dialog.ShowModal();
+                    if (dialog_rc != null)
+                    {
+                        foreach (var item in dialog_rc)
+                        {
+                            Console.WriteLine(item.ToJson(true));
+                        }
+                    }
+                };
+                var shdPropertybtn2 = new Button() { Text = "2 Shade Property" };
+                shdPropertybtn2.Click += (s, e) =>
+                {
+                    var dialog = new Honeybee.UI.Dialog_ShadeProperty(md.Properties, new List<Shade>() { shd, shd2 });
+                    var dialog_rc = dialog.ShowModal();
+                    if (dialog_rc != null)
+                    {
+                        foreach (var item in dialog_rc)
+                        {
+                            Console.WriteLine(item.ToJson(true));
+                        }
                     }
                 };
 
@@ -336,7 +380,7 @@ namespace Honeybee.UI.ConsoleApp
               
 
                 panel.AddSeparateRow(RoomPropertybtn, RoomPropertybtn2, RmEngPropbtn, null);
-                panel.AddSeparateRow(facePropertybtn, facePropertybtn2, aptPropertybtn, null);
+                panel.AddSeparateRow(facePropertybtn, facePropertybtn2, aptPropertybtn, aptPropertybtn2, shdPropertybtn, shdPropertybtn2, null);
                 panel.AddSeparateRow(Messagebtn);
                 panel.AddSeparateRow(conbtn, cSetbtn, cSetManager, cSetSel_btn, null);
                 panel.AddSeparateRow(pTypebtn, pTypeMngbtn, null);
