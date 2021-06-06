@@ -12,7 +12,13 @@ namespace Honeybee.UI
         }
 
         public override bool IsTextValid(string text) => int.TryParse(this.Text, out var value);
-
+        public override void SetDefault(object value)
+        {
+            if (value == null)
+                base.SetDefault(0);
+            else
+                base.SetDefault(value);
+        }
     }
 
 
@@ -23,6 +29,13 @@ namespace Honeybee.UI
         }
 
         public override bool IsTextValid(string text) => double.TryParse(this.Text, out var value);
+        public override void SetDefault(object value)
+        {
+            if (value == null)
+                base.SetDefault(0);
+            else
+                base.SetDefault(value);
+        }
     }
 
     public class StringText : ValidableText
@@ -45,7 +58,7 @@ namespace Honeybee.UI
         {
             this._defaultTextColor = this.TextColor;
         }
-        public void SetDefault(object value)
+        public virtual void SetDefault(object value)
         {
             this._defaultText = value?.ToString();
         }
@@ -80,8 +93,8 @@ namespace Honeybee.UI
         private Eto.Drawing.Color _disabledGry = Eto.Drawing.Color.FromArgb(200, 200, 200);
         private Eto.Drawing.Color _gry = Eto.Drawing.Color.FromArgb(150, 150, 150);
         private Eto.Drawing.Color _red = Eto.Drawing.Color.FromArgb(255, 100, 100);
-        private Eto.Drawing.Color _editedColor = Eto.Drawing.Color.FromArgb(150, 27, 100);
-
+        private Eto.Drawing.Color _editedColor = Eto.Drawing.Color.FromArgb(0, 100, 255);
+        
         protected override void OnEnabledChanged(EventArgs e)
         {
             base.OnEnabledChanged(e);

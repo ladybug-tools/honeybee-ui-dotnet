@@ -82,11 +82,11 @@ namespace Honeybee.UI.View
             id.TextBinding.Bind(vm, (_) => _.Identifier);
             layout.AddRow("ID: ", id);
 
-            var nameTB = new TextBox() { };
+            var nameTB = new StringText() { };
             nameTB.TextBinding.Bind(vm, (_) => _.DisplayName);
             layout.AddRow("Name:", nameTB);
 
-            var storyTB = new TextBox() { };
+            var storyTB = new StringText() { };
             storyTB.TextBinding.Bind(vm, (_) => _.Story);
             layout.AddRow("Story:", storyTB);
 

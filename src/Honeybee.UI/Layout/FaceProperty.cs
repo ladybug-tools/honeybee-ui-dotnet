@@ -69,7 +69,7 @@ namespace Honeybee.UI.View
             layout.AddRow("ID:", id);
             layout.AddRow(null, new Label() { Visible = false }); // add space
 
-            var nameTB = new TextBox();
+            var nameTB = new StringText();
             nameTB.TextBinding.Bind(_vm, (_) => _.DisplayName);
             layout.AddRow("Name:", nameTB);
           
@@ -104,7 +104,7 @@ namespace Honeybee.UI.View
             layout.DefaultSpacing = new Size(4, 4);
             layout.DefaultPadding = new Padding(4);
 
-            var c = new Button();
+            var c = new ValidateButton();
             c.Width = 250;
             c.Bind(_ => _.Enabled, _vm, v => v.Modifier.IsBtnEnabled);
             c.TextBinding.Bind(_vm, _ => _.Modifier.BtnName);
