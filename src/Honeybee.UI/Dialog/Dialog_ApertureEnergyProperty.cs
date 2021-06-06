@@ -7,6 +7,7 @@ using System;
 
 namespace Honeybee.UI
 {
+    [Obsolete("This is deprecated", false)]
     public class Dialog_ApertureEnergyProperty: Dialog<ApertureEnergyPropertiesAbridged>
     {
         private ModelEnergyProperties ModelEnergyProperties { get; set; }
