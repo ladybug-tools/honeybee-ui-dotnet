@@ -76,7 +76,7 @@ namespace Honeybee.UI
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateVentilationControlAbridged();
 
 
-            if (loads.Count == 1 && loads.FirstOrDefault() == null)
+            if (loads.Distinct().Count() == 1 && loads.FirstOrDefault() == null)
             {
                 this.IsCheckboxChecked = true;
             }

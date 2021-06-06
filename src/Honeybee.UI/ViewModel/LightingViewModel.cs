@@ -77,7 +77,7 @@ namespace Honeybee.UI
 
 
 
-            if (lights.Count == 1 && lights.FirstOrDefault() == null)
+            if (lights.Distinct().Count() == 1 && lights.FirstOrDefault() == null)
             {
                 this.IsCheckboxChecked = true;
             }
