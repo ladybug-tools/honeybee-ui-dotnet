@@ -96,25 +96,32 @@ namespace Honeybee.UI
             var mouseHoveredRanges = new List<(bool isVertical, RectangleF rectangle, int valueIndex)>();
             _scheduleDaydrawable.MouseMove += (s, e) =>
             {
-                var mouseLoc = e.Location;
-                //label.Text = $"{Math.Round(mouseLoc.X)},{Math.Round(mouseLoc.Y)}";
-                //Draw mouse hover over ranges
-                var hovered = allMouseHoverRanges.Where(_ => _.rectangle.Contains(mouseLoc));
-                if (hovered.Any())
+                try
                 {
-                    mouseHoveredRanges = hovered.ToList();
-                    _scheduleDaydrawable.Update(canvas);
-                }
-                else
-                {
-                    if (mouseHoveredRanges.Any())
+                    var mouseLoc = e.Location;
+                    //label.Text = $"{Math.Round(mouseLoc.X)},{Math.Round(mouseLoc.Y)}";
+                    //Draw mouse hover over ranges
+                    var hovered = allMouseHoverRanges.Where(_ => _.rectangle.Contains(mouseLoc));
+                    if (hovered.Any())
                     {
-                        ////var preRec = mouseHoveredRanges.First().rectangle;
-                        mouseHoveredRanges.Clear();
-                        //drawable.Update(new Rectangle(preRec));
+                        mouseHoveredRanges = hovered.ToList();
                         _scheduleDaydrawable.Update(canvas);
                     }
+                    else
+                    {
+                        if (mouseHoveredRanges.Any())
+                        {
+                            ////var preRec = mouseHoveredRanges.First().rectangle;
+                            mouseHoveredRanges.Clear();
+                            //drawable.Update(new Rectangle(preRec));
+                            _scheduleDaydrawable.Update(canvas);
+                        }
 
+                    }
+                }
+                catch (Exception err)
+                {
+                    MessageBox.Show(err.Message);
                 }
 
             };
@@ -123,23 +130,36 @@ namespace Honeybee.UI
             var mouseHoveredRangesForDragging = new List<(bool isVertical, RectangleF rectangle, int valueIndex)>();
             _scheduleDaydrawable.MouseDown += (s, e) =>
             {
-                if (mouseHoveredRanges.Any())
+                try
                 {
-                    startDragging = e.Buttons == MouseButtons.Primary;
-                    mouseHoveredRangesForDragging = mouseHoveredRanges;
-                    //label.Text = startDragging.ToString();
+                    if (mouseHoveredRanges.Any())
+                    {
+                        startDragging = e.Buttons == MouseButtons.Primary;
+                        mouseHoveredRangesForDragging = mouseHoveredRanges;
+                        //label.Text = startDragging.ToString();
+                    }
                 }
-
+                catch (Exception err)
+                {
+                    MessageBox.Show(err.Message);
+                }
+               
             };
             _scheduleDaydrawable.MouseUp += (s, e) =>
             {
-                if (startDragging)
+                try
                 {
-                    mouseHoveredRangesForDragging.Clear();
-                    startDragging = false;
-                    _scheduleDaydrawable.Update(canvas);
+                    if (startDragging)
+                    {
+                        mouseHoveredRangesForDragging.Clear();
+                        startDragging = false;
+                        _scheduleDaydrawable.Update(canvas);
+                    }
                 }
-
+                catch (Exception err)
+                {
+                    MessageBox.Show(err.Message);
+                }
             };
             _scheduleDaydrawable.LostFocus += (s, e) =>
             {
@@ -156,49 +176,66 @@ namespace Honeybee.UI
             // mouse move for dragging
             _scheduleDaydrawable.MouseMove += (s, e) =>
             {
-                if (!startDragging)
-                    return;
-
-                var mouseLoc = e.Location;
-                if (canvas.Contains(new Point(mouseLoc)) && mouseHoveredRangesForDragging.Any())
+                try
                 {
-                    var hovered = mouseHoveredRangesForDragging.First();
-                    var valueIndex = hovered.valueIndex;
+                    if (!startDragging)
+                        return;
 
-                    if (hovered.isVertical)
+                    var mouseLoc = e.Location;
+                    if (canvas.Contains(new Point(mouseLoc)) && mouseHoveredRangesForDragging.Any())
                     {
-                        var mappedTime = (mouseLoc.X - canvas.Left) / canvas.Width * 24;
-                        var timeNormalized = NormalizeHourMinute(mappedTime);
-                        var newHour = timeNormalized.hour;
-                        var newMinute = timeNormalized.minute;
-                        var newTime = newHour + newMinute / 60;
+                        var hovered = mouseHoveredRangesForDragging.First();
+                        var valueIndex = hovered.valueIndex;
 
-
-                        // get minimum movable left bound; 
-                        var beforeTime = 0;
-                        var beforeIndex = hovered.valueIndex - 1;
-                        if (beforeIndex >= 0)
+                        if (hovered.isVertical)
                         {
-                            var timeValue = _vm.SchDayTimes[beforeIndex];
-                            beforeTime = timeValue[0] + timeValue[1] / 60;
+                            var mappedTime = (mouseLoc.X - canvas.Left) / canvas.Width * 24;
+                            var timeNormalized = NormalizeHourMinute(mappedTime);
+                            var newHour = timeNormalized.hour;
+                            var newMinute = timeNormalized.minute;
+                            var newTime = newHour + newMinute / 60;
+
+
+                            // get minimum movable left bound; 
+                            var beforeTime = 0;
+                            var beforeIndex = hovered.valueIndex - 1;
+                            if (beforeIndex >= 0)
+                            {
+                                var timeValue = _vm.SchDayTimes[beforeIndex];
+                                beforeTime = timeValue[0] + timeValue[1] / 60;
+                            }
+
+
+                            // get maximum movable right bound; 
+                            var nextTime = 24;
+                            var nextIndex = hovered.valueIndex + 1;
+                            if (nextIndex < _vm.SchDayTimes.Count)
+                            {
+                                var timeValue = _vm.SchDayTimes[nextIndex];
+                                nextTime = timeValue[0] + timeValue[1] / 60;
+                            }
+
+
+                            if (newTime < nextTime && newTime > beforeTime)
+                            {
+                                _vm.SchDayTimes[valueIndex] = new List<int>() { newHour, newMinute };
+                                //DayTimes[valueIndex] = (newHour, newMinute);
+                                //mouseHoverValue_TB.Text = TimeSpan.Parse($"{DayTimes[valueIndex].hour}:{DayTimes[valueIndex].minute}").ToString(@"hh\:mm");
+                                _scheduleDaydrawable.Update(canvas);
+                            }
+
+
                         }
-
-
-                        // get maximum movable right bound; 
-                        var nextTime = 24;
-                        var nextIndex = hovered.valueIndex + 1;
-                        if (nextIndex < _vm.SchDayTimes.Count)
+                        else
                         {
-                            var timeValue = _vm.SchDayTimes[nextIndex];
-                            nextTime = timeValue[0] + timeValue[1] / 60;
-                        }
+                            var mappedPercent = (canvas.Bottom - mouseLoc.Y) / canvas.Height;
+                            mappedPercent = Math.Min(1, mappedPercent);
+                            mappedPercent = Math.Max(0, mappedPercent);
 
-
-                        if (newTime < nextTime && newTime > beforeTime)
-                        {
-                            _vm.SchDayTimes[valueIndex] = new List<int>() { newHour, newMinute };
-                            //DayTimes[valueIndex] = (newHour, newMinute);
-                            //mouseHoverValue_TB.Text = TimeSpan.Parse($"{DayTimes[valueIndex].hour}:{DayTimes[valueIndex].minute}").ToString(@"hh\:mm");
+                            var length = _vm.SchTypelength;
+                            var decimalPlaces = (length / 100).ToString().Split('.').Last().Length;
+                            var checkedValue = mappedPercent * length + _vm.LowerLimit;
+                            _vm.SchDayValues[valueIndex] = Math.Round(checkedValue, decimalPlaces);
                             _scheduleDaydrawable.Update(canvas);
                         }
 
@@ -206,83 +243,78 @@ namespace Honeybee.UI
                     }
                     else
                     {
-                        var mappedPercent = (canvas.Bottom - mouseLoc.Y) / canvas.Height;
-                        mappedPercent = Math.Min(1, mappedPercent);
-                        mappedPercent = Math.Max(0, mappedPercent);
-
-                        var length = _vm.SchTypelength;
-                        var decimalPlaces = (length / 100).ToString().Split('.').Last().Length;
-                        var checkedValue = mappedPercent * length + _vm.LowerLimit;
-                        _vm.SchDayValues[valueIndex] = Math.Round(checkedValue, decimalPlaces);
-                        _scheduleDaydrawable.Update(canvas);
+                        mouseHoveredRangesForDragging.Clear();
+                        startDragging = false;
                     }
 
-
                 }
-                else
+                catch (Exception err)
                 {
-                    mouseHoveredRangesForDragging.Clear();
-                    startDragging = false;
+                    MessageBox.Show(err.Message);
                 }
-
-
 
             };
 
 
             _scheduleDaydrawable.MouseDoubleClick += (s, e) =>
             {
-                var mouseLoc = e.Location;
-                var doubleClickedRanges = allMouseHoverRanges.Where(_ => _.rectangle.Contains(mouseLoc));
-
-                if (doubleClickedRanges.Any())
+                try
                 {
-                    var hovered = doubleClickedRanges.First();
-                    if (hovered.isVertical)
+                    var mouseLoc = e.Location;
+                    var doubleClickedRanges = allMouseHoverRanges.Where(_ => _.rectangle.Contains(mouseLoc));
+
+                    if (doubleClickedRanges.Any())
                     {
-                        _vm.SchDayTimes.RemoveAt(hovered.valueIndex);
-                        _vm.SchDayValues.RemoveAt(hovered.valueIndex);
-                        _scheduleDaydrawable.Update(canvas);
+                        var hovered = doubleClickedRanges.First();
+                        if (hovered.isVertical)
+                        {
+                            _vm.SchDayTimes.RemoveAt(hovered.valueIndex);
+                            _vm.SchDayValues.RemoveAt(hovered.valueIndex);
+                            _scheduleDaydrawable.Update(canvas);
 
-                        return;
+                            return;
+                        }
+
+                        //var mouseLoc = e.Location;
+                        var mappedTimeRaw = (mouseLoc.X - canvas.Left) / canvas.Width * 24;
+
+                        var timeNormalized = NormalizeHourMinute(mappedTimeRaw);
+                        var hour = timeNormalized.hour;
+                        var minute = timeNormalized.minute;
+                        var mappedTimeNormalized = hour + (double)(minute / 60.0);
+
+                        // get minimum movable left bound; 
+                        var beforeTime = new[] { 0, 0 }.ToList();
+                        var beforeIndex = hovered.valueIndex;
+                        if (beforeIndex >= 0)
+                            beforeTime = _vm.SchDayTimes[beforeIndex];
+                        var beforeTime2 = beforeTime[0] + beforeTime[1] / 60;
+                        // get maximum movable right bound; 
+                        var nextTime = new[] { 24, 0 }.ToList();
+                        var nextIndex = hovered.valueIndex + 1;
+                        if (nextIndex < _vm.SchDayTimes.Count)
+                            nextTime = _vm.SchDayTimes[nextIndex];
+                        var nextTime2 = nextTime[0] + nextTime[1] / 60;
+
+                        //var newDateTimes = dayTimes.ToList();
+                        if (mappedTimeNormalized < nextTime2 && mappedTimeNormalized > beforeTime2)
+                        {
+                            var insertIndex = hovered.valueIndex;
+                            _vm.SchDayTimes.Insert(insertIndex + 1, new List<int> { hour, minute });
+                            var addValue = _vm.SchDayValues[insertIndex];
+                            _vm.SchDayValues.Insert(insertIndex + 1, addValue);
+                            //newDateTimes.Add((hour, minute));
+                            _scheduleDaydrawable.Update(new Rectangle(hovered.rectangle));
+                        }
+
+
                     }
-
-                    //var mouseLoc = e.Location;
-                    var mappedTimeRaw = (mouseLoc.X - canvas.Left) / canvas.Width * 24;
-
-                    var timeNormalized = NormalizeHourMinute(mappedTimeRaw);
-                    var hour = timeNormalized.hour;
-                    var minute = timeNormalized.minute;
-                    var mappedTimeNormalized = hour + (double)(minute / 60.0);
-
-                    // get minimum movable left bound; 
-                    var beforeTime = new[] { 0, 0 }.ToList();
-                    var beforeIndex = hovered.valueIndex;
-                    if (beforeIndex >= 0)
-                        beforeTime = _vm.SchDayTimes[beforeIndex];
-                    var beforeTime2 = beforeTime[0] + beforeTime[1] / 60;
-                    // get maximum movable right bound; 
-                    var nextTime = new[] { 24, 0 }.ToList();
-                    var nextIndex = hovered.valueIndex + 1;
-                    if (nextIndex < _vm.SchDayTimes.Count)
-                        nextTime = _vm.SchDayTimes[nextIndex];
-                    var nextTime2 = nextTime[0] + nextTime[1] / 60;
-
-                    //var newDateTimes = dayTimes.ToList();
-                    if (mappedTimeNormalized < nextTime2 && mappedTimeNormalized > beforeTime2)
-                    {
-                        var insertIndex = hovered.valueIndex;
-                        _vm.SchDayTimes.Insert(insertIndex + 1, new List<int> { hour, minute });
-                        var addValue = _vm.SchDayValues[insertIndex];
-                        _vm.SchDayValues.Insert(insertIndex + 1, addValue);
-                        //newDateTimes.Add((hour, minute));
-                        _scheduleDaydrawable.Update(new Rectangle(hovered.rectangle));
-                    }
-
-
-
-
                 }
+                catch (Exception err)
+                {
+                    MessageBox.Show(err.Message);
+                }
+             
 
             };
             #endregion
@@ -290,134 +322,149 @@ namespace Honeybee.UI
             var hoveredValueIndex = 0;
             _scheduleDaydrawable.Paint += (s, e) =>
             {
-                //TODO: this is need when I start working on resizable charts 
-                //canvas = drawable.Bounds;
-                //canvas.Size = canvas.Size - 30;
-                //canvas.TopLeft = new Point(30, 15);
-                //canvas.Size = new Size(canvas.Width -100, 300);
-
-                var mouseLoc = location;
-
-                var graphics = e.Graphics;
-
-                //Draw schedule
-                graphics.FillRectangle(Colors.White, canvas);
-
-                var hourPts = GenHourPts(canvas);
-                var graphElements = GenPts(hourPts, canvas);
-                var allPts = graphElements.points;
-                allMouseHoverRanges = graphElements.ranges;
-
-
-                //Draw mouse hover over ranges
-                //var hovered = allMouseHoverRanges.Where(_ => _.rectangle.Contains(mouseLoc));
-
-                var hovered = mouseHoveredRanges;
-                if (hovered.Any())
+                try
                 {
-                    //mouseHoverValue_TB.Text = null;
-                    //label.Text = null;
+                    //TODO: this is need when I start working on resizable charts 
+                    //canvas = drawable.Bounds;
+                    //canvas.Size = canvas.Size - 30;
+                    //canvas.TopLeft = new Point(30, 15);
+                    //canvas.Size = new Size(canvas.Width -100, 300);
+
+                    var mouseLoc = location;
+
+                    var graphics = e.Graphics;
+
+                    //Draw schedule
+                    graphics.FillRectangle(Colors.White, canvas);
+
+                    var hourPts = GenHourPts(canvas);
+                    var graphElements = GenPts(hourPts, canvas);
+                    var allPts = graphElements.points;
+                    allMouseHoverRanges = graphElements.ranges;
 
 
-                    var hoveredRec = hovered.First();
-                    var rec = hoveredRec.rectangle;
-                    //draw hover rec
-                    graphics.FillRectangle(Color.FromArgb(200, 200, 200), rec);
-                    //draw text
-                    var textLoc = hoveredRec.rectangle.Center;
+                    //Draw mouse hover over ranges
+                    //var hovered = allMouseHoverRanges.Where(_ => _.rectangle.Contains(mouseLoc));
 
-                    //if (startDragging && hoveredRec.isVertical)
-                    //{
-                    //    mouseHoverValue_TB.Value = mouseLoc.X;
-                    //    mouseHoverValue_TB.Enabled = false;
-                    //    return;
-                    //}
-
-                    var valueToDisplay = string.Empty;
-                    if (hoveredRec.isVertical)
+                    var hovered = mouseHoveredRanges;
+                    if (hovered.Any())
                     {
-                        var time = _vm.SchDayTimes[hoveredRec.valueIndex];
-                        valueToDisplay = TimeSpan.Parse($"{time[0]}:{time[1]}").ToString(@"hh\:mm");
-                        valueToDisplay = $" {valueToDisplay}";
-                    }
-                    else
-                    {
-                        valueToDisplay = _vm.SchDayValues[hoveredRec.valueIndex].ToString();
-                    }
-                    var font = Fonts.Sans(8);
-                    var textSize = font.MeasureString(valueToDisplay);
-                    graphics.DrawText(font, Colors.Black, textLoc.X - textSize.Width / 2, textLoc.Y - textSize.Height / 2 - 8, valueToDisplay);
+                        //mouseHoverValue_TB.Text = null;
+                        //label.Text = null;
 
-                    // Show input textBox for users to type in a new value
-                    if (hoveredRec.isVertical)
-                    {
-                        mouseHoverValue_TB.Enabled = false;
-                        mouseHoverValue_TB.Text = valueToDisplay;
-                    }
-                    else
-                    {
-                        mouseHoverValue_TB.Enabled = true;
-                        hoveredValueIndex = hoveredRec.valueIndex;
-                        if (!mouseHoverValue_TB.HasFocus)
-                            mouseHoverValue_TB.Focus();
 
-                        var hoveredValue = _vm.SchDayValues[hoveredRec.valueIndex];
-                        if (mouseHoverValue_TB.SelectedText != hoveredValue.ToString())
+                        var hoveredRec = hovered.First();
+                        var rec = hoveredRec.rectangle;
+                        //draw hover rec
+                        graphics.FillRectangle(Color.FromArgb(200, 200, 200), rec);
+                        //draw text
+                        var textLoc = hoveredRec.rectangle.Center;
+
+                        //if (startDragging && hoveredRec.isVertical)
+                        //{
+                        //    mouseHoverValue_TB.Value = mouseLoc.X;
+                        //    mouseHoverValue_TB.Enabled = false;
+                        //    return;
+                        //}
+
+                        var valueToDisplay = string.Empty;
+                        if (hoveredRec.isVertical)
                         {
-                            mouseHoverValue_TB.Text = hoveredValue.ToString();
-                            mouseHoverValue_TB.SelectAll();
+                            var time = _vm.SchDayTimes[hoveredRec.valueIndex];
+                            valueToDisplay = TimeSpan.Parse($"{time[0]}:{time[1]}").ToString(@"hh\:mm");
+                            valueToDisplay = $" {valueToDisplay}";
                         }
-                    }
+                        else
+                        {
+                            valueToDisplay = _vm.SchDayValues[hoveredRec.valueIndex].ToString();
+                        }
+                        var font = Fonts.Sans(8);
+                        var textSize = font.MeasureString(valueToDisplay);
+                        graphics.DrawText(font, Colors.Black, textLoc.X - textSize.Width / 2, textLoc.Y - textSize.Height / 2 - 8, valueToDisplay);
 
-                }
-                else
-                {
-                    if (!startDragging)
+                        // Show input textBox for users to type in a new value
+                        if (hoveredRec.isVertical)
+                        {
+                            mouseHoverValue_TB.Enabled = false;
+                            mouseHoverValue_TB.Text = valueToDisplay;
+                        }
+                        else
+                        {
+                            mouseHoverValue_TB.Enabled = true;
+                            hoveredValueIndex = hoveredRec.valueIndex;
+                            if (!mouseHoverValue_TB.HasFocus)
+                                mouseHoverValue_TB.Focus();
+
+                            var hoveredValue = _vm.SchDayValues[hoveredRec.valueIndex];
+                            if (mouseHoverValue_TB.SelectedText != hoveredValue.ToString())
+                            {
+                                mouseHoverValue_TB.Text = hoveredValue.ToString();
+                                mouseHoverValue_TB.SelectAll();
+                            }
+                        }
+
+                    }
+                    else
                     {
-                        mouseHoverValue_TB.Text = null;
-                        mouseHoverValue_TB.Enabled = false;
+                        if (!startDragging)
+                        {
+                            mouseHoverValue_TB.Text = null;
+                            mouseHoverValue_TB.Enabled = false;
+                        }
+
                     }
 
-                }
+                    foreach (var pt in allPts)
+                    {
+                        graphics.FillRectangle(Colors.Black, new RectangleF(pt.X - 3, pt.Y - 3, 6, 6));
+                    }
 
-                foreach (var pt in allPts)
+                    var pen = new Pen(Colors.Black, 2);
+                    graphics.DrawLines(pen, allPts);
+
+                    // Draw canvas border
+                    graphics.DrawRectangle(Colors.Black, canvas);
+                    // Draw chart axis ticks
+                    DrawTicks(canvas, graphics);
+                }
+                catch (Exception err)
                 {
-                    graphics.FillRectangle(Colors.Black, new RectangleF(pt.X - 3, pt.Y - 3, 6, 6));
+                    MessageBox.Show(err.Message);
                 }
-
-                var pen = new Pen(Colors.Black, 2);
-                graphics.DrawLines(pen, allPts);
-
-                // Draw canvas border
-                graphics.DrawRectangle(Colors.Black, canvas);
-                // Draw chart axis ticks
-                DrawTicks(canvas, graphics);
-
+                
             };
 
 
             mouseHoverValue_TB.KeyDown += (s, e) =>
             {
-                if (e.Key == Keys.Enter)
+                try
                 {
-                    if (mouseHoveredRanges.Any())
+                    if (e.Key == Keys.Enter)
                     {
-                        var preRec = mouseHoveredRanges.First().rectangle;
-                        mouseHoveredRanges.Clear();
+                        if (mouseHoveredRanges.Any())
+                        {
+                            var preRec = mouseHoveredRanges.First().rectangle;
+                            mouseHoveredRanges.Clear();
 
-                        var valueIndex = hoveredValueIndex;
-                        var newUserInput = mouseHoverValue_TB.Value;
-                        var oldValue = _vm.SchDayValues[valueIndex];
+                            var valueIndex = hoveredValueIndex;
+                            var newUserInput = mouseHoverValue_TB.Value;
+                            var oldValue = _vm.SchDayValues[valueIndex];
 
-                        //preRec.Top = (float) Math.Max(newUserInput, oldValue);
-                        //preRec.Bottom = (float)Math.Min(newUserInput, oldValue);
-                        _vm.SchDayValues[valueIndex] = newUserInput;
+                            //preRec.Top = (float) Math.Max(newUserInput, oldValue);
+                            //preRec.Bottom = (float)Math.Min(newUserInput, oldValue);
+                            _vm.SchDayValues[valueIndex] = newUserInput;
 
-                        _scheduleDaydrawable.Update(canvas);
+                            _scheduleDaydrawable.Update(canvas);
+                        }
+
+
                     }
-
-
                 }
+                catch (Exception err)
+                {
+                    MessageBox.Show(err.Message);
+                }
+
 
             };
 
