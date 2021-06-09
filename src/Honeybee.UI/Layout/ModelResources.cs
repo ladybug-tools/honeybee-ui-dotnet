@@ -76,7 +76,7 @@ namespace Honeybee.UI
                 .Select(_ => _.Obj as HB.Energy.IConstruction)
                 .ToList();
 
-                var dialog = new Dialog_ConstructionManager(_model.Properties.Energy, constrcutionsInModel);
+                var dialog = new Dialog_ConstructionManager(_model.Properties.Energy);
                 var dialog_rc = dialog.ShowModal(this);
                 if (dialog_rc != null)
                 {
@@ -97,7 +97,7 @@ namespace Honeybee.UI
                 .Where(_ => _.Obj is HB.ConstructionSetAbridged)
                 .Select(_ => _.Obj as HB.Energy.IBuildingConstructionset)
                 .ToList();
-                var dialog = new Dialog_ConstructionSetManager(_model.Properties.Energy, constrcutionSetsInModel);
+                var dialog = new Dialog_ConstructionSetManager(_model.Properties.Energy);
                 var dialog_rc = dialog.ShowModal(this);
                 if (dialog_rc != null)
                 {
@@ -137,7 +137,7 @@ namespace Honeybee.UI
                 .ToList();
 
 
-                var dialog = new Dialog_ProgramTypeManager(_model.Properties.Energy, pTypeInModel);
+                var dialog = new Dialog_ProgramTypeManager(_model.Properties.Energy);
                 var dialog_rc = dialog.ShowModal(this);
                 if (dialog_rc != null)
                 {

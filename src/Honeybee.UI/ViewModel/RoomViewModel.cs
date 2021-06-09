@@ -9,6 +9,7 @@ using System.Windows.Input;
 
 namespace Honeybee.UI.ViewModel
 {
+    [Obsolete("This is deprecated, please use RoomPropertyViewModel instead", true)]
     public class RoomViewModel : ViewModelBase
     {
         private Room _hbObj = new Room("InvalidRoom", new List<Face>(), new RoomPropertiesAbridged());

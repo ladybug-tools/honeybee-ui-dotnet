@@ -6,6 +6,7 @@ using System.Windows.Input;
 
 namespace Honeybee.UI.ViewModel
 {
+    [Obsolete("This is deprecated, please use FacePropertyViewModel instead", true)]
     public class FaceViewModel : ViewModelBase
     {
         private Face _hbObj;
