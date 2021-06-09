@@ -25,7 +25,7 @@ namespace Honeybee.UI
             this.Icon = DialogHelper.HoneybeeIcon;
         }
 
-        [Obsolete("This is deprecated", false)]
+        [Obsolete("This is deprecated", true)]
         public Dialog_HVACManager(List<HB.Energy.IHvac> hvacs): this()
         {
             var hvacsInModel = hvacs;

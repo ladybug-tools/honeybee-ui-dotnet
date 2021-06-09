@@ -5,7 +5,7 @@ using System;
 
 namespace Honeybee.UI
 {
-    [Obsolete("This is deprecated", false)]
+    [Obsolete("This is deprecated", true)]
     public class Dialog_Face: Dialog<Face>
     {
         public ModelProperties ModelProperties { get; set; }

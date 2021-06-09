@@ -6,7 +6,7 @@ using Honeybee.UI.ViewModel;
 
 namespace Honeybee.UI.View
 {
-
+    [Obsolete("This is deprecated, please use ApertureProperty instead", true)]
     public class Aperture: Panel
     {
         private ApertureViewModel ViewModel { get; set; }

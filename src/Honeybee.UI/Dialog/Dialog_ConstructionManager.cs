@@ -26,7 +26,7 @@ namespace Honeybee.UI
         }
 
 
-        [Obsolete("This is deprecated", false)]
+        [Obsolete("This is deprecated", true)]
         public Dialog_ConstructionManager(ModelEnergyProperties libSource, List<HB.Energy.IConstruction> constructions):this()
         {
             this._modelEnergyProperties = libSource;

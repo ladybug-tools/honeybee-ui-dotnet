@@ -28,7 +28,7 @@ namespace Honeybee.UI
         private ScheduleRulesetAbridged ToAbridged(ScheduleRuleset obj)
         {
             var abridged = new ScheduleRulesetAbridged(obj.Identifier, obj.DaySchedules, obj.DefaultDaySchedule, obj.DisplayName,
-               obj.ScheduleRules, obj.HolidaySchedule, obj.SummerDesigndaySchedule, obj.WinterDesigndaySchedule, obj.ScheduleTypeLimit.Identifier);
+               obj.ScheduleRules, obj.HolidaySchedule, obj.SummerDesigndaySchedule, obj.WinterDesigndaySchedule, obj.ScheduleTypeLimit?.Identifier);
 
             return abridged;
         }
@@ -43,7 +43,7 @@ namespace Honeybee.UI
             this.Icon = DialogHelper.HoneybeeIcon;
         }
 
-        [Obsolete("This is deprecated", false)]
+        [Obsolete("This is deprecated", true)]
         public Dialog_ScheduleRulesetManager(List<HB.ScheduleRulesetAbridged> scheduleRulesets, List<HB.ScheduleTypeLimit> scheduleTypeLimits):this()
         {
             _typeLimits = scheduleTypeLimits;

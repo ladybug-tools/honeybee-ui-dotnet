@@ -6,7 +6,7 @@ using HoneybeeSchema;
 
 namespace Honeybee.UI
 {
-    [Obsolete("This is deprecated", false)]
+    [Obsolete("This is deprecated", true)]
     public class Dialog_FaceRadianceProperty : Dialog<FaceRadiancePropertiesAbridged>
     {
         private ModelRadianceProperties ModelRadianceProperties { get; set; }
