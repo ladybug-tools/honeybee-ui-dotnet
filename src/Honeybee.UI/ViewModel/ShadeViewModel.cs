@@ -5,6 +5,7 @@ using System.Windows.Input;
 
 namespace Honeybee.UI.ViewModel
 {
+    [Obsolete("This is deprecated, please use ShadePropertyViewModel instead", true)]
     public class ShadeViewModel : ViewModelBase
     {
         private Shade _hbObj;

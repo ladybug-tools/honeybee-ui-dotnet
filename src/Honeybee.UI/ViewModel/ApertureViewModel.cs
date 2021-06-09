@@ -6,6 +6,7 @@ using System.Windows.Input;
 
 namespace Honeybee.UI.ViewModel
 {
+    [Obsolete("This is deprecated, please use AperturePropertyViewModel instead", true)]
     public class ApertureViewModel : ViewModelBase
     {
         private Aperture _hbObj;

@@ -6,6 +6,7 @@ using System.Windows.Input;
 
 namespace Honeybee.UI.ViewModel
 {
+    [Obsolete("This is deprecated, please use DoorPropertyViewModel instead", true)]
     public class DoorViewModel : ViewModelBase
     {
         private Door _hbObj;
