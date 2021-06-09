@@ -6,6 +6,7 @@ using Honeybee.UI.ViewModel;
 
 namespace Honeybee.UI.View
 {
+    [Obsolete("This is deprecated, please use ShadeProperty instead", true)]
     public class Shade : Panel
     {
         private ShadeViewModel ViewModel { get; set; }

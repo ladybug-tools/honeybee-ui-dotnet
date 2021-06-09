@@ -5,6 +5,7 @@ using System;
 
 namespace Honeybee.UI
 {
+    [Obsolete("This is deprecated", true)]
     public class Dialog_ShadeEnergyProperty: Dialog<ShadeEnergyPropertiesAbridged>
     {
      

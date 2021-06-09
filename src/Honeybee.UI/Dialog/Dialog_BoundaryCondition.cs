@@ -4,7 +4,7 @@ using HB = HoneybeeSchema;
 using System;
 namespace Honeybee.UI
 {
-    [Obsolete("This is deprecated", false)]
+    [Obsolete("This is deprecated", true)]
     public class Dialog_BoundaryCondition_Outdoors : Dialog<HB.Outdoors>
     {
      
@@ -56,7 +56,7 @@ namespace Honeybee.UI
    
     }
     //TODO: finish this later
-    [Obsolete("This is deprecated", false)]
+    [Obsolete("This is deprecated", true)]
     public class Dialog_BoundaryCondition_Surface : Dialog<HB.Surface>
     {
 

@@ -25,7 +25,7 @@ namespace Honeybee.UI
         }
 
 
-        [Obsolete("This is deprecated", false)]
+        [Obsolete("This is deprecated", true)]
         public Dialog_ProgramTypeManager(ModelEnergyProperties libSource, List<HB.ProgramTypeAbridged> programTypes) : this()
         {
             this._modelEnergyProperties = libSource;

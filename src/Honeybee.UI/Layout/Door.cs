@@ -6,6 +6,7 @@ using Honeybee.UI.ViewModel;
 
 namespace Honeybee.UI.View
 {
+    [Obsolete("This is deprecated, please use DoorProperty instead", true)]
     /// <summary>
     /// Create Eto panel based on Honeybee geomerty. 
     /// If input HoneybeeObj is a duplicated object, geometryReset action must be provided, 

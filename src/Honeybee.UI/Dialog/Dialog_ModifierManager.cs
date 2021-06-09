@@ -26,7 +26,7 @@ namespace Honeybee.UI
             this.Icon = DialogHelper.HoneybeeIcon;
         }
 
-        [Obsolete("This is deprecated", false)]
+        [Obsolete("This is deprecated", true)]
         public Dialog_ModifierManager(ModelRadianceProperties libSource, List<HB.ModifierBase> modifiers) : this()
         {
             this._modelRadianceProperties = libSource;

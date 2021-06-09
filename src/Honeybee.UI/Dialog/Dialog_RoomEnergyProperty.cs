@@ -6,6 +6,7 @@ using Honeybee.UI.ViewModel;
 
 namespace Honeybee.UI
 {
+    [Obsolete("This is deprecated", true)]
     public class Dialog_RoomEnergyProperty: Dialog<RoomEnergyPropertiesAbridged>
     {
         private RoomEnergyPropertyViewModel ViewModel { get; set; }
