@@ -10,7 +10,7 @@ namespace Honeybee.UI.ViewModel
     public class FacePropertyViewModel : ViewModelBase
     {
         public string Varies => "<varies>";
-        public string ByRoomSetting => "By Room Setting";
+        public string ByParentSetting => "By Parent Setting";
         private Face _refHBObj;
 
         private List<Face> _hbObjs;

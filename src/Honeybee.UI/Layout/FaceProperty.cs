@@ -109,7 +109,7 @@ namespace Honeybee.UI.View
             c.Bind(_ => _.Enabled, _vm, v => v.Modifier.IsBtnEnabled);
             c.TextBinding.Bind(_vm, _ => _.Modifier.BtnName);
             c.Command = this._vm.ModifierCommand;
-            var cByRoom = new CheckBox() { Text = _vm.ByRoomSetting };
+            var cByRoom = new CheckBox() { Text = _vm.ByParentSetting };
             cByRoom.CheckedBinding.Bind(_vm, _ => _.Modifier.IsCheckboxChecked);
 
             layout.AddRow("Modifier:", cByRoom);
@@ -119,7 +119,7 @@ namespace Honeybee.UI.View
             mb.Bind(_ => _.Enabled, _vm, v => v.ModifierBlk.IsBtnEnabled);
             mb.TextBinding.Bind(_vm, _ => _.ModifierBlk.BtnName);
             mb.Command = this._vm.ModifierBlkCommand;
-            var mbByRoom = new CheckBox() { Text = _vm.ByRoomSetting };
+            var mbByRoom = new CheckBox() { Text = _vm.ByParentSetting };
             mbByRoom.CheckedBinding.Bind(_vm, _ => _.ModifierBlk.IsCheckboxChecked);
             layout.AddRow("Modifier Blk:", mbByRoom);
             layout.AddRow(null, mb);
@@ -142,7 +142,7 @@ namespace Honeybee.UI.View
             c.Bind(_ => _.Enabled, _vm, v => v.Construction.IsBtnEnabled);
             c.TextBinding.Bind(_vm, _ => _.Construction.BtnName);
             c.Command = this._vm.ConstructionCommand;
-            var cByRoom = new CheckBox() { Text = _vm.ByRoomSetting };
+            var cByRoom = new CheckBox() { Text = _vm.ByParentSetting };
             cByRoom.CheckedBinding.Bind(_vm, _ => _.Construction.IsCheckboxChecked);
 
             layout.AddRow("Construction:", cByRoom);
@@ -177,7 +177,7 @@ namespace Honeybee.UI.View
 
 
             //AFN
-            var afnByProgram = new CheckBox() { Text = _vm.ByRoomSetting };
+            var afnByProgram = new CheckBox() { Text = _vm.ByParentSetting };
             afnByProgram.CheckedBinding.Bind(_vm, _ => _.AFNCrack.IsCheckboxChecked);
             layout.AddRow("AFNCrack:", afnByProgram);
             var afn = GenAFNPanel();
