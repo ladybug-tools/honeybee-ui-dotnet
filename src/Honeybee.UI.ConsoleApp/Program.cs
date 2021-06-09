@@ -70,20 +70,6 @@ namespace Honeybee.UI.ConsoleApp
                     }
                 };
 
-                var RmEngPropbtn = new Button() { Text="Room Energy Property"};
-                RmEngPropbtn.Click += (s, e) =>
-                {
-                    var energyProp = new HoneybeeSchema.RoomEnergyPropertiesAbridged();
-                    energyProp.ProgramType = "Plenum";
-                    //var dialog = new Honeybee.UI.Dialog_RoomEnergyProperty(energyProp, ModelEnergyProperties.Default);
-                    var dialog = new Honeybee.UI.Dialog_RoomEnergyProperty(md.Properties.Energy, energyProp);
-                    var dialog_rc = dialog.ShowModal();
-                    if (dialog_rc != null)
-                    {
-                        Console.WriteLine(dialog_rc.ToJson());
-                    }
-                };
-
                 var facePropertybtn = new Button() { Text = "2 Faces Property" };
                 var face = new Face("faceId", new Face3D(new List<List<double>>()), FaceType.Floor, new Ground(), new FacePropertiesAbridged(new FaceEnergyPropertiesAbridged("aa"), new FaceRadiancePropertiesAbridged("bb", "cc")));
                 var face2 = new Face($"Face_{Guid.NewGuid()}", new Face3D(new List<List<double>>()), FaceType.Wall, new Outdoors(), new FacePropertiesAbridged(new FaceEnergyPropertiesAbridged("Generic Exterior Wall")), "Face name");
@@ -207,10 +193,7 @@ namespace Honeybee.UI.ConsoleApp
                 var pTypeMngbtn = new Button() { Text = "ProgramTypeManager" };
                 pTypeMngbtn.Click += (s, e) =>
                 {
-                    
-                    var pTypeInModel = md.Properties.Energy.ProgramTypes.OfType<ProgramTypeAbridged>().ToList();
-
-                    var dialog = new Honeybee.UI.Dialog_ProgramTypeManager(md.Properties.Energy, pTypeInModel);
+                    var dialog = new Honeybee.UI.Dialog_ProgramTypeManager(md.Properties.Energy);
                     var dialog_rc =dialog.ShowModal(this);
                   
                 };
@@ -218,12 +201,7 @@ namespace Honeybee.UI.ConsoleApp
                 var schbtn = new Button() { Text = "ScheduleRulesetManager" };
                 schbtn.Click += (s, e) =>
                 {
-                    var allSches = md.Properties.Energy.Schedules
-                    .OfType<ScheduleRulesetAbridged>()
-                    .ToList();
-                    var schTypes = md.Properties.Energy.ScheduleTypeLimits.Select(_ => _).ToList();
-
-                    var dialog = new Honeybee.UI.Dialog_ScheduleRulesetManager(allSches, schTypes);
+                    var dialog = new Honeybee.UI.Dialog_ScheduleRulesetManager(md.Properties.Energy);
                     dialog.ShowModal(this);
 
                 };
@@ -231,11 +209,7 @@ namespace Honeybee.UI.ConsoleApp
                 var conbtn = new Button() { Text = "ConstructionManager" };
                 conbtn.Click += (s, e) =>
                 {
-                    var constrcutionsInModel = md.Properties.Energy.Constructions
-                        .Where(_ => _.Obj.GetType().Name.Contains("Abridged"))
-                        .OfType<HoneybeeSchema.Energy.IConstruction>()
-                        .ToList();
-                    var dialog = new Honeybee.UI.Dialog_ConstructionManager(md.Properties.Energy, constrcutionsInModel);
+                    var dialog = new Honeybee.UI.Dialog_ConstructionManager(md.Properties.Energy);
                     dialog.ShowModal(this);
 
                 };
@@ -243,11 +217,7 @@ namespace Honeybee.UI.ConsoleApp
                 var cSetManager = new Button() { Text = "ConstructionSet Manager" };
                 cSetManager.Click += (s, e) =>
                 {
-                    var cSets = md.Properties.Energy.ConstructionSets;
-                    var constrcutionSetsInModel = md.Properties.Energy.ConstructionSets
-                    .OfType<HoneybeeSchema.Energy.IBuildingConstructionset>()
-                    .ToList();
-                    var dialog = new Dialog_ConstructionSetManager(md.Properties.Energy, constrcutionSetsInModel);
+                    var dialog = new Dialog_ConstructionSetManager(md.Properties.Energy);
                     dialog.ShowModal(this);
 
                 };
@@ -308,12 +278,7 @@ namespace Honeybee.UI.ConsoleApp
                 var modifierSetMngBtn = new Button() { Text = "ModifierSet Manager" };
                 modifierSetMngBtn.Click += (s, e) =>
                 {
-                    var existingItems = md.Properties.Radiance.ModifierSets
-                    .OfType<HoneybeeSchema.ModifierSetAbridged>()
-                    .ToList();
-
-                    var dup = existingItems.Select(_ => _.Duplicate()).OfType<HoneybeeSchema.ModifierSetAbridged>().ToList();
-                    var dialog = new Honeybee.UI.Dialog_ModifierSetManager(md.Properties.Radiance, dup);
+                    var dialog = new Honeybee.UI.Dialog_ModifierSetManager(md.Properties.Radiance);
 
                     var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
@@ -359,8 +324,7 @@ namespace Honeybee.UI.ConsoleApp
                 var HVACManager = new Button() { Text = "HVACsManager" };
                 HVACManager.Click += (s, e) =>
                 {
-                    var hvacs = md.Properties.Energy.Hvacs.OfType<HoneybeeSchema.Energy.IHvac>().ToList();
-                    var dialog = new Honeybee.UI.Dialog_HVACManager(hvacs);
+                    var dialog = new Honeybee.UI.Dialog_HVACManager(md.Properties.Energy);
                     dialog.ShowModal(this);
                 };
 
@@ -379,8 +343,10 @@ namespace Honeybee.UI.ConsoleApp
                 };
               
 
-                panel.AddSeparateRow(RoomPropertybtn, RoomPropertybtn2, RmEngPropbtn, null);
-                panel.AddSeparateRow(facePropertybtn, facePropertybtn2, aptPropertybtn, aptPropertybtn2, shdPropertybtn, shdPropertybtn2, null);
+                panel.AddSeparateRow(RoomPropertybtn, RoomPropertybtn2, null);
+                panel.AddSeparateRow(facePropertybtn, facePropertybtn2, null);
+                panel.AddSeparateRow(aptPropertybtn, aptPropertybtn2, null);
+                panel.AddSeparateRow(shdPropertybtn, shdPropertybtn2, null);
                 panel.AddSeparateRow(Messagebtn);
                 panel.AddSeparateRow(conbtn, cSetbtn, cSetManager, cSetSel_btn, null);
                 panel.AddSeparateRow(pTypebtn, pTypeMngbtn, null);
