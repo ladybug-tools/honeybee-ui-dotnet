@@ -89,7 +89,7 @@ namespace Honeybee.UI
         public PeopleAbridged Default { get; private set; }
         public PeopleViewModel(ModelProperties libSource, List<PeopleAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-            this.Default = new PeopleAbridged(Guid.NewGuid().ToString(), 0, "", "");
+            this.Default = new PeopleAbridged(Guid.NewGuid().ToString(), 0, "Not Set");
             this.refObjProperty = loads.FirstOrDefault()?.DuplicatePeopleAbridged();
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicatePeopleAbridged();
 

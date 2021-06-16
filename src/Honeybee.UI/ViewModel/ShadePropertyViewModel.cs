@@ -100,7 +100,7 @@ namespace Honeybee.UI.ViewModel
         public Shade Default { get; private set; }
         internal ShadePropertyViewModel(View.ShadeProperty panel)
         {
-            this.Default = new Shade("", new Face3D(new List<List<double>>()), new ShadePropertiesAbridged());
+            this.Default = new Shade("id", new Face3D(new List<List<double>>()), new ShadePropertiesAbridged());
             _refHBObj = this.Default.DuplicateShade();
             _libSource = new ModelProperties(ModelEnergyProperties.Default, ModelRadianceProperties.Default);
             this._control = panel;

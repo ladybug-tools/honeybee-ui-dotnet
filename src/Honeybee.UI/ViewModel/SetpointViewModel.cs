@@ -54,7 +54,7 @@ namespace Honeybee.UI
         public SetpointAbridged Default { get; private set; }
         public SetpointViewModel(ModelProperties libSource, List<SetpointAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-            this.Default = new SetpointAbridged(Guid.NewGuid().ToString(), "", "");
+            this.Default = new SetpointAbridged(Guid.NewGuid().ToString(), "Not Set", "Not Set");
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateSetpointAbridged();
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateSetpointAbridged();
 

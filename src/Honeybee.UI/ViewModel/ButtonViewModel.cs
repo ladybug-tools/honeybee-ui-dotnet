@@ -15,6 +15,7 @@ namespace Honeybee.UI
     public class ButtonViewModel<T> : ViewModelBase
     {
         public string Varies => "<varies>";
+        private static string None => "<None>";
         public bool IsVaries;
         private T _refObjProperty;
         private T refObjProperty
@@ -50,6 +51,8 @@ namespace Honeybee.UI
             private set
             {
                 IsVaries = value == this.Varies;
+                if (string.IsNullOrEmpty(value))
+                    value = None;
                 this.Set(() => _btnName = value, nameof(BtnName));
             }
         }

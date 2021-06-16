@@ -62,7 +62,7 @@ namespace Honeybee.UI
         public GasEquipmentAbridged Default { get; private set; }
         public GasEquipmentViewModel(ModelProperties libSource, List<GasEquipmentAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-            this.Default = new GasEquipmentAbridged(Guid.NewGuid().ToString(), 0, "");
+            this.Default = new GasEquipmentAbridged(Guid.NewGuid().ToString(), 0, "Not Set");
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateGasEquipmentAbridged();
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateGasEquipmentAbridged();
 

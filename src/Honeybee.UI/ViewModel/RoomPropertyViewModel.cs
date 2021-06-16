@@ -210,7 +210,7 @@ namespace Honeybee.UI.ViewModel
         public Room Default { get; private set; }
         internal RoomPropertyViewModel(View.RoomProperty roomPanel)
         {
-            this.Default = new Room("", new List<Face>(), new RoomPropertiesAbridged());
+            this.Default = new Room("id", new List<Face>(), new RoomPropertiesAbridged());
             _refHBObj = this.Default.DuplicateRoom();
             _libSource = new ModelProperties(ModelEnergyProperties.Default, ModelRadianceProperties.Default);
             this._control = roomPanel;
@@ -333,7 +333,7 @@ namespace Honeybee.UI.ViewModel
             this.ServiceHotWater = new ServiceHotWaterViewModel(libSource, allSHW, (s) => _refHBObj.Properties.Energy.ServiceHotWater = s as ServiceHotWaterAbridged);
 
             // InternalMass
-            var allInMasses = rooms.SelectMany(_ => _.Properties.Energy?.InternalMasses).Distinct().ToList();
+            var allInMasses = rooms.Select(_ => _.Properties.Energy?.InternalMasses?.FirstOrDefault()).Distinct().ToList();
             this.InternalMass = new InternalMassViewModel(libSource, allInMasses, (s) => _refHBObj.Properties.Energy.InternalMasses = new List<InternalMassAbridged>() { s as InternalMassAbridged });
 
 
