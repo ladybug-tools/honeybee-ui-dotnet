@@ -62,7 +62,7 @@ namespace Honeybee.UI
         public ServiceHotWaterAbridged Default { get; private set; }
         public ServiceHotWaterViewModel(ModelProperties libSource, List<ServiceHotWaterAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-            this.Default = new ServiceHotWaterAbridged(Guid.NewGuid().ToString(), 0, "");
+            this.Default = new ServiceHotWaterAbridged(Guid.NewGuid().ToString(), 0, "Not Set");
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateServiceHotWaterAbridged();
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateServiceHotWaterAbridged();
 

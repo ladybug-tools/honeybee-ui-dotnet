@@ -33,7 +33,7 @@ namespace Honeybee.UI
         public InternalMassAbridged Default { get; private set; }
         public InternalMassViewModel(ModelProperties libSource, List<InternalMassAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-            this.Default = new InternalMassAbridged(Guid.NewGuid().ToString(), "c", 0);
+            this.Default = new InternalMassAbridged(Guid.NewGuid().ToString(), "Not Set", 0);
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateInternalMassAbridged();
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateInternalMassAbridged();
 

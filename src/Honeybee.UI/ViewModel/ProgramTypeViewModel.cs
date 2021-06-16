@@ -87,7 +87,7 @@ namespace Honeybee.UI
                 if (_hbObj.People == null)
                 {
                     // this is only needed to initialize UI
-                    return new PeopleAbridged("", 0, "", "");
+                    return new PeopleAbridged("id", 0, "s");
                 }
                 return _hbObj.People;
             }

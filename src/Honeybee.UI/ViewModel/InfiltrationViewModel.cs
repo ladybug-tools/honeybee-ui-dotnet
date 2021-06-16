@@ -62,7 +62,7 @@ namespace Honeybee.UI
         public InfiltrationAbridged Default { get; private set; }
         public InfiltrationViewModel(ModelProperties libSource, List<InfiltrationAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-            this.Default = new InfiltrationAbridged(Guid.NewGuid().ToString(), 0, "");
+            this.Default = new InfiltrationAbridged(Guid.NewGuid().ToString(), 0, "Not Set");
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateInfiltrationAbridged();
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateInfiltrationAbridged();
 

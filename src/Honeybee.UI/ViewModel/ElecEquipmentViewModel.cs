@@ -62,7 +62,7 @@ namespace Honeybee.UI
 
         public ElecEquipmentViewModel(ModelProperties libSource, List<ElectricEquipmentAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-            this.Default = new ElectricEquipmentAbridged(Guid.NewGuid().ToString(), 0, "");
+            this.Default = new ElectricEquipmentAbridged(Guid.NewGuid().ToString(), 0, "Not Set");
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateElectricEquipmentAbridged();
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateElectricEquipmentAbridged();
 

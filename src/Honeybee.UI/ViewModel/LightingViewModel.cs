@@ -71,7 +71,7 @@ namespace Honeybee.UI
 
         public LightingViewModel(ModelProperties libSource, List<LightingAbridged> lights, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-            this.Default = new LightingAbridged(Guid.NewGuid().ToString(), 0, "");
+            this.Default = new LightingAbridged(Guid.NewGuid().ToString(), 0, "Not Set");
             this.refObjProperty = lights.FirstOrDefault()?.DuplicateLightingAbridged();
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateLightingAbridged();
 

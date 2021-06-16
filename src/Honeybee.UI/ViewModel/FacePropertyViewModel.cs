@@ -164,7 +164,7 @@ namespace Honeybee.UI.ViewModel
         public Face Default { get; private set; }
         internal FacePropertyViewModel(View.FaceProperty panel)
         {
-            this.Default = new Face("", new Face3D(new List<List<double>>()), FaceType.Wall, new Outdoors(), new FacePropertiesAbridged());
+            this.Default = new Face("id", new Face3D(new List<List<double>>()), FaceType.Wall, new Outdoors(), new FacePropertiesAbridged());
             _refHBObj = this.Default.DuplicateFace();
             _libSource = new ModelProperties(ModelEnergyProperties.Default, ModelRadianceProperties.Default);
             this._control = panel;

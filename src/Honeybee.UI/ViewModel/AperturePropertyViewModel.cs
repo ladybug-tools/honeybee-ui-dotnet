@@ -155,7 +155,7 @@ namespace Honeybee.UI.ViewModel
         public Aperture Default { get; private set; }
         internal AperturePropertyViewModel(View.ApertureProperty panel)
         {
-            this.Default = new Aperture("", new Face3D(new List<List<double>>()), new Outdoors(), new AperturePropertiesAbridged());
+            this.Default = new Aperture("id", new Face3D(new List<List<double>>()), new Outdoors(), new AperturePropertiesAbridged());
             _refHBObj = this.Default.DuplicateAperture();
             _libSource = new ModelProperties(ModelEnergyProperties.Default, ModelRadianceProperties.Default);
             this._control = panel;

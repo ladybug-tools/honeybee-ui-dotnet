@@ -156,7 +156,7 @@ namespace Honeybee.UI.ViewModel
         public Door Default { get; private set; }
         internal DoorPropertyViewModel(View.DoorProperty panel)
         {
-            this.Default = new Door("", new Face3D(new List<List<double>>()), new Outdoors(), new DoorPropertiesAbridged());
+            this.Default = new Door("id", new Face3D(new List<List<double>>()), new Outdoors(), new DoorPropertiesAbridged());
             _refHBObj = this.Default.DuplicateDoor();
             _libSource = new ModelProperties(ModelEnergyProperties.Default, ModelRadianceProperties.Default);
             this._control = panel;
