@@ -182,6 +182,13 @@ namespace Honeybee.UI.ViewModel
             set { this.Set(() => _serviceHotWater = value, nameof(ServiceHotWater)); }
         }
 
+        private InternalMassViewModel _internalMass;
+        public InternalMassViewModel InternalMass
+        {
+            get => _internalMass;
+            set { this.Set(() => _internalMass = value, nameof(InternalMass)); }
+        }
+
         private VentilationControlViewModel _ventilationControl;
         public VentilationControlViewModel VentilationControl
         {
@@ -324,6 +331,10 @@ namespace Honeybee.UI.ViewModel
             // ServiceHotWater
             var allSHW = rooms.Select(_ => _.Properties.Energy?.ServiceHotWater).Distinct().ToList();
             this.ServiceHotWater = new ServiceHotWaterViewModel(libSource, allSHW, (s) => _refHBObj.Properties.Energy.ServiceHotWater = s as ServiceHotWaterAbridged);
+
+            // InternalMass
+            var allInMasses = rooms.SelectMany(_ => _.Properties.Energy?.InternalMasses).Distinct().ToList();
+            this.InternalMass = new InternalMassViewModel(libSource, allInMasses, (s) => _refHBObj.Properties.Energy.InternalMasses = new List<InternalMassAbridged>() { s as InternalMassAbridged });
 
 
 

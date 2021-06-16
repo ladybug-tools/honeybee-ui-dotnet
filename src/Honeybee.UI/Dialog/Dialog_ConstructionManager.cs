@@ -149,7 +149,7 @@ namespace Honeybee.UI
 
         public ICommand AddAirBoundaryConstructionCommand => new RelayCommand(() => {
             var id = Guid.NewGuid().ToString();
-            var newConstrucion = new AirBoundaryConstructionAbridged(id, string.Empty, $"New AirBoundary Construction {id.Substring(0, 5)}");
+            var newConstrucion = new AirBoundaryConstructionAbridged(id, $"New AirBoundary Construction {id.Substring(0, 5)}");
 
             var dialog = new Honeybee.UI.Dialog_Construction_AirBoundary(newConstrucion);
             var dialog_rc = dialog.ShowModal(this);
