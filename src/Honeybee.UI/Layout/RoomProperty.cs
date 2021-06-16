@@ -183,6 +183,9 @@ namespace Honeybee.UI.View
             //Get ServiceHotWater
             layout.AddRow(GenSHWPanel());
 
+            //Get InternalMass
+            layout.AddRow(GenInternalMassPanel());
+
             layout.AddRow(null);
 
             layout.EndScrollable();
@@ -675,6 +678,45 @@ namespace Honeybee.UI.View
             return gp;
         }
 
+
+        private GroupBox GenInternalMassPanel()
+        {
+            var vm = this._vm;
+
+            var layout = new DynamicLayout();
+            layout.Bind((t) => t.Enabled, vm, v => v.InternalMass.IsPanelEnabled);
+            layout.Bind((t) => t.Visible, vm, v => v.InternalMass.IsPanelEnabled);
+
+
+            layout.DefaultSpacing = new Size(4, 4);
+            layout.DefaultPadding = new Padding(4);
+
+            var wPerArea = new DoubleText();
+            wPerArea.Width = 250;
+            wPerArea.ReservedText = _vm.Varies;
+            wPerArea.SetDefault(_vm.InternalMass.Default.Area);
+            wPerArea.TextBinding.Bind(vm, _ => _.InternalMass.Area.NumberText);
+            layout.AddRow("Area:");
+            layout.AddRow(wPerArea);
+
+            var sch = new Button();
+            sch.TextBinding.Bind(vm, _ => _.InternalMass.Construction.BtnName);
+            sch.Bind(_ => _.Command, vm, _ => _.InternalMass.ConstructionCommand);
+            layout.AddRow("Construction:");
+            layout.AddRow(sch);
+             
+
+            layout.AddRow(null);
+
+
+            var ltnByProgram = new CheckBox() { Text = vm.ByProgramType };
+            ltnByProgram.CheckedBinding.Bind(vm, _ => _.InternalMass.IsCheckboxChecked);
+
+            var gp = new GroupBox() { Text = "Internal Mass" };
+            gp.Content = new StackLayout(ltnByProgram, layout) { Spacing = 4, Padding = new Padding(4) };
+
+            return gp;
+        }
 
         private GroupBox GenVentCtrlPanel()
         {
