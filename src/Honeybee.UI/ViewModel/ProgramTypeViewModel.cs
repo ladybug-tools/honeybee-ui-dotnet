@@ -186,7 +186,7 @@ namespace Honeybee.UI
                 if (_hbObj.Lighting == null)
                 {
                     // this is only needed to initialize UI
-                    return new LightingAbridged("", 0, "");
+                    return new LightingAbridged("id", 0, "sch");
                 }
                 return _hbObj.Lighting;
             }
@@ -250,7 +250,7 @@ namespace Honeybee.UI
                 if (_hbObj.ElectricEquipment == null)
                 {
                     // this is only needed to initialize UI
-                    return new ElectricEquipmentAbridged("", 0, "", "");
+                    return new ElectricEquipmentAbridged("id", 0, "sch");
                 }
                 return _hbObj.ElectricEquipment;
             }
@@ -312,7 +312,7 @@ namespace Honeybee.UI
                 if (_hbObj.GasEquipment == null)
                 {
                     // this is only needed to initialize UI
-                    return new GasEquipmentAbridged("", 0, "", "");
+                    return new GasEquipmentAbridged("id", 0, "s");
                 }
                 return _hbObj.GasEquipment;
             }
@@ -375,7 +375,7 @@ namespace Honeybee.UI
                 if (_hbObj.Infiltration == null)
                 {
                     // this is only needed to initialize UI
-                    return new InfiltrationAbridged("", 0, "", "");
+                    return new InfiltrationAbridged("id", 0, "sch");
                 }
                 return _hbObj.Infiltration;
             }
@@ -437,7 +437,7 @@ namespace Honeybee.UI
                 if (_hbObj.Ventilation == null)
                 {
                     // this is only needed to initialize UI
-                    return new VentilationAbridged("");
+                    return new VentilationAbridged("id");
                 }
                 return _hbObj.Ventilation;
             }
@@ -498,7 +498,7 @@ namespace Honeybee.UI
                 if (_hbObj.Setpoint == null)
                 {
                     // this is only needed to initialize UI
-                    return new SetpointAbridged("", "", "");
+                    return new SetpointAbridged("id", "sch", "sch");
                 }
                 return _hbObj.Setpoint;
             }
@@ -585,7 +585,7 @@ namespace Honeybee.UI
                 if (_hbObj.ServiceHotWater == null)
                 {
                     // this is only needed to initialize UI
-                    return new ServiceHotWaterAbridged("", 0, "", "");
+                    return new ServiceHotWaterAbridged("id", 0, "sch");
                 }
                 return _hbObj.ServiceHotWater;
             }
