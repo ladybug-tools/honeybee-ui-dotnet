@@ -193,6 +193,7 @@ namespace Honeybee.UI.ConsoleApp
                 var pTypeMngbtn = new Button() { Text = "ProgramTypeManager" };
                 pTypeMngbtn.Click += (s, e) =>
                 {
+                    
                     var dialog = new Honeybee.UI.Dialog_ProgramTypeManager(md.Properties.Energy);
                     var dialog_rc =dialog.ShowModal(this);
                   
