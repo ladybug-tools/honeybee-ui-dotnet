@@ -303,7 +303,7 @@ namespace Honeybee.UI.ViewModel
         public ICommand ModifierCommand => new RelayCommand(() =>
         {
             var dialog = new Dialog_ModifierManager(_libSource.Radiance, true);
-            var dialog_rc = dialog.ShowModal(Config.Owner);
+            var dialog_rc = dialog.ShowModal(this._control);
             if (dialog_rc != null)
             {
                 this.Modifier.SetPropetyObj(dialog_rc[0]);
@@ -313,7 +313,7 @@ namespace Honeybee.UI.ViewModel
         public ICommand ModifierBlkCommand => new RelayCommand(() =>
         {
             var dialog = new Dialog_ModifierManager(_libSource.Radiance, true);
-            var dialog_rc = dialog.ShowModal(Config.Owner);
+            var dialog_rc = dialog.ShowModal(this._control);
             if (dialog_rc != null)
             {
                 this.ModifierBlk.SetPropetyObj(dialog_rc[0]);
@@ -323,7 +323,7 @@ namespace Honeybee.UI.ViewModel
         public ICommand ConstructionCommand => new RelayCommand(() =>
         {
             var dialog = new Dialog_ConstructionManager(_libSource.Energy, true);
-            var dialog_rc = dialog.ShowModal(Config.Owner);
+            var dialog_rc = dialog.ShowModal(this._control);
             if (dialog_rc != null)
             {
                 this.Construction.SetPropetyObj(dialog_rc[0]);

@@ -408,7 +408,7 @@ namespace Honeybee.UI.ViewModel
         public ICommand RoomConstructionSetCommand => new RelayCommand(() =>
         {
             var dialog = new Dialog_ConstructionSetManager(_libSource.Energy, true);
-            var dialog_rc = dialog.ShowModal(Config.Owner);
+            var dialog_rc = dialog.ShowModal(this._control);
             if (dialog_rc != null)
             {
                 this.ConstructionSet.SetPropetyObj(dialog_rc[0]);
@@ -418,7 +418,7 @@ namespace Honeybee.UI.ViewModel
         public ICommand RoomProgramTypeCommand => new RelayCommand(() =>
         {
             var dialog = new Dialog_ProgramTypeManager(_libSource.Energy, true);
-            var dialog_rc = dialog.ShowModal(Config.Owner);
+            var dialog_rc = dialog.ShowModal(this._control);
             if (dialog_rc != null)
             {
                 this.PropgramType.SetPropetyObj(dialog_rc[0]);
@@ -428,7 +428,7 @@ namespace Honeybee.UI.ViewModel
         public ICommand RoomHVACCommand => new RelayCommand(() =>
         {
             var dialog = new Dialog_HVACManager(_libSource.Energy, true);
-            var dialog_rc = dialog.ShowModal(Config.Owner);
+            var dialog_rc = dialog.ShowModal(this._control);
             if (dialog_rc != null)
             {
                 this.HVAC.SetPropetyObj(dialog_rc[0]);
@@ -438,7 +438,7 @@ namespace Honeybee.UI.ViewModel
         public ICommand ModifierSetCommand => new RelayCommand(() =>
         {
             var dialog = new Dialog_ModifierSetManager(_libSource.Radiance, true);
-            var dialog_rc = dialog.ShowModal(Config.Owner);
+            var dialog_rc = dialog.ShowModal(this._control);
             if (dialog_rc != null)
             {
                 this.ModifierSet.SetPropetyObj(dialog_rc[0]);
