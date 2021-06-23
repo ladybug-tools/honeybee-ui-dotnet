@@ -71,7 +71,7 @@ namespace Honeybee.UI
             if (this.IsCheckboxChecked)
                 return null;
 
-            obj = obj?.DuplicateInternalMassAbridged() ?? new InternalMassAbridged(Guid.NewGuid().ToString(), "", 0);
+            obj = obj?.DuplicateInternalMassAbridged() ?? new InternalMassAbridged(Guid.NewGuid().ToString(), "Not Set", 0);
 
             if (!this.Area.IsVaries)
                 obj.Area = this._refHBObj.Area;

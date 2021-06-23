@@ -165,7 +165,7 @@ namespace Honeybee.UI
             if (this.IsCheckboxChecked)
                 return null;
 
-            obj = obj?.DuplicatePeopleAbridged() ?? new PeopleAbridged(Guid.NewGuid().ToString(), 0, "", "");
+            obj = obj?.DuplicatePeopleAbridged() ?? new PeopleAbridged(Guid.NewGuid().ToString(), 0, "Not Set");
 
             if (!this.PeoplePerArea.IsVaries)
                 obj.PeoplePerArea = this._refHBObj.PeoplePerArea;
