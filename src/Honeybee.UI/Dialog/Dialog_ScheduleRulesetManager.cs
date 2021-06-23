@@ -225,7 +225,7 @@ namespace Honeybee.UI
         public RelayCommand RemoveCommand => new RelayCommand(() =>
         {
             var gd = this._gd;
-            var selected = gd.SelectedItem as ModifierSetAbridged;
+            var selected = gd.SelectedItem as ScheduleRulesetAbridged;
             if (selected == null)
             {
                 MessageBox.Show(this, "Nothing is selected to edit!");
