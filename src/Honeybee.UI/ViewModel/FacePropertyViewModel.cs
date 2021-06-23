@@ -105,17 +105,7 @@ namespace Honeybee.UI.ViewModel
                 _isBoundaryConditionVaries = value == this.Varies;
                 if (!_isBoundaryConditionVaries)
                 {
-                    if (value == nameof(Surface))
-                    {
-                        // reset
-                        _isBoundaryConditionVaries = _boundaryConditionText == this.Varies;
-                        MessageBox.Show("Boundary condition cannot be changed to Surface manually. please use check SolveAdjacency");
-                        return;
-                    }
-                    else
-                    {
-                        this._refHBObj.BoundaryCondition = Bcs[value];
-                    }
+                    this._refHBObj.BoundaryCondition = Bcs[value];
                 }
 
                 this.IsOutdoorBoundary = value == nameof(Outdoors);
@@ -123,6 +113,12 @@ namespace Honeybee.UI.ViewModel
                 {
                     var outdoorBc = this._refHBObj.BoundaryCondition.Obj as Outdoors;
                     this.BCOutdoor = new BoundaryConditionOutdoorViewModel(new List<Outdoors>() { outdoorBc }, (o) => _refHBObj.BoundaryCondition = o);
+                }
+                this.IsSurfaceBoundary = value == nameof(Surface);
+                if (this.IsSurfaceBoundary)
+                {
+                    var srf = this._refHBObj.BoundaryCondition.Obj as Surface;
+                    this.BCSurface = new BoundaryConditionSurfaceViewModel(new List<Surface>() { srf }, (o) => _refHBObj.BoundaryCondition = o);
                 }
                 this.Set(()=> _boundaryConditionText = value, nameof(BoundaryConditionText));
             }
@@ -142,6 +138,19 @@ namespace Honeybee.UI.ViewModel
             private set => this.Set(() => _bcOutdoor = value, nameof(BCOutdoor)); 
         }
 
+        private bool _isSurfaceBoundary = false;
+        public bool IsSurfaceBoundary
+        {
+            get => _isSurfaceBoundary;
+            private set => this.Set(() => _isSurfaceBoundary = value, nameof(IsSurfaceBoundary));
+        }
+
+        private BoundaryConditionSurfaceViewModel _bcSurface;
+        public BoundaryConditionSurfaceViewModel BCSurface
+        {
+            get => _bcSurface;
+            private set => this.Set(() => _bcSurface = value, nameof(BCSurface));
+        }
 
 
         // AFNCrack
@@ -247,6 +256,12 @@ namespace Honeybee.UI.ViewModel
                 var outdoors = objs.Select(_ => _.BoundaryCondition).OfType<Outdoors>().Distinct().ToList();
                 this.BCOutdoor = new BoundaryConditionOutdoorViewModel(outdoors, (o)=> _refHBObj.BoundaryCondition = o);
             }
+            else if (this.IsSurfaceBoundary)
+            {
+                var srfs = objs.Select(_ => _.BoundaryCondition).OfType<Surface>().Distinct().ToList();
+                this.BCSurface = new BoundaryConditionSurfaceViewModel(srfs, (o) => _refHBObj.BoundaryCondition = o);
+            }
+
          
             var afns = objs.Select(_ => _.Properties.Energy?.VentCrack).Distinct().ToList();
             this.AFNCrack = new AFNCrackViewModel(libSource, afns, _ => _refHBObj.Properties.Energy.VentCrack = _);
@@ -277,6 +292,10 @@ namespace Honeybee.UI.ViewModel
                     if (this.IsOutdoorBoundary)
                     {
                         item.BoundaryCondition = this.BCOutdoor.MatchObj(item.BoundaryCondition.Obj as Outdoors);
+                    }
+                    else if (this.IsSurfaceBoundary)
+                    {
+                        item.BoundaryCondition = this.BCSurface.MatchObj(item.BoundaryCondition.Obj as Surface);
                     }
                     else
                     {

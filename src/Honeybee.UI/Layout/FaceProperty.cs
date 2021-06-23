@@ -174,7 +174,8 @@ namespace Honeybee.UI.View
             // outdoor bc
             var outdoorBc = CreateOutdoorLayout();
             layout.AddRow(null, outdoorBc);
-
+            var surfaceBc = CreateSurfaceLayout();
+            layout.AddRow(null, surfaceBc);
 
             //AFN
             var afnByProgram = new CheckBox() { Text = _vm.ByParentSetting };
@@ -221,6 +222,19 @@ namespace Honeybee.UI.View
             layout.AddRow(autosize);
             layout.AddRow(vFactor);
 
+            return layout;
+        }
+        public DynamicLayout CreateSurfaceLayout()
+        {
+            var layout = new DynamicLayout();
+            layout.DefaultSpacing = new Size(4, 4);
+
+            layout.Bind(_ => _.Enabled, _vm, _ => _.IsSurfaceBoundary);
+
+            var adjSrfs = new StringText();
+            adjSrfs.TextBinding.Bind(_vm, (_) => _.BCSurface.AdjacentSurfaceText);
+            layout.AddRow("Adjacent Surface:");
+            layout.AddRow( adjSrfs);
             return layout;
         }
 
