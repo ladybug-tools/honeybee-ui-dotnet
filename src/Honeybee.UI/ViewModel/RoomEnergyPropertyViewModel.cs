@@ -9,6 +9,7 @@ using System.Windows.Input;
 
 namespace Honeybee.UI.ViewModel
 {
+    [Obsolete("This is deprecated, please use RoomPropertyViewModel instead", true)]
     public class RoomEnergyPropertyViewModel : ViewModelBase
     {
         public RoomEnergyPropertiesAbridged HoneybeeObject { get; set; }
@@ -21,7 +22,8 @@ namespace Honeybee.UI.ViewModel
         public ConstructionSetAbridged ConstructionSet
         {
             get { return _const; }
-            private set {
+            private set
+            {
                 this.Set(() => _const = value, nameof(ConstructionSet));
                 this.HoneybeeObject.ConstructionSet = value.Identifier == this.SetNull ? null : value.Identifier;
             }
@@ -32,7 +34,8 @@ namespace Honeybee.UI.ViewModel
         public ProgramTypeAbridged ProgramType
         {
             get { return _pType; }
-            private set {
+            private set
+            {
                 this.Set(() => _pType = value, nameof(ProgramType));
                 this.HoneybeeObject.ProgramType = value.Identifier == this.SetNull ? null : value.Identifier;
             }
@@ -43,7 +46,8 @@ namespace Honeybee.UI.ViewModel
         public IHvac HVAC
         {
             get { return _hvac; }
-            private set {
+            private set
+            {
                 this.Set(() => _hvac = value, nameof(HVAC));
                 this.HoneybeeObject.Hvac = value.Identifier == this.SetNull ? null : value.Identifier;
             }
@@ -54,9 +58,10 @@ namespace Honeybee.UI.ViewModel
         public PeopleAbridged People
         {
             get { return _ppl; }
-            private set {
+            private set
+            {
                 this.Set(() => _ppl = value, nameof(People));
-                this.HoneybeeObject.People = value.Identifier == this.ByProgramType ? null : value; 
+                this.HoneybeeObject.People = value.Identifier == this.ByProgramType ? null : value;
             }
         }
 
@@ -196,8 +201,8 @@ namespace Honeybee.UI.ViewModel
 
         #region Prepare dropdown data
 
-        
-        private void PrepConstructionSets( bool updateChangesOnly)
+
+        private void PrepConstructionSets(bool updateChangesOnly)
         {
             var items = this.ModelEnergyProperties.ConstructionSets
                 ?.OfType<ConstructionSetAbridged>()
@@ -211,7 +216,7 @@ namespace Honeybee.UI.ViewModel
             cSets.Insert(0, nullValue);
 
             var noChange = new ConstructionSetAbridged(NoChanges);
-            if (updateChangesOnly) 
+            if (updateChangesOnly)
                 cSets.Insert(0, noChange);
 
             this.ConstructionSets = cSets;
@@ -235,7 +240,7 @@ namespace Honeybee.UI.ViewModel
             pTypes.Insert(0, nullValue);
 
             var noChange = new ProgramTypeAbridged(NoChanges);
-            if (updateChangesOnly) 
+            if (updateChangesOnly)
                 pTypes.Insert(0, noChange);
 
             this.ProgramTypes = pTypes;
@@ -267,7 +272,7 @@ namespace Honeybee.UI.ViewModel
             var found = pTypes.FirstOrDefault(_ => _.Identifier == this.HoneybeeObject.Hvac);
             this.HVAC = found ?? (updateChangesOnly ? noChange : nullValue);
         }
-        
+
         private void PrepPeoples(bool updateChangesOnly)
         {
             var items = HoneybeeSchema.Helper.EnergyLibrary.DefaultPeopleLoads
