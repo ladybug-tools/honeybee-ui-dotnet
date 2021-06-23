@@ -136,7 +136,7 @@ namespace Honeybee.UI
             if (this.IsCheckboxChecked)
                 return null;
 
-            obj = obj?.DuplicateDaylightingControl() ?? new DaylightingControl(null);
+            obj = obj?.DuplicateDaylightingControl() ?? new DaylightingControl(new List<double>());
 
             if (!this.IlluminanceSetpoint.IsVaries)
                 obj.IlluminanceSetpoint = this._refHBObj.IlluminanceSetpoint;
