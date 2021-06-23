@@ -164,7 +164,6 @@ namespace Honeybee.UI
                 return;
             }
 
-            var index = gd.SelectedRow;
             if (selected.Identifier.StartsWith("Generic_"))
             {
                 MessageBox.Show(this, $"{selected.DisplayName ?? selected.Identifier } cannot be removed, because it is Honeybee default modifier set.");
@@ -174,8 +173,7 @@ namespace Honeybee.UI
             var res = MessageBox.Show(this, $"Are you sure you want to delete:\n {selected.DisplayName ?? selected.Identifier }", MessageBoxButtons.YesNo);
             if (res == DialogResult.Yes)
             {
-                var newDataStore = gd.DataStore.ToList();
-                newDataStore.RemoveAt(index);
+                var newDataStore = gd.DataStore.Where(_ => _ != selected).ToList();
                 gd.DataStore = newDataStore;
             }
         });
