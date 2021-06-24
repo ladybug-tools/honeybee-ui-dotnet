@@ -438,13 +438,12 @@ namespace Honeybee.UI.ViewModel
                 this.ProgramTypes.Insert(0, newItem);
                 this.ProgramType = newItem;
 
-                var schedules = dialog_rc.schedules.OfType<IDdEnergyBaseModel>().ToList();
-                this.ModelEnergyProperties.AddSchedules(schedules);
+                this.ModelEnergyProperties.AddSchedules(dialog_rc.schedules);
                 this.ModelEnergyProperties.AddProgramType(newItem);
 
                 MessageBox.Show(
                     this.Control,
-                    $"ProgramType [{newItem.DisplayName ?? newItem.Identifier}] is added to model along with [{schedules.Count}] schedules.",
+                    $"ProgramType [{newItem.DisplayName ?? newItem.Identifier}] is added to model along with [{dialog_rc.schedules.Count()}] schedules.",
                     MessageBoxType.Information
                     );
             }

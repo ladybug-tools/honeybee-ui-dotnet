@@ -288,7 +288,7 @@ namespace Honeybee.UI.ConsoleApp
                     if (dialog_rc != null)
                     {
                         md.Properties.Radiance.ModifierSets.Clear();
-                        md.AddModifierSets(dialog_rc.OfType<IDdRadianceBaseModel>().ToList());
+                        md.AddModifierSets(dialog_rc);
 
                     }
                 };
