@@ -35,7 +35,7 @@ namespace Honeybee.UI
                 if (value is HoneybeeSchema.IIDdBase idd)
                     BtnName = idd?.DisplayName ?? idd?.Identifier;
                 else if (value is List<double> point)
-                    BtnName = $"({string.Join(",", point.Take(3))})";
+                    BtnName = (point == null || !point.Any()) ? None : $"{string.Join(",", point)}";
                 else
                     BtnName = value.GetType().Name;
 

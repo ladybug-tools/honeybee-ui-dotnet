@@ -333,6 +333,10 @@ namespace Honeybee.UI.ViewModel
             this.ServiceHotWater = new ServiceHotWaterViewModel(libSource, allSHW, (s) => _refHBObj.Properties.Energy.ServiceHotWater = s as ServiceHotWaterAbridged);
 
             // InternalMass
+            if (rooms.Select(_ => _.Properties.Energy?.InternalMasses).Any(_=>_?.Count>1))
+            {
+                MessageBox.Show("The current room property editor doesn't support multiple internal masses in one room.");
+            }
             var allInMasses = rooms.Select(_ => _.Properties.Energy?.InternalMasses?.FirstOrDefault()).Distinct().ToList();
             this.InternalMass = new InternalMassViewModel(libSource, allInMasses, (s) => _refHBObj.Properties.Energy.InternalMasses = new List<InternalMassAbridged>() { s as InternalMassAbridged });
 
@@ -395,6 +399,10 @@ namespace Honeybee.UI.ViewModel
                 item.Properties.Energy.Ventilation = this.Ventilation.MatchObj(item.Properties.Energy.Ventilation);
                 item.Properties.Energy.Setpoint = this.Setpoint.MatchObj(item.Properties.Energy.Setpoint);
                 item.Properties.Energy.ServiceHotWater = this.ServiceHotWater.MatchObj(item.Properties.Energy.ServiceHotWater);
+
+                // internal mass
+                var internalMass = this.InternalMass.MatchObj(item.Properties.Energy.InternalMasses?.FirstOrDefault());
+                item.Properties.Energy.InternalMasses = new List<InternalMassAbridged>() { internalMass };
 
                 // controls
                 item.Properties.Energy.WindowVentControl = this.VentilationControl.MatchObj(item.Properties.Energy.WindowVentControl);

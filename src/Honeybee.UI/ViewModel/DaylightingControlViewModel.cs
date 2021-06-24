@@ -68,8 +68,18 @@ namespace Honeybee.UI
             private set => this.Set(() => _offAtMinimum = value, nameof(OffAtMinimum)); 
         }
 
+        public Func<List<double>> SensorPositionPicker { get; set; }
+      
+
+        public bool EnableSensorPositionPicker
+        {
+            get => SensorPositionPicker != null;
+            set => this.RefreshControl(nameof(EnableSensorPositionPicker));
+        }
         public DaylightingControl Default { get; private set; }
-        public DaylightingControlViewModel(ModelProperties libSource, List<DaylightingControl> loads, Action<DaylightingControl> setAction):base(libSource, setAction)
+      
+
+        public DaylightingControlViewModel(ModelProperties libSource, List<DaylightingControl> loads, Action<DaylightingControl> setAction) :base(libSource, setAction)
         {
             this.Default = new DaylightingControl(new List<double>());
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateDaylightingControl();
@@ -142,8 +152,8 @@ namespace Honeybee.UI
                 obj.IlluminanceSetpoint = this._refHBObj.IlluminanceSetpoint;
             if (!this.SensorPosition.IsVaries)
             {
-                if (this._refHBObj.SensorPosition == null)
-                    throw new ArgumentException("Missing required DaylightingControl schedule!");
+                if (this._refHBObj.SensorPosition == null || this._refHBObj.SensorPosition.Count != 3)
+                    throw new ArgumentException("Missing required DaylightingControl sensor position!");
                 obj.SensorPosition = this._refHBObj.SensorPosition;
             }
             if (!this.ControlFraction.IsVaries)
@@ -157,15 +167,15 @@ namespace Honeybee.UI
                 obj.OffAtMinimum = this._refHBObj.OffAtMinimum;
             return obj;
         }
-
+      
         public RelayCommand SensorPositionCommand => new RelayCommand(() =>
         {
-            //var dialog = new Dialog_ScheduleRulesetSelector(_libSource.Energy);
-            //var dialog_rc = dialog.ShowModal(Config.Owner);
-            //if (dialog_rc != null)
-            //{
-            //    this.SensorPosition.SetPropetyObj(dialog_rc);
-            //}
+            var pts = this.SensorPositionPicker?.Invoke();
+            if (pts != null && pts.Count == 3)
+            {
+                this.SensorPosition.SetPropetyObj(pts);
+            }
+            
         });
 
     }
