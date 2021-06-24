@@ -269,8 +269,7 @@ namespace Honeybee.UI
             this._modelEnergyProperties.AddScheduleTypeLimits(_typeLimits);
 
             this._modelEnergyProperties.Schedules.Clear();
-            var schs = allItems.OfType<IDdEnergyBaseModel>().ToList();
-            this._modelEnergyProperties.AddSchedules(schs);
+            this._modelEnergyProperties.AddSchedules(allItems);
 
             Close(itemsToReturn);
         });

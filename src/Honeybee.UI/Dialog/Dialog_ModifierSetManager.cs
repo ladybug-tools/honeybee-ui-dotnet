@@ -197,8 +197,7 @@ namespace Honeybee.UI
             }
 
             this.ModelRadianceProperties.ModifierSets.Clear();
-            var mSets = allItems.OfType<IDdRadianceBaseModel>().ToList();
-            this.ModelRadianceProperties.AddModifierSets(mSets);
+            this.ModelRadianceProperties.AddModifierSets(allItems);
             Close(itemsToReturn);
         });
 
