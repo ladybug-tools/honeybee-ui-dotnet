@@ -52,6 +52,15 @@ namespace Honeybee.UI
             }
 
         }
+
+        public void SetSensorPositionPicker(Func<List<double>> SensorPositionPicker)
+        {
+            RoomProperty.Instance.SetSensorPositionPicker(SensorPositionPicker);
+        }
+        public void SetInternalMassPicker(Func<double> internalMassAreaPicker)
+        {
+            RoomProperty.Instance.SetInternalMassPicker(internalMassAreaPicker);
+        }
     }
 
 

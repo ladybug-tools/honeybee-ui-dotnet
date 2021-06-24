@@ -29,6 +29,13 @@ namespace Honeybee.UI
             get => _construction;
             private set => this.Set(() => _construction = value, nameof(Construction));
         }
+        public Func<double> InternalMassAreaPicker { get; set; }
+ 
+        public bool EnableInternalMassAreaPicker
+        {
+            get => InternalMassAreaPicker != null;
+            set => this.RefreshControl(nameof(EnableInternalMassAreaPicker));
+        }
 
         public InternalMassAbridged Default { get; private set; }
         public InternalMassViewModel(ModelProperties libSource, List<InternalMassAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
@@ -93,6 +100,16 @@ namespace Honeybee.UI
             {
                 this.Construction.SetPropetyObj(dialog_rc[0]);
             }
+        });
+
+        public RelayCommand InternalMassAreaCommand => new RelayCommand(() =>
+        {
+            var area = this.InternalMassAreaPicker?.Invoke();
+            if (area.HasValue)
+            {
+                this.Area.SetNumberText(area.Value.ToString());
+            }
+
         });
 
     }

@@ -4,6 +4,7 @@ using System.Linq;
 using HB = HoneybeeSchema;
 using Honeybee.UI.ViewModel;
 using System.Collections.Generic;
+using System;
 
 namespace Honeybee.UI.View
 {
@@ -39,6 +40,16 @@ namespace Honeybee.UI.View
            
         }
 
+        public void SetSensorPositionPicker(Func<List<double>> SensorPositionPicker)
+        {
+            this._vm.DaylightingControl.SensorPositionPicker = SensorPositionPicker;
+            this._vm.DaylightingControl.EnableSensorPositionPicker = SensorPositionPicker != null;
+        }
+        public void SetInternalMassPicker(Func<double> internalMassAreaPicker)
+        {
+            this._vm.InternalMass.InternalMassAreaPicker = internalMassAreaPicker;
+            this._vm.InternalMass.EnableInternalMassAreaPicker = internalMassAreaPicker != null;
+        }
         private void Initialize()
         {
             var vm = this._vm;
@@ -691,6 +702,7 @@ namespace Honeybee.UI.View
             layout.DefaultSpacing = new Size(4, 4);
             layout.DefaultPadding = new Padding(4);
 
+
             var wPerArea = new DoubleText();
             wPerArea.Width = 250;
             wPerArea.ReservedText = _vm.Varies;
@@ -698,6 +710,11 @@ namespace Honeybee.UI.View
             wPerArea.TextBinding.Bind(vm, _ => _.InternalMass.Area.NumberText);
             layout.AddRow("Area:");
             layout.AddRow(wPerArea);
+
+            var btn = new Button() { Text = "Get area from geometry"};
+            btn.Bind(_ => _.Command, vm, _ => _.InternalMass.InternalMassAreaCommand);
+            btn.Bind(_ => _.Enabled, vm, _ => _.InternalMass.EnableInternalMassAreaPicker);
+            layout.AddRow(btn);
 
             var sch = new Button();
             sch.TextBinding.Bind(vm, _ => _.InternalMass.Construction.BtnName);
@@ -800,8 +817,11 @@ namespace Honeybee.UI.View
             var sch = new Button();
             sch.TextBinding.Bind(vm, _ => _.DaylightingControl.SensorPosition.BtnName);
             sch.Bind(_ => _.Command, vm, _ => _.DaylightingControl.SensorPositionCommand);
+            sch.Bind(_ => _.Enabled, vm, _ => _.DaylightingControl.EnableSensorPositionPicker);
             layout.AddRow("Sensor Position:");
             layout.AddRow(sch);
+
+     
 
             var wPerArea = new DoubleText();
             wPerArea.Width = 250;
