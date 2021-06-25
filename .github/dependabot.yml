@@ -1,0 +1,28 @@
+version: 2
+updates:
+- package-ecosystem: nuget
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "11:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: Newtonsoft.Json
+    versions:
+    - "> 12.0.1"
+  - dependency-name: RhinoCommon
+    versions:
+    - "> 6.23.20055.13111"
+  - dependency-name: Eto.Forms
+    versions:
+    - 2.5.10
+  - dependency-name: HoneybeeSchema
+    versions:
+    - 1.40.2.1
+    - 1.40.2.2
+  - dependency-name: Eto.Platform.Wpf
+    versions:
+    - 2.5.10
+  commit-message:
+    prefix: fix
+    include: scope
