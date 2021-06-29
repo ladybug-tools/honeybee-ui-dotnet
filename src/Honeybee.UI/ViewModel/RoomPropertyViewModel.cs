@@ -402,7 +402,7 @@ namespace Honeybee.UI.ViewModel
 
                 // internal mass
                 var internalMass = this.InternalMass.MatchObj(item.Properties.Energy.InternalMasses?.FirstOrDefault());
-                item.Properties.Energy.InternalMasses = new List<InternalMassAbridged>() { internalMass };
+                item.Properties.Energy.InternalMasses = internalMass == null ? null : new List<InternalMassAbridged>() { internalMass };
 
                 // controls
                 item.Properties.Energy.WindowVentControl = this.VentilationControl.MatchObj(item.Properties.Energy.WindowVentControl);
