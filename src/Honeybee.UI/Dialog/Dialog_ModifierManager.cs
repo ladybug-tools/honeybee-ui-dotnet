@@ -9,7 +9,7 @@ using System.Windows.Input;
 
 namespace Honeybee.UI
 {
-    public class Dialog_ModifierManager : Dialog<List<HB.ModifierBase>>
+    public class Dialog_ModifierManager : Dialog<List<HB.Radiance.IModifier>>
     {
  
         private bool _returnSelectedOnly;
@@ -37,13 +37,11 @@ namespace Honeybee.UI
         {
             this._returnSelectedOnly = returnSelectedOnly;
             this._modelRadianceProperties = libSource;
-            var modifierSets = libSource.Modifiers
-                  .OfType<ModifierBase>()
-                  .ToList();
+            var modifierSets = libSource.ModifierList;
 
             Content = Init(modifierSets);
         }
-        private DynamicLayout Init(List<ModifierBase> modifiers)
+        private DynamicLayout Init(IEnumerable<HB.Radiance.IModifier> modifiers)
         {
             var layout = new DynamicLayout();
             layout.DefaultPadding = new Padding(10);
@@ -90,24 +88,25 @@ namespace Honeybee.UI
 
         private GridView GenGridView(IEnumerable<object> items)
         {
+            items = items ?? new List<HB.Radiance.IModifier>();
             var gd = new GridView() { DataStore = items };
             gd.Height = 250;
             var nameTB = new TextBoxCell
             {
-                Binding = Binding.Delegate<HB.ModifierBase, string>(r => r.DisplayName ?? r.Identifier)
+                Binding = Binding.Delegate<HB.Radiance.IModifier, string>(r => r.DisplayName ?? r.Identifier)
             };
             gd.Columns.Add(new GridColumn { DataCell = nameTB, HeaderText = "Name" });
 
             var typeTB = new TextBoxCell
             {
-                Binding = Binding.Delegate<HB.ModifierBase, string>(r => r.GetType().Name)
+                Binding = Binding.Delegate<HB.Radiance.IModifier, string>(r => r.GetType().Name)
             };
             gd.Columns.Add(new GridColumn { DataCell = typeTB, HeaderText = "Type" });
             return gd;
         }
 
         #region AddModifier
-        public ICommand AddPlasticCommand => new RelayCommand<HB.ModifierBase>((obj) => {
+        public ICommand AddPlasticCommand => new RelayCommand<HB.Radiance.IModifier>((obj) => {
 
             var id = Guid.NewGuid().ToString();
             var newModifier = obj as Plastic ?? new Plastic(id, $"Plastic {id.Substring(0, 5)}", new HB.Void() );
@@ -172,10 +171,10 @@ namespace Honeybee.UI
             var dialog_rc = dialog.ShowModal(this);
             AddModifier(dialog_rc);
         });
-        private void AddModifier(HB.ModifierBase newModifier)
+        private void AddModifier(HB.Radiance.IModifier newModifier)
         {
             if (newModifier == null) return;
-            var d = this._gd.DataStore.OfType<HB.ModifierBase>().ToList();
+            var d = this._gd.DataStore.OfType<HB.Radiance.IModifier>().ToList();
             d.Add(newModifier);
             this._gd.DataStore = d;
         }
@@ -212,7 +211,7 @@ namespace Honeybee.UI
         public RelayCommand DuplicateCommand => new RelayCommand(() =>
         {
             var gd = this._gd;
-            var selected = gd.SelectedItem as HB.ModifierBase;
+            var selected = gd.SelectedItem as HB.Radiance.IModifier;
             if (selected == null)
             {
                 MessageBox.Show(this, "Nothing is selected to duplicate!");
@@ -220,7 +219,7 @@ namespace Honeybee.UI
             }
 
 
-            var dup = selected.DuplicateModifierBase();
+            var dup = selected.Duplicate() as HB.Radiance.IModifier;
             var id = Guid.NewGuid().ToString();
             dup.Identifier = id;
             dup.DisplayName = string.IsNullOrEmpty(selected.DisplayName) ? $"{selected.GetType()} {id.Substring(0, 5)}" : $"{selected.DisplayName}_dup";
@@ -258,14 +257,14 @@ namespace Honeybee.UI
         public RelayCommand EditCommand => new RelayCommand(() =>
         {
             var gd = this._gd;
-            var selected = gd.SelectedItem as HB.ModifierBase;
+            var selected = gd.SelectedItem as HB.Radiance.IModifier;
             if (selected == null)
             {
                 MessageBox.Show(this, "Nothing is selected to edit!");
                 return;
             }
-            var dup = selected.DuplicateModifierBase();
-            HB.ModifierBase dialog_rc = null;
+            var dup = selected.Duplicate() as HB.Radiance.IModifier;
+            HB.Radiance.IModifier dialog_rc = null;
             switch (dup)
             {
                 case Plastic obj:
@@ -298,7 +297,7 @@ namespace Honeybee.UI
 
             if (dialog_rc == null) return;
             var index = gd.SelectedRow;
-            var newDataStore = gd.DataStore.OfType<HB.ModifierBase>().ToList();
+            var newDataStore = gd.DataStore.OfType<HB.Radiance.IModifier>().ToList();
             newDataStore.RemoveAt(index);
             newDataStore.Insert(index, dialog_rc);
             gd.DataStore = newDataStore;
@@ -307,7 +306,7 @@ namespace Honeybee.UI
         public RelayCommand RemoveCommand => new RelayCommand(() =>
         {
             var gd = this._gd;
-            var selected = gd.SelectedItem as HB.ModifierBase;
+            var selected = gd.SelectedItem as HB.Radiance.IModifier;
             if (selected == null)
             {
                 MessageBox.Show(this, "Nothing is selected to edit!");
@@ -326,18 +325,18 @@ namespace Honeybee.UI
         {
             var gd = this._gd;
 
-            var allItems = gd.DataStore.Select(_ => _ as HB.ModifierBase).ToList();
+            var allItems = gd.DataStore.Select(_ => _ as HB.Radiance.IModifier).ToList();
             var itemsToReturn = allItems;
 
             if (this._returnSelectedOnly)
             {
-                var d = gd.SelectedItem as ModifierBase;
+                var d = gd.SelectedItem as HB.Radiance.IModifier;
                 if (d == null)
                 {
                     MessageBox.Show(this, "Nothing is selected!");
                     return;
                 }
-                itemsToReturn = new List<ModifierBase>() { d };
+                itemsToReturn = new List<HB.Radiance.IModifier>() { d };
             }
 
             this._modelRadianceProperties.Modifiers.Clear();

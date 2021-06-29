@@ -37,14 +37,12 @@ namespace Honeybee.UI
         {
             this._returnSelectedOnly = returnSelectedOnly;
             this._modelEnergyProperties = libSource;
-            var constructions = libSource.Constructions
-                  .OfType<HB.Energy.IConstruction>()
-                  .ToList();
+            var constructions = libSource.ConstructionList;
 
             Content = Init(constructions);
         }
 
-        private DynamicLayout Init(List<HB.Energy.IConstruction> constructions)
+        private DynamicLayout Init(IEnumerable<HB.Energy.IConstruction> constructions)
         {
 
             var layout = new DynamicLayout();
@@ -89,6 +87,7 @@ namespace Honeybee.UI
 
         private GridView GenGridView(IEnumerable<object> items)
         {
+            items = items ?? new List<HB.Energy.IConstruction>();
             var gd = new GridView() { DataStore = items };
             gd.Height = 250;
             var nameTB = new TextBoxCell

@@ -55,16 +55,14 @@ namespace Honeybee.UI
             this._returnSelectedOnly = returnSelectedOnly;
             this._modelEnergyProperties = libSource;
 
-            var allSches = libSource.Schedules
-               .OfType<ScheduleRulesetAbridged>()
-               .ToList();
-            var schTypes = libSource.ScheduleTypeLimits.ToList();
+            var allSches = libSource.Schedules?.OfType<ScheduleRulesetAbridged>();
+            var schTypes = libSource.ScheduleTypeLimits;
 
             _typeLimits = schTypes;
             Content = Init(allSches);
         }
 
-        private DynamicLayout Init(List<HB.ScheduleRulesetAbridged> allSches)
+        private DynamicLayout Init(IEnumerable<HB.ScheduleRulesetAbridged> allSches)
         {
             var layout = new DynamicLayout();
             layout.DefaultSpacing = new Size(5, 5);
@@ -105,6 +103,7 @@ namespace Honeybee.UI
 
         private GridView GenGridView(IEnumerable<object> items)
         {
+            items = items ?? new List<HB.ScheduleRulesetAbridged>();
             var gd = new GridView() { DataStore = items };
             gd.Height = 250;
             var nameTB = new TextBoxCell

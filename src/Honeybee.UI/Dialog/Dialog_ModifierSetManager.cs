@@ -34,14 +34,12 @@ namespace Honeybee.UI
         {
             this._returnSelectedOnly = returnSelectedOnly;
             this.ModelRadianceProperties = libSource;
-            var modifierSets = libSource.ModifierSets
-                  .OfType<ModifierSetAbridged>()
-                  .ToList();
+            var modifierSets = libSource.ModifierSetList;
 
             Content = Init(modifierSets);
         }
 
-        private DynamicLayout Init(List<ModifierSetAbridged> modifierSets)
+        private DynamicLayout Init(IEnumerable<HoneybeeSchema.Radiance.IBuildingModifierSet> modifierSets)
         {
             var layout = new DynamicLayout();
             layout.DefaultPadding = new Padding(10);
@@ -83,11 +81,12 @@ namespace Honeybee.UI
 
         private GridView GenGridView(IEnumerable<object> items)
         {
+            items = items ?? new List<HoneybeeSchema.Radiance.IBuildingModifierSet>();
             var gd = new GridView() { DataStore = items };
   
             var nameTB = new TextBoxCell
             {
-                Binding = Binding.Delegate<ModifierSetAbridged, string>(r => r.DisplayName ?? r.Identifier)
+                Binding = Binding.Delegate<HoneybeeSchema.Radiance.IBuildingModifierSet, string>(r => r.DisplayName ?? r.Identifier)
             };
             gd.Columns.Add(new GridColumn { DataCell = nameTB, HeaderText = "Name" });
 
