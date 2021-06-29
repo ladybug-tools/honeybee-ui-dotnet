@@ -37,12 +37,12 @@ namespace Honeybee.UI
         {
             this._returnSelectedOnly = returnSelectedOnly;
             this._modelEnergyProperties = libSource;
-            var pTypes = libSource.ProgramTypes.OfType<ProgramTypeAbridged>().ToList();
+            var pTypes = libSource.ProgramTypes?.OfType<ProgramTypeAbridged>();
 
             Content = Init(pTypes);
         }
 
-        private DynamicLayout Init(List<HB.ProgramTypeAbridged> pTypes)
+        private DynamicLayout Init(IEnumerable<HB.ProgramTypeAbridged> pTypes)
         {
             var layout = new DynamicLayout();
             layout.DefaultSpacing = new Size(5, 5);
@@ -82,6 +82,7 @@ namespace Honeybee.UI
 
         private GridView GenProgramType_GV(IEnumerable<object> items)
         {
+            items = items ?? new List<HB.ProgramTypeAbridged>();
             var pType_GD = new GridView() { DataStore = items };
             pType_GD.Height = 250;
             var nameTB = new TextBoxCell

@@ -34,14 +34,14 @@ namespace Honeybee.UI
         }
         public Dialog_HVACManager(ModelEnergyProperties libSource, bool returnSelectedOnly = false) : this()
         {
-            var hvacsInModel = libSource.Hvacs.OfType<HB.Energy.IHvac>().ToList();
+            var hvacsInModel = libSource.HVACList;
             this._returnSelectedOnly = returnSelectedOnly;
             this._modelEnergyProperties = libSource;
 
             Content = Init(hvacsInModel);
         }
 
-        private DynamicLayout Init(List<HB.Energy.IHvac> hvacs)
+        private DynamicLayout Init(IEnumerable<HB.Energy.IHvac> hvacs)
         {
 
             var layout = new DynamicLayout();
@@ -83,6 +83,7 @@ namespace Honeybee.UI
 
         private GridView GenGridView(IEnumerable<object> items)
         {
+            items = items ?? new List<HB.Energy.IHvac>();
             var gd = new GridView() { DataStore = items };
             gd.Height = 250;
             var nameTB = new TextBoxCell

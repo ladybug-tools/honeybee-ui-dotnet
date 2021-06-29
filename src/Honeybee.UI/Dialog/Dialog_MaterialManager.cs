@@ -35,14 +35,12 @@ namespace Honeybee.UI
         {
             this._returnSelectedOnly = returnSelectedOnly;
             this._modelEnergyProperties = libSource;
-            var materials = libSource.Materials
-                  .OfType<HB.Energy.IMaterial>()
-                  .ToList();
+            var materials = libSource.MaterialList;
 
             Content = Init(materials);
         }
 
-        public DynamicLayout Init(List<HB.Energy.IMaterial> materials)
+        public DynamicLayout Init(IEnumerable<HB.Energy.IMaterial> materials)
         {
             var materialsInModel = materials;
 
@@ -88,6 +86,7 @@ namespace Honeybee.UI
 
         private GridView GenGridView(IEnumerable<object> items)
         {
+            items = items ?? new List<HB.Energy.IMaterial>();
             var gd = new GridView() { DataStore = items };
             gd.Height = 250;
             var nameTB = new TextBoxCell
