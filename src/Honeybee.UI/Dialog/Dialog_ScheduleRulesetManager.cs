@@ -58,7 +58,7 @@ namespace Honeybee.UI
             var allSches = libSource.Schedules?.OfType<ScheduleRulesetAbridged>();
             var schTypes = libSource.ScheduleTypeLimits;
 
-            _typeLimits = schTypes;
+            _typeLimits = schTypes.Select(_=>_.DuplicateScheduleTypeLimit()).ToList();
             Content = Init(allSches);
         }
 
