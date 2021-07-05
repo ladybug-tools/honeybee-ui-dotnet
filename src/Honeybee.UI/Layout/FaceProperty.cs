@@ -191,7 +191,7 @@ namespace Honeybee.UI.View
             return gp;
         }
 
-        public DynamicLayout CreateOutdoorLayout()
+        private DynamicLayout CreateOutdoorLayout()
         {
             var layout = new DynamicLayout();
             layout.DefaultSpacing = new Size(4, 4);
@@ -224,7 +224,7 @@ namespace Honeybee.UI.View
 
             return layout;
         }
-        public DynamicLayout CreateSurfaceLayout()
+        private DynamicLayout CreateSurfaceLayout()
         {
             var layout = new DynamicLayout();
             layout.DefaultSpacing = new Size(4, 4);
