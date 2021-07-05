@@ -49,11 +49,12 @@ namespace Honeybee.UI.View
             var tb = new TabControl();
 
             var basis = GenGeneralTab();
-            tb.Pages.Add(new TabPage(basis) { Text = "General" });
+            var pg = new TabPage(basis) { Text = "General" };
+            tb.Pages.Add(pg);
 
             var loads = GenVentPanel();
             tb.Pages.Add(new TabPage(loads) { Text = "Ventilation" });
-
+            tb.SelectedPage = pg;
             layout.AddRow(tb);
 
 
@@ -183,13 +184,14 @@ namespace Honeybee.UI.View
             // outdoor bc
             var outdoorBc = CreateOutdoorLayout();
             layout.AddRow(null, outdoorBc);
-
+            var surfaceBc = CreateSurfaceLayout();
+            layout.AddRow(null, surfaceBc);
 
             gp.Content = layout;
             return gp;
         }
 
-        public DynamicLayout CreateOutdoorLayout()
+        private DynamicLayout CreateOutdoorLayout()
         {
             var layout = new DynamicLayout();
             layout.DefaultSpacing = new Size(4, 4);
@@ -220,6 +222,20 @@ namespace Honeybee.UI.View
             layout.AddRow(autosize);
             layout.AddRow(vFactor);
 
+            return layout;
+        }
+
+        private DynamicLayout CreateSurfaceLayout()
+        {
+            var layout = new DynamicLayout();
+            layout.DefaultSpacing = new Size(4, 4);
+
+            layout.Bind(_ => _.Enabled, _vm, _ => _.IsSurfaceBoundary);
+
+            var adjSrfs = new StringText();
+            adjSrfs.TextBinding.Bind(_vm, (_) => _.BCSurface.AdjacentSurfaceText);
+            layout.AddRow("Adjacent Surface:");
+            layout.AddRow(adjSrfs);
             return layout;
         }
 
@@ -290,9 +306,8 @@ namespace Honeybee.UI.View
             var ltnByProgram = new CheckBox() { Text = vm.NoControl };
             ltnByProgram.CheckedBinding.Bind(vm, _ => _.VentilationOpening.IsCheckboxChecked);
 
-            var gp = new GroupBox() { Text = "Ventilation Opening", Height = 470 };
+            var gp = new GroupBox() { Text = "Ventilation Opening", Height = 500 };
             gp.Content = new StackLayout(ltnByProgram, layout) { Spacing = 4, Padding = new Padding(4) };
-
             return gp;
         }
 
