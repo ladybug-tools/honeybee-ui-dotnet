@@ -231,10 +231,10 @@ namespace Honeybee.UI.View
 
             layout.Bind(_ => _.Enabled, _vm, _ => _.IsSurfaceBoundary);
 
-            var adjSrfs = new StringText();
-            adjSrfs.TextBinding.Bind(_vm, (_) => _.BCSurface.AdjacentSurfaceText);
-            layout.AddRow("Adjacent Surface:");
-            layout.AddRow( adjSrfs);
+            var adjBtn = new Button() { Text = "Adjacent Surface" };
+            adjBtn.Command = _vm.SurfaceBCCommand;
+            layout.AddRow(adjBtn);
+
             return layout;
         }
 

@@ -43,6 +43,7 @@ namespace Honeybee.UI
                 AbortButton.Click += (sender, e) => Close();
 
                 p.AddSeparateRow(null, OKButton, this.AbortButton, null);
+                p.Add(null);
                 this.Content = p;
             }
             catch (Exception e)

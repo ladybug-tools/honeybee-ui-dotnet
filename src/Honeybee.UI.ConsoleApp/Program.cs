@@ -108,7 +108,7 @@ namespace Honeybee.UI.ConsoleApp
 
                 var aptPropertybtn = new Button() { Text = "1 Apt Property" };
                 var apt = new Aperture("aptId", new Face3D(new List<List<double>>()), new Outdoors(), new AperturePropertiesAbridged(new ApertureEnergyPropertiesAbridged("aa"), new ApertureRadiancePropertiesAbridged("bb", "cc")));
-                var apt2 = new Aperture($"Apt_{Guid.NewGuid()}", new Face3D(new List<List<double>>()), new Outdoors(), new AperturePropertiesAbridged(new ApertureEnergyPropertiesAbridged("Generic Exterior Wall")), "apt name", isOperable: true);
+                var apt2 = new Aperture($"Aperture_{Guid.NewGuid()}", new Face3D(new List<List<double>>()), new Outdoors(), new AperturePropertiesAbridged(new ApertureEnergyPropertiesAbridged("Generic Exterior Wall")), "apt name", isOperable: true);
                 aptPropertybtn.Click += (s, e) =>
                 {
                     var dialog = new Honeybee.UI.Dialog_ApertureProperty(md.Properties, new List<Aperture>() { apt2 });
