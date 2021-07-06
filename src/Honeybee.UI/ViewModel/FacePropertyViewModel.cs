@@ -349,7 +349,12 @@ namespace Honeybee.UI.ViewModel
             }
         });
 
-       
+        public ICommand SurfaceBCCommand => new Eto.Forms.RelayCommand(() =>
+        {
+            this.BCSurface.EditSurfaceBC(this._control);
+        });
+
+
         public ICommand HBDataBtnClick => new RelayCommand(() => {
 
             Honeybee.UI.Dialog_Message.Show(this._control, this._refHBObj.ToJson(true), "Schema Data");
