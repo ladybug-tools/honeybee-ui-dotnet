@@ -24,14 +24,7 @@ namespace Honeybee.UI
             this.Icon = DialogHelper.HoneybeeIcon;
         }
 
-        [Obsolete("This is deprecated", true)]
-        public Dialog_MaterialManager(ModelEnergyProperties libSource, List<HB.Energy.IMaterial> materials) :this()
-        {
-            this._modelEnergyProperties = libSource;
-            Content = Init(materials);
-        }
-
-        public Dialog_MaterialManager(ModelEnergyProperties libSource, bool returnSelectedOnly = false) : this()
+        public Dialog_MaterialManager(ref ModelEnergyProperties libSource, bool returnSelectedOnly = false) : this()
         {
             this._returnSelectedOnly = returnSelectedOnly;
             this._modelEnergyProperties = libSource;

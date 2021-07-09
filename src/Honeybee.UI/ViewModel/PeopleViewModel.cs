@@ -188,7 +188,8 @@ namespace Honeybee.UI
 
         public RelayCommand ScheduleCommand => new RelayCommand(() =>
         {
-            var dialog = new Dialog_ScheduleRulesetManager(_libSource.Energy, true);
+            var lib = _libSource.Energy;
+            var dialog = new Dialog_ScheduleRulesetManager(ref lib, true);
             var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
             {
@@ -198,7 +199,8 @@ namespace Honeybee.UI
 
         public RelayCommand ActivityScheduleCommand => new RelayCommand(() =>
         {
-            var dialog = new Dialog_ScheduleRulesetManager(_libSource.Energy, true);
+            var lib = _libSource.Energy;
+            var dialog = new Dialog_ScheduleRulesetManager(ref lib, true);
             var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
             {

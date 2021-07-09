@@ -415,7 +415,8 @@ namespace Honeybee.UI.ViewModel
 
         public ICommand RoomConstructionSetCommand => new RelayCommand(() =>
         {
-            var dialog = new Dialog_ConstructionSetManager(_libSource.Energy, true);
+            var lib = _libSource.Energy;
+            var dialog = new Dialog_ConstructionSetManager(ref lib, true);
             var dialog_rc = dialog.ShowModal(this._control);
             if (dialog_rc != null)
             {
@@ -425,7 +426,8 @@ namespace Honeybee.UI.ViewModel
 
         public ICommand RoomProgramTypeCommand => new RelayCommand(() =>
         {
-            var dialog = new Dialog_ProgramTypeManager(_libSource.Energy, true);
+            var lib = _libSource.Energy;
+            var dialog = new Dialog_ProgramTypeManager(ref lib, true);
             var dialog_rc = dialog.ShowModal(this._control);
             if (dialog_rc != null)
             {
@@ -435,7 +437,8 @@ namespace Honeybee.UI.ViewModel
 
         public ICommand RoomHVACCommand => new RelayCommand(() =>
         {
-            var dialog = new Dialog_HVACManager(_libSource.Energy, true);
+            var lib = _libSource.Energy;
+            var dialog = new Dialog_HVACManager(ref lib, true);
             var dialog_rc = dialog.ShowModal(this._control);
             if (dialog_rc != null)
             {
@@ -445,7 +448,8 @@ namespace Honeybee.UI.ViewModel
 
         public ICommand ModifierSetCommand => new RelayCommand(() =>
         {
-            var dialog = new Dialog_ModifierSetManager(_libSource.Radiance, true);
+            var lib = _libSource.Radiance;
+            var dialog = new Dialog_ModifierSetManager(ref lib, true);
             var dialog_rc = dialog.ShowModal(this._control);
             if (dialog_rc != null)
             {

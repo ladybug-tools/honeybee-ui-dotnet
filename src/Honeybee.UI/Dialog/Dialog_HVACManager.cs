@@ -25,14 +25,8 @@ namespace Honeybee.UI
             this.Icon = DialogHelper.HoneybeeIcon;
         }
 
-        [Obsolete("This is deprecated", true)]
-        public Dialog_HVACManager(List<HB.Energy.IHvac> hvacs): this()
-        {
-            var hvacsInModel = hvacs;
-            Content = Init(hvacsInModel);
-
-        }
-        public Dialog_HVACManager(ModelEnergyProperties libSource, bool returnSelectedOnly = false) : this()
+     
+        public Dialog_HVACManager(ref ModelEnergyProperties libSource, bool returnSelectedOnly = false) : this()
         {
             var hvacsInModel = libSource.HVACList;
             this._returnSelectedOnly = returnSelectedOnly;

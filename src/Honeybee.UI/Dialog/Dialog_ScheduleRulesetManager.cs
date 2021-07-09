@@ -43,14 +43,8 @@ namespace Honeybee.UI
             this.Icon = DialogHelper.HoneybeeIcon;
         }
 
-        [Obsolete("This is deprecated", true)]
-        public Dialog_ScheduleRulesetManager(List<HB.ScheduleRulesetAbridged> scheduleRulesets, List<HB.ScheduleTypeLimit> scheduleTypeLimits):this()
-        {
-            _typeLimits = scheduleTypeLimits;
-            Content = Init(scheduleRulesets);
-        }
-
-        public Dialog_ScheduleRulesetManager(ModelEnergyProperties libSource, bool returnSelectedOnly = false) : this()
+    
+        public Dialog_ScheduleRulesetManager(ref ModelEnergyProperties libSource, bool returnSelectedOnly = false) : this()
         {
             this._returnSelectedOnly = returnSelectedOnly;
             this._modelEnergyProperties = libSource;
