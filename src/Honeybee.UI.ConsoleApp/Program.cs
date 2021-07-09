@@ -196,8 +196,8 @@ namespace Honeybee.UI.ConsoleApp
                 var pTypeMngbtn = new Button() { Text = "ProgramTypeManager" };
                 pTypeMngbtn.Click += (s, e) =>
                 {
-                    
-                    var dialog = new Honeybee.UI.Dialog_ProgramTypeManager(md.Properties.Energy);
+                    var lib = md.Properties.Energy;
+                    var dialog = new Honeybee.UI.Dialog_ProgramTypeManager(ref lib);
                     var dialog_rc =dialog.ShowModal(this);
                   
                 };
@@ -205,7 +205,8 @@ namespace Honeybee.UI.ConsoleApp
                 var schbtn = new Button() { Text = "ScheduleRulesetManager" };
                 schbtn.Click += (s, e) =>
                 {
-                    var dialog = new Honeybee.UI.Dialog_ScheduleRulesetManager(md.Properties.Energy);
+                    var lib = md.Properties.Energy;
+                    var dialog = new Honeybee.UI.Dialog_ScheduleRulesetManager(ref lib);
                     dialog.ShowModal(this);
 
                 };
@@ -213,7 +214,8 @@ namespace Honeybee.UI.ConsoleApp
                 var conbtn = new Button() { Text = "ConstructionManager" };
                 conbtn.Click += (s, e) =>
                 {
-                    var dialog = new Honeybee.UI.Dialog_ConstructionManager(md.Properties.Energy);
+                    var lib = md.Properties.Energy;
+                    var dialog = new Honeybee.UI.Dialog_ConstructionManager(ref lib);
                     dialog.ShowModal(this);
 
                 };
@@ -221,7 +223,8 @@ namespace Honeybee.UI.ConsoleApp
                 var cSetManager = new Button() { Text = "ConstructionSet Manager" };
                 cSetManager.Click += (s, e) =>
                 {
-                    var dialog = new Dialog_ConstructionSetManager(md.Properties.Energy);
+                    var lib = md.Properties.Energy;
+                    var dialog = new Dialog_ConstructionSetManager(ref lib);
                     dialog.ShowModal(this);
 
                 };
@@ -246,7 +249,8 @@ namespace Honeybee.UI.ConsoleApp
                 var materialBtn = new Button() { Text = "Material Manager" };
                 materialBtn.Click += (s, e) =>
                 {
-                    var dialog = new Honeybee.UI.Dialog_MaterialManager(md.Properties.Energy);
+                    var lib = md.Properties.Energy;
+                    var dialog = new Honeybee.UI.Dialog_MaterialManager(ref lib);
                     var newMaterials = dialog.ShowModal(this);
                     if (newMaterials != null)
                     {
@@ -267,7 +271,8 @@ namespace Honeybee.UI.ConsoleApp
                 var modifierBtn = new Button() { Text = "Modifier Manager" };
                 modifierBtn.Click += (s, e) =>
                 {
-                    var dialog = new Honeybee.UI.Dialog_ModifierManager(md.Properties.Radiance);
+                    var lib = md.Properties.Radiance;
+                    var dialog = new Honeybee.UI.Dialog_ModifierManager(ref lib);
 
                     var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
@@ -282,7 +287,8 @@ namespace Honeybee.UI.ConsoleApp
                 var modifierSetMngBtn = new Button() { Text = "ModifierSet Manager" };
                 modifierSetMngBtn.Click += (s, e) =>
                 {
-                    var dialog = new Honeybee.UI.Dialog_ModifierSetManager(md.Properties.Radiance);
+                    var lib = md.Properties.Radiance;
+                    var dialog = new Honeybee.UI.Dialog_ModifierSetManager(ref lib);
 
                     var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
@@ -328,14 +334,16 @@ namespace Honeybee.UI.ConsoleApp
                 var HVACManager = new Button() { Text = "HVACsManager" };
                 HVACManager.Click += (s, e) =>
                 {
-                    var dialog = new Honeybee.UI.Dialog_HVACManager(md.Properties.Energy);
+                    var lib = md.Properties.Energy;
+                    var dialog = new Honeybee.UI.Dialog_HVACManager(ref lib);
                     dialog.ShowModal(this);
                 };
 
                 var cSetSel_btn = new Button() { Text = "CSetSelector" };
                 cSetSel_btn.Click += (s, e) =>
                 {
-                    var cSetSel = new Dialog_ConstructionSetManager(md.Properties.Energy, true);
+                    var lib = md.Properties.Energy;
+                    var cSetSel = new Dialog_ConstructionSetManager(ref lib, true);
                     var cSetSel_rc = cSetSel.ShowModal(Config.Owner);
                     if (cSetSel_rc != null)
                     {

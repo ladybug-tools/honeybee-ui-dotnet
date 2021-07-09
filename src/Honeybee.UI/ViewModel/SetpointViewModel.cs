@@ -146,7 +146,8 @@ namespace Honeybee.UI
 
         public RelayCommand CoolingScheduleCommand => new RelayCommand(() =>
         {
-            var dialog = new Dialog_ScheduleRulesetManager(_libSource.Energy, true);
+            var lib = _libSource.Energy;
+            var dialog = new Dialog_ScheduleRulesetManager(ref lib, true);
             var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
             {
@@ -156,7 +157,8 @@ namespace Honeybee.UI
 
         public RelayCommand HeatingScheduleCommand => new RelayCommand(() =>
         {
-            var dialog = new Dialog_ScheduleRulesetManager(_libSource.Energy, true);
+            var lib = _libSource.Energy;
+            var dialog = new Dialog_ScheduleRulesetManager(ref lib, true);
             var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
             {
@@ -166,7 +168,8 @@ namespace Honeybee.UI
 
         public RelayCommand HumidifyingScheduleCommand => new RelayCommand(() =>
         {
-            var dialog = new Dialog_ScheduleRulesetManager(_libSource.Energy, true);
+            var lib = _libSource.Energy;
+            var dialog = new Dialog_ScheduleRulesetManager(ref lib, true);
             var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
             {
@@ -176,7 +179,8 @@ namespace Honeybee.UI
 
         public RelayCommand DehumidifyingScheduleCommand => new RelayCommand(() =>
         {
-            var dialog = new Dialog_ScheduleRulesetManager(_libSource.Energy, true);
+            var lib = _libSource.Energy;
+            var dialog = new Dialog_ScheduleRulesetManager(ref lib, true);
             var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
             {

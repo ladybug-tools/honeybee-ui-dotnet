@@ -54,7 +54,8 @@ namespace Honeybee.UI
                     MessageBox.Show(this, "Invalid model");
                     return;
                 }
-                var dialog = new Dialog_MaterialManager(_model.Properties.Energy);
+                var lib = _model.Properties.Energy;
+                var dialog = new Dialog_MaterialManager(ref lib);
                 var dialog_rc = dialog.ShowModal(this);
                 if (dialog_rc != null)
                 {
@@ -71,12 +72,9 @@ namespace Honeybee.UI
                     MessageBox.Show(this, "Invalid model");
                     return;
                 }
-                var constrcutionsInModel = _model.Properties.Energy.Constructions
-                .Where(_ => _.Obj.GetType().Name.Contains("Abridged"))
-                .Select(_ => _.Obj as HB.Energy.IConstruction)
-                .ToList();
-
-                var dialog = new Dialog_ConstructionManager(_model.Properties.Energy);
+        
+                var lib = _model.Properties.Energy;
+                var dialog = new Dialog_ConstructionManager(ref lib);
                 var dialog_rc = dialog.ShowModal(this);
                 if (dialog_rc != null)
                 {
@@ -93,11 +91,8 @@ namespace Honeybee.UI
                     MessageBox.Show(this, "Invalid model");
                     return;
                 }
-                var constrcutionSetsInModel = _model.Properties.Energy.ConstructionSets
-                .Where(_ => _.Obj is HB.ConstructionSetAbridged)
-                .Select(_ => _.Obj as HB.Energy.IBuildingConstructionset)
-                .ToList();
-                var dialog = new Dialog_ConstructionSetManager(_model.Properties.Energy);
+                var lib = _model.Properties.Energy;
+                var dialog = new Dialog_ConstructionSetManager(ref lib);
                 var dialog_rc = dialog.ShowModal(this);
                 if (dialog_rc != null)
                 {
@@ -115,8 +110,7 @@ namespace Honeybee.UI
                     return;
                 }
                 var lib = _model.Properties.Energy;
-
-                var dialog = new Dialog_ScheduleRulesetManager(lib);
+                var dialog = new Dialog_ScheduleRulesetManager(ref lib);
                 var dialog_rc = dialog.ShowModal(this);
                 if (dialog_rc != null)
                 {
@@ -131,13 +125,8 @@ namespace Honeybee.UI
                     return;
                 }
 
-                var pTypeInModel = _model.Properties.Energy.ProgramTypes
-                .Where(_ => _.Obj is HB.ProgramTypeAbridged)
-                .Select(_ => _.Obj as HB.ProgramTypeAbridged)
-                .ToList();
-
-
-                var dialog = new Dialog_ProgramTypeManager(_model.Properties.Energy);
+                var lib = _model.Properties.Energy;
+                var dialog = new Dialog_ProgramTypeManager(ref lib);
                 var dialog_rc = dialog.ShowModal(this);
                 if (dialog_rc != null)
                 {

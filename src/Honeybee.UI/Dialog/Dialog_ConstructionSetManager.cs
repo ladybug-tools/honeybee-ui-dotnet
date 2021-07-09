@@ -24,14 +24,7 @@ namespace Honeybee.UI
             this.Icon = DialogHelper.HoneybeeIcon;
         }
 
-        [Obsolete("This is deprecated", true)]
-        public Dialog_ConstructionSetManager(ModelEnergyProperties libSource, List<HB.Energy.IBuildingConstructionset> constructionsets):this()
-        {
-            this._modelEnergyProperties = libSource;
-            Content = Init(constructionsets);
-        }
-
-        public Dialog_ConstructionSetManager(ModelEnergyProperties libSource, bool returnSelectedOnly = false) : this()
+        public Dialog_ConstructionSetManager(ref ModelEnergyProperties libSource, bool returnSelectedOnly = false) : this()
         {
             this._returnSelectedOnly = returnSelectedOnly;
             this._modelEnergyProperties = libSource;

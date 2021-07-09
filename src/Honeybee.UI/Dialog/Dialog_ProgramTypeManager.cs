@@ -25,15 +25,8 @@ namespace Honeybee.UI
         }
 
 
-        [Obsolete("This is deprecated", true)]
-        public Dialog_ProgramTypeManager(ModelEnergyProperties libSource, List<HB.ProgramTypeAbridged> programTypes) : this()
-        {
-            this._modelEnergyProperties = libSource;
-            Content = Init(programTypes);
-        }
 
-
-        public Dialog_ProgramTypeManager(ModelEnergyProperties libSource, bool returnSelectedOnly = false):this()
+        public Dialog_ProgramTypeManager(ref ModelEnergyProperties libSource, bool returnSelectedOnly = false):this()
         {
             this._returnSelectedOnly = returnSelectedOnly;
             this._modelEnergyProperties = libSource;

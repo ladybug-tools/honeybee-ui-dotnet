@@ -23,14 +23,7 @@ namespace Honeybee.UI
             this.Icon = DialogHelper.HoneybeeIcon;
         }
 
-        [Obsolete("This is deprecated", true)]
-        public Dialog_ModifierSetManager(ModelRadianceProperties libSource, List<ModifierSetAbridged> modifierSets) : this()
-        {
-            this.ModelRadianceProperties = libSource;
-            Content = Init(modifierSets);
-        }
-
-        public Dialog_ModifierSetManager(ModelRadianceProperties libSource, bool returnSelectedOnly = false) : this()
+        public Dialog_ModifierSetManager(ref ModelRadianceProperties libSource, bool returnSelectedOnly = false) : this()
         {
             this._returnSelectedOnly = returnSelectedOnly;
             this.ModelRadianceProperties = libSource;
