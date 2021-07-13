@@ -39,7 +39,6 @@ namespace Honeybee.UI.ConsoleApp
                 var rms = new List<Room>() { rm1, rm2 };
                 RoomPropertybtn.Click += (s, e) =>
                 {
-                
                     var dialog = new Honeybee.UI.Dialog_RoomProperty(md.Properties ,rms);
                     //dialog.SetSensorPositionPicker(() => { return new List<double>(); });
                     var dialog_rc = dialog.ShowModal();
@@ -59,6 +58,7 @@ namespace Honeybee.UI.ConsoleApp
 
                 RoomPropertybtn2.Click += (s, e) =>
                 {
+                    md.Properties.Energy.Hvacs = null;
                     var dialog = new Honeybee.UI.Dialog_RoomProperty(md.Properties, new List<Room>() { rm2 });
                     //dialog.SetSensorPositionPicker(() => { return new List<double>(); });
                     dialog.SetInternalMassPicker(() => 22);
