@@ -203,8 +203,8 @@ namespace Honeybee.UI.ViewModel
 
 
             // Modifier
-            var mdf = _libSource.Radiance.Modifiers
-                .OfType<HoneybeeSchema.Radiance.IIDdRadianceBaseModel>()
+            var mdf = _libSource.Radiance.Modifiers?
+                .OfType<HoneybeeSchema.Radiance.IIDdRadianceBaseModel>()?
                 .FirstOrDefault(_ => _.Identifier  == _refHBObj.Properties.Radiance.Modifier);
             this.Modifier = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Radiance.Modifier = s?.Identifier);
 
@@ -214,8 +214,8 @@ namespace Honeybee.UI.ViewModel
                 this.Modifier.SetPropetyObj(mdf);
 
             // ModifierBlk
-            var mdfblk = _libSource.Radiance.Modifiers
-                .OfType<HoneybeeSchema.Radiance.IIDdRadianceBaseModel>()
+            var mdfblk = _libSource.Radiance.Modifiers?
+                .OfType<HoneybeeSchema.Radiance.IIDdRadianceBaseModel>()?
                 .FirstOrDefault(_ => _.Identifier == _refHBObj.Properties.Radiance.ModifierBlk);
             this.ModifierBlk = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Radiance.ModifierBlk = s?.Identifier);
 
@@ -232,8 +232,8 @@ namespace Honeybee.UI.ViewModel
 
 
             // Construction
-            var cts = _libSource.Energy.Constructions
-                .OfType<HoneybeeSchema.Energy.IIDdEnergyBaseModel>()
+            var cts = _libSource.Energy.Constructions?
+                .OfType<HoneybeeSchema.Energy.IIDdEnergyBaseModel>()?
                 .FirstOrDefault(_ => _.Identifier == _refHBObj.Properties.Energy.Construction);
             this.Construction = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.Construction = s?.Identifier);
 

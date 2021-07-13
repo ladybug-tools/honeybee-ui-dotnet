@@ -248,8 +248,8 @@ namespace Honeybee.UI.ViewModel
 
             
 
-            var cSet = _libSource.Energy.ConstructionSets
-                .OfType<HoneybeeSchema.Energy.IBuildingConstructionset>()
+            var cSet = _libSource.Energy.ConstructionSets?
+                .OfType<HoneybeeSchema.Energy.IBuildingConstructionset>()?
                 .FirstOrDefault(_ => _.Identifier == _refHBObj.Properties.Energy.ConstructionSet); 
             this.ConstructionSet = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.ConstructionSet = s?.Identifier);
 
@@ -261,8 +261,8 @@ namespace Honeybee.UI.ViewModel
                 this.ConstructionSet.SetPropetyObj(cSet);
 
 
-            var pType = _libSource.Energy.ProgramTypes
-               .OfType<HoneybeeSchema.Energy.IProgramtype>()
+            var pType = _libSource.Energy.ProgramTypes?
+               .OfType<HoneybeeSchema.Energy.IProgramtype>()?
                .FirstOrDefault(_ => _.Identifier == _refHBObj.Properties.Energy.ProgramType); 
             this.PropgramType = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.ProgramType = s?.Identifier);
 
@@ -274,8 +274,8 @@ namespace Honeybee.UI.ViewModel
                 this.PropgramType.SetPropetyObj(pType);
 
 
-            var hvac = _libSource.Energy.Hvacs
-                .OfType<HoneybeeSchema.Energy.IHvac>()
+            var hvac = _libSource.Energy.Hvacs?
+                .OfType<HoneybeeSchema.Energy.IHvac>()?
                 .FirstOrDefault(_ => _.Identifier == _refHBObj.Properties.Energy.Hvac); 
             this.HVAC = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.Hvac = s?.Identifier);
 
@@ -286,8 +286,8 @@ namespace Honeybee.UI.ViewModel
                 this.HVAC.SetPropetyObj(hvac);
 
 
-            var mSet = _libSource.Radiance.ModifierSets
-               .OfType<HoneybeeSchema.ModifierSetAbridged>()
+            var mSet = _libSource.Radiance.ModifierSets?
+               .OfType<HoneybeeSchema.ModifierSetAbridged>()?
                .FirstOrDefault(_ => _.Identifier == _refHBObj.Properties.Radiance.ModifierSet);
             this.ModifierSet = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Radiance.ModifierSet = s?.Identifier);
 
