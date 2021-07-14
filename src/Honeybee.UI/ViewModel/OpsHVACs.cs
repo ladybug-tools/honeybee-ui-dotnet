@@ -217,18 +217,18 @@ namespace Honeybee.UI
 
             this.Name = hvac.DisplayName;
 
-            var dummy = new VAV("");
+            var dummy = new VAV("dummy");
             // vintage
-            var vintage = hvac.GetType().GetProperty(nameof(dummy.Vintage)).GetValue(hvac);
+            var vintage = hvac.GetType().GetProperty(nameof(dummy.Vintage))?.GetValue(hvac);
             if (vintage is Vintages v)
                 this.Vintage = v.ToString();
 
             // equipment type
-            var eqpType = hvac.GetType().GetProperty(nameof(dummy.EquipmentType)).GetValue(hvac);
+            var eqpType = hvac.GetType().GetProperty(nameof(dummy.EquipmentType))?.GetValue(hvac);
             this.HvacEquipmentType = eqpType.ToString();
 
             // LatentHeatRecovery
-            var lat = hvac.GetType().GetProperty(nameof(dummy.LatentHeatRecovery)).GetValue(hvac) as AnyOf<Autosize, double>;
+            var lat = hvac.GetType()?.GetProperty(nameof(dummy.LatentHeatRecovery))?.GetValue(hvac) as AnyOf<Autosize, double>;
             if (lat != null)
             {
                 if (double.TryParse(lat.Obj.ToString(), out var latValue))
@@ -236,7 +236,7 @@ namespace Honeybee.UI
             }
 
             // SensibleHeatRecovery
-            var sen = hvac.GetType().GetProperty(nameof(dummy.SensibleHeatRecovery)).GetValue(hvac) as AnyOf<Autosize, double>;
+            var sen = hvac.GetType()?.GetProperty(nameof(dummy.SensibleHeatRecovery))?.GetValue(hvac) as AnyOf<Autosize, double>;
             if (sen != null)
             {
                 if (double.TryParse(sen.Obj.ToString(), out var senValue))
@@ -251,7 +251,7 @@ namespace Honeybee.UI
                 SensibleHRVisable = true;
 
                 // Economizer
-                Economizer = hvac.GetType().GetProperty(nameof(dummy.EconomizerType)).GetValue(hvac).ToString();
+                Economizer = hvac.GetType().GetProperty(nameof(dummy.EconomizerType))?.GetValue(hvac)?.ToString();
             
             }
             else if (this.IsDOASGroup(hvac))
