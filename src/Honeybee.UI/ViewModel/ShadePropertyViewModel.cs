@@ -213,8 +213,6 @@ namespace Honeybee.UI.ViewModel
 
                 if (!this.TransmittanceSchedule.IsVaries)
                 {
-                    if (this._refHBObj.Properties.Energy.TransmittanceSchedule == null)
-                        throw new ArgumentException("Missing required schedule of the lighting load!");
                     item.Properties.Energy.TransmittanceSchedule = this._refHBObj.Properties.Energy.TransmittanceSchedule;
                 }
 
