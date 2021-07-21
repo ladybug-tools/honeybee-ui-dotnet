@@ -11,7 +11,7 @@ namespace Honeybee.UI
     {
         private IEnumerable<string> VintageJsonPaths => EnergyLibrary.BuildingVintages;
         public IEnumerable<string> VintageNames => VintageJsonPaths.Select(_ => System.IO.Path.GetFileNameWithoutExtension(_).Replace("_registry", ""));
-        private string DefaultVintageName => VintageNames.First(_ => _.Contains("2013"));
+        private string DefaultVintageName => VintageNames.First(_ => _.Contains("2019"));
         private Dictionary<string, IEnumerable<string>> DefaultBuildingTypes => EnergyLibrary.LoadBuildingVintage(VintageJsonPaths.First(_=>_.Contains(DefaultVintageName)));
         private IEnumerable<string> DefaultProgramTypes => DefaultBuildingTypes["LargeOffice"];
 

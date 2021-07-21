@@ -11,7 +11,7 @@ namespace Honeybee.UI
     {
         private IEnumerable<string> VintageJsonPaths => EnergyLibrary.BuildingVintages;
         public IEnumerable<string> VintageNames => VintageJsonPaths.Select(_ => _.Split('\\').Last().Replace("_registry.json", ""));
-        private string DefaultVintageName => VintageNames.First(_ => _.Contains("2013"));
+        private string DefaultVintageName => VintageNames.First(_ => _.Contains("2019"));
 
         public IEnumerable<string> ConstructionSetTypes => new List<string>() { "SteelFramed", "WoodFramed", "Mass", "Metal Building" };
         private string DefaultConstructionSetType => ConstructionSetTypes.First();
@@ -58,6 +58,7 @@ namespace Honeybee.UI
         private OpsConstructionSetsViewModel()
         {
         }
+
 
     }
 

@@ -30,7 +30,7 @@ namespace Honeybee.UI
         private string _vintage;
         public string Vintage
         {
-            get => _vintage ?? nameof(HoneybeeSchema.Vintages.ASHRAE_2013);
+            get => _vintage ?? nameof(HoneybeeSchema.Vintages.ASHRAE_2019);
             set
             {
                 if (_vintage == value || string.IsNullOrEmpty(value))
