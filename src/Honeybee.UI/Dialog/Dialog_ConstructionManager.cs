@@ -9,6 +9,33 @@ using System.Windows.Input;
 
 namespace Honeybee.UI
 {
+    class ConstructionViewData
+    {
+        public string Name { get; }
+        public string CType { get; }
+        public string RValue { get; }
+        public string RValueIP { get; }
+        public string UFactor { get; }
+        public string UFactorIP { get; }
+        public HB.Energy.IConstruction Construction { get; }
+        public static ModelEnergyProperties LibSource { get; set; }
+        public ConstructionViewData(HB.Energy.IConstruction c)
+        {
+            this.Name = c.DisplayName ?? c.Identifier;
+            this.CType = c.GetType().Name.Replace("Abridged", "").Replace("Construction", "");
+            if (c is HB.Energy.IThermalConstruction tc)
+            {
+                tc.CalThermalValues(LibSource);
+                this.RValue = Math.Round(tc.RValue, 5).ToString();
+                this.UFactor = Math.Round(tc.UFactor, 5).ToString();
+
+                this.RValueIP = Math.Round(tc.RValue *   5.678263337, 5).ToString();
+                this.UFactorIP = Math.Round(tc.UFactor / 5.678263337, 5).ToString();
+            }
+            this.Construction = c;
+         
+        }
+    }
     public class Dialog_ConstructionManager : Dialog<List<HB.Energy.IConstruction>>
     {
         private bool _returnSelectedOnly;
@@ -21,7 +48,7 @@ namespace Honeybee.UI
             Resizable = true;
             Title = $"Construction Manager - {DialogHelper.PluginName}";
             WindowStyle = WindowStyle.Default;
-            MinimumSize = new Size(650, 300);
+            MinimumSize = new Size(800, 300);
             this.Icon = DialogHelper.HoneybeeIcon;
         }
 
@@ -56,10 +83,11 @@ namespace Honeybee.UI
 
             layout.AddSeparateRow("Constructions:", null, addNew, duplicate, edit, remove);
 
-            this._gd = GenGridView(constructions);
+            ConstructionViewData.LibSource = _modelEnergyProperties;
+            var data = constructions.Select(_ => new ConstructionViewData(_));
+            this._gd = GenGridView(data);
             this._gd.Height = 250;
             layout.AddRow(this._gd);
-
             var gd = this._gd;
 
 
@@ -78,22 +106,43 @@ namespace Honeybee.UI
 
         }
 
-        private GridView GenGridView(IEnumerable<object> items)
+        private GridView GenGridView(IEnumerable<ConstructionViewData> items)
         {
-            items = items ?? new List<HB.Energy.IConstruction>();
+            items = items ?? new List<ConstructionViewData>();
             var gd = new GridView() { DataStore = items };
             gd.Height = 250;
-            var nameTB = new TextBoxCell
-            {
-                Binding = Binding.Delegate<HB.Energy.IConstruction, string>(r => r.DisplayName ?? r.Identifier)
-            };
-            gd.Columns.Add(new GridColumn { DataCell = nameTB, HeaderText = "Name" });
 
-            var typeTB = new TextBoxCell
+            gd.Columns.Add(new GridColumn { 
+                DataCell = new TextBoxCell {Binding = Binding.Delegate<ConstructionViewData, string>(r =>r.Name ) }, 
+                HeaderText = "Name" 
+            });
+
+          
+            gd.Columns.Add(new GridColumn { 
+                DataCell = new TextBoxCell {Binding = Binding.Delegate<ConstructionViewData, string>(r => r.CType)}, 
+                HeaderText = "Type" 
+            });
+
+            gd.Columns.Add(new GridColumn { 
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<ConstructionViewData, string>(r => r.RValue) }, 
+                HeaderText = "RValue[m2·K/W]"
+            });
+
+            gd.Columns.Add(new GridColumn
             {
-                Binding = Binding.Delegate<HB.Energy.IConstruction, string>(r => r.GetType().Name.Replace("Abridged", ""))
-            };
-            gd.Columns.Add(new GridColumn { DataCell = typeTB, HeaderText = "Type" });
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<ConstructionViewData, string>(r => r.RValueIP) },
+                HeaderText = "RValue[h·ft2·F/Btu]"
+            });
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<ConstructionViewData, string>(r => r.UFactor) },
+                HeaderText = "UFactor[W/m2·K]"
+            });
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<ConstructionViewData, string>(r => r.UFactorIP) },
+                HeaderText = "UFactor[Btu/h·ft2·F]"
+            });
             return gd;
         }
 
@@ -105,8 +154,8 @@ namespace Honeybee.UI
             var dialog_rc = dialog.ShowModal(this);
             if (dialog_rc != null)
             {
-                var d = this._gd.DataStore.OfType<HB.Energy.IConstruction>().ToList();
-                d.Add(dialog_rc);
+                var d = this._gd.DataStore.OfType<ConstructionViewData>().ToList();
+                d.Add(new ConstructionViewData(dialog_rc));
                 this._gd.DataStore = d;
 
             }
@@ -119,8 +168,8 @@ namespace Honeybee.UI
             var dialog_rc = dialog.ShowModal(this);
             if (dialog_rc != null)
             {
-                var d = this._gd.DataStore.OfType<HB.Energy.IConstruction>().ToList();
-                d.Add(dialog_rc);
+                var d = this._gd.DataStore.OfType<ConstructionViewData>().ToList();
+                d.Add(new ConstructionViewData(dialog_rc));
                 this._gd.DataStore = d;
 
             }
@@ -133,8 +182,8 @@ namespace Honeybee.UI
             var dialog_rc = dialog.ShowModal(this);
             if (dialog_rc != null)
             {
-                var d = this._gd.DataStore.OfType<HB.Energy.IConstruction>().ToList();
-                d.Add(dialog_rc);
+                var d = this._gd.DataStore.OfType<ConstructionViewData>().ToList();
+                d.Add(new ConstructionViewData(dialog_rc));
                 this._gd.DataStore = d;
             }
         });
@@ -147,8 +196,8 @@ namespace Honeybee.UI
             var dialog_rc = dialog.ShowModal(this);
             if (dialog_rc != null)
             {
-                var d = this._gd.DataStore.OfType<HB.Energy.IConstruction>().ToList();
-                d.Add(dialog_rc);
+                var d = this._gd.DataStore.OfType<ConstructionViewData>().ToList();
+                d.Add(new ConstructionViewData(dialog_rc));
                 this._gd.DataStore = d;
             }
         });
@@ -182,7 +231,7 @@ namespace Honeybee.UI
         public RelayCommand DuplicateCommand => new RelayCommand(() =>
         {
             var gd = this._gd;
-            var selected = gd.SelectedItem as HB.Energy.IConstruction;
+            var selected = gd.SelectedItem as ConstructionViewData;
             if (selected == null)
             {
                 MessageBox.Show(this, "Nothing is selected to duplicate!");
@@ -190,7 +239,7 @@ namespace Honeybee.UI
             }
 
             var id = Guid.NewGuid().ToString();
-            var dup = selected.Duplicate() as HB.Energy.IConstruction;
+            var dup = selected.Construction.Duplicate() as HB.Energy.IConstruction;
 
             dup.Identifier = id;
             dup.DisplayName = string.IsNullOrEmpty(dup.DisplayName) ? $"New Duplicate {id.Substring(0, 5)}" : $"{dup.DisplayName}_dup";
@@ -198,8 +247,9 @@ namespace Honeybee.UI
             var dialog_rc = dialog.ShowModal(this);
             if (dialog_rc != null)
             {
-                var d = gd.DataStore.Select(_ => _ as HB.Energy.IConstruction).ToList();
-                d.Add(dialog_rc);
+                var d = gd.DataStore.OfType<ConstructionViewData>().ToList();
+                var newItem = new ConstructionViewData(dialog_rc);
+                d.Add(newItem);
                 gd.DataStore = d;
 
             }
@@ -208,7 +258,7 @@ namespace Honeybee.UI
         public RelayCommand EditCommand => new RelayCommand(() =>
         {
             var gd = this._gd;
-            var selected = gd.SelectedItem as HB.Energy.IConstruction;
+            var selected = (gd.SelectedItem as ConstructionViewData)?.Construction;
             if (selected == null)
             {
                 MessageBox.Show(this, "Nothing is selected to edit!");
@@ -237,10 +287,11 @@ namespace Honeybee.UI
             }
 
             if (dialog_rc == null) return;
+            var newItem = new ConstructionViewData(dialog_rc);
             var index = gd.SelectedRow;
-            var newDataStore = gd.DataStore.OfType<HB.Energy.IConstruction>().ToList();
+            var newDataStore = gd.DataStore.OfType<ConstructionViewData>().ToList();
             newDataStore.RemoveAt(index);
-            newDataStore.Insert(index, dialog_rc);
+            newDataStore.Insert(index, newItem);
             gd.DataStore = newDataStore;
 
 
@@ -249,14 +300,14 @@ namespace Honeybee.UI
         public RelayCommand RemoveCommand => new RelayCommand(() =>
         {
             var gd = this._gd;
-            var selected = gd.SelectedItem as HB.Energy.IConstruction;
+            var selected = gd.SelectedItem as ConstructionViewData;
             if (selected == null)
             {
                 MessageBox.Show(this, "Nothing is selected to edit!");
                 return;
             }
 
-            var res = MessageBox.Show(this, $"Are you sure you want to delete:\n {selected.DisplayName ?? selected.Identifier }", MessageBoxButtons.YesNo);
+            var res = MessageBox.Show(this, $"Are you sure you want to delete:\n {selected.Name}", MessageBoxButtons.YesNo);
             if (res == DialogResult.Yes)
             {
                 var newDataStore = gd.DataStore.Where(_ => _ != selected).ToList();
@@ -267,18 +318,18 @@ namespace Honeybee.UI
         public RelayCommand OkCommand => new RelayCommand(() =>
         {
             var gd = this._gd;
-            var allItems = gd.DataStore.Select(_ => _ as HB.Energy.IConstruction).ToList();
+            var allItems = gd.DataStore.OfType<ConstructionViewData>().Select(_ => _.Construction).ToList();
             var itemsToReturn = allItems;
 
             if (this._returnSelectedOnly)
             {
-                var d = gd.SelectedItem as HB.Energy.IConstruction;
+                var d = gd.SelectedItem as ConstructionViewData;
                 if (d == null)
                 {
                     MessageBox.Show(this, "Nothing is selected!");
                     return;
                 }
-                itemsToReturn = new List<HB.Energy.IConstruction>() { d };
+                itemsToReturn = new List<HB.Energy.IConstruction>() { d.Construction };
             }
 
             this._modelEnergyProperties.Constructions.Clear();
