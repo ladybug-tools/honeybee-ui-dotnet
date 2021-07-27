@@ -65,6 +65,20 @@ namespace Honeybee.UI
             ResetDataCollection();
         }
 
+        internal HB.Energy.IConstruction CheckObjName(HB.Energy.IConstruction obj)
+        {
+            var name = obj.DisplayName;
+            
+            if (_allData.Any(_=>_.Name == name))
+            {
+                name = $"{name} {Guid.NewGuid().ToString().Substring(0, 5)}";
+                MessageBox.Show(_control, $"Name [{obj.DisplayName}] is conflicting with an existing item, and now it is changed to [{name}].");
+            }
+            obj.Identifier = name;
+            obj.DisplayName = name;
+            return obj;
+        }
+
         public ICommand AddOpaqueConstructionCommand => new RelayCommand(() => {
             var id = Guid.NewGuid().ToString();
             var name = $"New Opaque Construction {id.Substring(0, 5)}";
@@ -74,7 +88,8 @@ namespace Honeybee.UI
             var dialog_rc = dialog.ShowModal(_control);
             if (dialog_rc != null)
             {
-                _allData.Add(new ConstructionViewData(dialog_rc));
+                var newItem = CheckObjName(dialog_rc);
+                _allData.Add(new ConstructionViewData(newItem));
                 ResetDataCollection();
             }
         });
@@ -90,7 +105,8 @@ namespace Honeybee.UI
             var dialog_rc = dialog.ShowModal(_control);
             if (dialog_rc != null)
             {
-                _allData.Add(new ConstructionViewData(dialog_rc));
+                var newItem = CheckObjName(dialog_rc);
+                _allData.Add(new ConstructionViewData(newItem));
                 ResetDataCollection();
             }
         });
@@ -103,7 +119,8 @@ namespace Honeybee.UI
             var dialog_rc = dialog.ShowModal(_control);
             if (dialog_rc != null)
             {
-                _allData.Add(new ConstructionViewData(dialog_rc));
+                var newItem = CheckObjName(dialog_rc);
+                _allData.Add(new ConstructionViewData(newItem));
                 ResetDataCollection();
             }
         });
@@ -117,7 +134,8 @@ namespace Honeybee.UI
             var dialog_rc = dialog.ShowModal(_control);
             if (dialog_rc != null)
             {
-                _allData.Add(new ConstructionViewData(dialog_rc));
+                var newItem = CheckObjName(dialog_rc);
+                _allData.Add(new ConstructionViewData(newItem));
                 ResetDataCollection();
             }
         });
@@ -176,7 +194,8 @@ namespace Honeybee.UI
             var dialog_rc = dialog.ShowModal(_control);
             if (dialog_rc != null)
             {
-                _allData.Add(new ConstructionViewData(dialog_rc));
+                var newItem = CheckObjName(dialog_rc);
+                _allData.Add(new ConstructionViewData(newItem));
                 ResetDataCollection();
             }
         });
@@ -219,7 +238,7 @@ namespace Honeybee.UI
             }
 
             if (dialog_rc == null) return;
-            var newItem = new ConstructionViewData(dialog_rc);
+            var newItem = new ConstructionViewData(CheckObjName(dialog_rc));
             var index = _allData.IndexOf(selected);
             _allData.RemoveAt(index);
             _allData.Insert(index, newItem);
