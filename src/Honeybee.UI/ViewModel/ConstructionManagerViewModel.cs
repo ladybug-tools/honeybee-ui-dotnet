@@ -5,12 +5,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
 using HoneybeeSchema;
+using System.Text.RegularExpressions;
 
 namespace Honeybee.UI
 {
     public class ConstructionManagerViewModel : ViewModelBase
     {
-     
+        private string _filterKey;
+        public string FilterKey
+        {
+            get => _filterKey;
+            set {
+                this.Set(() => _filterKey = value, nameof(_filterKey));
+                ApplyFilter();
+            }
+        }
+
         private DataStoreCollection<ConstructionViewData> _gridViewDataCollection = new DataStoreCollection<ConstructionViewData>();
         internal DataStoreCollection<ConstructionViewData> GridViewDataCollection
         {
@@ -18,6 +28,7 @@ namespace Honeybee.UI
             set => this.Set(() => _gridViewDataCollection = value, nameof(_gridViewDataCollection));
         }
 
+        private List<ConstructionViewData> _allData { get; set; }
         internal ConstructionViewData SelectedData { get; set; }
 
         private HB.ModelEnergyProperties _modelEnergyProperties { get; set; }
@@ -29,9 +40,8 @@ namespace Honeybee.UI
             _control = control;
             _modelEnergyProperties = libSource;
 
-            var constructions = libSource.ConstructionList;
-            var data = constructions.Select(_ => new ConstructionViewData(_));
-            GridViewDataCollection = new DataStoreCollection<ConstructionViewData>(data);
+            this._allData = libSource.ConstructionList.Select(_ => new ConstructionViewData(_)).ToList();
+            GridViewDataCollection = new DataStoreCollection<ConstructionViewData>(this._allData);
 
         }
 
@@ -39,6 +49,20 @@ namespace Honeybee.UI
         {
             this._modelEnergyProperties.Constructions.Clear();
             this._modelEnergyProperties.AddConstructions(newItems);
+        }
+
+        private void ResetDataCollection()
+        {
+            GridViewDataCollection.Clear();
+            GridViewDataCollection.AddRange(_allData);
+        }
+
+        internal void SortList(Func<ConstructionViewData, string> sortFunc, bool isNumber, bool descend = false)
+        {
+            var c = new StringComparer(isNumber);
+            var newOrder = descend ? _allData.OrderByDescending(sortFunc, c) : _allData.OrderBy(sortFunc, c);
+            _allData = newOrder.ToList();
+            ResetDataCollection();
         }
 
         public ICommand AddOpaqueConstructionCommand => new RelayCommand(() => {
@@ -50,7 +74,8 @@ namespace Honeybee.UI
             var dialog_rc = dialog.ShowModal(_control);
             if (dialog_rc != null)
             {
-                GridViewDataCollection.Add(new ConstructionViewData(dialog_rc));
+                _allData.Add(new ConstructionViewData(dialog_rc));
+                ResetDataCollection();
             }
         });
 
@@ -65,7 +90,8 @@ namespace Honeybee.UI
             var dialog_rc = dialog.ShowModal(_control);
             if (dialog_rc != null)
             {
-                GridViewDataCollection.Add(new ConstructionViewData(dialog_rc));
+                _allData.Add(new ConstructionViewData(dialog_rc));
+                ResetDataCollection();
             }
         });
         public ICommand AddShadeConstructionCommand => new RelayCommand(() => {
@@ -77,7 +103,8 @@ namespace Honeybee.UI
             var dialog_rc = dialog.ShowModal(_control);
             if (dialog_rc != null)
             {
-                GridViewDataCollection.Add(new ConstructionViewData(dialog_rc));
+                _allData.Add(new ConstructionViewData(dialog_rc));
+                ResetDataCollection();
             }
         });
 
@@ -90,7 +117,8 @@ namespace Honeybee.UI
             var dialog_rc = dialog.ShowModal(_control);
             if (dialog_rc != null)
             {
-                GridViewDataCollection.Add(new ConstructionViewData(dialog_rc));
+                _allData.Add(new ConstructionViewData(dialog_rc));
+                ResetDataCollection();
             }
         });
 
@@ -139,8 +167,7 @@ namespace Honeybee.UI
                 MessageBox.Show(_control, "Nothing is selected to duplicate!");
                 return;
             }
-
-            
+           
             var dup = selected.Construction.Duplicate() as HB.Energy.IConstruction;
             var name = $"{dup.Identifier}_dup";
             dup.Identifier = name;
@@ -149,7 +176,8 @@ namespace Honeybee.UI
             var dialog_rc = dialog.ShowModal(_control);
             if (dialog_rc != null)
             {
-                GridViewDataCollection.Add(new ConstructionViewData(dialog_rc));
+                _allData.Add(new ConstructionViewData(dialog_rc));
+                ResetDataCollection();
             }
         });
 
@@ -159,6 +187,12 @@ namespace Honeybee.UI
             if (selected == null)
             {
                 MessageBox.Show(_control, "Nothing is selected to edit!");
+                return;
+            }
+
+            if (selected.IsSystemLibrary)
+            {
+                MessageBox.Show(_control, "You cannot edit an item of system library!");
                 return;
             }
 
@@ -186,10 +220,11 @@ namespace Honeybee.UI
 
             if (dialog_rc == null) return;
             var newItem = new ConstructionViewData(dialog_rc);
-            var index = GridViewDataCollection.IndexOf(selected);
-            GridViewDataCollection.RemoveAt(index);
-            GridViewDataCollection.Insert(index, newItem);
+            var index = _allData.IndexOf(selected);
+            _allData.RemoveAt(index);
+            _allData.Insert(index, newItem);
 
+            ResetDataCollection();
 
         });
 
@@ -202,17 +237,48 @@ namespace Honeybee.UI
                 return;
             }
 
+            if (selected.IsSystemLibrary)
+            {
+                MessageBox.Show(_control, "You cannot remove an item of system library!");
+                return;
+            }
+
             var res = MessageBox.Show(_control, $"Are you sure you want to delete:\n {selected.Name}", MessageBoxButtons.YesNo);
             if (res == DialogResult.Yes)
             {
-                GridViewDataCollection.Remove(selected);
+                _allData.Remove(selected);
+                ResetDataCollection();
             }
         });
+
+        public void ApplyFilter(bool forceRefresh = true)
+        {
+            var filter = this.FilterKey;
+            var allData = this._allData;
+
+            // list is not filtered
+            if (string.IsNullOrWhiteSpace(filter))
+            {
+                if (!forceRefresh) return;
+                // reset
+                ResetDataCollection();
+                return;
+            }
+
+            // do nothing if user only type in one key
+            if (filter.Length <= 1) return;
+
+            // filter
+            var regexPatten = ".*" + filter.Replace(" ", "(.*)") + ".*";
+            var filtered = allData.Where(_ => Regex.IsMatch(_.SearchableText, regexPatten, RegexOptions.IgnoreCase));
+            GridViewDataCollection.Clear();
+            GridViewDataCollection.AddRange(filtered);
+        }
     }
 
 
 
-    internal class ConstructionViewData
+    internal class ConstructionViewData: IEquatable<ConstructionViewData>
     {
         public string Name { get; }
         public string CType { get; }
@@ -220,8 +286,12 @@ namespace Honeybee.UI
         public string RValueIP { get; }
         public string UFactor { get; }
         public string UFactorIP { get; }
+        public bool IsSystemLibrary { get; }
         public HB.Energy.IConstruction Construction { get; }
+        public string SearchableText { get; }
+
         public static HB.ModelEnergyProperties LibSource { get; set; }
+        private static IEnumerable<string> SystemLibraryIds = HB.ModelEnergyProperties.Default.ConstructionList.Select(_ => _.Identifier);
         public ConstructionViewData(HB.Energy.IConstruction c)
         {
             this.Name = c.DisplayName ?? c.Identifier;
@@ -237,6 +307,15 @@ namespace Honeybee.UI
             }
             this.Construction = c;
 
+            this.SearchableText = $"{this.Name}_{this.CType}";
+
+            //check if system library
+            this.IsSystemLibrary = SystemLibraryIds.Contains(c.Identifier);
+        }
+
+        public bool Equals(ConstructionViewData other)
+        {
+            return other?.Name == this?.Name;
         }
     }
 
