@@ -13,7 +13,7 @@ namespace Honeybee.UI
 
             Padding = new Padding(10);
             Resizable = true;
-            Title = $"Material - {DialogHelper.PluginName}";
+            Title = $"Construction - {DialogHelper.PluginName}";
             WindowStyle = WindowStyle.Default;
             Width = 450;
             this.Icon = DialogHelper.HoneybeeIcon;
