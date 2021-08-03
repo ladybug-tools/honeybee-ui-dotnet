@@ -27,7 +27,6 @@ namespace Honeybee.UI
         public Dialog_ConstructionManager(ref HB.ModelEnergyProperties libSource, bool returnSelectedOnly = false) : this()
         {
             this._returnSelectedOnly = returnSelectedOnly;
-            //this._modelEnergyProperties = libSource;
             this._vm = new ConstructionManagerViewModel(libSource, this);
             Content = Init();
         }
