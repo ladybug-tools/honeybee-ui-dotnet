@@ -12,50 +12,51 @@ namespace Honeybee.UI
     {
         private bool _returnSelectedOnly;
         private GridView _gd { get; set; }
-        private ModelEnergyProperties _modelEnergyProperties { get; set; }
-
+        //private ModelEnergyProperties _modelEnergyProperties { get; set; }
+        private MaterialManagerViewModel _vm { get; set; }
         private Dialog_MaterialManager()
         {
             Padding = new Padding(5);
             Resizable = true;
             Title = $"Materials Manager - {DialogHelper.PluginName}";
             WindowStyle = WindowStyle.Default;
-            MinimumSize = new Size(650, 300);
+            MinimumSize = new Size(800, 300);
             this.Icon = DialogHelper.HoneybeeIcon;
         }
 
         public Dialog_MaterialManager(ref ModelEnergyProperties libSource, bool returnSelectedOnly = false) : this()
         {
             this._returnSelectedOnly = returnSelectedOnly;
-            this._modelEnergyProperties = libSource;
-            var materials = libSource.MaterialList;
-
-            Content = Init(materials);
+            this._vm = new MaterialManagerViewModel(libSource, this);
+            Content = Init();
         }
 
-        public DynamicLayout Init(IEnumerable<HB.Energy.IMaterial> materials)
+        public DynamicLayout Init()
         {
-            var materialsInModel = materials;
-
             var layout = new DynamicLayout();
             layout.DefaultPadding = new Padding(10);
             layout.DefaultSpacing = new Size(5, 5);
 
             var addNew = new Button { Text = "Add" };
-            addNew.Command = AddCommand;
+            addNew.Command = _vm.AddCommand;
 
             var duplicate = new Button { Text = "Duplicate" };
-            duplicate.Command = DuplicateCommand;
+            duplicate.Command = _vm.DuplicateCommand;
 
             var edit = new Button { Text = "Edit" };
-            edit.Command = EditCommand;
+            edit.Command = _vm.EditCommand;
 
             var remove = new Button { Text = "Remove" };
-            remove.Command = RemoveCommand;
+            remove.Command = _vm.RemoveCommand;
 
             layout.AddSeparateRow("Materials:", null, addNew, duplicate, edit, remove);
 
-            var gd = GenGridView(materialsInModel);
+            // search bar
+            var filter = new TextBox() { PlaceholderText = "Filter" };
+            filter.TextBinding.Bind(_vm, _ => _.FilterKey);
+            layout.AddRow(filter);
+
+            var gd = GenGridView();
             gd.Height = 250;
             layout.AddRow(gd);
             this._gd = gd;
@@ -69,7 +70,7 @@ namespace Honeybee.UI
             layout.AddSeparateRow(null, OKButton, AbortButton, null);
 
 
-            gd.CellDoubleClick += (s, e) => EditCommand.Execute(null);
+            gd.CellDoubleClick += (s, e) => _vm.EditCommand.Execute(null);
 
             return layout;
 
@@ -77,134 +78,134 @@ namespace Honeybee.UI
 
 
 
-        private GridView GenGridView(IEnumerable<object> items)
+        private GridView GenGridView()
         {
-            items = items ?? new List<HB.Energy.IMaterial>();
-            var gd = new GridView() { DataStore = items };
-            gd.Height = 250;
-            var nameTB = new TextBoxCell
-            {
-                Binding = Binding.Delegate<HB.Energy.IMaterial, string>(r => r.DisplayName ?? r.Identifier)
+            var gd = new GridView();
+            gd.Bind(_ => _.DataStore, _vm, _ => _.GridViewDataCollection);
+            gd.SelectedItemsChanged += (s, e) => {
+                _vm.SelectedData = gd.SelectedItem as MaterialViewData;
             };
-            gd.Columns.Add(new GridColumn { DataCell = nameTB, HeaderText = "Name" });
 
-            var typeTB = new TextBoxCell
+            gd.Height = 250;
+            gd.Columns.Add(new GridColumn { 
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<MaterialViewData, string>(r => r.Name) }, 
+                HeaderText = "Name",
+                Sortable = true,
+                Width = 150
+            });
+
+            gd.Columns.Add(new GridColumn
             {
-                Binding = Binding.Delegate<HB.Energy.IMaterial, string>(r => r.GetType().Name)
-            };
-            gd.Columns.Add(new GridColumn { DataCell = typeTB, HeaderText = "Type" });
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<MaterialViewData, string>(r => r.CType) },
+                HeaderText = "Type",
+                Sortable = true
+            });
+
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<MaterialViewData, string>(r => r.RValue) },
+                HeaderText = "RValue[m2·K/W]",
+                Sortable = true
+            });
+
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<MaterialViewData, string>(r => r.RValueIP) },
+                HeaderText = "RValue[h·ft2·F/Btu]",
+                Sortable = true
+            });
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<MaterialViewData, string>(r => r.UFactor) },
+                HeaderText = "UFactor[W/m2·K]",
+                Sortable = true
+            });
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<MaterialViewData, string>(r => r.UFactorIP) },
+                HeaderText = "UFactor[Btu/h·ft2·F]",
+                Sortable = true
+            });
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new CheckBoxCell { Binding = Binding.Delegate<MaterialViewData, bool?>(r => r.IsSystemLibrary) },
+                HeaderText = "System lib",
+                Sortable = true
+            });
+
+            // sorting by header
+            gd.ColumnHeaderClick += OnColumnHeaderClick;
             return gd;
         }
 
-
-
-        public RelayCommand AddCommand => new RelayCommand(() =>
+        private string _currentSortByColumn;
+        private void OnColumnHeaderClick(object sender, GridColumnEventArgs e)
         {
-            var gd = this._gd;
-            var id = Guid.NewGuid().ToString();
-            // R10
-            var newObj = new EnergyMaterialNoMass(id, 0.35, $"New No Mass Material {id.Substring(0, 5)}");
-
-            var dialog = new Honeybee.UI.Dialog_Material(newObj);
-            var dialog_rc = dialog.ShowModal(this);
-            if (dialog_rc != null)
+            var cell = e.Column.DataCell;
+            var colName = e.Column.HeaderText;
+            System.Func<MaterialViewData, string> sortFunc = null;
+            var isNumber = false;
+            switch (colName)
             {
-                var d = gd.DataStore.Select(_ => _ as HB.Energy.IMaterial).ToList();
-                d.Add(dialog_rc);
-                gd.DataStore = d;
 
-            }
-        });
-
-        public RelayCommand DuplicateCommand => new RelayCommand(() =>
-        {
-            var gd = this._gd;
-            if (gd.SelectedItem == null)
-            {
-                MessageBox.Show(this, "Nothing is selected to duplicate!");
-                return;
-            }
-
-            var id = Guid.NewGuid().ToString();
-
-            var dup = (gd.SelectedItem as HB.Energy.IMaterial).Duplicate() as HB.Energy.IMaterial;
-
-            dup.Identifier = id;
-            dup.DisplayName = string.IsNullOrEmpty(dup.DisplayName) ? $"New Duplicate {id.Substring(0, 5)}" : $"{dup.DisplayName}_dup";
-            var dialog = new Honeybee.UI.Dialog_Material(dup);
-            var dialog_rc = dialog.ShowModal(this);
-            if (dialog_rc != null)
-            {
-                var d = gd.DataStore.Select(_ => _ as HB.Energy.IMaterial).ToList();
-                d.Add(dialog_rc);
-                gd.DataStore = d;
-
-            }
-        });
-
-        public RelayCommand EditCommand => new RelayCommand(() =>
-        {
-            var gd = this._gd;
-            var selected = gd.SelectedItem;
-            if (selected == null)
-            {
-                MessageBox.Show(this, "Nothing is selected to edit!");
-                return;
+                case "Name":
+                    sortFunc = (MaterialViewData _) => _.Name;
+                    break;
+                case "Type":
+                    sortFunc = (MaterialViewData _) => _.CType;
+                    break;
+                case "RValue[m2·K/W]":
+                    sortFunc = (MaterialViewData _) => _.RValue;
+                    isNumber = true;
+                    break;
+                case "RValue[h·ft2·F/Btu]":
+                    sortFunc = (MaterialViewData _) => _.RValueIP;
+                    isNumber = true;
+                    break;
+                case "UFactor[W/m2·K]":
+                    sortFunc = (MaterialViewData _) => _.UFactor;
+                    isNumber = true;
+                    break;
+                case "UFactor[Btu/h·ft2·F]":
+                    sortFunc = (MaterialViewData _) => _.UFactorIP;
+                    isNumber = true;
+                    break;
+                case "System lib":
+                    sortFunc = (MaterialViewData _) => _.IsSystemLibrary.ToString();
+                    break;
+                default:
+                    break;
             }
 
-            var dup = (gd.SelectedItem as HB.Energy.IMaterial).Duplicate() as HB.Energy.IMaterial;
+            if (sortFunc == null) return;
 
-            var dialog = new Honeybee.UI.Dialog_Material(dup);
-            var dialog_rc = dialog.ShowModal(this);
-            if (dialog_rc != null)
-            {
-                var index = gd.SelectedRow;
-                var newDataStore = gd.DataStore.Select(_ => _ as HB.Energy.IMaterial).ToList();
-                newDataStore.RemoveAt(index);
-                newDataStore.Insert(index, dialog_rc);
-                gd.DataStore = newDataStore;
+            var descend = colName == _currentSortByColumn;
+            _vm.SortList(sortFunc, isNumber, descend);
 
-            }
+            _currentSortByColumn = colName == _currentSortByColumn ? string.Empty : colName;
 
-        });
+        }
 
-        public RelayCommand RemoveCommand => new RelayCommand(() =>
-        {
-            var gd = this._gd;
-            var selected = gd.SelectedItem as HB.Energy.IMaterial;
-            if (selected == null)
-            {
-                MessageBox.Show(this, "Nothing is selected to edit!");
-                return;
-            }
-
-            var res = MessageBox.Show(this, $"Are you sure you want to delete:\n {selected.DisplayName ?? selected.Identifier }", MessageBoxButtons.YesNo);
-            if (res == DialogResult.Yes)
-            {
-                var newDataStore = gd.DataStore.Where(_ => _ != selected).ToList();
-                gd.DataStore = newDataStore;
-            }
-        });
 
         public RelayCommand OkCommand => new RelayCommand(() =>
         {
-            var gd = this._gd;
-            var allItems = gd.DataStore.OfType<HB.Energy.IMaterial>().ToList();
+            
+            var allItems = _vm.GridViewDataCollection.Select(_ => _.Material).ToList();
+            _vm.UpdateLibSource(allItems);
+
             var itemsToReturn = allItems;
 
             if (this._returnSelectedOnly)
             {
-                var d = gd.SelectedItem as HB.Energy.IMaterial;
+                var d = _vm.SelectedData;
                 if (d == null)
                 {
                     MessageBox.Show(this, "Nothing is selected!");
                     return;
                 }
-                itemsToReturn = new List<HB.Energy.IMaterial>() { d };
+                itemsToReturn = new List<HB.Energy.IMaterial>() { d.Material };
             }
 
-            this._modelEnergyProperties.Materials.Clear();
-            this._modelEnergyProperties.AddMaterials(allItems);
             Close(itemsToReturn);
         });
 
