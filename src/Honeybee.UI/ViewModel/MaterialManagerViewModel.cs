@@ -171,12 +171,12 @@ namespace Honeybee.UI
             {
                 { "Opaque (No Mass)", AddNoMassMaterialCommand},
                 { "Opaque", AddOpaqueMaterialCommand},
-                { "Separator", null},
+                { "Separator_1", null},
                 { "Simple Window",AddSimpleWindowMaterialCommand },
                 { "Window Glass", AddGlassMaterialCommand},
                 { "Window Gap", AddWindowGapMaterialCommand},
                 { "Window Shade", AddWindowShadeMaterialCommand},
-                { "Separator", null},
+                { "Separator_2", null},
                 { "Window Blind", AddWindowBlindMaterialCommand},
                 { "Custom Gap", AddWindowGapCustomMaterialCommand},
                 { "Gas Mixture (WIP)", AddWindowGasMixtureMaterialShadeCommand},
@@ -185,7 +185,7 @@ namespace Honeybee.UI
             var contextMenu = new ContextMenu();
             foreach (var item in menuDic)
             {
-                if (item.Key == "Separator")
+                if (item.Key.StartsWith("Separator"))
                 {
                     contextMenu.Items.Add(new Eto.Forms.SeparatorMenuItem());
                 }
@@ -230,7 +230,7 @@ namespace Honeybee.UI
                 return;
             }
 
-            if (selected.IsSystemLibrary)
+            if (selected.Locked)
             {
                 MessageBox.Show(_control, "You cannot edit an item of system library! Try to duplicate it first!");
                 return;
@@ -260,7 +260,7 @@ namespace Honeybee.UI
                 return;
             }
 
-            if (selected.IsSystemLibrary)
+            if (selected.Locked)
             {
                 MessageBox.Show(_control, "You cannot remove an item of system library!");
                 return;
@@ -297,6 +297,13 @@ namespace Honeybee.UI
             GridViewDataCollection.Clear();
             GridViewDataCollection.AddRange(filtered);
         }
+
+        public void ChangeUnit(bool IPUnit)
+        {
+            this._allData = this._allData.Select(_ => new MaterialViewData( _.Material, IPUnit)).ToList();
+            GridViewDataCollection.Clear();
+            GridViewDataCollection.AddRange(this._allData);
+        }
     }
 
 
@@ -306,43 +313,58 @@ namespace Honeybee.UI
         public string Name { get; }
         public string CType { get; }
         public string RValue { get; }
-        public string RValueIP { get; }
+        public string UValue { get; }
         public string UFactor { get; }
-        public string UFactorIP { get; }
-        public bool IsSystemLibrary { get; }
+        public string Source { get; }
+        public bool Locked { get; }
         public HB.Energy.IMaterial Material { get; }
         public string SearchableText { get; }
 
         //public static HB.ModelEnergyProperties LibSource { get; set; }
-        private static IEnumerable<string> SystemLibraryIds = 
-            HB.ModelEnergyProperties.Default.MaterialList.Select(_ => _.Identifier)
-            .Concat(HB.Helper.EnergyLibrary.StandardsOpaqueMaterials.Select(_ => _.Value.Identifier))
-            .Concat(HB.Helper.EnergyLibrary.StandardsWindowMaterials.Select(_ => _.Value.Identifier));
+        private static IEnumerable<string> NRELLibraryIds =
+            HB.Helper.EnergyLibrary.StandardsOpaqueMaterials.Keys
+            .Concat(HB.Helper.EnergyLibrary.StandardsWindowMaterials.Keys);
 
-        public MaterialViewData(HB.Energy.IMaterial c)
+        private static IEnumerable<string> LBTLibraryIds =
+         HB.ModelEnergyProperties.Default.MaterialList.Select(_ => _.Identifier);
+
+        private static IEnumerable<string> LockedLibraryIds = LBTLibraryIds.Concat(NRELLibraryIds);
+
+        public MaterialViewData(HB.Energy.IMaterial c, bool ShowIPUnit = false)
         {
             this.Name = c.DisplayName ?? c.Identifier;
             this.CType = c.GetType().Name.Replace("EnergyWindowMaterial", "");
+            if (c is HB.EnergyMaterial opc)
+                this.CType = "Opaque";
+            else if (c is HB.EnergyMaterialNoMass noMass)
+                this.CType = "Opaque (No Mass)";
+
             if (c is HB.Energy.IMaterial tc)
             {
-                this.RValue = Math.Round(tc.RValue, 5).ToString();
-                this.UFactor = Math.Round(tc.UValue, 5).ToString();
-
-                this.RValueIP = Math.Round(tc.RValue * 5.678263337, 5).ToString();
-                this.UFactorIP = Math.Round(tc.UValue / 5.678263337, 5).ToString();
+                this.RValue = ShowIPUnit? Math.Round(tc.RValue * 5.678263337, 5).ToString(): Math.Round(tc.RValue, 5).ToString();
+                this.UValue = ShowIPUnit ? Math.Round(tc.UValue * 5.678263337, 5).ToString() : Math.Round(tc.UValue, 5).ToString();
+            }
+            
+            if (c is HB.EnergyWindowMaterialSimpleGlazSys win)
+            {
+                this.UFactor = ShowIPUnit ? Math.Round(win.UFactor / 5.678263337, 5).ToString() : Math.Round(win.UFactor, 5).ToString();
             }
             this.Material = c;
 
             this.SearchableText = $"{this.Name}_{this.CType}";
 
             //check if system library
-            this.IsSystemLibrary = SystemLibraryIds.Contains(c.Identifier);
+            this.Locked = LockedLibraryIds.Contains(c.Identifier);
+
+            if (LBTLibraryIds.Contains(this.Name)) this.Source = "LBT";
+            else if (NRELLibraryIds.Contains(this.Name)) this.Source = "DoE NREL";
         }
 
         public bool Equals(MaterialViewData other)
         {
             return other?.Name == this?.Name;
         }
+
     }
 
 }
