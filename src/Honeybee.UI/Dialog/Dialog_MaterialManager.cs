@@ -20,7 +20,7 @@ namespace Honeybee.UI
             Resizable = true;
             Title = $"Materials Manager - {DialogHelper.PluginName}";
             WindowStyle = WindowStyle.Default;
-            MinimumSize = new Size(800, 300);
+            MinimumSize = new Size(680, 300);
             this.Icon = DialogHelper.HoneybeeIcon;
         }
 
@@ -61,14 +61,22 @@ namespace Honeybee.UI
             layout.AddRow(gd);
             this._gd = gd;
 
+            // unit switchs
+            var unit = new RadioButtonList();
+            unit.Items.Add("Metric");
+            unit.Items.Add("Imperial");
+            unit.SelectedIndex = 0;
+            unit.Spacing = new Size(5, 0);
+            unit.SelectedIndexChanged += (s, e) => _vm.ChangeUnit(unit.SelectedIndex == 1);
+
             var OKButton = new Button { Text = "OK" };
             OKButton.Click += (sender, e) => OkCommand.Execute(null);
 
 
             AbortButton = new Button { Text = "Cancel" };
             AbortButton.Click += (sender, e) => Close();
-            layout.AddSeparateRow(null, OKButton, AbortButton, null);
-
+            layout.AddSeparateRow(null, OKButton, AbortButton, null, unit);
+            layout.AddRow(null);
 
             gd.CellDoubleClick += (s, e) => _vm.EditCommand.Execute(null);
 
@@ -98,38 +106,41 @@ namespace Honeybee.UI
             {
                 DataCell = new TextBoxCell { Binding = Binding.Delegate<MaterialViewData, string>(r => r.CType) },
                 HeaderText = "Type",
-                Sortable = true
+                Sortable = true,
+                Width = 100
             });
 
             gd.Columns.Add(new GridColumn
             {
                 DataCell = new TextBoxCell { Binding = Binding.Delegate<MaterialViewData, string>(r => r.RValue) },
-                HeaderText = "RValue[m2·K/W]",
+                HeaderText = "RValue",
                 Sortable = true
             });
 
             gd.Columns.Add(new GridColumn
             {
-                DataCell = new TextBoxCell { Binding = Binding.Delegate<MaterialViewData, string>(r => r.RValueIP) },
-                HeaderText = "RValue[h·ft2·F/Btu]",
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<MaterialViewData, string>(r => r.UValue) },
+                HeaderText = "UValue",
                 Sortable = true
             });
             gd.Columns.Add(new GridColumn
             {
                 DataCell = new TextBoxCell { Binding = Binding.Delegate<MaterialViewData, string>(r => r.UFactor) },
-                HeaderText = "UFactor[W/m2·K]",
+                HeaderText = "UFactor",
                 Sortable = true
             });
+
             gd.Columns.Add(new GridColumn
             {
-                DataCell = new TextBoxCell { Binding = Binding.Delegate<MaterialViewData, string>(r => r.UFactorIP) },
-                HeaderText = "UFactor[Btu/h·ft2·F]",
+                DataCell = new CheckBoxCell { Binding = Binding.Delegate<MaterialViewData, bool?>(r => r.Locked) },
+                HeaderText = "Locked",
                 Sortable = true
             });
+
             gd.Columns.Add(new GridColumn
             {
-                DataCell = new CheckBoxCell { Binding = Binding.Delegate<MaterialViewData, bool?>(r => r.IsSystemLibrary) },
-                HeaderText = "System lib",
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<MaterialViewData, string>(r => r.Source) },
+                HeaderText = "Source",
                 Sortable = true
             });
 
@@ -154,24 +165,23 @@ namespace Honeybee.UI
                 case "Type":
                     sortFunc = (MaterialViewData _) => _.CType;
                     break;
-                case "RValue[m2·K/W]":
+                case "RValue":
                     sortFunc = (MaterialViewData _) => _.RValue;
                     isNumber = true;
                     break;
-                case "RValue[h·ft2·F/Btu]":
-                    sortFunc = (MaterialViewData _) => _.RValueIP;
+                case "UValue":
+                    sortFunc = (MaterialViewData _) => _.UValue;
                     isNumber = true;
                     break;
-                case "UFactor[W/m2·K]":
+                case "UFactor":
                     sortFunc = (MaterialViewData _) => _.UFactor;
                     isNumber = true;
                     break;
-                case "UFactor[Btu/h·ft2·F]":
-                    sortFunc = (MaterialViewData _) => _.UFactorIP;
-                    isNumber = true;
+                case "Locked":
+                    sortFunc = (MaterialViewData _) => _.Locked.ToString();
                     break;
-                case "System lib":
-                    sortFunc = (MaterialViewData _) => _.IsSystemLibrary.ToString();
+                case "Source":
+                    sortFunc = (MaterialViewData _) => _.Source.ToString();
                     break;
                 default:
                     break;
