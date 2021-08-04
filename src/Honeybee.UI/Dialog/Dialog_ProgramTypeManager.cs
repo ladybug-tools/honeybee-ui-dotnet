@@ -12,14 +12,14 @@ namespace Honeybee.UI
     {
         private GridView _gd;
         private bool _returnSelectedOnly;
-        private ModelEnergyProperties _modelEnergyProperties { get; set; }
-
+        //private ModelEnergyProperties _modelEnergyProperties { get; set; }
+        private ProgramTypeManagerViewModel _vm { get; set; }
         private Dialog_ProgramTypeManager()
         {
             Padding = new Padding(5);
             Title = $"Program Type Manager - {DialogHelper.PluginName}";
             WindowStyle = WindowStyle.Default;
-            Width = 900;
+            Width = 800;
 
             this.Icon = DialogHelper.HoneybeeIcon;
         }
@@ -29,225 +29,199 @@ namespace Honeybee.UI
         public Dialog_ProgramTypeManager(ref ModelEnergyProperties libSource, bool returnSelectedOnly = false):this()
         {
             this._returnSelectedOnly = returnSelectedOnly;
-            this._modelEnergyProperties = libSource;
-            var pTypes = libSource.ProgramTypes?.OfType<ProgramTypeAbridged>();
-
-            Content = Init(pTypes);
+            this._vm = new ProgramTypeManagerViewModel(libSource, this);
+            Content = Init();
         }
 
-        private DynamicLayout Init(IEnumerable<HB.ProgramTypeAbridged> pTypes)
+        private DynamicLayout Init()
         {
             var layout = new DynamicLayout();
             layout.DefaultSpacing = new Size(5, 5);
-            layout.DefaultPadding = new Padding(10, 5);
+            layout.DefaultPadding = new Padding(5);
 
             var addNew = new Button { Text = "Add" };
-            addNew.Command = AddCommand;
+            addNew.Command = _vm.AddCommand;
 
             var duplicate = new Button { Text = "Duplicate" };
-            duplicate.Command = DuplicateCommand;
+            duplicate.Command = _vm.DuplicateCommand;
 
             var edit = new Button { Text = "Edit" };
-            edit.Command = EditCommand;
+            edit.Command = _vm.EditCommand;
 
             var remove = new Button { Text = "Remove" };
-            remove.Command = RemoveCommand;
+            remove.Command = _vm.RemoveCommand;
 
             layout.AddSeparateRow("Program Types:", null, addNew, duplicate, edit, remove);
-            var gd = GenProgramType_GV(pTypes);
+
+            // search bar
+            var filter = new TextBox() { PlaceholderText = "Filter" };
+            filter.TextBinding.Bind(_vm, _ => _.FilterKey);
+            layout.AddRow(filter);
+
+            var gd = GenProgramType_GV();
             _gd = gd;
-            layout.AddSeparateRow(gd);
+            gd.CellDoubleClick += (s, e) => _vm.EditCommand.Execute(null);
+            layout.AddRow(gd);
 
+            // counts
+            var counts = new Label();
+            counts.TextBinding.Bind(_vm, _ => _.Counts);
 
-            gd.CellDoubleClick += (s, e) => EditCommand.Execute(null);
+            layout.AddSeparateRow(counts, null);
 
             DefaultButton = new Button { Text = "OK" };
             DefaultButton.Click += (sender, e) => OkCommand.Execute(null);
 
             AbortButton = new Button { Text = "Cancel" };
             AbortButton.Click += (sender, e) => Close();
-            layout.AddSeparateRow(null);
             layout.AddSeparateRow(null, DefaultButton, AbortButton, null);
-            layout.AddSeparateRow(null);
+            layout.AddRow(null);
 
             return layout;
         }
 
-        private GridView GenProgramType_GV(IEnumerable<object> items)
+        private GridView GenProgramType_GV()
         {
-            items = items ?? new List<HB.ProgramTypeAbridged>();
-            var pType_GD = new GridView() { DataStore = items };
-            pType_GD.Height = 250;
+            var gd = new GridView();
+            gd.Bind(_ => _.DataStore, _vm, _ => _.GridViewDataCollection);
+            gd.SelectedItemsChanged += (s, e) => {
+                _vm.SelectedData = gd.SelectedItem as ProgramTypeViewData;
+            };
+
+            gd.Height = 250;
+
             var nameTB = new TextBoxCell
             {
-                Binding = Binding.Delegate<HB.ProgramTypeAbridged, string>(r => r.DisplayName ?? r.Identifier)
+                Binding = Binding.Delegate<ProgramTypeViewData, string>(r => r.Name)
             };
-            pType_GD.Columns.Add(new GridColumn { DataCell = nameTB, HeaderText = "Name" });
+            gd.Columns.Add(new GridColumn { DataCell = nameTB, HeaderText = "Name", Sortable = true });
 
             var peopleTB = new CheckBoxCell
             {
-                Binding = Binding.Delegate<HB.ProgramTypeAbridged, bool?>( r => r.People == null ? false : true)
+                Binding = Binding.Delegate<ProgramTypeViewData, bool?>( r => r.HasPeople)
             };
-            pType_GD.Columns.Add(new GridColumn { DataCell = peopleTB, HeaderText = "People", Sortable = true });
+            gd.Columns.Add(new GridColumn { DataCell = peopleTB, HeaderText = "People", Sortable = true });
 
             var lightingTB = new CheckBoxCell
             {
-                Binding = Binding.Delegate<HB.ProgramTypeAbridged, bool?>(r => r.Lighting == null ? false : true)
+                Binding = Binding.Delegate<ProgramTypeViewData, bool?>(r => r.HasLighting)
             };
-            pType_GD.Columns.Add(new GridColumn { DataCell = lightingTB, HeaderText = "Lighting", Sortable = true });
+            gd.Columns.Add(new GridColumn { DataCell = lightingTB, HeaderText = "Lighting", Sortable = true });
 
             var equipTB = new CheckBoxCell
             {
-                Binding = Binding.Delegate<HB.ProgramTypeAbridged, bool?>(r => r.ElectricEquipment == null ? false : true)
+                Binding = Binding.Delegate<ProgramTypeViewData, bool?>(r => r.HasElecEquip)
             };
-            pType_GD.Columns.Add(new GridColumn { DataCell = equipTB, HeaderText = "ElecEquip", Sortable = true });
+            gd.Columns.Add(new GridColumn { DataCell = equipTB, HeaderText = "ElecEquip", Sortable = true });
 
             var gasTB = new CheckBoxCell
             {
-                Binding = Binding.Delegate<HB.ProgramTypeAbridged, bool?>(r => r.GasEquipment == null ? false : true)
+                Binding = Binding.Delegate<ProgramTypeViewData, bool?>(r => r.HasGasEquip)
             };
-            pType_GD.Columns.Add(new GridColumn { DataCell = gasTB, HeaderText = "GasEquip", Sortable = true });
+            gd.Columns.Add(new GridColumn { DataCell = gasTB, HeaderText = "GasEquip", Sortable = true });
 
             var infTB = new CheckBoxCell
             {
-                Binding = Binding.Delegate<HB.ProgramTypeAbridged, bool?>(r => r.Infiltration == null ? false : true)
+                Binding = Binding.Delegate<ProgramTypeViewData, bool?>(r => r.HasInfiltration)
             };
-            pType_GD.Columns.Add(new GridColumn { DataCell = infTB, HeaderText = "Infiltration", Sortable = true });
+            gd.Columns.Add(new GridColumn { DataCell = infTB, HeaderText = "Infiltration", Sortable = true });
 
             var ventTB = new CheckBoxCell
             {
-                Binding = Binding.Delegate<HB.ProgramTypeAbridged, bool?>(r => r.Ventilation == null ? false : true)
+                Binding = Binding.Delegate<ProgramTypeViewData, bool?>(r => r.HasVentilation)
             };
-            pType_GD.Columns.Add(new GridColumn { DataCell = ventTB, HeaderText = "Ventilation", Sortable = true });
+            gd.Columns.Add(new GridColumn { DataCell = ventTB, HeaderText = "Ventilation", Sortable = true });
 
             var setpointTB = new CheckBoxCell
             {
-                Binding = Binding.Delegate<HB.ProgramTypeAbridged, bool?>(r => r.Setpoint == null ? false : true)
+                Binding = Binding.Delegate<ProgramTypeViewData, bool?>(r => r.HasSetpoint)
             };
-            pType_GD.Columns.Add(new GridColumn { DataCell = setpointTB, HeaderText = "Setpoint", Sortable = true });
+            gd.Columns.Add(new GridColumn { DataCell = setpointTB, HeaderText = "Setpoint", Sortable = true });
 
             var serviceHotWaterTB = new CheckBoxCell
             {
-                Binding = Binding.Delegate<HB.ProgramTypeAbridged, bool?>(r => r.ServiceHotWater == null ? false : true)
+                Binding = Binding.Delegate<ProgramTypeViewData, bool?>(r => r.HasServiceHotWater)
             };
-            pType_GD.Columns.Add(new GridColumn { DataCell = serviceHotWaterTB, HeaderText = "ServiceHotWater", Sortable = true });
+            gd.Columns.Add(new GridColumn { DataCell = serviceHotWaterTB, HeaderText = "ServiceHotWater", Sortable = true });
 
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new CheckBoxCell { Binding = Binding.Delegate<ProgramTypeViewData, bool?>(r => r.Locked) },
+                HeaderText = "Locked",
+                Sortable = true
+            });
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<ProgramTypeViewData, string>(r => r.Source) },
+                HeaderText = "Source",
+                Sortable = true
+            });
 
-            return pType_GD;
+            // sorting by header
+            gd.ColumnHeaderClick += OnColumnHeaderClick;
+            return gd;
+        }
+
+        private string _currentSortByColumn;
+        private void OnColumnHeaderClick(object sender, GridColumnEventArgs e)
+        {
+            var cell = e.Column.DataCell;
+            var colName = e.Column.HeaderText;
+            System.Func<ProgramTypeViewData, string> sortFunc = null;
+            var isNumber = false;
+            switch (colName)
+            {
+
+                case "Name":
+                    sortFunc = (ProgramTypeViewData _) => _.Name;
+                    break;
+                case "People":
+                    sortFunc = (ProgramTypeViewData _) => _.HasPeople.ToString();
+                    break;
+                case "Lighting":
+                    sortFunc = (ProgramTypeViewData _) => _.HasLighting.ToString();
+                    break;
+                case "ElecEquip":
+                    sortFunc = (ProgramTypeViewData _) => _.HasElecEquip.ToString();
+                    break;
+                case "GasEquip":
+                    sortFunc = (ProgramTypeViewData _) => _.HasGasEquip.ToString();
+                    break;
+                case "Infiltration":
+                    sortFunc = (ProgramTypeViewData _) => _.HasInfiltration.ToString();
+                    break;
+                case "Ventilation":
+                    sortFunc = (ProgramTypeViewData _) => _.HasVentilation.ToString();
+                    break;
+                case "Setpoint":
+                    sortFunc = (ProgramTypeViewData _) => _.HasSetpoint.ToString();
+                    break;
+                case "ServiceHotWater":
+                    sortFunc = (ProgramTypeViewData _) => _.HasServiceHotWater.ToString();
+                    break;
+                case "Locked":
+                    sortFunc = (ProgramTypeViewData _) => _.Locked.ToString();
+                    break;
+                case "Source":
+                    sortFunc = (ProgramTypeViewData _) => _.Source;
+                    break;
+                default:
+                    break;
+            }
+
+            if (sortFunc == null) return;
+
+            var descend = colName == _currentSortByColumn;
+            _vm.SortList(sortFunc, isNumber, descend);
+
+            _currentSortByColumn = colName == _currentSortByColumn ? string.Empty : colName;
+
         }
 
 
-        public RelayCommand AddCommand => new RelayCommand(() =>
-        {
-            var gd = this._gd;
-            var dialog = new Honeybee.UI.Dialog_OpsProgramTypes(this._modelEnergyProperties);
-            var dialog_rc = dialog.ShowModal(this);
-
-            var type = dialog_rc.programType;
-            var sches = dialog_rc.schedules;
-            if (type != null)
-            {
-                // add schedules
-                var existingScheduleIds = this._modelEnergyProperties.Schedules.Select(_ => (_.Obj as HB.IDdEnergyBaseModel).Identifier);
-                foreach (var sch in sches)
-                {
-                    if (existingScheduleIds.Any(_ => _ == sch.Identifier))
-                        continue;
-                    this._modelEnergyProperties.Schedules.Add(sch);
-                }
-
-                this._modelEnergyProperties.AddProgramType(type);
-
-                // add program type
-                gd.DataStore = this._modelEnergyProperties.ProgramTypes.OfType<ProgramTypeAbridged>().ToList();
-
-            }
-        });
-
-        public RelayCommand DuplicateCommand => new RelayCommand(() =>
-        {
-            var gd = this._gd;
-            if (gd.SelectedItem == null)
-            {
-                MessageBox.Show(this, "Nothing is selected to duplicate!");
-                return;
-            }
-
-            var id = Guid.NewGuid().ToString();
-            var newPType = (gd.SelectedItem as ProgramTypeAbridged).DuplicateProgramTypeAbridged();
-            newPType.Identifier = id;
-            newPType.DisplayName = string.IsNullOrEmpty(newPType.DisplayName) ? $"New Duplicate {id.Substring(0, 5)}" : $"{newPType.DisplayName}_dup";
-            var dialog = new Honeybee.UI.Dialog_ProgramType(this._modelEnergyProperties, newPType);
-            var dialog_rc = dialog.ShowModal(this);
-            if (dialog_rc != null)
-            {
-                var d = gd.DataStore.Select(_ => _ as ProgramTypeAbridged).ToList();
-                d.Add(dialog_rc);
-                gd.DataStore = d;
-            }
-        });
-
-        public RelayCommand EditCommand => new RelayCommand(() =>
-        {
-            var gd = this._gd;
-            var selected = gd.SelectedItem;
-            if (selected == null)
-            {
-                MessageBox.Show(this, "Nothing is selected to edit!");
-                return;
-            }
-
-            var newPType = (selected as ProgramTypeAbridged).DuplicateProgramTypeAbridged();
-            var dialog = new Honeybee.UI.Dialog_ProgramType(this._modelEnergyProperties, newPType);
-            var dialog_rc = dialog.ShowModal(this);
-            if (dialog_rc != null)
-            {
-                var index = gd.SelectedRow;
-                var newDataStore = gd.DataStore.Select(_ => _ as ProgramTypeAbridged).ToList();
-                newDataStore.RemoveAt(index);
-                newDataStore.Insert(index, dialog_rc);
-                gd.DataStore = newDataStore;
-
-            }
-        });
-
-        public RelayCommand RemoveCommand => new RelayCommand(() =>
-        {
-            var gd = this._gd;
-            var selected = gd.SelectedItem as ProgramTypeAbridged;
-            if (selected == null)
-            {
-                MessageBox.Show(this, "Nothing is selected to edit!");
-                return;
-            }
-
-            var res = MessageBox.Show(this, $"Are you sure you want to delete:\n {selected.DisplayName ?? selected.Identifier }", MessageBoxButtons.YesNo);
-            if (res == DialogResult.Yes)
-            {
-                var newDataStore = gd.DataStore.Where(_ => _ != selected).ToList();
-                gd.DataStore = newDataStore;
-            }
-        });
-
         public RelayCommand OkCommand => new RelayCommand(() =>
         {
-            var gd = this._gd;
-            var allPTypes = gd.DataStore.OfType<HB.Energy.IProgramtype>().ToList();
-            var pTypesToReturn = allPTypes;
-
-            if (this._returnSelectedOnly)
-            {
-                var d = gd.SelectedItem as HB.Energy.IProgramtype;
-                if (d == null)
-                {
-                    MessageBox.Show(this, "Nothing is selected!");
-                    return;
-                }
-                pTypesToReturn = new List<HB.Energy.IProgramtype>() { d };
-            }
-
-            this._modelEnergyProperties.ProgramTypes.Clear();
-            this._modelEnergyProperties.AddProgramTypes(allPTypes);
+            var pTypesToReturn = _vm.GetUserItems(_returnSelectedOnly);
             Close(pTypesToReturn);
         });
     
