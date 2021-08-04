@@ -1,20 +1,14 @@
 ﻿using Eto.Drawing;
 using Eto.Forms;
 using HB = HoneybeeSchema;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using HoneybeeSchema;
-using System.Windows.Input;
 
 namespace Honeybee.UI
 {
     public class Dialog_ModifierManager : Dialog<List<HB.Radiance.IModifier>>
     {
- 
         private bool _returnSelectedOnly;
-        private GridView _gd { get; set; }
-        //private ModelRadianceProperties _modelRadianceProperties { get; set; }
         private ModifierManagerViewModel _vm { get; set; }
         private Dialog_ModifierManager()
         {
@@ -59,11 +53,9 @@ namespace Honeybee.UI
             filter.TextBinding.Bind(_vm, _ => _.FilterKey);
             layout.AddRow(filter);
 
-            this._gd = GenGridView();
-            this._gd.Height = 250;
-            layout.AddRow(this._gd);
+            var gd = GenGridView();
+            layout.AddRow(gd);
 
-            var gd = this._gd;
 
             // counts
             var counts = new Label();

@@ -1,59 +1,22 @@
 ﻿using Eto.Forms;
-using System;
 using HB = HoneybeeSchema;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Input;
 using HoneybeeSchema;
-using System.Text.RegularExpressions;
 
 namespace Honeybee.UI
 {
-    public class ProgramTypeManagerViewModel : ViewModelBase
+    internal class ProgramTypeManagerViewModel : ManagerBaseViewModel<ProgramTypeViewData>
     {
-        private string _filterKey;
-        public string FilterKey
-        {
-            get => _filterKey;
-            set {
-                this.Set(() => _filterKey = value, nameof(FilterKey));
-                ApplyFilter();
-                this.Counts = this.GridViewDataCollection.Count.ToString();
-            }
-        }
-
-        private string _counts;
-        public string Counts
-        {
-            get => $"Count: {_counts}";
-            set => this.Set(() => _counts = value, nameof(Counts));
-        }
-
-
-        private DataStoreCollection<ProgramTypeViewData> _gridViewDataCollection = new DataStoreCollection<ProgramTypeViewData>();
-        internal DataStoreCollection<ProgramTypeViewData> GridViewDataCollection
-        {
-            get => _gridViewDataCollection;
-            set => this.Set(() => _gridViewDataCollection = value, nameof(_gridViewDataCollection));
-        }
-
-        private List<ProgramTypeViewData> _userData { get; set; }
-        private List<ProgramTypeViewData> _systemData { get; set; }
-        private List<ProgramTypeViewData> _allData { get; set; }
-        internal ProgramTypeViewData SelectedData { get; set; }
-
         private HB.ModelEnergyProperties _modelEnergyProperties { get; set; }
-        private Control _control;
     
-        public ProgramTypeManagerViewModel(HB.ModelEnergyProperties libSource, Control control = default)
+        public ProgramTypeManagerViewModel(HB.ModelEnergyProperties libSource, Control control = default):base(control)
         {
-            _control = control;
             _modelEnergyProperties = libSource;
 
             this._userData = libSource.ProgramTypeList.OfType<ProgramTypeAbridged>().Select(_ => new ProgramTypeViewData(_)).ToList();
             this._systemData = new List<ProgramTypeViewData>();
             this._allData = _userData.Concat(_systemData).ToList();
-
 
             ResetDataCollection();
 
@@ -67,7 +30,7 @@ namespace Honeybee.UI
         }
         private void ReplaceUserData(ProgramTypeViewData oldObj, ProgramTypeAbridged newObj)
         {
-            var newItem = CheckObjName(newObj);
+            var newItem = CheckObjName(newObj, oldObj.Name);
             var index = _userData.IndexOf(oldObj);
             _userData.RemoveAt(index);
             _userData.Insert(index, new ProgramTypeViewData(newItem));
@@ -116,46 +79,13 @@ namespace Honeybee.UI
             return itemsToReturn;
         }
 
-        private void ResetDataCollection()
-        {
-            if (!string.IsNullOrEmpty(this.FilterKey))
-                this.FilterKey = string.Empty;
-
-            GridViewDataCollection.Clear();
-            GridViewDataCollection.AddRange(_allData);
-            this.Counts = this.GridViewDataCollection.Count.ToString();
-        }
-
-        internal void SortList(Func<ProgramTypeViewData, string> sortFunc, bool isNumber, bool descend = false)
-        {
-            var c = new StringComparer(isNumber);
-            var newOrder = descend ? _allData.OrderByDescending(sortFunc, c) : _allData.OrderBy(sortFunc, c);
-            _allData = newOrder.ToList();
-            ResetDataCollection();
-        }
-
-        internal ProgramTypeAbridged CheckObjName(ProgramTypeAbridged obj)
-        {
-            var name = obj.DisplayName ?? obj.Identifier;
-            obj = obj.DuplicateProgramTypeAbridged();
-            if (_allData.Any(_=>_.Name == name))
-            {
-                name = $"{name} {Guid.NewGuid().ToString().Substring(0, 5)}";
-                MessageBox.Show(_control, $"Name [{obj.DisplayName}] is conflicting with an existing item, and now it is changed to [{name}].");
-            }
-            obj.Identifier = name;
-            obj.DisplayName = name;
-            return obj;
-        }
-
-
         public RelayCommand AddCommand => new RelayCommand(() =>
         {
             var dialog = new Honeybee.UI.Dialog_OpsProgramTypes(this._modelEnergyProperties);
             var dialog_rc = dialog.ShowModal(_control);
 
-            var type = dialog_rc.programType;
-            var sches = dialog_rc.schedules;
+            var type = dialog_rc.programType?.DuplicateProgramTypeAbridged();
+            var sches = dialog_rc.schedules?.Select(_=>_.DuplicateScheduleRulesetAbridged());
             if (type != null)
             {
                 // add schedules
@@ -250,37 +180,13 @@ namespace Honeybee.UI
 
         });
 
-        public void ApplyFilter(bool forceRefresh = true)
-        {
-            var filter = this.FilterKey;
-            var allData = this._allData;
-
-            // list is not filtered
-            if (string.IsNullOrWhiteSpace(filter))
-            {
-                if (!forceRefresh) return;
-                // reset
-                ResetDataCollection();
-                return;
-            }
-
-            // do nothing if user only type in one key
-            if (filter.Length <= 1) return;
-
-            // filter
-            var regexPatten = ".*" + filter.Replace(" ", "(.*)") + ".*";
-            var filtered = allData.Where(_ => Regex.IsMatch(_.SearchableText, regexPatten, RegexOptions.IgnoreCase));
-            GridViewDataCollection.Clear();
-            GridViewDataCollection.AddRange(filtered);
-        }
-
+  
     }
 
 
 
-    internal class ProgramTypeViewData: IEquatable<ProgramTypeViewData>
+    internal class ProgramTypeViewData: ManagerViewDataBase
     {
-        public string Name { get; }
         public bool HasPeople { get; }
         public bool HasLighting { get; }
         public bool HasElecEquip { get; }
@@ -292,9 +198,7 @@ namespace Honeybee.UI
         public string Source { get; }
         public bool Locked { get; }
         public HB.Energy.IProgramtype ProgramType { get; }
-        public string SearchableText { get; }
-
-
+      
         private static IEnumerable<string> LBTLibraryIds =
          HB.ModelEnergyProperties.Default.ProgramTypeList.Select(_ => _.Identifier);
 
@@ -324,11 +228,7 @@ namespace Honeybee.UI
             //else if (NRELLibraryIds.Contains(this.Name)) this.Source = "DoE NREL";
         }
 
-        public bool Equals(ProgramTypeViewData other)
-        {
-            return other?.Name == this?.Name;
-        }
-
+   
     }
 
 }

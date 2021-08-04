@@ -1,9 +1,7 @@
 ﻿using Eto.Drawing;
 using Eto.Forms;
 using HB = HoneybeeSchema;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using HoneybeeSchema;
 
 namespace Honeybee.UI
@@ -11,8 +9,6 @@ namespace Honeybee.UI
     public class Dialog_MaterialManager : Dialog<List<HB.Energy.IMaterial>>
     {
         private bool _returnSelectedOnly;
-        private GridView _gd { get; set; }
-        //private ModelEnergyProperties _modelEnergyProperties { get; set; }
         private MaterialManagerViewModel _vm { get; set; }
         private Dialog_MaterialManager()
         {
@@ -57,9 +53,7 @@ namespace Honeybee.UI
             layout.AddRow(filter);
 
             var gd = GenGridView();
-            gd.Height = 250;
             layout.AddRow(gd);
-            this._gd = gd;
 
             // counts
             var counts = new Label();

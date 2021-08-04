@@ -5,49 +5,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
 using HoneybeeSchema;
-using System.Text.RegularExpressions;
 
 namespace Honeybee.UI
 {
-    public class ModifierManagerViewModel : ViewModelBase
+    internal class ModifierManagerViewModel : ManagerBaseViewModel<ModifierViewData>
     {
-        private string _filterKey;
-        public string FilterKey
-        {
-            get => _filterKey;
-            set {
-                this.Set(() => _filterKey = value, nameof(FilterKey));
-                ApplyFilter();
-                this.Counts = this.GridViewDataCollection.Count.ToString();
-            }
-        }
-
-        private string _counts;
-        public string Counts
-        {
-            get => $"Count: {_counts}";
-            set => this.Set(() => _counts = value, nameof(Counts));
-        }
-
-
-        private DataStoreCollection<ModifierViewData> _gridViewDataCollection = new DataStoreCollection<ModifierViewData>();
-        internal DataStoreCollection<ModifierViewData> GridViewDataCollection
-        {
-            get => _gridViewDataCollection;
-            set => this.Set(() => _gridViewDataCollection = value, nameof(_gridViewDataCollection));
-        }
-
-        private List<ModifierViewData> _userData { get; set; }
-        private List<ModifierViewData> _systemData { get; set; }
-        private List<ModifierViewData> _allData { get; set; }
-        internal ModifierViewData SelectedData { get; set; }
-
+      
         private HB.ModelRadianceProperties _modelEnergyProperties { get; set; }
-        private Control _control;
-    
-        public ModifierManagerViewModel(HB.ModelRadianceProperties libSource, Control control = default)
+
+        public ModifierManagerViewModel(HB.ModelRadianceProperties libSource, Control control = default):base(control)
         {
-            _control = control;
             _modelEnergyProperties = libSource;
 
             this._userData = libSource.ModifierList.Select(_ => new ModifierViewData(_)).ToList();
@@ -61,8 +28,6 @@ namespace Honeybee.UI
         }
 
       
-      
-
         public void UpdateLibSource()
         {
             var newItems = this._userData.Select(_ => _.Modifier);
@@ -99,39 +64,6 @@ namespace Honeybee.UI
             }
             return itemsToReturn;
         }
-
-        private void ResetDataCollection()
-        {
-            if (!string.IsNullOrEmpty(this.FilterKey))
-                this.FilterKey = string.Empty;
-
-            GridViewDataCollection.Clear();
-            GridViewDataCollection.AddRange(_allData);
-            this.Counts = this.GridViewDataCollection.Count.ToString();
-        }
-
-        internal void SortList(Func<ModifierViewData, string> sortFunc, bool isNumber, bool descend = false)
-        {
-            var c = new StringComparer(isNumber);
-            var newOrder = descend ? _allData.OrderByDescending(sortFunc, c) : _allData.OrderBy(sortFunc, c);
-            _allData = newOrder.ToList();
-            ResetDataCollection();
-        }
-
-        internal HB.Radiance.IModifier CheckObjName(HB.Radiance.IModifier obj)
-        {
-            var name = obj.DisplayName ?? obj.Identifier;
-            
-            if (_allData.Any(_=>_.Name == name))
-            {
-                name = $"{name} {Guid.NewGuid().ToString().Substring(0, 5)}";
-                MessageBox.Show(_control, $"Name [{obj.DisplayName}] is conflicting with an existing item, and now it is changed to [{name}].");
-            }
-            obj.Identifier = name;
-            obj.DisplayName = name;
-            return obj;
-        }
-
 
 
         private void AddModifier(HB.Radiance.IModifier newModifier)
@@ -371,38 +303,12 @@ namespace Honeybee.UI
             }
         });
 
-        public void ApplyFilter(bool forceRefresh = true)
-        {
-            var filter = this.FilterKey;
-            var allData = this._allData;
-
-            // list is not filtered
-            if (string.IsNullOrWhiteSpace(filter))
-            {
-                if (!forceRefresh) return;
-                // reset
-                ResetDataCollection();
-                return;
-            }
-
-            // do nothing if user only type in one key
-            if (filter.Length <= 1) return;
-
-            // filter
-            var regexPatten = ".*" + filter.Replace(" ", "(.*)") + ".*";
-            var filtered = allData.Where(_ => Regex.IsMatch(_.SearchableText, regexPatten, RegexOptions.IgnoreCase));
-            GridViewDataCollection.Clear();
-            GridViewDataCollection.AddRange(filtered);
-        }
-
-      
     }
 
 
 
-    internal class ModifierViewData: IEquatable<ModifierViewData>
+    internal class ModifierViewData: ManagerViewDataBase
     {
-        public string Name { get; }
         public string CType { get; }
         public string Reflectance { get; }
         public string Transmittance { get; }
@@ -410,7 +316,6 @@ namespace Honeybee.UI
         public string Source { get; }
         public bool Locked { get; }
         public HB.Radiance.IModifier Modifier { get; }
-        public string SearchableText { get; }
 
         //private static IEnumerable<string> NRELLibraryIds =
         //    HB.Helper.EnergyLibrary.StandardsOpaqueModifiers.Keys
@@ -468,10 +373,6 @@ namespace Honeybee.UI
             //else if (NRELLibraryIds.Contains(this.Name)) this.Source = "DoE NREL";
         }
 
-        public bool Equals(ModifierViewData other)
-        {
-            return other?.Name == this?.Name;
-        }
 
     }
 

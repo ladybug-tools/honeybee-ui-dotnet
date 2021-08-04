@@ -1,18 +1,14 @@
 ﻿using Eto.Drawing;
 using Eto.Forms;
 using HB = HoneybeeSchema;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using HoneybeeSchema;
 
 namespace Honeybee.UI
 {
     public class Dialog_ProgramTypeManager : Dialog<List<HB.Energy.IProgramtype>>
     {
-        private GridView _gd;
         private bool _returnSelectedOnly;
-        //private ModelEnergyProperties _modelEnergyProperties { get; set; }
         private ProgramTypeManagerViewModel _vm { get; set; }
         private Dialog_ProgramTypeManager()
         {
@@ -59,7 +55,6 @@ namespace Honeybee.UI
             layout.AddRow(filter);
 
             var gd = GenProgramType_GV();
-            _gd = gd;
             gd.CellDoubleClick += (s, e) => _vm.EditCommand.Execute(null);
             layout.AddRow(gd);
 

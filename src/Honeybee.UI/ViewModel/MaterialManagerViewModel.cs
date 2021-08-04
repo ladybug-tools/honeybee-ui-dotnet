@@ -5,30 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
 using HoneybeeSchema;
-using System.Text.RegularExpressions;
 
 namespace Honeybee.UI
 {
-    public class MaterialManagerViewModel : ViewModelBase
+    internal class MaterialManagerViewModel : ManagerBaseViewModel<MaterialViewData>
     {
-        private string _filterKey;
-        public string FilterKey
-        {
-            get => _filterKey;
-            set {
-                this.Set(() => _filterKey = value, nameof(FilterKey));
-                ApplyFilter();
-                this.Counts = this.GridViewDataCollection.Count.ToString();
-            }
-        }
-
-        private string _counts;
-        public string Counts
-        {
-            get => $"Count: {_counts}";
-            set => this.Set(() => _counts = value, nameof(Counts));
-        }
-
         private bool _useIPUnit;
         public bool UseIPUnit
         {
@@ -42,24 +23,12 @@ namespace Honeybee.UI
             }
         }
 
-        private DataStoreCollection<MaterialViewData> _gridViewDataCollection = new DataStoreCollection<MaterialViewData>();
-        internal DataStoreCollection<MaterialViewData> GridViewDataCollection
-        {
-            get => _gridViewDataCollection;
-            set => this.Set(() => _gridViewDataCollection = value, nameof(_gridViewDataCollection));
-        }
-
-        private List<MaterialViewData> _userData { get; set; }
-        private List<MaterialViewData> _systemData { get; set; }
-        private List<MaterialViewData> _allData { get; set; }
-        internal MaterialViewData SelectedData { get; set; }
-
+       
         private HB.ModelEnergyProperties _modelEnergyProperties { get; set; }
-        private Control _control;
+     
     
-        public MaterialManagerViewModel(HB.ModelEnergyProperties libSource, Control control = default)
+        public MaterialManagerViewModel(HB.ModelEnergyProperties libSource, Control control = default):base(control)
         {
-            _control = control;
             _modelEnergyProperties = libSource;
 
             this._userData = libSource.MaterialList.Select(_ => new MaterialViewData(_, ShowIPUnit: false)).ToList();
@@ -82,7 +51,7 @@ namespace Honeybee.UI
         }
         private void ReplaceUserData(MaterialViewData oldObj, HB.Energy.IMaterial newObj)
         {
-            var newItem = CheckObjName(newObj);
+            var newItem = CheckObjName(newObj, oldObj.Name);
             var index = _userData.IndexOf(oldObj);
             _userData.RemoveAt(index);
             _userData.Insert(index, new MaterialViewData(newItem, this.UseIPUnit));
@@ -131,38 +100,7 @@ namespace Honeybee.UI
             return itemsToReturn;
         }
 
-        private void ResetDataCollection()
-        {
-            if (!string.IsNullOrEmpty(this.FilterKey))
-                this.FilterKey = string.Empty;
-
-            GridViewDataCollection.Clear();
-            GridViewDataCollection.AddRange(_allData);
-            this.Counts = this.GridViewDataCollection.Count.ToString();
-        }
-
-        internal void SortList(Func<MaterialViewData, string> sortFunc, bool isNumber, bool descend = false)
-        {
-            var c = new StringComparer(isNumber);
-            var newOrder = descend ? _allData.OrderByDescending(sortFunc, c) : _allData.OrderBy(sortFunc, c);
-            _allData = newOrder.ToList();
-            ResetDataCollection();
-        }
-
-        internal HB.Energy.IMaterial CheckObjName(HB.Energy.IMaterial obj)
-        {
-            var name = obj.DisplayName ?? obj.Identifier;
-
-            if (_allData.Any(_=>_.Name == name))
-            {
-                name = $"{name} {Guid.NewGuid().ToString().Substring(0, 5)}";
-                MessageBox.Show(_control, $"Name [{obj.DisplayName}] is conflicting with an existing item, and now it is changed to [{name}].");
-            }
-            obj.Identifier = name;
-            obj.DisplayName = name;
-            return obj;
-        }
-
+    
 
         private void ShowMaterialDialog(HB.Energy.IMaterial material)
         {
@@ -351,29 +289,7 @@ namespace Honeybee.UI
             }
         });
 
-        public void ApplyFilter(bool forceRefresh = true)
-        {
-            var filter = this.FilterKey;
-            var allData = this._allData;
-
-            // list is not filtered
-            if (string.IsNullOrWhiteSpace(filter))
-            {
-                if (!forceRefresh) return;
-                // reset
-                ResetDataCollection();
-                return;
-            }
-
-            // do nothing if user only type in one key
-            if (filter.Length <= 1) return;
-
-            // filter
-            var regexPatten = ".*" + filter.Replace(" ", "(.*)") + ".*";
-            var filtered = allData.Where(_ => Regex.IsMatch(_.SearchableText, regexPatten, RegexOptions.IgnoreCase));
-            GridViewDataCollection.Clear();
-            GridViewDataCollection.AddRange(filtered);
-        }
+    
 
         private void ChangeUnit(bool IPUnit)
         {
@@ -384,11 +300,8 @@ namespace Honeybee.UI
         }
     }
 
-
-
-    internal class MaterialViewData: IEquatable<MaterialViewData>
+    internal class MaterialViewData: ManagerViewDataBase
     {
-        public string Name { get; }
         public string CType { get; }
         public string RValue { get; }
         public string UValue { get; }
@@ -396,7 +309,6 @@ namespace Honeybee.UI
         public string Source { get; }
         public bool Locked { get; }
         public HB.Energy.IMaterial Material { get; }
-        public string SearchableText { get; }
 
         private static IEnumerable<string> NRELLibraryIds =
             HB.Helper.EnergyLibrary.StandardsOpaqueMaterials.Keys
@@ -437,10 +349,7 @@ namespace Honeybee.UI
             else if (NRELLibraryIds.Contains(c.Identifier)) this.Source = "DoE NREL";
         }
 
-        public bool Equals(MaterialViewData other)
-        {
-            return other?.Name == this?.Name;
-        }
+    
 
     }
 
