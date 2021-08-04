@@ -19,7 +19,7 @@ namespace Honeybee.UI
             Resizable = true;
             Title = $"Construction Manager - {DialogHelper.PluginName}";
             WindowStyle = WindowStyle.Default;
-            MinimumSize = new Size(800, 300);
+            MinimumSize = new Size(680, 300);
             this.Icon = DialogHelper.HoneybeeIcon;
         }
 
@@ -62,9 +62,22 @@ namespace Honeybee.UI
             layout.AddRow(this._gd);
             var gd = this._gd;
 
+            // counts
+            var counts = new Label();
+            counts.TextBinding.Bind(_vm, _ => _.Counts);
+
+            // unit switchs
+            var unit = new RadioButtonList();
+            unit.Items.Add("Metric");
+            unit.Items.Add("Imperial");
+            unit.SelectedIndex = 0;
+            unit.Spacing = new Size(5, 0);
+            unit.SelectedIndexChanged += (s, e) => _vm.UseIPUnit = unit.SelectedIndex == 1;
+
+            layout.AddSeparateRow(counts, null, unit);
 
             var OKButton = new Button { Text = "OK" };
-            OKButton.Click += (sender, e) => OkCommand.Execute(null);
+            OKButton.Click += (sender, e) => OkCommand.Execute(this._returnSelectedOnly);
 
 
             AbortButton = new Button { Text = "Cancel" };
@@ -91,47 +104,48 @@ namespace Honeybee.UI
             gd.Columns.Add(new GridColumn { 
                 DataCell = new TextBoxCell {Binding = Binding.Delegate<ConstructionViewData, string>(r =>r.Name ) }, 
                 HeaderText = "Name",
-                Sortable = true
+                Sortable = true,
+                Width = 250
             });
 
           
             gd.Columns.Add(new GridColumn { 
                 DataCell = new TextBoxCell {Binding = Binding.Delegate<ConstructionViewData, string>(r => r.CType)}, 
                 HeaderText = "Type",
-                Sortable = true
+                Sortable = true,
+                Width = 80
             });
 
             gd.Columns.Add(new GridColumn { 
                 DataCell = new TextBoxCell { Binding = Binding.Delegate<ConstructionViewData, string>(r => r.RValue) }, 
-                HeaderText = "RValue[m2·K/W]",
+                HeaderText = "RValue",
                 Sortable = true
             });
 
             gd.Columns.Add(new GridColumn
             {
-                DataCell = new TextBoxCell { Binding = Binding.Delegate<ConstructionViewData, string>(r => r.RValueIP) },
-                HeaderText = "RValue[h·ft2·F/Btu]",
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<ConstructionViewData, string>(r => r.UFactor) },
+                HeaderText = "UValue",
                 Sortable = true
             });
             gd.Columns.Add(new GridColumn
             {
                 DataCell = new TextBoxCell { Binding = Binding.Delegate<ConstructionViewData, string>(r => r.UFactor) },
-                HeaderText = "UFactor[W/m2·K]",
+                HeaderText = "UFactor",
                 Sortable = true
             });
             gd.Columns.Add(new GridColumn
             {
-                DataCell = new TextBoxCell { Binding = Binding.Delegate<ConstructionViewData, string>(r => r.UFactorIP) },
-                HeaderText = "UFactor[Btu/h·ft2·F]",
+                DataCell = new CheckBoxCell { Binding = Binding.Delegate<ConstructionViewData, bool?>(r => r.Locked) },
+                HeaderText = "Locked",
                 Sortable = true
             });
             gd.Columns.Add(new GridColumn
             {
-                DataCell = new CheckBoxCell { Binding = Binding.Delegate<ConstructionViewData, bool?>(r => r.IsSystemLibrary) },
-                HeaderText = "System lib",
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<ConstructionViewData, string>(r => r.Source) },
+                HeaderText = "Source",
                 Sortable = true
             });
-
             // sorting by header
             gd.ColumnHeaderClick += OnColumnHeaderClick;
             return gd;
@@ -153,24 +167,23 @@ namespace Honeybee.UI
                 case "Type":
                     sortFunc = (ConstructionViewData _) => _.CType;
                     break;
-                case "RValue[m2·K/W]":
+                case "RValue":
                     sortFunc = (ConstructionViewData _) => _.RValue;
                     isNumber = true;
                     break;
-                case "RValue[h·ft2·F/Btu]":
-                    sortFunc = (ConstructionViewData _) => _.RValueIP;
+                case "UValue":
+                    sortFunc = (ConstructionViewData _) => _.UValue;
                     isNumber = true;
                     break;
-                case "UFactor[W/m2·K]":
+                case "UFactor":
                     sortFunc = (ConstructionViewData _) => _.UFactor;
                     isNumber = true;
                     break;
-                case "UFactor[Btu/h·ft2·F]":
-                    sortFunc = (ConstructionViewData _) => _.UFactorIP;
-                    isNumber = true;
+                case "Locked":
+                    sortFunc = (ConstructionViewData _) => _.Locked.ToString();
                     break;
-                case "System lib":
-                    sortFunc = (ConstructionViewData _) => _.IsSystemLibrary.ToString();
+                case "Source":
+                    sortFunc = (ConstructionViewData _) => _.Source;
                     break;
                 default:
                     break;
@@ -187,24 +200,7 @@ namespace Honeybee.UI
 
         public RelayCommand OkCommand => new RelayCommand(() =>
         {
-            var allItems = _vm.GridViewDataCollection.Select(_ => _.Construction).ToList();
-            _vm.UpdateLibSource(allItems);
-
-            var itemsToReturn = allItems;
-
-            if (this._returnSelectedOnly)
-            {
-                var d = _vm.SelectedData;
-                if (d == null)
-                {
-                    MessageBox.Show(this, "Nothing is selected!");
-                    return;
-                }
-                itemsToReturn = new List<HB.Energy.IConstruction>() { d.Construction };
-            }
-
-        
-    
+            var itemsToReturn = _vm.GetUserItems(this._returnSelectedOnly);
             Close(itemsToReturn);
         });
 

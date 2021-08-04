@@ -16,8 +16,28 @@ namespace Honeybee.UI
         {
             get => _filterKey;
             set {
-                this.Set(() => _filterKey = value, nameof(_filterKey));
+                this.Set(() => _filterKey = value, nameof(FilterKey));
                 ApplyFilter();
+                this.Counts = this.GridViewDataCollection.Count.ToString();
+            }
+        }
+
+        private string _counts;
+        public string Counts
+        {
+            get => $"Count: {_counts}";
+            set => this.Set(() => _counts = value, nameof(Counts));
+        }
+
+        private bool _useIPUnit;
+        public bool UseIPUnit
+        {
+            get => _useIPUnit;
+            set
+            {
+                if (_useIPUnit != value)
+                    ChangeUnit(value);
+                _useIPUnit = value;
             }
         }
 
@@ -28,6 +48,8 @@ namespace Honeybee.UI
             set => this.Set(() => _gridViewDataCollection = value, nameof(_gridViewDataCollection));
         }
 
+        private List<ConstructionViewData> _userData { get; set; }
+        private List<ConstructionViewData> _systemData { get; set; }
         private List<ConstructionViewData> _allData { get; set; }
         internal ConstructionViewData SelectedData { get; set; }
 
@@ -36,32 +58,100 @@ namespace Honeybee.UI
     
         public ConstructionManagerViewModel(HB.ModelEnergyProperties libSource, Control control = default)
         {
-            ConstructionViewData.LibSource = libSource;
+            
             _control = control;
             _modelEnergyProperties = libSource;
 
-            this._allData = libSource.ConstructionList.Select(_ => new ConstructionViewData(_)).ToList();
-            GridViewDataCollection = new DataStoreCollection<ConstructionViewData>(this._allData);
+            // for calculating R/U values 
+            ConstructionViewData.LibSource = libSource.DuplicateModelEnergyProperties();
+            ConstructionViewData.LibSource.AddMaterials(HB.Helper.EnergyLibrary.StandardsOpaqueMaterials.Values);
+            ConstructionViewData.LibSource.AddMaterials(HB.Helper.EnergyLibrary.StandardsWindowMaterials.Values);
 
+            this._userData = libSource.ConstructionList.Select(_ => new ConstructionViewData(_, ShowIPUnit: false)).ToList();
+            this._systemData = 
+                HB.Helper.EnergyLibrary.StandardsOpaqueConstructions.Select(_ => new ConstructionViewData(_.Value, ShowIPUnit: false))
+                .Concat(HB.Helper.EnergyLibrary.StandardsWindowConstructions.Select(_ => new ConstructionViewData(_.Value, ShowIPUnit: false)))
+                .ToList();
+            this._allData = _userData.Concat(_systemData).ToList();
+
+            ResetDataCollection();
         }
 
-        public void UpdateLibSource(List<HB.Energy.IConstruction> newItems)
+        private void AddUserData(HB.Energy.IConstruction item)
         {
+            var newItem = CheckObjName(item);
+            this._userData.Insert(0, new ConstructionViewData(newItem, this.UseIPUnit));
+            this._allData = _userData.Concat(_systemData).ToList();
+        }
+        private void ReplaceUserData(ConstructionViewData oldObj, HB.Energy.IConstruction newObj)
+        {
+            var newItem = CheckObjName(newObj);
+            var index = _userData.IndexOf(oldObj);
+            _userData.RemoveAt(index);
+            _userData.Insert(index, new ConstructionViewData(newItem, this.UseIPUnit));
+            this._allData = _userData.Concat(_systemData).ToList();
+        }
+        private void DeleteUserData(ConstructionViewData item)
+        {
+            this._userData.Remove(item);
+            this._allData = _userData.Concat(_systemData).ToList();
+        }
+
+        public void UpdateLibSource()
+        {
+            var newItems = this._userData.Select(_ => _.Construction);
             this._modelEnergyProperties.Constructions.Clear();
             this._modelEnergyProperties.AddConstructions(newItems);
         }
 
+        public List<HB.Energy.IConstruction> GetUserItems(bool selectedOnly) 
+        {
+
+            UpdateLibSource();
+
+            var itemsToReturn = new List<HB.Energy.IConstruction>();
+
+            if (selectedOnly)
+            {
+                var d = SelectedData;
+                if (d == null)
+                {
+                    MessageBox.Show(_control, "Nothing is selected!");
+                    return null;
+                }
+                else if (!this._userData.Contains(d))
+                {
+                    // user selected an item from system library, now add it to model EnergyProperties
+                    var mats = d.GetMaterials();
+                    this._modelEnergyProperties.AddMaterials(mats);
+                    this._modelEnergyProperties.AddConstruction(d.Construction);
+                }
+               
+                itemsToReturn.Add(d.Construction);
+            }
+            else
+            {
+                itemsToReturn = this._modelEnergyProperties.ConstructionList.ToList();
+            }
+            return itemsToReturn;
+        }
+
         private void ResetDataCollection()
         {
+            if (!string.IsNullOrEmpty(this.FilterKey))
+                this.FilterKey = string.Empty;
+
             GridViewDataCollection.Clear();
             GridViewDataCollection.AddRange(_allData);
+            this.Counts = this.GridViewDataCollection.Count.ToString();
+
         }
 
         internal void SortList(Func<ConstructionViewData, string> sortFunc, bool isNumber, bool descend = false)
         {
             var c = new StringComparer(isNumber);
             var newOrder = descend ? _allData.OrderByDescending(sortFunc, c) : _allData.OrderBy(sortFunc, c);
-            _allData = newOrder.ToList();
+            this._allData = newOrder.ToList();
             ResetDataCollection();
         }
 
@@ -79,19 +169,25 @@ namespace Honeybee.UI
             return obj;
         }
 
+        private void ShowConstructionDialog(HB.Energy.IConstruction c)
+        {
+            var dialog = new Honeybee.UI.Dialog_Construction(this._modelEnergyProperties, c);
+            var dialog_rc = dialog.ShowModal(_control);
+            if (dialog_rc != null)
+            {
+                AddUserData(dialog_rc);
+                ResetDataCollection();
+            }
+
+        }
+      
+
         public ICommand AddOpaqueConstructionCommand => new RelayCommand(() => {
             var id = Guid.NewGuid().ToString();
             var name = $"New Opaque Construction {id.Substring(0, 5)}";
             var newConstrucion = new HB.OpaqueConstructionAbridged(name, new List<string>(), name);
 
-            var dialog = new Honeybee.UI.Dialog_Construction(this._modelEnergyProperties, newConstrucion);
-            var dialog_rc = dialog.ShowModal(_control);
-            if (dialog_rc != null)
-            {
-                var newItem = CheckObjName(dialog_rc);
-                _allData.Add(new ConstructionViewData(newItem));
-                ResetDataCollection();
-            }
+            ShowConstructionDialog(newConstrucion);
         });
 
 
@@ -101,28 +197,14 @@ namespace Honeybee.UI
             var name = $"New Window Construction {id.Substring(0, 5)}";
             var newConstrucion = new HB.WindowConstructionAbridged(name, new List<string>(), name);
 
-            var dialog = new Honeybee.UI.Dialog_Construction(this._modelEnergyProperties, newConstrucion);
-            var dialog_rc = dialog.ShowModal(_control);
-            if (dialog_rc != null)
-            {
-                var newItem = CheckObjName(dialog_rc);
-                _allData.Add(new ConstructionViewData(newItem));
-                ResetDataCollection();
-            }
+            ShowConstructionDialog(newConstrucion);
         });
         public ICommand AddShadeConstructionCommand => new RelayCommand(() => {
             var id = Guid.NewGuid().ToString();
             var name = $"New Shade Construction {id.Substring(0, 5)}";
             var newConstrucion = new HB.ShadeConstruction(name, name);
 
-            var dialog = new Honeybee.UI.Dialog_Construction_Shade(newConstrucion);
-            var dialog_rc = dialog.ShowModal(_control);
-            if (dialog_rc != null)
-            {
-                var newItem = CheckObjName(dialog_rc);
-                _allData.Add(new ConstructionViewData(newItem));
-                ResetDataCollection();
-            }
+            ShowConstructionDialog(newConstrucion);
         });
 
         public ICommand AddAirBoundaryConstructionCommand => new RelayCommand(() => {
@@ -130,14 +212,7 @@ namespace Honeybee.UI
             var name = $"New AirBoundary Construction {id.Substring(0, 5)}";
             var newConstrucion = new HB.AirBoundaryConstructionAbridged(name, name);
 
-            var dialog = new Honeybee.UI.Dialog_Construction_AirBoundary(newConstrucion);
-            var dialog_rc = dialog.ShowModal(_control);
-            if (dialog_rc != null)
-            {
-                var newItem = CheckObjName(dialog_rc);
-                _allData.Add(new ConstructionViewData(newItem));
-                ResetDataCollection();
-            }
+            ShowConstructionDialog(newConstrucion);
         });
 
         public ICommand AddWindowConstructionShadeCommand => new RelayCommand(() => {
@@ -190,14 +265,7 @@ namespace Honeybee.UI
             var name = $"{dup.Identifier}_dup";
             dup.Identifier = name;
             dup.DisplayName = name;
-            var dialog = new Honeybee.UI.Dialog_Construction(this._modelEnergyProperties, dup);
-            var dialog_rc = dialog.ShowModal(_control);
-            if (dialog_rc != null)
-            {
-                var newItem = CheckObjName(dialog_rc);
-                _allData.Add(new ConstructionViewData(newItem));
-                ResetDataCollection();
-            }
+            ShowConstructionDialog(dup);
         });
 
         public RelayCommand EditCommand => new RelayCommand(() =>
@@ -209,7 +277,7 @@ namespace Honeybee.UI
                 return;
             }
 
-            if (selected.IsSystemLibrary)
+            if (selected.Locked)
             {
                 MessageBox.Show(_control, "You cannot edit an item of system library!");
                 return;
@@ -238,11 +306,8 @@ namespace Honeybee.UI
             }
 
             if (dialog_rc == null) return;
-            var newItem = new ConstructionViewData(CheckObjName(dialog_rc));
-            var index = _allData.IndexOf(selected);
-            _allData.RemoveAt(index);
-            _allData.Insert(index, newItem);
 
+            ReplaceUserData(selected, dialog_rc);
             ResetDataCollection();
 
         });
@@ -256,7 +321,7 @@ namespace Honeybee.UI
                 return;
             }
 
-            if (selected.IsSystemLibrary)
+            if (selected.Locked)
             {
                 MessageBox.Show(_control, "You cannot remove an item of system library!");
                 return;
@@ -265,7 +330,7 @@ namespace Honeybee.UI
             var res = MessageBox.Show(_control, $"Are you sure you want to delete:\n {selected.Name}", MessageBoxButtons.YesNo);
             if (res == DialogResult.Yes)
             {
-                _allData.Remove(selected);
+                DeleteUserData(selected);
                 ResetDataCollection();
             }
         });
@@ -293,6 +358,14 @@ namespace Honeybee.UI
             GridViewDataCollection.Clear();
             GridViewDataCollection.AddRange(filtered);
         }
+
+        private void ChangeUnit(bool IPUnit)
+        {
+            this._userData = this._userData.Select(_ => new ConstructionViewData(_.Construction, IPUnit)).ToList();
+            this._systemData = this._systemData.Select(_ => new ConstructionViewData(_.Construction, IPUnit)).ToList();
+            this._allData = _userData.Concat(_systemData).ToList();
+            ResetDataCollection();
+        }
     }
 
 
@@ -302,39 +375,71 @@ namespace Honeybee.UI
         public string Name { get; }
         public string CType { get; }
         public string RValue { get; }
-        public string RValueIP { get; }
+        public string UValue { get; }
         public string UFactor { get; }
-        public string UFactorIP { get; }
-        public bool IsSystemLibrary { get; }
+        public bool Locked { get; }
+        public string Source { get; }
         public HB.Energy.IConstruction Construction { get; }
         public string SearchableText { get; }
 
         public static HB.ModelEnergyProperties LibSource { get; set; }
-        private static IEnumerable<string> SystemLibraryIds = HB.ModelEnergyProperties.Default.ConstructionList.Select(_ => _.Identifier);
-        public ConstructionViewData(HB.Energy.IConstruction c)
+
+        private static IEnumerable<string> NRELLibraryIds =
+         HB.Helper.EnergyLibrary.StandardsOpaqueConstructions.Keys
+         .Concat(HB.Helper.EnergyLibrary.StandardsWindowConstructions.Keys);
+
+        private static IEnumerable<string> LBTLibraryIds =
+         HB.ModelEnergyProperties.Default.ConstructionList.Select(_ => _.Identifier);
+
+        private static IEnumerable<string> SystemLibraryIds = LBTLibraryIds.Concat(NRELLibraryIds);
+
+        public ConstructionViewData(HB.Energy.IConstruction c, bool ShowIPUnit)
         {
             this.Name = c.DisplayName ?? c.Identifier;
             this.CType = c.GetType().Name.Replace("Abridged", "").Replace("Construction", "");
             if (c is HB.Energy.IThermalConstruction tc)
             {
                 tc.CalThermalValues(LibSource);
-                this.RValue = Math.Round(tc.RValue, 5).ToString();
-                this.UFactor = Math.Round(tc.UFactor, 5).ToString();
-
-                this.RValueIP = Math.Round(tc.RValue * 5.678263337, 5).ToString();
-                this.UFactorIP = Math.Round(tc.UFactor / 5.678263337, 5).ToString();
+                this.RValue = ShowIPUnit ? Math.Round(tc.RValue * 5.678263337, 5).ToString(): Math.Round(tc.RValue, 5).ToString();
+                this.UFactor = ShowIPUnit ? Math.Round(tc.UFactor / 5.678263337, 5).ToString(): Math.Round(tc.UFactor, 5).ToString();
+                this.UValue = ShowIPUnit ? Math.Round(tc.UValue / 5.678263337, 5).ToString() : Math.Round(tc.UValue, 5).ToString();
             }
             this.Construction = c;
 
             this.SearchableText = $"{this.Name}_{this.CType}";
 
             //check if system library
-            this.IsSystemLibrary = SystemLibraryIds.Contains(c.Identifier);
+            this.Locked = SystemLibraryIds.Contains(c.Identifier);
+            if (LBTLibraryIds.Contains(this.Name)) this.Source = "LBT";
+            else if (NRELLibraryIds.Contains(this.Name)) this.Source = "DoE NREL";
         }
 
         public bool Equals(ConstructionViewData other)
         {
             return other?.Name == this?.Name;
+        }
+
+        public List<HB.Energy.IMaterial> GetMaterials()
+        {
+            var layers = new List<string>();
+            if (this.Construction is HB.OpaqueConstructionAbridged obj)
+            {
+                layers =  obj.Materials;
+            }
+            else if (this.Construction is HB.WindowConstructionAbridged win)
+            {
+                layers = win.Materials;
+            }
+
+            var materials = new List<HB.Energy.IMaterial>();
+            foreach (var layer in layers)
+            {
+                var m = LibSource.MaterialList.FirstOrDefault(_ => _.Identifier == layer);
+                var dup = m.Duplicate() as HB.Energy.IMaterial;
+                dup.DisplayName = m.DisplayName ?? m.Identifier;
+                materials.Add(dup);
+            }
+            return materials;
         }
     }
 
