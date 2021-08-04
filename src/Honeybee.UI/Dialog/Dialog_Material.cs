@@ -21,11 +21,11 @@ namespace Honeybee.UI
                 //_hbObj = HB.ModelEnergyProperties.Default.Materials.First(_ => _.Obj is HB.EnergyWindowMaterialGas).Obj as HB.EnergyWindowMaterialGas;
                 _hbObj = material;
 
-                Padding = new Padding(10);
+                Padding = new Padding(5);
                 Resizable = true;
                 Title = $"Material - {DialogHelper.PluginName}";
                 WindowStyle = WindowStyle.Default;
-                MinimumSize = new Size(450, 250);
+                MinimumSize = new Size(450, 200);
                 this.Icon = DialogHelper.HoneybeeIcon;
 
                 var OkButton = new Button { Text = "OK" };
@@ -38,15 +38,11 @@ namespace Honeybee.UI
                 //panel.AddSeparateRow(null, OkButton, AbortButton, null);
                 //Content = panel;
 
-                var leftLayout = new DynamicLayout();
-                leftLayout.DefaultSpacing = new Size(5, 5);
-                leftLayout.DefaultPadding = new Padding(10, 5);
+                var layout = new DynamicLayout();
+                layout.DefaultSpacing = new Size(5, 5);
+                layout.DefaultPadding = new Padding(5);
 
-                leftLayout.AddRow("Name");
-                var name = new TextBox();
-                _hbObj.DisplayName = _hbObj.DisplayName ?? _hbObj.Identifier;
-                name.TextBinding.Bind(() => _hbObj.DisplayName, (v) => _hbObj.DisplayName = v);
-                leftLayout.AddRow(name);
+        
 
                 //_layers = _hbObj.Layers;
                 var i = 0;
@@ -59,8 +55,22 @@ namespace Honeybee.UI
                 //groupContent.DefaultSpacing = new Size(5, 5);
            
                 _materialPanel = new DynamicLayout();
+                _materialPanel.DefaultSpacing = new Size(5, 5);
+                _materialPanel.DefaultPadding = new Padding(5);
 
-                var properties = _hbObj.GetType().GetProperties();
+                var properties = _hbObj.GetType().GetProperties().Where(_=>_.CanWrite);
+                if (properties.Count() > 15)
+                {
+                    _materialPanel.Height = 450;
+                    _materialPanel.BeginScrollable();
+                }
+
+                var name = new TextBox();
+                _hbObj.DisplayName = _hbObj.DisplayName ?? _hbObj.Identifier;
+                name.TextBinding.Bind(() => _hbObj.DisplayName, (v) => _hbObj.DisplayName = v);
+
+                _materialPanel.AddRow("Name", name);
+
                 foreach (var item in properties)
                 {
                     if (item.Name == "Identifier" || item.Name == "Type" || item.Name == "DisplayName")
@@ -73,24 +83,21 @@ namespace Honeybee.UI
                         var textBox = new TextBox();
                         //textBox.Text = stringvalue;
                         textBox.TextBinding.Bind(() => stringvalue, (v) => item.SetValue(_hbObj, v));
-                        _materialPanel.AddRow(item.Name);
-                        _materialPanel.AddRow(textBox);
+                        _materialPanel.AddRow(item.Name, textBox);
                     }
                     else if (value is double numberValue)
                     {
                         var numberTB = new MaskedTextBox();
                         numberTB.Provider = new NumericMaskedTextProvider() { AllowDecimal=true };
                         numberTB.TextBinding.Bind(() => numberValue.ToString(), (v)=> item.SetValue(_hbObj, Convert.ChangeType(v, type)));
-                        _materialPanel.AddRow(item.Name);
-                        _materialPanel.AddRow(numberTB);
+                        _materialPanel.AddRow(item.Name, numberTB);
                     }
                     else if (value is int intValue)
                     {
                         var numberTB = new NumericStepper();
                         numberTB.DecimalPlaces = 0;
                         numberTB.Value = intValue;
-                        _materialPanel.AddRow(item.Name);
-                        _materialPanel.AddRow(numberTB);
+                        _materialPanel.AddRow(item.Name, numberTB);
                     }
                     else if (Nullable.GetUnderlyingType(type) != null)
                     {
@@ -110,8 +117,7 @@ namespace Honeybee.UI
                             (v) => item.SetValue(_hbObj, Enum.Parse(enumType, v))
                             );
 
-                        _materialPanel.AddRow(item.Name);
-                        _materialPanel.AddRow(dropdown);
+                        _materialPanel.AddRow(item.Name, dropdown);
 
 
                     }
@@ -128,13 +134,11 @@ namespace Honeybee.UI
                             (v) => item.SetValue(_hbObj, Enum.Parse(type, v))
                             );
 
-                        _materialPanel.AddRow(item.Name);
-                        _materialPanel.AddRow(dropdown);
+                        _materialPanel.AddRow(item.Name, dropdown);
 
                     }
                 }
               
-                leftLayout.AddRow(_materialPanel);
 
                 var buttonSource = new Button { Text = "Schema Data" };
                 buttonSource.Click += (s, e) =>
@@ -143,147 +147,8 @@ namespace Honeybee.UI
                 };
               
 
-                leftLayout.AddRow(null);
-                leftLayout.AddRow(buttonSource);
-                leftLayout.AddRow(null);
-
-      
-
-                #region Right Panel
-        
-                ////Right panel
-                //var rightGroup = new GroupBox();
-                //rightGroup.Text = "Library";
-                //var groupPanel = new DynamicLayout();
-
-
-                //var materialType = new DropDown();
-                //materialType.Items.Add(new ListItem() { Key = "Opaque", Text = "Opaque Material" });
-                //materialType.Items.Add(new ListItem() { Key = "Window", Text = "Window Material" });
-                ////constructionTypes.Items.Add(new ListItem() { Key = "Shade Material" });
-                ////constructionTypes.Items.Add(new ListItem() { Key = "AirBoundary Material" });
-                //materialType.SelectedIndex = 0;
-                //groupPanel.AddRow(materialType);
-
-                ////Search tbox
-                //var searchTBox = new TextBox() { PlaceholderText = "Search" };
-                //groupPanel.AddRow(searchTBox);
-
-                //// Library
-                //var lib = new ListBox();
-                //lib.Height = 300;
-                //groupPanel.AddRow(lib);
-                //var allMaterials = OpaqueMaterials;
-
-                //// material details
-                //var detailPanel = new DynamicLayout();
-                //var materialDetail = new ListBox();
-                //materialDetail.Height = 150;
-                //materialDetail.Items.Add(new ListItem() { Text = "Material Details" });
-                ////groupPanel.AddRow(materialDetail);
-
-                //var rightSplit = new Splitter();
-                //rightSplit.Panel1 = groupPanel;
-                //rightSplit.Panel2 = materialDetail;
-                //rightSplit.Panel1MinimumSize = 300;
-                //rightSplit.Orientation = Orientation.Vertical;
-
-                //rightGroup.Content = rightSplit;
-
-
-                //materialType.SelectedIndexChanged += (sender, e) =>
-                //{
-                //    var selectedType = materialType.SelectedKey;
-
-                //    if (selectedType == "Window")
-                //    {
-                //        allMaterials = this.WindowMaterials;
-                //    }
-                //    else
-                //    {
-                //        allMaterials = this.OpaqueMaterials;
-                //    }
-                //    searchTBox.Text = null;
-                //    lib.Items.Clear();
-
-                //    var filteredItems = allMaterials.Select(_ => new ListItem() { Text = _.Identifier, Key = _.Identifier, Tag = _ });
-                //    lib.Items.AddRange(filteredItems);
-
-                //};
-
-
-                
-                //var allMaterialItems = allMaterials.Select(_ => new ListItem() { Text = _.DisplayName??_.Identifier, Key = _.DisplayName ?? _.Identifier, Tag = _ });
-                //lib.Items.AddRange(allMaterialItems);
-                //lib.MouseMove += (sender, e) =>
-                //{
-                //    var dragableArea = lib.Bounds;
-                //    dragableArea.Width -= 20;
-                //    dragableArea.Height -= 20;
-                //    var iscontained = e.Location.Y < dragableArea.Height  && e.Location.X < dragableArea.Width;
-                //    //name.Text = $"{dragableArea.Width}x{dragableArea.Height}, {new Point(e.Location).X}:{new Point(e.Location).Y}, {dragableArea.Contains(new Point(e.Location))}";
-                //    if (!iscontained)
-                //        return; 
-
-                //    if (e.Buttons == MouseButtons.Primary && lib.SelectedIndex != -1)
-                //    {
-                //        var selected = lib.SelectedKey;
-                //        var data = new DataObject();
-                //        data.SetString(selected, "Material");
-                //        lib.DoDragDrop(data, DragEffects.Move);
-                //        e.Handled = true;
-                //    }
-                //};
-
-                //lib.SelectedIndexChanged += (s, e) => 
-                //{
-                //    if (lib.SelectedIndex == -1)
-                //    {
-                //        materialDetail.Items.Clear();
-                //        return;
-                //    }
-
-                //    var selectedItem = (lib.Items[lib.SelectedIndex] as ListItem).Tag as HB.HoneybeeObject;
-                //    var layers = new List<string>();
-                    
-                //    var layersItems = selectedItem.ToString(true).Split('\n').Select(_ => new ListItem() { Text = _ });
-                //    materialDetail.Items.Clear();
-                //    materialDetail.Items.AddRange(layersItems);
-
-
-
-                //};
-
-               
-                //searchTBox.TextChanged += (sender, e) =>
-                //{
-                //    var input = searchTBox.Text;
-                //    materialDetail.Items.Clear();
-                //    lib.Items.Clear();
-                //    if (string.IsNullOrWhiteSpace(input))
-                //    {
-                //        lib.Items.AddRange(allMaterialItems);
-                //        return;
-                //    }
-                //    var regexPatten = ".*" + input.Replace(" ", "(.*)") + ".*";
-                //    var filtered = allMaterials.Where(_ => Regex.IsMatch(_.Identifier, regexPatten, RegexOptions.IgnoreCase) || (_.DisplayName != null ? Regex.IsMatch(_.DisplayName, regexPatten, RegexOptions.IgnoreCase) : false));
-                //    var filteredItems = filtered.Select(_ => new ListItem() { Text = _.DisplayName ?? _.Identifier, Key = _.DisplayName ?? _.Identifier, Tag = _ });
-                //    lib.Items.AddRange(filteredItems);
-
-                //};
-
-
-                #endregion
-
-
-                //var split = new Splitter();
-                //split.Orientation = Orientation.Horizontal;
-                //split.Panel1 = leftLayout;
-                //split.Panel2 = rightGroup;
-
-                var layout = new DynamicLayout();
-                layout.DefaultPadding = new Padding(5);
-                layout.AddRow(leftLayout);
+                layout.AddRow(_materialPanel);
+                layout.AddRow(buttonSource);
                 layout.AddSeparateRow(null, OkButton, AbortButton, null);
                 layout.AddRow(null);
 
