@@ -151,8 +151,8 @@ namespace Honeybee.UI
 
         internal HB.Energy.IMaterial CheckObjName(HB.Energy.IMaterial obj)
         {
-            var name = obj.DisplayName;
-            
+            var name = obj.DisplayName ?? obj.Identifier;
+
             if (_allData.Any(_=>_.Name == name))
             {
                 name = $"{name} {Guid.NewGuid().ToString().Substring(0, 5)}";
