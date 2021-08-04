@@ -14,7 +14,8 @@ namespace Honeybee.UI
         
         private GridView _gd { get; set; }
         private bool _returnSelectedOnly;
-        private ModelEnergyProperties _modelEnergyProperties { get; set; }
+        //private ModelEnergyProperties _modelEnergyProperties { get; set; }
+        private HVACManagerViewModel _vm { get; set; }
 
         private Dialog_HVACManager()
         {
@@ -30,40 +31,49 @@ namespace Honeybee.UI
         {
             var hvacsInModel = libSource.HVACList;
             this._returnSelectedOnly = returnSelectedOnly;
-            this._modelEnergyProperties = libSource;
+            this._vm = new HVACManagerViewModel(libSource, this);
 
-            Content = Init(hvacsInModel);
+            Content = Init();
         }
 
-        private DynamicLayout Init(IEnumerable<HB.Energy.IHvac> hvacs)
+        private DynamicLayout Init()
         {
 
             var layout = new DynamicLayout();
-            layout.DefaultPadding = new Padding(10);
+            layout.DefaultPadding = new Padding(5);
             layout.DefaultSpacing = new Size(5, 5);
 
             var addNew = new Button { Text = "Add" };
-            addNew.Command = AddCommand;
+            addNew.Command = _vm.AddCommand;
 
             var duplicate = new Button { Text = "Duplicate" };
-            duplicate.Command = DuplicateCommand;
+            duplicate.Command = _vm.DuplicateCommand;
 
             var edit = new Button { Text = "Edit" };
-            edit.Command = EditCommand;
+            edit.Command = _vm.EditCommand;
 
             var remove = new Button { Text = "Remove" };
-            remove.Command = RemoveCommand;
+            remove.Command = _vm.RemoveCommand;
 
             layout.AddSeparateRow("HVACs:", null, addNew, duplicate, edit, remove);
 
-            this._gd = GenGridView(hvacs);
+            // search bar
+            var filter = new TextBox() { PlaceholderText = "Filter" };
+            filter.TextBinding.Bind(_vm, _ => _.FilterKey);
+            layout.AddRow(filter);
+
+            this._gd = GenGridView();
             this._gd.Height = 250;
             layout.AddRow(this._gd);
 
             var gd = this._gd;
+            gd.CellDoubleClick += (s, e) => _vm.EditCommand.Execute(null);
 
-   
-            gd.CellDoubleClick += (s, e) => EditCommand.Execute(null);
+            // counts
+            var counts = new Label();
+            counts.TextBinding.Bind(_vm, _ => _.Counts);
+
+            layout.AddSeparateRow(counts, null);
 
             DefaultButton = new Button { Text = "OK" };
             DefaultButton.Click += (sender, e) => OkCommand.Execute(null);
@@ -75,170 +85,91 @@ namespace Honeybee.UI
             return layout;
         }
 
-        private GridView GenGridView(IEnumerable<object> items)
+        private GridView GenGridView()
         {
-            items = items ?? new List<HB.Energy.IHvac>();
-            var gd = new GridView() { DataStore = items };
-            gd.Height = 250;
-            var nameTB = new TextBoxCell
-            {
-                Binding = Binding.Delegate<HB.Energy.IHvac, string>(r => r.DisplayName ?? r.Identifier)
+            var gd = new GridView();
+            gd.Bind(_ => _.DataStore, _vm, _ => _.GridViewDataCollection);
+            gd.SelectedItemsChanged += (s, e) => {
+                _vm.SelectedData = gd.SelectedItem as HVACViewData;
             };
-            gd.Columns.Add(new GridColumn { DataCell = nameTB, HeaderText = "Name" });
 
-            var typeTB = new TextBoxCell
+            gd.Height = 250;
+            gd.Columns.Add(new GridColumn
             {
-                Binding = Binding.Delegate<HB.Energy.IHvac, string>(r => GetSystemType(r))
-            };
-            gd.Columns.Add(new GridColumn { DataCell = typeTB, HeaderText = "Type" });
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<HVACViewData, string>(r => r.Name) },
+                HeaderText = "Name",
+                Sortable = true,
+                Width = 200
+            });
+
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<HVACViewData, string>(r => r.CType) },
+                HeaderText = "Type",
+                Sortable = true,
+                Width = 250
+            });
+
+           
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new CheckBoxCell { Binding = Binding.Delegate<HVACViewData, bool?>(r => r.Locked) },
+                HeaderText = "Locked",
+                Sortable = true
+            });
+
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<HVACViewData, string>(r => r.Source) },
+                HeaderText = "Source",
+                Sortable = true
+            });
+
+            // sorting by header
+            gd.ColumnHeaderClick += OnColumnHeaderClick;
             return gd;
 
-            string GetSystemType(HB.Energy.IHvac hvac)
-            {
-                var type = hvac.GetType().GetProperty("EquipmentType")?.GetValue(hvac)?.ToString() ?? hvac.GetType().Name;
-                return OpsHVACsViewModel.HVACUserFriendlyNamesDic.TryGetValue(type, out var userFriendly) ? userFriendly : type;
+        }
 
+        private string _currentSortByColumn;
+        private void OnColumnHeaderClick(object sender, GridColumnEventArgs e)
+        {
+            var cell = e.Column.DataCell;
+            var colName = e.Column.HeaderText;
+            System.Func<HVACViewData, string> sortFunc = null;
+            var isNumber = false;
+            switch (colName)
+            {
+
+                case "Name":
+                    sortFunc = (HVACViewData _) => _.Name;
+                    break;
+                case "Type":
+                    sortFunc = (HVACViewData _) => _.CType;
+                    break;
+                case "Locked":
+                    sortFunc = (HVACViewData _) => _.Locked.ToString();
+                    break;
+                case "Source":
+                    sortFunc = (HVACViewData _) => _.Source;
+                    break;
+                default:
+                    break;
             }
+
+            if (sortFunc == null) return;
+
+            var descend = colName == _currentSortByColumn;
+            _vm.SortList(sortFunc, isNumber, descend);
+
+            _currentSortByColumn = colName == _currentSortByColumn ? string.Empty : colName;
+
         }
 
    
-        public ICommand AddIdealAirLoadCommand => new RelayCommand<HoneybeeSchema.IdealAirSystemAbridged>((obj) => {
-
-            var dialog = new Honeybee.UI.Dialog_IdealAirLoad(obj);
-            var dialog_rc = dialog.ShowModal(this);
-            AddHVACToGridView(dialog_rc);
-        });
-        public ICommand AddOpsHVACCommand => new RelayCommand<HoneybeeSchema.Energy.IHvac>((obj) => {
-            var dialog = new Honeybee.UI.Dialog_OpsHVACs(obj);
-            var dialog_rc = dialog.ShowModal(this);
-            AddHVACToGridView(dialog_rc);
-        });
- 
-        private void AddHVACToGridView(HB.Energy.IHvac newModifier)
-        {
-            if (newModifier == null) return;
-            var d = this._gd.DataStore.OfType<HB.Energy.IHvac>().ToList();
-            d.Add(newModifier);
-            this._gd.DataStore = d;
-        }
-
-
-        public RelayCommand AddCommand => new RelayCommand(() =>
-        {
-            var gd = this._gd;
-            var contextMenu = new ContextMenu();
-
-            var AddHvacsDic = new Dictionary<string, ICommand>()
-                {
-                    { "Ideal Air Load", AddIdealAirLoadCommand},
-                    { "From OpenStudio library", AddOpsHVACCommand}
-                };
-
-            foreach (var item in AddHvacsDic)
-            {
-                contextMenu.Items.Add(
-                  new Eto.Forms.ButtonMenuItem()
-                  {
-                      Text = item.Key,
-                      Command = item.Value
-                  });
-            }
-            contextMenu.Show();
-        });
-
-        public RelayCommand DuplicateCommand => new RelayCommand(() =>
-        {
-            var gd = this._gd;
-            var selected = gd.SelectedItem as HB.Energy.IHvac;
-            if (selected == null)
-            {
-                MessageBox.Show(this, "Nothing is selected to duplicate!");
-                return;
-            }
-
-            var dup = selected.Duplicate() as HB.Energy.IHvac;
-            var id = Guid.NewGuid().ToString();
-            dup.Identifier = id;
-            dup.DisplayName = string.IsNullOrEmpty(selected.DisplayName) ? $"{selected.GetType()} {id.Substring(0, 5)}" : $"{selected.DisplayName}_dup";
-            if (dup is IdealAirSystemAbridged obj)
-                AddIdealAirLoadCommand.Execute(obj);
-            else
-                AddOpsHVACCommand.Execute(dup);
-
-        });
-
-        public RelayCommand EditCommand => new RelayCommand(() =>
-        {
-            var gd = this._gd;
-            var selected = gd.SelectedItem as HB.Energy.IHvac;
-            if (selected == null)
-            {
-                MessageBox.Show(this, "Nothing is selected to edit!");
-                return;
-            }
-            var dup = selected.Duplicate() as HB.Energy.IHvac;
-            HB.Energy.IHvac dialog_rc = null;
-            if (dup is IdealAirSystemAbridged obj)
-            {
-                var dialog = new Dialog_IdealAirLoad(obj);
-                dialog_rc = dialog.ShowModal(this);
-            }
-            else
-            {
-                var dialog = new Dialog_OpsHVACs(dup);
-                dialog_rc = dialog.ShowModal(this);
-            }
-
-
-            if (dialog_rc == null) return;
-            var index = gd.SelectedRow;
-            var newDataStore = gd.DataStore.OfType<HB.Energy.IHvac>().ToList();
-            newDataStore.RemoveAt(index);
-            newDataStore.Insert(index, dialog_rc);
-            gd.DataStore = newDataStore;
-
-        });
-
-        public RelayCommand RemoveCommand => new RelayCommand(() =>
-        {
-            var gd = this._gd;
-            var selected = gd.SelectedItem as HB.Energy.IHvac;
-            if (selected == null)
-            {
-                MessageBox.Show(this, "Nothing is selected to edit!");
-                return;
-            }
-
-            var index = gd.SelectedRow;
-            var res = MessageBox.Show(this, $"Are you sure you want to delete:\n {selected.DisplayName ?? selected.Identifier }", MessageBoxButtons.YesNo);
-            if (res == DialogResult.Yes)
-            {
-                var newDataStore = gd.DataStore.OfType<HB.Energy.IHvac>().ToList();
-                var found = newDataStore.FindIndex(_ => _.Identifier == selected.Identifier);
-                newDataStore.RemoveAt(found);
-                gd.DataStore = newDataStore;
-            }
-        });
-
         public RelayCommand OkCommand => new RelayCommand(() =>
         {
-            var gd = this._gd;
-            var allItems = gd.DataStore.Select(_ => _ as HB.Energy.IHvac).ToList();
-            var itemsToReturn = allItems;
-
-            if (this._returnSelectedOnly)
-            {
-                var d = gd.SelectedItem as HB.Energy.IHvac;
-                if (d == null)
-                {
-                    MessageBox.Show(this, "Nothing is selected!");
-                    return;
-                }
-                itemsToReturn = new List<HB.Energy.IHvac>() { d };
-            }
-
-            this._modelEnergyProperties.Hvacs.Clear();
-            this._modelEnergyProperties.AddHVACs(allItems);
+            var itemsToReturn = _vm.GetUserItems(this._returnSelectedOnly);
             Close(itemsToReturn);
         });
 
