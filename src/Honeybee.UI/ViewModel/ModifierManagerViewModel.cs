@@ -464,7 +464,7 @@ namespace Honeybee.UI
             //check if system library
             this.Locked = LockedLibraryIds.Contains(c.Identifier);
 
-            if (LBTLibraryIds.Contains(this.Name)) this.Source = "LBT";
+            if (LBTLibraryIds.Contains(c.Identifier)) this.Source = "LBT";
             //else if (NRELLibraryIds.Contains(this.Name)) this.Source = "DoE NREL";
         }
 
