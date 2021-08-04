@@ -34,7 +34,7 @@ namespace Honeybee.UI
         public DynamicLayout Init()
         {
             var layout = new DynamicLayout();
-            layout.DefaultPadding = new Padding(10);
+            layout.DefaultPadding = new Padding(5);
             layout.DefaultSpacing = new Size(5, 5);
 
             var addNew = new Button { Text = "Add" };
@@ -61,21 +61,28 @@ namespace Honeybee.UI
             layout.AddRow(gd);
             this._gd = gd;
 
+            // counts
+            var counts = new Label();
+            counts.TextBinding.Bind(_vm, _ => _.Counts);
+
             // unit switchs
             var unit = new RadioButtonList();
             unit.Items.Add("Metric");
             unit.Items.Add("Imperial");
             unit.SelectedIndex = 0;
             unit.Spacing = new Size(5, 0);
-            unit.SelectedIndexChanged += (s, e) => _vm.ChangeUnit(unit.SelectedIndex == 1);
+            unit.SelectedIndexChanged += (s, e) => _vm.UseIPUnit = unit.SelectedIndex == 1;
 
+            layout.AddSeparateRow(counts, null, unit);
+
+            
             var OKButton = new Button { Text = "OK" };
             OKButton.Click += (sender, e) => OkCommand.Execute(null);
 
 
             AbortButton = new Button { Text = "Cancel" };
             AbortButton.Click += (sender, e) => Close();
-            layout.AddSeparateRow(null, OKButton, AbortButton, null, unit);
+            layout.AddSeparateRow(null, OKButton, AbortButton, null);
             layout.AddRow(null);
 
             gd.CellDoubleClick += (s, e) => _vm.EditCommand.Execute(null);
@@ -99,7 +106,7 @@ namespace Honeybee.UI
                 DataCell = new TextBoxCell { Binding = Binding.Delegate<MaterialViewData, string>(r => r.Name) }, 
                 HeaderText = "Name",
                 Sortable = true,
-                Width = 150
+                Width = 200
             });
 
             gd.Columns.Add(new GridColumn
@@ -181,7 +188,7 @@ namespace Honeybee.UI
                     sortFunc = (MaterialViewData _) => _.Locked.ToString();
                     break;
                 case "Source":
-                    sortFunc = (MaterialViewData _) => _.Source.ToString();
+                    sortFunc = (MaterialViewData _) => _.Source;
                     break;
                 default:
                     break;
@@ -199,23 +206,7 @@ namespace Honeybee.UI
 
         public RelayCommand OkCommand => new RelayCommand(() =>
         {
-            
-            var allItems = _vm.GridViewDataCollection.Select(_ => _.Material).ToList();
-            _vm.UpdateLibSource(allItems);
-
-            var itemsToReturn = allItems;
-
-            if (this._returnSelectedOnly)
-            {
-                var d = _vm.SelectedData;
-                if (d == null)
-                {
-                    MessageBox.Show(this, "Nothing is selected!");
-                    return;
-                }
-                itemsToReturn = new List<HB.Energy.IMaterial>() { d.Material };
-            }
-
+            var itemsToReturn = _vm.GetUserItems(this._returnSelectedOnly);
             Close(itemsToReturn);
         });
 
