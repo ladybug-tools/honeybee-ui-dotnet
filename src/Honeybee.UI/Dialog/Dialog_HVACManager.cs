@@ -1,20 +1,14 @@
 ﻿using Eto.Drawing;
 using Eto.Forms;
 using HB = HoneybeeSchema;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using HoneybeeSchema;
-using System.Windows.Input;
 
 namespace Honeybee.UI
 {
     public class Dialog_HVACManager : Dialog<List<HB.Energy.IHvac>>
     {
-        
-        private GridView _gd { get; set; }
         private bool _returnSelectedOnly;
-        //private ModelEnergyProperties _modelEnergyProperties { get; set; }
         private HVACManagerViewModel _vm { get; set; }
 
         private Dialog_HVACManager()
@@ -62,11 +56,9 @@ namespace Honeybee.UI
             filter.TextBinding.Bind(_vm, _ => _.FilterKey);
             layout.AddRow(filter);
 
-            this._gd = GenGridView();
-            this._gd.Height = 250;
-            layout.AddRow(this._gd);
+            var gd = GenGridView();
+            layout.AddRow(gd);
 
-            var gd = this._gd;
             gd.CellDoubleClick += (s, e) => _vm.EditCommand.Execute(null);
 
             // counts

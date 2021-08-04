@@ -2,7 +2,6 @@
 using Eto.Forms;
 using HB = HoneybeeSchema;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Honeybee.UI
 {
@@ -10,8 +9,6 @@ namespace Honeybee.UI
     public class Dialog_ConstructionManager : Dialog<List<HB.Energy.IConstruction>>
     {
         private bool _returnSelectedOnly;
-        private GridView _gd { get; set; }
-        //private ModelEnergyProperties _modelEnergyProperties { get; set; }
         private ConstructionManagerViewModel _vm { get; set; }
         private Dialog_ConstructionManager()
         {
@@ -57,10 +54,8 @@ namespace Honeybee.UI
             filter.TextBinding.Bind(_vm, _ => _.FilterKey);
             layout.AddRow(filter);
 
-            this._gd = GenGridView();
-            this._gd.Height = 250;
-            layout.AddRow(this._gd);
-            var gd = this._gd;
+            var gd = GenGridView();
+            layout.AddRow(gd);
 
             // counts
             var counts = new Label();

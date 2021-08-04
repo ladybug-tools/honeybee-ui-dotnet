@@ -5,58 +5,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
 using HoneybeeSchema;
-using System.Text.RegularExpressions;
 
 namespace Honeybee.UI
 {
-    public class HVACManagerViewModel : ViewModelBase
+    internal class HVACManagerViewModel : ManagerBaseViewModel<HVACViewData>
     {
-        private string _filterKey;
-        public string FilterKey
-        {
-            get => _filterKey;
-            set {
-                this.Set(() => _filterKey = value, nameof(FilterKey));
-                ApplyFilter();
-                this.Counts = this.GridViewDataCollection.Count.ToString();
-            }
-        }
-
-        private string _counts;
-        public string Counts
-        {
-            get => $"Count: {_counts}";
-            set => this.Set(() => _counts = value, nameof(Counts));
-        }
-
-
-        private DataStoreCollection<HVACViewData> _gridViewDataCollection = new DataStoreCollection<HVACViewData>();
-        internal DataStoreCollection<HVACViewData> GridViewDataCollection
-        {
-            get => _gridViewDataCollection;
-            set => this.Set(() => _gridViewDataCollection = value, nameof(_gridViewDataCollection));
-        }
-
-        private List<HVACViewData> _userData { get; set; }
-        private List<HVACViewData> _systemData { get; set; }
-        private List<HVACViewData> _allData { get; set; }
-        internal HVACViewData SelectedData { get; set; }
-
         private HB.ModelEnergyProperties _modelEnergyProperties { get; set; }
-        private Control _control;
     
-        public HVACManagerViewModel(HB.ModelEnergyProperties libSource, Control control = default)
+        public HVACManagerViewModel(HB.ModelEnergyProperties libSource, Control control = default):base(control)
         {
-            _control = control;
             _modelEnergyProperties = libSource;
 
             this._userData = libSource.HVACList.Select(_ => new HVACViewData(_)).ToList();
             this._systemData = new List<HVACViewData>();
             this._allData = _userData.Concat(_systemData).ToList();
 
-
             ResetDataCollection();
-
         }
 
         private void AddUserData(HB.Energy.IHvac item)
@@ -116,38 +80,7 @@ namespace Honeybee.UI
             return itemsToReturn;
         }
 
-        private void ResetDataCollection()
-        {
-            if (!string.IsNullOrEmpty(this.FilterKey))
-                this.FilterKey = string.Empty;
-
-            GridViewDataCollection.Clear();
-            GridViewDataCollection.AddRange(_allData);
-            this.Counts = this.GridViewDataCollection.Count.ToString();
-        }
-
-        internal void SortList(Func<HVACViewData, string> sortFunc, bool isNumber, bool descend = false)
-        {
-            var c = new StringComparer(isNumber);
-            var newOrder = descend ? _allData.OrderByDescending(sortFunc, c) : _allData.OrderBy(sortFunc, c);
-            _allData = newOrder.ToList();
-            ResetDataCollection();
-        }
-
-        internal HB.Energy.IHvac CheckObjName(HB.Energy.IHvac obj)
-        {
-            var name = obj.DisplayName ?? obj.Identifier;
-
-            if (_allData.Any(_=>_.Name == name))
-            {
-                name = $"{name} {Guid.NewGuid().ToString().Substring(0, 5)}";
-                MessageBox.Show(_control, $"Name [{obj.DisplayName}] is conflicting with an existing item, and now it is changed to [{name}].");
-            }
-            obj.Identifier = name;
-            obj.DisplayName = name;
-            return obj;
-        }
-
+    
 
         private void ShowHVACDialog(HB.Energy.IHvac HVAC)
         {
@@ -284,42 +217,17 @@ namespace Honeybee.UI
 
         });
 
-        public void ApplyFilter(bool forceRefresh = true)
-        {
-            var filter = this.FilterKey;
-            var allData = this._allData;
-
-            // list is not filtered
-            if (string.IsNullOrWhiteSpace(filter))
-            {
-                if (!forceRefresh) return;
-                // reset
-                ResetDataCollection();
-                return;
-            }
-
-            // do nothing if user only type in one key
-            if (filter.Length <= 1) return;
-
-            // filter
-            var regexPatten = ".*" + filter.Replace(" ", "(.*)") + ".*";
-            var filtered = allData.Where(_ => Regex.IsMatch(_.SearchableText, regexPatten, RegexOptions.IgnoreCase));
-            GridViewDataCollection.Clear();
-            GridViewDataCollection.AddRange(filtered);
-        }
 
     }
 
 
 
-    internal class HVACViewData: IEquatable<HVACViewData>
+    internal class HVACViewData: ManagerViewDataBase
     {
-        public string Name { get; }
         public string CType { get; }
         public string Source { get; }
         public bool Locked { get; }
         public HB.Energy.IHvac HVAC { get; }
-        public string SearchableText { get; }
 
 
         private static IEnumerable<string> LBTLibraryIds =
@@ -341,11 +249,6 @@ namespace Honeybee.UI
 
             if (LBTLibraryIds.Contains(c.Identifier)) this.Source = "LBT";
             //else if (NRELLibraryIds.Contains(this.Name)) this.Source = "DoE NREL";
-        }
-
-        public bool Equals(HVACViewData other)
-        {
-            return other?.Name == this?.Name;
         }
 
     }
