@@ -16,8 +16,29 @@ namespace Honeybee.UI
         {
             get => _filterKey;
             set {
-                this.Set(() => _filterKey = value, nameof(_filterKey));
+                this.Set(() => _filterKey = value, nameof(FilterKey));
                 ApplyFilter();
+                this.Counts = this.GridViewDataCollection.Count.ToString();
+            }
+        }
+
+        private string _counts;
+        public string Counts
+        {
+            get => $"Count: {_counts}";
+            set => this.Set(() => _counts = value, nameof(Counts));
+        }
+
+        private bool _useIPUnit;
+        public bool UseIPUnit
+        {
+            get => _useIPUnit;
+            set
+            {
+                if (_useIPUnit != value)
+                    ChangeUnit(value);
+                _useIPUnit = value;
+
             }
         }
 
@@ -28,6 +49,8 @@ namespace Honeybee.UI
             set => this.Set(() => _gridViewDataCollection = value, nameof(_gridViewDataCollection));
         }
 
+        private List<MaterialViewData> _userData { get; set; }
+        private List<MaterialViewData> _systemData { get; set; }
         private List<MaterialViewData> _allData { get; set; }
         internal MaterialViewData SelectedData { get; set; }
 
@@ -39,25 +62,83 @@ namespace Honeybee.UI
             _control = control;
             _modelEnergyProperties = libSource;
 
-            this._allData = libSource.MaterialList.Select(_ => new MaterialViewData(_))
-                .Concat(HB.Helper.EnergyLibrary.StandardsOpaqueMaterials.Select(_ => new MaterialViewData(_.Value)))
-                .Concat(HB.Helper.EnergyLibrary.StandardsWindowMaterials.Select(_ => new MaterialViewData(_.Value)))
+            this._userData = libSource.MaterialList.Select(_ => new MaterialViewData(_, ShowIPUnit: false)).ToList();
+            this._systemData =
+                HB.Helper.EnergyLibrary.StandardsOpaqueMaterials.Select(_ => new MaterialViewData(_.Value, ShowIPUnit: false))
+                .Concat(HB.Helper.EnergyLibrary.StandardsWindowMaterials.Select(_ => new MaterialViewData(_.Value, ShowIPUnit: false)))
                 .ToList();
-      
-            GridViewDataCollection = new DataStoreCollection<MaterialViewData>(this._allData);
+            this._allData = _userData.Concat(_systemData).ToList();
+
+
+            ResetDataCollection();
 
         }
 
-        public void UpdateLibSource(List<HB.Energy.IMaterial> newItems)
+        private void AddUserData(HB.Energy.IMaterial item)
         {
+            var newItem = CheckObjName(item);
+            this._userData.Insert(0, new MaterialViewData(newItem, this.UseIPUnit));
+            this._allData = _userData.Concat(_systemData).ToList();
+        }
+        private void ReplaceUserData(MaterialViewData oldObj, HB.Energy.IMaterial newObj)
+        {
+            var newItem = CheckObjName(newObj);
+            var index = _userData.IndexOf(oldObj);
+            _userData.RemoveAt(index);
+            _userData.Insert(index, new MaterialViewData(newItem, this.UseIPUnit));
+            this._allData = _userData.Concat(_systemData).ToList();
+        }
+        private void DeleteUserData(MaterialViewData item)
+        {
+            this._userData.Remove(item);
+            this._allData = _userData.Concat(_systemData).ToList();
+        }
+
+        public void UpdateLibSource()
+        {
+            var newItems = this._userData.Select(_ => _.Material);
             this._modelEnergyProperties.Materials.Clear();
             this._modelEnergyProperties.AddMaterials(newItems);
         }
 
+        public List<HB.Energy.IMaterial> GetUserItems(bool selectedOnly)
+        {
+
+            UpdateLibSource();
+
+            var itemsToReturn = new List<HB.Energy.IMaterial>();
+
+            if (selectedOnly)
+            {
+                var d = SelectedData;
+                if (d == null)
+                {
+                    MessageBox.Show(_control, "Nothing is selected!");
+                    return null;
+                }
+                else if (!this._userData.Contains(d))
+                {
+                    // user selected an item from system library, now add it to model EnergyProperties
+                    this._modelEnergyProperties.AddMaterial(d.Material);
+                }
+
+                itemsToReturn.Add(d.Material);
+            }
+            else
+            {
+                itemsToReturn = this._modelEnergyProperties.MaterialList.ToList();
+            }
+            return itemsToReturn;
+        }
+
         private void ResetDataCollection()
         {
+            if (!string.IsNullOrEmpty(this.FilterKey))
+                this.FilterKey = string.Empty;
+
             GridViewDataCollection.Clear();
             GridViewDataCollection.AddRange(_allData);
+            this.Counts = this.GridViewDataCollection.Count.ToString();
         }
 
         internal void SortList(Func<MaterialViewData, string> sortFunc, bool isNumber, bool descend = false)
@@ -89,8 +170,7 @@ namespace Honeybee.UI
             var dialog_rc = dialog.ShowModal(_control);
             if (dialog_rc != null)
             {
-                var newItem = CheckObjName(dialog_rc);
-                _allData.Add(new MaterialViewData(newItem));
+                AddUserData(dialog_rc);
                 ResetDataCollection();
             }
 
@@ -129,7 +209,7 @@ namespace Honeybee.UI
         public ICommand AddWindowGapCustomMaterialCommand => new RelayCommand(() => {
             var id = Guid.NewGuid().ToString();
             var name = $"New Window Gap (Custom) {id.Substring(0, 5)}";
-            var newObj = new EnergyWindowMaterialGasCustom(name, 0, 0, 0, 0, 0, displayName: name);
+            var newObj = new EnergyWindowMaterialGasCustom(name, 0, 0, 0, 0, 20, displayName: name);
             ShowMaterialDialog(newObj);
         });
 
@@ -242,11 +322,8 @@ namespace Honeybee.UI
             var dialog_rc = dialog.ShowModal(_control);
 
             if (dialog_rc == null) return;
-            var newItem = new MaterialViewData(CheckObjName(dialog_rc));
-            var index = _allData.IndexOf(selected);
-            _allData.RemoveAt(index);
-            _allData.Insert(index, newItem);
 
+            ReplaceUserData(selected, dialog_rc);
             ResetDataCollection();
 
         });
@@ -269,7 +346,7 @@ namespace Honeybee.UI
             var res = MessageBox.Show(_control, $"Are you sure you want to delete:\n {selected.Name}", MessageBoxButtons.YesNo);
             if (res == DialogResult.Yes)
             {
-                _allData.Remove(selected);
+                DeleteUserData(selected);
                 ResetDataCollection();
             }
         });
@@ -298,11 +375,12 @@ namespace Honeybee.UI
             GridViewDataCollection.AddRange(filtered);
         }
 
-        public void ChangeUnit(bool IPUnit)
+        private void ChangeUnit(bool IPUnit)
         {
-            this._allData = this._allData.Select(_ => new MaterialViewData( _.Material, IPUnit)).ToList();
-            GridViewDataCollection.Clear();
-            GridViewDataCollection.AddRange(this._allData);
+            this._userData = this._userData.Select(_ => new MaterialViewData(_.Material, IPUnit)).ToList();
+            this._systemData = this._systemData.Select(_ => new MaterialViewData(_.Material, IPUnit)).ToList();
+            this._allData = _userData.Concat(_systemData).ToList();
+            ResetDataCollection();
         }
     }
 
@@ -320,7 +398,6 @@ namespace Honeybee.UI
         public HB.Energy.IMaterial Material { get; }
         public string SearchableText { get; }
 
-        //public static HB.ModelEnergyProperties LibSource { get; set; }
         private static IEnumerable<string> NRELLibraryIds =
             HB.Helper.EnergyLibrary.StandardsOpaqueMaterials.Keys
             .Concat(HB.Helper.EnergyLibrary.StandardsWindowMaterials.Keys);
