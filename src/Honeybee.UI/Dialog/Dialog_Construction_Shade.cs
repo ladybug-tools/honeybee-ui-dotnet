@@ -5,7 +5,7 @@ using HB = HoneybeeSchema;
 namespace Honeybee.UI
 {
 
-    public class Dialog_Construction_Shade : Dialog<HB.ShadeConstruction>
+    public class Dialog_Construction_Shade : Dialog_ResourceEditor<HB.ShadeConstruction>
     {
         public Dialog_Construction_Shade(HB.ShadeConstruction shadeConstruction)
         {
@@ -20,7 +20,7 @@ namespace Honeybee.UI
             this.Icon = DialogHelper.HoneybeeIcon;
 
             var OkButton = new Button { Text = "OK" };
-            OkButton.Click += (sender, e) => Close(_hbObj);
+            OkButton.Click += (sender, e) => OkCommand.Execute(_hbObj);
 
             AbortButton = new Button { Text = "Cancel" };
             AbortButton.Click += (sender, e) => Close();
@@ -72,6 +72,5 @@ namespace Honeybee.UI
             Content = layout;
 
         }
-
     }
 }

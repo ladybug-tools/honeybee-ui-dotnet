@@ -7,10 +7,8 @@ using System.Linq;
 namespace Honeybee.UI
 {
 
-    public class Dialog_Material : Dialog<HB.Energy.IMaterial>
+    public class Dialog_Material : Dialog_ResourceEditor<HB.Energy.IMaterial>
     {
-        //private List<string> _layers = new List<string>();
-        private HB.Energy.IMaterial _hbObj;
         private DynamicLayout _materialPanel;
 
 
@@ -19,7 +17,7 @@ namespace Honeybee.UI
             try
             {
                 //_hbObj = HB.ModelEnergyProperties.Default.Materials.First(_ => _.Obj is HB.EnergyWindowMaterialGas).Obj as HB.EnergyWindowMaterialGas;
-                _hbObj = material;
+                var _hbObj = material;
 
                 Padding = new Padding(5);
                 Resizable = true;
@@ -29,7 +27,7 @@ namespace Honeybee.UI
                 this.Icon = DialogHelper.HoneybeeIcon;
 
                 var OkButton = new Button { Text = "OK" };
-                OkButton.Click += (sender, e) => Close(_hbObj);
+                OkButton.Click += (sender, e) => OkCommand.Execute(_hbObj);
 
                 AbortButton = new Button { Text = "Cancel" };
                 AbortButton.Click += (sender, e) => Close();
@@ -61,7 +59,7 @@ namespace Honeybee.UI
                 var properties = _hbObj.GetType().GetProperties().Where(_=>_.CanWrite);
                 if (properties.Count() > 15)
                 {
-                    _materialPanel.Height = 450;
+                    _materialPanel.Height = 360;
                     _materialPanel.BeginScrollable();
                 }
 
@@ -138,7 +136,7 @@ namespace Honeybee.UI
 
                     }
                 }
-              
+                _materialPanel.AddRow(null, null);
 
                 var buttonSource = new Button { Text = "Schema Data" };
                 buttonSource.Click += (s, e) =>
@@ -158,207 +156,12 @@ namespace Honeybee.UI
             }
             catch (Exception e)
             {
-
-                throw e;
+                MessageBox.Show(e.Message);
+                //throw e;
             }
-            
-            
         }
 
-        //private void GenMaterialLayersPanel(DynamicLayout layout, Action<int, string> actionAfterChanged)
-        //{
-        //    _materialPanel.Clear();
-        //    var index = 0;
-        //    foreach (var item in _layers)
-        //    {
-        //        var id = Guid.NewGuid();
-        //        var dropin = GenDropInArea(index, item, actionAfterChanged,
-        //            (i) => {
-        //                _layers.RemoveAt(i);
-        //                ////ctrls.Detach();
-        //                //ctrls.Clear();
-        //                GenMaterialLayersPanel(layout, actionAfterChanged);
-        //                //foreach (var c in newPanel.Controls)
-        //                //{
-        //                //    ctrlsLayers.AddRow(c);
-        //                //}
 
-        //                //ctrls.AddRow(new TextBox());
-        //                _materialPanel.Create();
-
-        //            });
-        //        _materialPanel.AddRow(dropin);
-
-        //        index++;
-        //    }
-        //    //return ctrls;
-
-        //    //GenItems();
-        //    ////return ctrls;
-
-        //    //void GenItems()
-        //    //{
-        //    //    _layersPanel.Clear();
-        //    //    var index = 0;
-        //    //    foreach (var item in _layers)
-        //    //    {
-        //    //        var id = Guid.NewGuid();
-        //    //        var dropin = GenDropInArea(index, item, actionAfterChanged,
-        //    //            (i) => {
-        //    //                _layers.RemoveAt(i);
-        //    //                ////ctrls.Detach();
-        //    //                //ctrls.Clear();
-        //    //                GenMaterialLayersPanel(layout, actionAfterChanged);
-        //    //                //foreach (var c in newPanel.Controls)
-        //    //                //{
-        //    //                //    ctrlsLayers.AddRow(c);
-        //    //                //}
-
-        //    //                //ctrls.AddRow(new TextBox());
-        //    //                ctrls.Create();
-
-        //    //            });
-        //    //        ctrls.AddRow(dropin);
-
-        //    //        index++;
-        //    //    }
-        //    //    //return ctrls;
-        //    //}
-        
-        //    //ctrls.EndGroup();
-        //}
-        private Control GenDropInArea(int layerIndex, string text, Action<int, string> actionAfterChanged, Action<int> deleteAction)
-        {
-            var width = 300;
-            var height = 36;
-
-            var layerPanel = new PixelLayout();
-
-            var backgroundLayer = new Label();
-            backgroundLayer.Width = width;
-            backgroundLayer.Height = height;
-            backgroundLayer.BackgroundColor = Colors.White;
-
-
-            var dropInValue = new Label();
-            dropInValue.Text = text ?? "Drag from library";
-            dropInValue.TextAlignment = TextAlignment.Center;
-            dropInValue.VerticalAlignment = VerticalAlignment.Center;
-
-            dropInValue.Width = width-50;
-            dropInValue.Height = height;
-            var backGround = string.IsNullOrEmpty(text) ? Color.FromArgb(230, 230, 230) : Colors.White;
-            dropInValue.BackgroundColor = Colors.Transparent;
-
-            
-
-
-
-            var dropIn = new Drawable();
-            dropIn.AllowDrop = true;
-            dropIn.Width = width;
-            dropIn.Height = height;
-            dropIn.BackgroundColor = Colors.Transparent;
-
-            var deleteBtn = new Button();
-            deleteBtn.Text = "✕";
-            deleteBtn.Width = 20;
-            deleteBtn.Height = 20;
-            deleteBtn.Click += (s, e) => deleteAction(layerIndex);
-            //deleteBtn.Visible = false;
-
-            //dropIn.MouseMove += (sender, e) =>
-            //{
-            //    deleteBtn.Visible = true;
-            //    //dropInValue.BackgroundColor = Colors.White;
-            //};
-            //dropIn.MouseLeave += (sender, e) =>
-            //{
-            //    deleteBtn.Visible = false;
-            //};
-            //dropIn.Paint += (s, e) =>
-            //{
-            //    e.Graphics.DrawText(font, brush, new PointF(0, 0), item);
-            //};
-            //dropIn.DragEnter += (sender, e) =>
-            //{
-            //    //if (e.Effects != DragEffects.None)
-            //    dropIn.BackgroundColor = Colors.Green;
-            //};
-            dropIn.DragLeave += (sender, e) =>
-            {
-                backgroundLayer.BackgroundColor = Colors.White;
-            };
-            dropIn.DragOver += (sender, e) =>
-            {
-                e.Effects = DragEffects.Move;
-                backgroundLayer.BackgroundColor = Color.FromArgb(230, 230, 230);
-
-            };
-            dropIn.DragDrop += (sender, e) =>
-            {
-                //if (e.Effects == DragEffects.None)
-                //    return;
-                //e.Effects = DragEffects.All;
-                //dropIn.BackgroundColor = Colors.Red;
-                var newValue = e.Data.GetString("Material");
-                dropInValue.Text = newValue;
-                actionAfterChanged(layerIndex, newValue);
-
-            };
-            layerPanel.Add(backgroundLayer, 0, 0);
-            layerPanel.Add(dropInValue, 15, 0);
-            layerPanel.Add(dropIn, 0, 0);
-            layerPanel.Add(deleteBtn, width - 26, 8);
-            return layerPanel;
-        }
-        private Control GenAddMoreDropInArea(Action<string> actionAfterNewDroppedIn)
-        {
-            var width = 300;
-            var height = 60;
-
-            var layerPanel = new PixelLayout();
-            var dropInValue = new Label();
-            dropInValue.Text = "Drag a new material from library";
-            dropInValue.TextColor = Colors.DimGray;
-            dropInValue.TextAlignment = TextAlignment.Center;
-            dropInValue.VerticalAlignment = VerticalAlignment.Center;
-
-            dropInValue.Width = width;
-            dropInValue.Height = height;
-            var backGround =  Color.FromArgb(230, 230, 230);
-            dropInValue.BackgroundColor = backGround;
-
-            var dropIn = new Drawable();
-            dropIn.AllowDrop = true;
-            dropIn.Width = width;
-            dropIn.Height = height;
-            dropIn.BackgroundColor = Colors.Transparent;
-
-            dropIn.DragLeave += (sender, e) =>
-            {
-
-                dropInValue.BackgroundColor = backGround;
-            };
-            dropIn.DragOver += (sender, e) =>
-            {
-                e.Effects = DragEffects.Move;
-                dropInValue.BackgroundColor = Colors.Yellow;
-            };
-            dropIn.DragDrop += (sender, e) =>
-            {
-              
-                var newValue = e.Data.GetString("Material");
-                //dropInValue.Text = newValue;
-                actionAfterNewDroppedIn(newValue);
-
-            };
-            layerPanel.Add(dropInValue, 0, 0);
-            layerPanel.Add(dropIn, 0, 0);
-            return layerPanel;
-        }
-
-       
 
     }
 }

@@ -5,7 +5,7 @@ using HB = HoneybeeSchema;
 namespace Honeybee.UI
 {
 
-    public class Dialog_Construction_AirBoundary : Dialog<HB.AirBoundaryConstructionAbridged>
+    public class Dialog_Construction_AirBoundary : Dialog_ResourceEditor<HB.AirBoundaryConstructionAbridged>
     {
         public Dialog_Construction_AirBoundary(HB.AirBoundaryConstructionAbridged airBoundaryConst)
         {
@@ -19,7 +19,7 @@ namespace Honeybee.UI
             this.Icon = DialogHelper.HoneybeeIcon;
 
             var OkButton = new Button { Text = "OK" };
-            OkButton.Click += (sender, e) => Close(_hbObj);
+            OkButton.Click += (sender, e) => OkCommand.Execute(_hbObj);
 
             AbortButton = new Button { Text = "Cancel" };
             AbortButton.Click += (sender, e) => Close();

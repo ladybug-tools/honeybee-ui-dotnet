@@ -2,12 +2,10 @@
 using Eto.Forms;
 using HoneybeeSchema;
 using System;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace Honeybee.UI
 {
-    public class Dialog_IdealAirLoad : Dialog<HoneybeeSchema.IdealAirSystemAbridged>
+    public class Dialog_IdealAirLoad : Dialog_ResourceEditor<IdealAirSystemAbridged>
     {
         //private ModelEnergyProperties ModelEnergyProperties { get; set; }
         public Dialog_IdealAirLoad(IdealAirSystemAbridged hvac = default)
@@ -109,10 +107,7 @@ namespace Honeybee.UI
             layout.AddSeparateRow(coolingLimitNumber, coolingLimit);
 
             var OKButton = new Button { Text = "OK" };
-            OKButton.Click += (sender, e) => {
-                var obj = vm.GreateHvac(hvac);
-                Close(obj);
-            };
+            OKButton.Click += (sender, e) => OkCommand.Execute(vm.GreateHvac(hvac));
 
             AbortButton = new Button { Text = "Cancel" };
             AbortButton.Click += (sender, e) => Close();
@@ -121,10 +116,8 @@ namespace Honeybee.UI
             layout.AddRow(null);
             Content = layout;
 
-
         }
-        
-     
+
 
     }
 }
