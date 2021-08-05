@@ -13,7 +13,7 @@ using System.Reflection;
 namespace Honeybee.UI
 {
 
-    public class Dialog_ProgramType: Dialog<HB.ProgramTypeAbridged>
+    public class Dialog_ProgramType: Dialog_ResourceEditor<HB.ProgramTypeAbridged>
     {
         private ProgramTypeViewModel _vm;
 
@@ -62,7 +62,7 @@ namespace Honeybee.UI
                 var pTypePanel = GenProgramTypePanel();
 
                 DefaultButton = new Button { Text = "OK" };
-                DefaultButton.Click += (sender, e) => Close(_vm.hbObj);
+                DefaultButton.Click += (sender, e) => OkCommand.Execute(_vm.hbObj);
 
                 AbortButton = new Button { Text = "Cancel" };
                 AbortButton.Click += (sender, e) => Close();

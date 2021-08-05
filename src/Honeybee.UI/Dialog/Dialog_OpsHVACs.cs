@@ -1,13 +1,10 @@
 ﻿using Eto.Drawing;
 using Eto.Forms;
-using HoneybeeSchema;
 using System;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace Honeybee.UI
 {
-    public class Dialog_OpsHVACs : Dialog<HoneybeeSchema.Energy.IHvac>
+    public class Dialog_OpsHVACs : Dialog_ResourceEditor<HoneybeeSchema.Energy.IHvac>
     {
         //private ModelEnergyProperties ModelEnergyProperties { get; set; }
         public Dialog_OpsHVACs(HoneybeeSchema.Energy.IHvac hvac = default)
@@ -100,7 +97,7 @@ namespace Honeybee.UI
             var OKButton = new Button { Text = "OK" };
             OKButton.Click += (sender, e) => {
                 var obj = vm.GreateHvac(hvac);
-                Close(obj);
+                OkCommand.Execute(obj);
             };
 
             AbortButton = new Button { Text = "Cancel" };

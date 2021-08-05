@@ -10,8 +10,7 @@ using System.Reflection;
 
 namespace Honeybee.UI
 {
-   
-    public class Dialog_ConstructionSet: Dialog<HB.ConstructionSetAbridged>
+    public class Dialog_ConstructionSet: Dialog_ResourceEditor<HB.ConstructionSetAbridged>
     {
 
         private static IEnumerable<HB.Energy.IConstruction> _opaqueConstructions;
@@ -320,8 +319,8 @@ namespace Honeybee.UI
                 panelAll.AddRow(panelLeft, panelRight);
 
 
-                DefaultButton = new Button { Text = "OK" };
-                DefaultButton.Click += (sender, e) => Close(cSet);
+                var OkButton = new Button { Text = "OK" };
+                OkButton.Click += (sender, e) => OkCommand.Execute(cSet);
 
                 AbortButton = new Button { Text = "Cancel" };
                 AbortButton.Click += (sender, e) => Close();
@@ -333,7 +332,7 @@ namespace Honeybee.UI
                 {
                     Padding = new Padding(5, 10, 5, 5),
                     Spacing = new Size(10, 10),
-                    Rows = { new TableRow(null, this.DefaultButton, this.AbortButton, null, hbData) }
+                    Rows = { new TableRow(null, OkButton, this.AbortButton, null, hbData) }
                 };
 
 
@@ -508,7 +507,6 @@ namespace Honeybee.UI
 
         }
 
-        
 
     }
 }

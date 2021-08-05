@@ -10,7 +10,7 @@ using HoneybeeSchema;
 namespace Honeybee.UI
 {
 
-    public class Dialog_Construction : Dialog<HB.Energy.IConstruction>
+    public class Dialog_Construction : Dialog_ResourceEditor<HB.Energy.IConstruction>
     {
         //private List<string> _layers = new List<string>();
         private HB.Energy.IConstruction _hbObj;
@@ -137,8 +137,7 @@ namespace Honeybee.UI
                         dup.DisplayName = m.DisplayName ?? m.Identifier;
                         libSource.AddMaterial(dup);
                     }
-
-                    Close(_hbObj);
+                    OkCommand.Execute(_hbObj);
                 };
 
                 AbortButton = new Button { Text = "Cancel" };
@@ -561,7 +560,6 @@ namespace Honeybee.UI
             return layerPanel;
         }
 
-       
 
     }
 }

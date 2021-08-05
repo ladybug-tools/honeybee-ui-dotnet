@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 namespace Honeybee.UI
 {
    
-    public class Dialog_ModifierSet: Dialog<HB.ModifierSetAbridged>
+    public class Dialog_ModifierSet: Dialog_ResourceEditor<HB.ModifierSetAbridged>
     {
 
         private IEnumerable<HB.ModifierBase> _modifiers;
@@ -213,7 +213,7 @@ namespace Honeybee.UI
 
 
             var OKButton = new Button { Text = "OK" };
-            OKButton.Click += (sender, e) => Close(mSet);
+            OKButton.Click += (sender, e) => OkCommand.Execute(mSet);
 
             AbortButton = new Button { Text = "Cancel" };
             AbortButton.Click += (sender, e) => Close();

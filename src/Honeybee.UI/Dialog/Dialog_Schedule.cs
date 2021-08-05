@@ -4,7 +4,7 @@ using HoneybeeSchema;
 
 namespace Honeybee.UI
 {
-    public class Dialog_Schedule : Dialog<ScheduleRuleset>
+    public class Dialog_Schedule : Dialog_ResourceEditor<ScheduleRuleset>
     {
         
         public Dialog_Schedule(ScheduleRuleset scheduleRuleset)
@@ -16,7 +16,7 @@ namespace Honeybee.UI
             this.Icon = DialogHelper.HoneybeeIcon;
 
             var OkButton = new Button { Text = "OK" };
-            OkButton.Click += (sender, e) => Close(scheduleRuleset);
+            OkButton.Click += (sender, e) => OkCommand.Execute(scheduleRuleset);
 
             AbortButton = new Button { Text = "Cancel" };
             AbortButton.Click += (sender, e) => Close();

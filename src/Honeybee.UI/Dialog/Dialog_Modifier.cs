@@ -1,12 +1,11 @@
 ﻿using Eto.Drawing;
 using Eto.Forms;
-using System.Reflection;
 using HB = HoneybeeSchema;
 
 namespace Honeybee.UI
 {
 
-    public class Dialog_Modifier<T> : Dialog<T> where T : HB.ModifierBase
+    public class Dialog_Modifier<T> : Dialog_ResourceEditor<T> where T : HB.ModifierBase
     {
         public Dialog_Modifier(T modifier)
         {
@@ -20,7 +19,7 @@ namespace Honeybee.UI
             this.Icon = DialogHelper.HoneybeeIcon;
             
             var OkButton = new Button { Text = "OK" };
-            OkButton.Click += (sender, e) => Close(_hbObj);
+            OkButton.Click += (sender, e) => OkCommand.Execute(_hbObj);
 
             AbortButton = new Button { Text = "Cancel" };
             AbortButton.Click += (sender, e) => Close();
@@ -98,5 +97,8 @@ namespace Honeybee.UI
 
         }
 
+
     }
+
+
 }
