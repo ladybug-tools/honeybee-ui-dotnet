@@ -21,6 +21,8 @@ namespace Honeybee.UI
 
         public Dialog_ModifierSetManager(ref ModelRadianceProperties libSource, bool returnSelectedOnly = false) : this()
         {
+            libSource.FillNulls();
+
             this._returnSelectedOnly = returnSelectedOnly;
             this._vm = new ModifierSetManagerViewModel(libSource, this);
             Content = Init();

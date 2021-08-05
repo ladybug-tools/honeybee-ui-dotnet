@@ -72,6 +72,8 @@ namespace Honeybee.UI
         {
             try
             {
+                libSource.FillNulls();
+
                 this.ModelEnergyProperties = libSource;
                 var cSet = constructionSet ?? new HB.ConstructionSetAbridged(identifier: Guid.NewGuid().ToString());
                 //cSet.WallSet = new WallConstructionSetAbridged("interior C");

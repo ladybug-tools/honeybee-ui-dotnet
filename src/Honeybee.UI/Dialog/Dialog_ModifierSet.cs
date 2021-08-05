@@ -26,6 +26,8 @@ namespace Honeybee.UI
         private ModelRadianceProperties ModelRadianceProperties { get; set; }
         public Dialog_ModifierSet(ModelRadianceProperties libSource, HB.ModifierSetAbridged modifierSet)
         {
+            libSource.FillNulls();
+
             this.ModelRadianceProperties = libSource;
             var mSet = modifierSet ?? new HB.ModifierSetAbridged(identifier: Guid.NewGuid().ToString());
 

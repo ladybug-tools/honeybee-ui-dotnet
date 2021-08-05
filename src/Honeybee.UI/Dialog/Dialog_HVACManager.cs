@@ -23,6 +23,8 @@ namespace Honeybee.UI
      
         public Dialog_HVACManager(ref ModelEnergyProperties libSource, bool returnSelectedOnly = false) : this()
         {
+            libSource.FillNulls();
+
             var hvacsInModel = libSource.HVACList;
             this._returnSelectedOnly = returnSelectedOnly;
             this._vm = new HVACManagerViewModel(libSource, this);

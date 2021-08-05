@@ -32,6 +32,8 @@ namespace Honeybee.UI
         {
             try
             {
+                libSource.FillNulls();
+
                 _vm = new ProgramTypeViewModel(libSource);
                 _vm.hbObj = ProgramType ?? new HB.ProgramTypeAbridged(identifier: Guid.NewGuid().ToString());
 
