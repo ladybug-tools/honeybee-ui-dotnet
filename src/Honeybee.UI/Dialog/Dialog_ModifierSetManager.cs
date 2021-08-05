@@ -1,63 +1,64 @@
 ﻿using Eto.Drawing;
 using Eto.Forms;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using HoneybeeSchema;
 
 namespace Honeybee.UI
 {
-    public class Dialog_ModifierSetManager : Dialog<List<ModifierSetAbridged>>
+    public class Dialog_ModifierSetManager : Dialog<List<HoneybeeSchema.Radiance.IBuildingModifierSet>>
     {
-        private GridView _gd;
         private bool _returnSelectedOnly;
-        private ModelRadianceProperties ModelRadianceProperties { get; set; }
+        private ModifierSetManagerViewModel _vm { get; set; }
 
         private Dialog_ModifierSetManager()
         {
             Padding = new Padding(5);
-            Resizable = true;
             Title = $"ModifierSet Manager - {DialogHelper.PluginName}";
             WindowStyle = WindowStyle.Default;
-            MinimumSize = new Size(650, 300);
+            MinimumSize = new Size(800, 300);
             this.Icon = DialogHelper.HoneybeeIcon;
         }
 
         public Dialog_ModifierSetManager(ref ModelRadianceProperties libSource, bool returnSelectedOnly = false) : this()
         {
             this._returnSelectedOnly = returnSelectedOnly;
-            this.ModelRadianceProperties = libSource;
-            var modifierSets = libSource.ModifierSetList;
-
-            Content = Init(modifierSets);
+            this._vm = new ModifierSetManagerViewModel(libSource, this);
+            Content = Init();
         }
 
-        private DynamicLayout Init(IEnumerable<HoneybeeSchema.Radiance.IBuildingModifierSet> modifierSets)
+        private DynamicLayout Init()
         {
             var layout = new DynamicLayout();
-            layout.DefaultPadding = new Padding(10);
+            layout.DefaultPadding = new Padding(5);
             layout.DefaultSpacing = new Size(5, 5);
 
 
             var addNew = new Button { Text = "Add" };
-            addNew.Command = AddCommand;
+            addNew.Command = _vm.AddCommand;
 
             var duplicate = new Button { Text = "Duplicate" };
-            duplicate.Command = DuplicateCommand;
+            duplicate.Command = _vm.DuplicateCommand;
 
             var edit = new Button { Text = "Edit" };
-            edit.Command = EditCommand;
+            edit.Command = _vm.EditCommand;
 
             var remove = new Button { Text = "Remove" };
-            remove.Command = RemoveCommand;
+            remove.Command = _vm.RemoveCommand;
 
             layout.AddSeparateRow("Construction Sets:", null, addNew, duplicate, edit, remove);
 
-            var gd = GenGridView(modifierSets);
-            _gd = gd;
-            gd.Height = 250;
+            // search bar
+            var filter = new TextBox() { PlaceholderText = "Filter" };
+            filter.TextBinding.Bind(_vm, _ => _.FilterKey);
+            layout.AddRow(filter);
+
+            var gd = GenGridView();
             layout.AddRow(gd);
 
+            // counts
+            var counts = new Label();
+            counts.TextBinding.Bind(_vm, _ => _.Counts);
+            layout.AddSeparateRow(counts, null);
 
             var OKButton = new Button { Text = "OK" };
             OKButton.Click += (sender, e) => OkCommand.Execute(null);
@@ -68,131 +69,140 @@ namespace Honeybee.UI
             layout.AddSeparateRow(null, OKButton, AbortButton, null);
 
 
-            gd.CellDoubleClick += (s, e) => EditCommand.Execute(null);
+            gd.CellDoubleClick += (s, e) => _vm.EditCommand.Execute(null);
             return layout;
         }
 
-        private GridView GenGridView(IEnumerable<object> items)
+        private GridView GenGridView()
         {
-            items = items ?? new List<HoneybeeSchema.Radiance.IBuildingModifierSet>();
-            var gd = new GridView() { DataStore = items };
-  
-            var nameTB = new TextBoxCell
-            {
-                Binding = Binding.Delegate<HoneybeeSchema.Radiance.IBuildingModifierSet, string>(r => r.DisplayName ?? r.Identifier)
+            var gd = new GridView();
+            gd.Bind(_ => _.DataStore, _vm, _ => _.GridViewDataCollection);
+            gd.SelectedItemsChanged += (s, e) => {
+                _vm.SelectedData = gd.SelectedItem as ModifierSetViewData;
             };
-            gd.Columns.Add(new GridColumn { DataCell = nameTB, HeaderText = "Name" });
 
+            gd.Height = 250;
+
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<ModifierSetViewData, string>(r => r.Name) },
+                HeaderText = "Name",
+                Sortable = true
+            });
+
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new CheckBoxCell { Binding = Binding.Delegate<ModifierSetViewData, bool?>(r => r.HasWallSet) },
+                HeaderText = "Wall",
+                Sortable = true
+            });
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new CheckBoxCell { Binding = Binding.Delegate<ModifierSetViewData, bool?>(r => r.HasRoofCeilingSet) },
+                HeaderText = "RoofCeiling",
+                Sortable = true
+            });
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new CheckBoxCell { Binding = Binding.Delegate<ModifierSetViewData, bool?>(r => r.HasFloorSet) },
+                HeaderText = "Floor",
+                Sortable = true
+            });
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new CheckBoxCell { Binding = Binding.Delegate<ModifierSetViewData, bool?>(r => r.HasApertureSet) },
+                HeaderText = "Aperture",
+                Sortable = true
+            });
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new CheckBoxCell { Binding = Binding.Delegate<ModifierSetViewData, bool?>(r => r.HasAirBoundaryModifier) },
+                HeaderText = "AirBoundary",
+                Sortable = true
+            });
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new CheckBoxCell { Binding = Binding.Delegate<ModifierSetViewData, bool?>(r => r.HasShadeSet) },
+                HeaderText = "Shade",
+                Sortable = true
+            });
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new CheckBoxCell { Binding = Binding.Delegate<ModifierSetViewData, bool?>(r => r.Locked) },
+                HeaderText = "Locked",
+                Sortable = true
+            });
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<ModifierSetViewData, string>(r => r.Source) },
+                HeaderText = "Source",
+                Sortable = true
+            });
+            // sorting by header
+            gd.ColumnHeaderClick += OnColumnHeaderClick;
             return gd;
         }
 
-
-
-        public RelayCommand AddCommand => new RelayCommand(() =>
+        private string _currentSortByColumn;
+        private void OnColumnHeaderClick(object sender, GridColumnEventArgs e)
         {
-            var gd = this._gd;
-            var dialog = new Honeybee.UI.Dialog_ModifierSet(this.ModelRadianceProperties, null);
-            var dialog_rc = dialog.ShowModal(this);
-
-            if (dialog_rc == null) return;
-            var d = gd.DataStore.OfType<ModifierSetAbridged>().ToList();
-            d.Add(dialog_rc);
-            gd.DataStore = d;
-        });
-
-        public RelayCommand DuplicateCommand => new RelayCommand(() =>
-        {
-            var gd = this._gd;
-            if (gd.SelectedItem == null)
+            var cell = e.Column.DataCell;
+            var colName = e.Column.HeaderText;
+            System.Func<ModifierSetViewData, string> sortFunc = null;
+            var isNumber = false;
+            switch (colName)
             {
-                MessageBox.Show(this, "Nothing is selected to duplicate!");
-                return;
+
+                case "Name":
+                    sortFunc = (ModifierSetViewData _) => _.Name;
+                    break;
+                case "Wall":
+                    sortFunc = (ModifierSetViewData _) => _.HasWallSet.ToString();
+                    break;
+                case "RoofCeiling":
+                    sortFunc = (ModifierSetViewData _) => _.HasRoofCeilingSet.ToString();
+                    break;
+                case "Floor":
+                    sortFunc = (ModifierSetViewData _) => _.HasFloorSet.ToString();
+                    isNumber = true;
+                    break;
+                case "Aperture":
+                    sortFunc = (ModifierSetViewData _) => _.HasApertureSet.ToString();
+                    isNumber = true;
+                    break;
+                case "AirBoundary":
+                    sortFunc = (ModifierSetViewData _) => _.HasAirBoundaryModifier.ToString();
+                    isNumber = true;
+                    break;
+                case "Shade":
+                    sortFunc = (ModifierSetViewData _) => _.HasShadeSet.ToString();
+                    isNumber = true;
+                    break;
+                case "Locked":
+                    sortFunc = (ModifierSetViewData _) => _.Locked.ToString();
+                    break;
+                case "Source":
+                    sortFunc = (ModifierSetViewData _) => _.Source;
+                    break;
+                default:
+                    break;
             }
 
-            var id = Guid.NewGuid().ToString();
+            if (sortFunc == null) return;
 
-            var dup = (gd.SelectedItem as ModifierSetAbridged).DuplicateModifierSetAbridged();
+            var descend = colName == _currentSortByColumn;
+            _vm.SortList(sortFunc, isNumber, descend);
 
-            dup.Identifier = id;
-            dup.DisplayName = string.IsNullOrEmpty(dup.DisplayName) ? $"ModifierSet {id.Substring(0, 5)}" : $"{dup.DisplayName}_dup";
-            var dialog = new Honeybee.UI.Dialog_ModifierSet(this.ModelRadianceProperties, dup);
-            var dialog_rc = dialog.ShowModal(this);
-            if (dialog_rc == null) return;
-            var d = gd.DataStore.OfType<ModifierSetAbridged>().ToList();
-            d.Add(dialog_rc);
-            gd.DataStore = d;
-        });
+            _currentSortByColumn = colName == _currentSortByColumn ? string.Empty : colName;
 
-        public RelayCommand EditCommand => new RelayCommand(() =>
-        {
-            var gd = this._gd;
-            var selected = gd.SelectedItem as ModifierSetAbridged;
-            if (selected == null)
-            {
-                MessageBox.Show(this, "Nothing is selected to edit!");
-                return;
-            }
+        }
 
-            var dup = selected.DuplicateModifierSetAbridged();
-
-            var dialog = new Honeybee.UI.Dialog_ModifierSet(this.ModelRadianceProperties, dup);
-            var dialog_rc = dialog.ShowModal(this);
-            if (dialog_rc == null) return;
-
-            var index = gd.SelectedRow;
-            var newDataStore = gd.DataStore.OfType<ModifierSetAbridged>().ToList();
-            newDataStore.RemoveAt(index);
-            newDataStore.Insert(index, dialog_rc);
-            gd.DataStore = newDataStore;
-        });
-
-        public RelayCommand RemoveCommand => new RelayCommand(() =>
-        {
-            var gd = this._gd;
-            var selected = gd.SelectedItem as ModifierSetAbridged;
-            if (selected == null)
-            {
-                MessageBox.Show(this, "Nothing is selected to edit!");
-                return;
-            }
-
-            if (selected.Identifier.StartsWith("Generic_"))
-            {
-                MessageBox.Show(this, $"{selected.DisplayName ?? selected.Identifier } cannot be removed, because it is Honeybee default modifier set.");
-                return;
-            }
-
-            var res = MessageBox.Show(this, $"Are you sure you want to delete:\n {selected.DisplayName ?? selected.Identifier }", MessageBoxButtons.YesNo);
-            if (res == DialogResult.Yes)
-            {
-                var newDataStore = gd.DataStore.Where(_ => _ != selected).ToList();
-                gd.DataStore = newDataStore;
-            }
-        });
 
         public RelayCommand OkCommand => new RelayCommand(() =>
         {
-            var gd = this._gd;
-     
-            var allItems = gd.DataStore.OfType<ModifierSetAbridged>().ToList();
-            var itemsToReturn = allItems;
-
-            if (this._returnSelectedOnly)
-            {
-                var d = gd.SelectedItem as ModifierSetAbridged;
-                if (d == null)
-                {
-                    MessageBox.Show(this, "Nothing is selected!");
-                    return;
-                }
-                itemsToReturn = new List<ModifierSetAbridged>() { d };
-            }
-
-            this.ModelRadianceProperties.ModifierSets.Clear();
-            this.ModelRadianceProperties.AddModifierSets(allItems);
+            var itemsToReturn = _vm.GetUserItems(_returnSelectedOnly);
             Close(itemsToReturn);
         });
-
 
     }
 }
