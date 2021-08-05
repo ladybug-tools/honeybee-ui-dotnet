@@ -1,5 +1,7 @@
 ﻿using Eto.Drawing;
 using Eto.Forms;
+using System;
+using System.Linq;
 using HB = HoneybeeSchema;
 
 namespace Honeybee.UI
@@ -10,9 +12,6 @@ namespace Honeybee.UI
         public Dialog_Modifier(T modifier)
         {
             var _hbObj = modifier;
-
-            Padding = new Padding(10);
-            Resizable = true;
             Title = $"Modifier - {DialogHelper.PluginName}";
             WindowStyle = WindowStyle.Default;
             Width = 450;
@@ -27,17 +26,10 @@ namespace Honeybee.UI
 
             var layout = new DynamicLayout();
             layout.DefaultSpacing = new Size(5, 5);
-            layout.DefaultPadding = new Padding(10, 5);
+            layout.DefaultPadding = new Padding(5);
 
-            var textArea = new RichTextArea();
-            textArea.Height = 300;
-            textArea.Text = _hbObj.ToJson(true);
-        
-            layout.AddRow(textArea);
-
-            var isValid = new Label();
-            isValid.Height = 30;
-            layout.AddRow(isValid);
+            var paramPanel = GenParmPanel(_hbObj);
+            layout.AddRow(paramPanel);
 
             var docLink = new LinkButton();
             docLink.Text = "View help documents...";
@@ -49,54 +41,103 @@ namespace Honeybee.UI
             };
             layout.AddRow(docLink);
 
-            textArea.TextChanged += (s, e) =>
-            {
-                var changedText = textArea.Text.Trim();
-
-                object newObj = null;
-                try
-                {
-                    newObj = ValidateJsonText<T>(changedText);
-                }
-                catch (System.Reflection.TargetInvocationException err)
-                {
-                    var error = err.InnerException;
-                    isValid.Text = error.Message;
-                    OkButton.Enabled = false;
-                    return;
-                }
-
-                if (newObj == null)
-                {
-                    isValid.Text = "Invalid input text";
-                    OkButton.Enabled = false;
-                    return;
-                }
-                OkButton.Enabled = true;
-                isValid.Text = $"Valid {typeof(T).Name} object";
-                _hbObj = newObj as T;
-            };
-
-            layout.AddRow(null);
             layout.AddSeparateRow(null, OkButton, AbortButton, null);
             layout.AddRow(null);
             Content = layout;
 
         }
 
-        private object ValidateJsonText<T>(string userInput)
+        private Panel GenParmPanel(HB.ModifierBase modifier)
         {
-            var changedText = userInput;
-            var hbType = typeof(T);
-            var fromJsonMethod = hbType.GetMethod("FromJson");
+            var hbObj = modifier;
 
-            //object newObj = null;
-            var newObj = fromJsonMethod.Invoke(null, new[] { changedText });
-          
-            return newObj;
+            var panel = new DynamicLayout();
+            panel.DefaultSpacing = new Size(5, 5);
+            panel.DefaultPadding = new Padding(5);
 
+            var properties = hbObj.GetType().GetProperties().Where(_ => _.CanWrite);
+            if (properties.Count() > 15)
+            {
+                panel.Height = 360;
+                panel.BeginScrollable();
+            }
+
+            var name = new TextBox();
+            hbObj.DisplayName = hbObj.DisplayName ?? hbObj.Identifier;
+            name.TextBinding.Bind(() => hbObj.DisplayName, (v) => hbObj.DisplayName = v);
+
+            panel.AddRow("Name", name);
+
+            foreach (var item in properties)
+            {
+                if (item.Name == "Identifier" || item.Name == "Type" || item.Name == "DisplayName")
+                    continue;
+
+                var value = item.GetValue(hbObj);
+                var type = item.PropertyType;
+                if (value is string stringvalue)
+                {
+                    var textBox = new TextBox();
+                    //textBox.Text = stringvalue;
+                    textBox.TextBinding.Bind(() => stringvalue, (v) => item.SetValue(hbObj, v));
+                    panel.AddRow(item.Name, textBox);
+                }
+                else if (value is double numberValue)
+                {
+                    var numberTB = new MaskedTextBox();
+                    numberTB.Provider = new NumericMaskedTextProvider() { AllowDecimal = true };
+                    numberTB.TextBinding.Bind(() => numberValue.ToString(), (v) => item.SetValue(hbObj, Convert.ChangeType(v, type)));
+                    panel.AddRow(item.Name, numberTB);
+                }
+                else if (value is int intValue)
+                {
+                    var numberTB = new NumericStepper();
+                    numberTB.DecimalPlaces = 0;
+                    numberTB.Value = intValue;
+                    panel.AddRow(item.Name, numberTB);
+                }
+                else if (Nullable.GetUnderlyingType(type) != null)
+                {
+                    var enumType = Nullable.GetUnderlyingType(type);
+                    if (!enumType.IsEnum)
+                    {
+                        continue;
+                    }
+                    var values = Enum.GetNames(enumType).ToList();
+                    var dropdown = new DropDown();
+                    var dropDownItems = values.Select(_ => new ListItem() { Text = _, Key = _ });
+                    dropdown.Items.AddRange(dropDownItems);
+
+                    var currentValue = item.GetValue(hbObj, null).ToString();
+                    dropdown.SelectedKeyBinding.Bind(
+                        () => currentValue,
+                        (v) => item.SetValue(hbObj, Enum.Parse(enumType, v))
+                        );
+
+                    panel.AddRow(item.Name, dropdown);
+
+
+                }
+                else if (type.IsEnum)
+                {
+                    var values = Enum.GetNames(type).ToList();
+                    var dropdown = new DropDown();
+                    var dropDownItems = values.Select(_ => new ListItem() { Text = _, Key = _ });
+                    dropdown.Items.AddRange(dropDownItems);
+
+                    var currentValue = item.GetValue(hbObj, null).ToString();
+                    dropdown.SelectedKeyBinding.Bind(
+                        () => currentValue,
+                        (v) => item.SetValue(hbObj, Enum.Parse(type, v))
+                        );
+
+                    panel.AddRow(item.Name, dropdown);
+
+                }
+            }
+            panel.AddRow(null, null);
+            return panel;
         }
-
 
     }
 
