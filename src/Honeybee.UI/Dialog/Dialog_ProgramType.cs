@@ -221,7 +221,6 @@ namespace Honeybee.UI
             nameTbx.TextBinding.Bind(_vm.hbObj, c => c.DisplayName);
             pTypePanel.BeginScrollable(BorderType.None);
 
-            pTypePanel.AddSeparateRow(new Label() { Text = "ID: " }, new Label() { Text = _vm.hbObj.Identifier, Enabled = false });
             pTypePanel.AddSeparateRow(new Label() { Text = "Name:" });
             pTypePanel.AddSeparateRow(nameTbx);
             pTypePanel.AddSpace();
