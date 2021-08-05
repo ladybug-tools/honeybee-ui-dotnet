@@ -192,7 +192,6 @@ namespace Honeybee.UI
             var nameTbx = new TextBox();
             mSet.DisplayName = mSet.DisplayName ?? $"ModifierSet {mSet.Identifier.Substring(0, 5)}";
             nameTbx.TextBinding.Bind(mSet, c => c.DisplayName);
-            panelNames.AddRow(new Label() { Text = "ID: ", Width = 75 }, new Label() { Text = mSet.Identifier, Enabled = false });
             panelNames.AddRow(new Label() { Text = "Name:", Width = 75 }, nameTbx);
             panelLeft.AddRow(panelNames);
             panelLeft.AddRow(wallGroup);
