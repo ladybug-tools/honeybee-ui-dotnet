@@ -31,7 +31,7 @@ namespace Honeybee.UI
         }
         private void ReplaceUserData(HVACViewData oldObj, HB.Energy.IHvac newObj)
         {
-            var newItem = CheckObjName(newObj);
+            var newItem = CheckObjName(newObj, oldObj.Name);
             var index = _userData.IndexOf(oldObj);
             _userData.RemoveAt(index);
             _userData.Insert(index, new HVACViewData(newItem));

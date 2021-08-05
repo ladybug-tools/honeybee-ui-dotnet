@@ -270,7 +270,7 @@ namespace Honeybee.UI
 
             if (dialog_rc == null) return;
 
-            var newItem = CheckObjName(dialog_rc);
+            var newItem = CheckObjName(dialog_rc, selected.Name);
             var index = _userData.IndexOf(selected);
             _userData.RemoveAt(index);
             _userData.Insert(index, new ModifierViewData(newItem));
