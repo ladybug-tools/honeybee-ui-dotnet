@@ -330,8 +330,11 @@ namespace Honeybee.UI
 
             if (c is HB.Energy.IMaterial tc)
             {
-                this.RValue = ShowIPUnit? Math.Round(tc.RValue * 5.678263337, 5).ToString(): Math.Round(tc.RValue, 5).ToString();
-                this.UValue = ShowIPUnit ? Math.Round(tc.UValue * 5.678263337, 5).ToString() : Math.Round(tc.UValue, 5).ToString();
+                var r = ShowIPUnit? Math.Round(tc.RValue * 5.678263337, 5): Math.Round(tc.RValue, 5);
+                var u = ShowIPUnit ? Math.Round(tc.UValue / 5.678263337, 5) : Math.Round(tc.UValue, 5);
+
+                this.RValue = r < 0 ? "Skylight only" : r.ToString();
+                this.UValue = u < 0 ? "Skylight only" : u.ToString();
             }
             
             if (c is HB.EnergyWindowMaterialSimpleGlazSys win)
