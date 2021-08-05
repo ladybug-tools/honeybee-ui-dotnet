@@ -116,6 +116,12 @@ namespace Honeybee.UI
             });
             gd.Columns.Add(new GridColumn
             {
+                DataCell = new CheckBoxCell { Binding = Binding.Delegate<ModifierSetViewData, bool?>(r => r.HasDoorSet) },
+                HeaderText = "Door",
+                Sortable = true
+            });
+            gd.Columns.Add(new GridColumn
+            {
                 DataCell = new CheckBoxCell { Binding = Binding.Delegate<ModifierSetViewData, bool?>(r => r.HasAirBoundaryModifier) },
                 HeaderText = "AirBoundary",
                 Sortable = true
@@ -164,19 +170,18 @@ namespace Honeybee.UI
                     break;
                 case "Floor":
                     sortFunc = (ModifierSetViewData _) => _.HasFloorSet.ToString();
-                    isNumber = true;
                     break;
                 case "Aperture":
                     sortFunc = (ModifierSetViewData _) => _.HasApertureSet.ToString();
-                    isNumber = true;
+                    break;
+                case "Door":
+                    sortFunc = (ModifierSetViewData _) => _.HasDoorSet.ToString();
                     break;
                 case "AirBoundary":
                     sortFunc = (ModifierSetViewData _) => _.HasAirBoundaryModifier.ToString();
-                    isNumber = true;
                     break;
                 case "Shade":
                     sortFunc = (ModifierSetViewData _) => _.HasShadeSet.ToString();
-                    isNumber = true;
                     break;
                 case "Locked":
                     sortFunc = (ModifierSetViewData _) => _.Locked.ToString();
