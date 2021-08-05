@@ -149,7 +149,7 @@ namespace Honeybee.UI
             }
            
             var dup = selected.HVAC.Duplicate() as HB.Energy.IHvac;
-            var name = $"{dup.Identifier}_dup";
+            var name = $"{dup.DisplayName ?? dup.Identifier}_dup";
             dup.Identifier = name;
             dup.DisplayName = name;
 
