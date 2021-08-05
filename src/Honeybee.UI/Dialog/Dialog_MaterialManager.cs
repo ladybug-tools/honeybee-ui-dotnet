@@ -22,6 +22,8 @@ namespace Honeybee.UI
 
         public Dialog_MaterialManager(ref ModelEnergyProperties libSource, bool returnSelectedOnly = false) : this()
         {
+            libSource.FillNulls();
+
             this._returnSelectedOnly = returnSelectedOnly;
             this._vm = new MaterialManagerViewModel(libSource, this);
             Content = Init();

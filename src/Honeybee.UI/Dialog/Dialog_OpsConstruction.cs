@@ -14,6 +14,8 @@ namespace Honeybee.UI
         {
             try
             {
+                libSource.FillNulls();
+
                 this.ModelEnergyProperties = libSource;
                 //var output = simulationOutput;
                 var vm = OpsConstructionSetsViewModel.Instance;

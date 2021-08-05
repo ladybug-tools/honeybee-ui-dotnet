@@ -13,6 +13,8 @@ namespace Honeybee.UI
         {
             try
             {
+                libSource.FillNulls();
+
                 Title = $"Face Properties - {DialogHelper.PluginName}";
                 WindowStyle = WindowStyle.Default;
                 this.Icon = DialogHelper.HoneybeeIcon;

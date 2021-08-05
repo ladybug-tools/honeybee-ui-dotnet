@@ -25,6 +25,8 @@ namespace Honeybee.UI
     
         public Dialog_ScheduleRulesetManager(ref ModelEnergyProperties libSource, bool returnSelectedOnly = false) : this()
         {
+            libSource.FillNulls();
+
             this._returnSelectedOnly = returnSelectedOnly;
             this._vm = new ScheduleRulesetManagerViewModel(libSource, this);
             Content = Init();

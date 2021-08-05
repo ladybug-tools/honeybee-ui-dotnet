@@ -24,6 +24,8 @@ namespace Honeybee.UI
 
         public Dialog_ProgramTypeManager(ref ModelEnergyProperties libSource, bool returnSelectedOnly = false):this()
         {
+            libSource.FillNulls();
+
             this._returnSelectedOnly = returnSelectedOnly;
             this._vm = new ProgramTypeManagerViewModel(libSource, this);
             Content = Init();
