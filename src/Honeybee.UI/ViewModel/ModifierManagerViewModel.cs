@@ -77,7 +77,7 @@ namespace Honeybee.UI
         public ICommand AddPlasticCommand => new RelayCommand<HB.Radiance.IModifier>((obj) => {
 
             var id = Guid.NewGuid().ToString();
-            var name = $"New Plastic {id.Substring(0, 5)}";
+            var name = $"Plastic_{id.Substring(0, 5)}";
             var newModifier = obj as Plastic ?? new Plastic(name, displayName: name);
 
             var dialog = new Honeybee.UI.Dialog_Modifier<Plastic>(newModifier);
@@ -86,7 +86,7 @@ namespace Honeybee.UI
         });
         public ICommand AddGlassCommand => new RelayCommand(() => {
             var id = Guid.NewGuid().ToString();
-            var name = $"New Glass {id.Substring(0, 5)}";
+            var name = $"Glass_{id.Substring(0, 5)}";
             var newModifier = new Glass(name, displayName: name);
 
             var dialog = new Honeybee.UI.Dialog_Modifier<Glass>(newModifier);
@@ -95,7 +95,7 @@ namespace Honeybee.UI
         });
         public ICommand AddBSDFCommand => new RelayCommand(() => {
             var id = Guid.NewGuid().ToString();
-            var name = $"New BSDF {id.Substring(0, 5)}";
+            var name = $"BSDF_{id.Substring(0, 5)}";
             var newModifier = new BSDF(name, "Replace with your BSDF data", displayName: name); 
 
             var dialog = new Honeybee.UI.Dialog_Modifier<BSDF>(newModifier);
@@ -104,7 +104,7 @@ namespace Honeybee.UI
         });
         public ICommand AddGlowCommand => new RelayCommand(() => {
             var id = Guid.NewGuid().ToString();
-            var name = $"New Glow {id.Substring(0, 5)}";
+            var name = $"Glow_{id.Substring(0, 5)}";
             var newModifier = new Glow(name, displayName: name); ;
 
             var dialog = new Honeybee.UI.Dialog_Modifier<Glow>(newModifier);
@@ -113,7 +113,7 @@ namespace Honeybee.UI
         });
         public ICommand AddLightCommand => new RelayCommand(() => {
             var id = Guid.NewGuid().ToString();
-            var name = $"New Light {id.Substring(0, 5)}";
+            var name = $"Light_{id.Substring(0, 5)}";
             var newModifier = new Light(name,  displayName: name); 
 
             var dialog = new Honeybee.UI.Dialog_Modifier<Light>(newModifier);
@@ -122,7 +122,7 @@ namespace Honeybee.UI
         });
         public ICommand AddTransCommand => new RelayCommand(() => {
             var id = Guid.NewGuid().ToString();
-            var name = $"New Trans {id.Substring(0, 5)}";
+            var name = $"Trans_{id.Substring(0, 5)}";
             var newModifier = new Trans(name, displayName: name); ;
 
             var dialog = new Honeybee.UI.Dialog_Modifier<Trans>(newModifier);
@@ -131,7 +131,7 @@ namespace Honeybee.UI
         });
         public ICommand AddMetalCommand => new RelayCommand(() => {
             var id = Guid.NewGuid().ToString();
-            var name = $"New Metal {id.Substring(0, 5)}";
+            var name = $"Metal_{id.Substring(0, 5)}";
             var newModifier = new Metal(name, displayName: name); ;
 
             var dialog = new Honeybee.UI.Dialog_Modifier<Metal>(newModifier);
@@ -140,7 +140,7 @@ namespace Honeybee.UI
         });
         public ICommand AddMirrorCommand => new RelayCommand(() => {
             var id = Guid.NewGuid().ToString();
-            var name = $"New Mirror {id.Substring(0, 5)}";
+            var name = $"Mirror_{id.Substring(0, 5)}";
             var newModifier = new Mirror(name, displayName: name); ;
 
             var dialog = new Honeybee.UI.Dialog_Modifier<Mirror>(newModifier);
