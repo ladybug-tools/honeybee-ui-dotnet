@@ -9,6 +9,17 @@ namespace Honeybee.UI
 
     public class Dialog_Material : Dialog_ResourceEditor<HB.Energy.IMaterial>
     {
+        private Label _r_label;
+        private Label _u_label;
+        private TextBox _r_value;
+        private TextBox _u_value;
+
+        const string _r_si = "R Value [m2·K/W]";
+        const string _r_ip = "R Value [ft2·F·h/BTU]";
+        const string _u_si = "U Value [W/m2·K]";
+        const string _u_ip = "U Value [BTU/ft2·F·h]";
+
+        private bool _showIP = false;
         public Dialog_Material(HB.Energy.IMaterial material, bool lockedMode = false)
         {
             try
@@ -40,7 +51,13 @@ namespace Honeybee.UI
                 layout.DefaultSpacing = new Size(5, 5);
                 layout.DefaultPadding = new Padding(5);
 
-        
+                // unit switchs
+                var unit = new RadioButtonList();
+                unit.Items.Add("Metric");
+                unit.Items.Add("Imperial");
+                unit.SelectedIndex = 0;
+                unit.Spacing = new Size(5, 0);
+                unit.SelectedIndexChanged += (s, e) => CalRValue(_hbObj, unit.SelectedIndex == 1);
 
                 var buttonSource = new Button { Text = "Schema Data" };
                 buttonSource.Click += (s, e) =>
@@ -50,6 +67,7 @@ namespace Honeybee.UI
 
                 var materialPanel = GenParmPanel(_hbObj);
                 layout.AddRow(materialPanel);
+                layout.AddSeparateRow( null, "R/U value unit:", unit);
                 layout.AddSeparateRow(locked, null, OkButton, AbortButton, null, buttonSource);
                 layout.AddRow(null);
 
@@ -76,7 +94,7 @@ namespace Honeybee.UI
             var properties = hbObj.GetType().GetProperties().Where(_ => _.CanWrite);
             if (properties.Count() > 15)
             {
-                panel.Height = 360;
+                panel.Height = 300;
                 panel.BeginScrollable();
             }
 
@@ -85,6 +103,15 @@ namespace Honeybee.UI
             name.TextBinding.Bind(() => hbObj.DisplayName, (v) => hbObj.DisplayName = v);
 
             panel.AddRow("Name", name);
+
+            _r_label = new Label() {Text = _r_si };
+            _u_label = new Label() { Text = _u_si };
+
+            _r_value = new TextBox() { Enabled = false, PlaceholderText = "Not available" };
+            _u_value = new TextBox() { Enabled = false, PlaceholderText = "Not available" };
+            panel.AddRow(_r_label, _r_value);
+            panel.AddRow(_u_label, _u_value);
+            CalRValue(hbObj, false);
 
             foreach (var item in properties)
             {
@@ -104,14 +131,26 @@ namespace Honeybee.UI
                 {
                     var numberTB = new MaskedTextBox();
                     numberTB.Provider = new NumericMaskedTextProvider() { AllowDecimal = true };
-                    numberTB.TextBinding.Bind(() => numberValue.ToString(), (v) => item.SetValue(hbObj, Convert.ChangeType(v, type)));
+                    numberTB.TextBinding.Bind(
+                        () => numberValue.ToString(), 
+                        (v) => { 
+                            item.SetValue(hbObj, Convert.ChangeType(v, type));
+                            CalRValue(hbObj, _showIP);
+                            }
+                        );
                     panel.AddRow(item.Name, numberTB);
                 }
                 else if (value is int intValue)
                 {
                     var numberTB = new NumericStepper();
                     numberTB.DecimalPlaces = 0;
-                    numberTB.Value = intValue;
+                    numberTB.ValueBinding.Bind(
+                        () => intValue, 
+                        (v) => { 
+                            item.SetValue(hbObj, v);
+                            CalRValue(hbObj, _showIP);
+                        }
+                    );
                     panel.AddRow(item.Name, numberTB);
                 }
                 else if (Nullable.GetUnderlyingType(type) != null)
@@ -153,8 +192,25 @@ namespace Honeybee.UI
 
                 }
             }
+
+
             panel.AddRow(null, null);
             return panel;
+
+           
+        }
+
+        void CalRValue(HB.Energy.IMaterial tc, bool ShowIPUnit)
+        {
+            _showIP = ShowIPUnit;
+
+            var r = ShowIPUnit ? Math.Round(tc.RValue * 5.678263337, 5) : Math.Round(tc.RValue, 5);
+            var u = ShowIPUnit ? Math.Round(tc.UValue / 5.678263337, 5) : Math.Round(tc.UValue, 5);
+
+            _r_value.Text = r < 0 ? "Skylight only" : r.ToString();
+            _u_value.Text = u < 0 ? "Skylight only" : u.ToString();
+            _r_label.Text = ShowIPUnit ? _r_ip : _r_si;
+            _u_label.Text = ShowIPUnit ? _u_ip : _u_si;
         }
     }
 }
