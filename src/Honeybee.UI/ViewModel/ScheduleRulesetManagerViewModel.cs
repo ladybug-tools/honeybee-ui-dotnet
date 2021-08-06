@@ -159,15 +159,15 @@ namespace Honeybee.UI
                 MessageBox.Show(_control, "Nothing is selected to edit!");
                 return;
             }
-            if (selected.Locked)
-            {
-                MessageBox.Show(_control, "You cannot edit an item of system library! Try to duplicate it first!");
-                return;
-            }
+            //if (selected.Locked)
+            //{
+            //    MessageBox.Show(_control, "You cannot edit an item of system library! Try to duplicate it first!");
+            //    return;
+            //}
 
             var dup = selected.ScheduleRuleset.Duplicate() as ScheduleRulesetAbridged;
             var realObj = AbridgedToReal(dup);
-            var dialog = new Honeybee.UI.Dialog_Schedule(realObj);
+            var dialog = new Honeybee.UI.Dialog_Schedule(realObj, selected.Locked);
             var dialog_rc = dialog.ShowModal(_control);
        
             if (dialog_rc == null) return;

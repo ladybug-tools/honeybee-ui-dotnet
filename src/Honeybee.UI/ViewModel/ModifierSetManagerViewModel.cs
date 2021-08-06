@@ -110,14 +110,14 @@ namespace Honeybee.UI
                 MessageBox.Show(_control, "Nothing is selected to edit!");
                 return;
             }
-            if (selected.Locked)
-            {
-                MessageBox.Show(_control, "You cannot edit an item of system library! Try to duplicate it first!");
-                return;
-            }
+            //if (selected.Locked)
+            //{
+            //    MessageBox.Show(_control, "You cannot edit an item of system library! Try to duplicate it first!");
+            //    return;
+            //}
 
             var dup = selected.ModifierSet.Duplicate() as ModifierSetAbridged;
-            var dialog = new Honeybee.UI.Dialog_ModifierSet(this._modelRadianceProperties, dup);
+            var dialog = new Honeybee.UI.Dialog_ModifierSet(this._modelRadianceProperties, dup, selected.Locked);
             var dialog_rc = dialog.ShowModal(_control);
 
             if (dialog_rc == null) return;

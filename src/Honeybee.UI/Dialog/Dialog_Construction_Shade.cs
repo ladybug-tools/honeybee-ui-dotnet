@@ -7,7 +7,7 @@ namespace Honeybee.UI
 
     public class Dialog_Construction_Shade : Dialog_ResourceEditor<HB.ShadeConstruction>
     {
-        public Dialog_Construction_Shade(HB.ShadeConstruction shadeConstruction)
+        public Dialog_Construction_Shade(HB.ShadeConstruction shadeConstruction, bool lockedMode = false)
         {
             var _hbObj = shadeConstruction;
 
@@ -19,7 +19,10 @@ namespace Honeybee.UI
             Width = 450;
             this.Icon = DialogHelper.HoneybeeIcon;
 
-            var OkButton = new Button { Text = "OK" };
+            var locked = new CheckBox() { Text = "Locked", Enabled = false };
+            locked.Checked = lockedMode;
+
+            var OkButton = new Button { Text = "OK", Enabled = !lockedMode };
             OkButton.Click += (sender, e) => OkCommand.Execute(_hbObj);
 
             AbortButton = new Button { Text = "Cancel" };
@@ -67,7 +70,7 @@ namespace Honeybee.UI
             layout.AddRow(null);
             layout.AddRow(buttonSource);
             layout.AddRow(null);
-            layout.AddSeparateRow(null, OkButton, AbortButton, null);
+            layout.AddSeparateRow(locked, null, OkButton, AbortButton, null, buttonSource);
 
             Content = layout;
 

@@ -68,7 +68,7 @@ namespace Honeybee.UI
         }
 
         private HB.ModelEnergyProperties ModelEnergyProperties { get; set; }
-        public Dialog_ConstructionSet(HB.ModelEnergyProperties libSource, HB.ConstructionSetAbridged constructionSet)
+        public Dialog_ConstructionSet(HB.ModelEnergyProperties libSource, HB.ConstructionSetAbridged constructionSet, bool lockedMode = false)
         {
             try
             {
@@ -320,21 +320,23 @@ namespace Honeybee.UI
                 var panelAll = new DynamicLayout() { };
                 panelAll.AddRow(panelLeft, panelRight);
 
+                var locked = new CheckBox() { Text = "Locked", Enabled = false };
+                locked.Checked = lockedMode;
 
-                var OkButton = new Button { Text = "OK" };
+                var OkButton = new Button { Text = "OK" , Enabled = !lockedMode };
                 OkButton.Click += (sender, e) => OkCommand.Execute(cSet);
 
                 AbortButton = new Button { Text = "Cancel" };
                 AbortButton.Click += (sender, e) => Close();
 
                 var hbData = new Button { Text = "Schema Data" };
-                hbData.Click += (sender, e) => Dialog_Message.Show(Config.Owner, cSet.ToJson(true), "Schema Data");
+                hbData.Click += (sender, e) => Dialog_Message.Show(this, cSet.ToJson(true), "Schema Data");
 
                 var buttons = new TableLayout
                 {
                     Padding = new Padding(5, 10, 5, 5),
                     Spacing = new Size(10, 10),
-                    Rows = { new TableRow(null, OkButton, this.AbortButton, null, hbData) }
+                    Rows = { new TableRow(locked, null, OkButton, this.AbortButton, null, hbData) }
                 };
 
 

@@ -230,39 +230,39 @@ namespace Honeybee.UI
                 MessageBox.Show(_control, "Nothing is selected to edit!");
                 return;
             }
-            if (selected.Locked)
-            {
-                MessageBox.Show(_control, "You cannot edit an item of system library! Try to duplicate it first!");
-                return;
-            }
+            //if (selected.Locked)
+            //{
+            //    MessageBox.Show(_control, "You cannot edit an item of system library! Try to duplicate it first!");
+            //    return;
+            //}
 
             var dup = selected.Modifier.Duplicate() as HB.Radiance.IModifier;
             HB.Radiance.IModifier dialog_rc = null;
             switch (dup)
             {
                 case Plastic obj:
-                    dialog_rc = new Dialog_Modifier<Plastic>(obj).ShowModal(_control);
+                    dialog_rc = new Dialog_Modifier<Plastic>(obj, selected.Locked).ShowModal(_control);
                     break;
                 case Glass obj:
-                    dialog_rc = new Dialog_Modifier<Glass>(obj).ShowModal(_control);
+                    dialog_rc = new Dialog_Modifier<Glass>(obj, selected.Locked).ShowModal(_control);
                     break;
                 case Trans obj:
-                    dialog_rc = new Dialog_Modifier<Trans>(obj).ShowModal(_control);
+                    dialog_rc = new Dialog_Modifier<Trans>(obj, selected.Locked).ShowModal(_control);
                     break;
                 case Metal obj:
-                    dialog_rc = new Dialog_Modifier<Metal>(obj).ShowModal(_control);
+                    dialog_rc = new Dialog_Modifier<Metal>(obj, selected.Locked).ShowModal(_control);
                     break;
                 case Mirror obj:
-                    dialog_rc = new Dialog_Modifier<Mirror>(obj).ShowModal(_control);
+                    dialog_rc = new Dialog_Modifier<Mirror>(obj, selected.Locked).ShowModal(_control);
                     break;
                 case Glow obj:
-                    dialog_rc = new Dialog_Modifier<Glow>(obj).ShowModal(_control);
+                    dialog_rc = new Dialog_Modifier<Glow>(obj, selected.Locked).ShowModal(_control);
                     break;
                 case Light obj:
-                    dialog_rc = new Dialog_Modifier<Light>(obj).ShowModal(_control);
+                    dialog_rc = new Dialog_Modifier<Light>(obj, selected.Locked).ShowModal(_control);
                     break;
                 case BSDF obj:
-                    dialog_rc = new Dialog_Modifier<BSDF>(obj).ShowModal(_control);
+                    dialog_rc = new Dialog_Modifier<BSDF>(obj, selected.Locked).ShowModal(_control);
                     break;
                 default:
                     break;

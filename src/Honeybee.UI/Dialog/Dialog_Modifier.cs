@@ -9,15 +9,18 @@ namespace Honeybee.UI
 
     public class Dialog_Modifier<T> : Dialog_ResourceEditor<T> where T : HB.ModifierBase
     {
-        public Dialog_Modifier(T modifier)
+        public Dialog_Modifier(T modifier, bool lockedMode = false)
         {
             var _hbObj = modifier;
             Title = $"Modifier - {DialogHelper.PluginName}";
             WindowStyle = WindowStyle.Default;
             Width = 450;
             this.Icon = DialogHelper.HoneybeeIcon;
-            
-            var OkButton = new Button { Text = "OK" };
+
+            var locked = new CheckBox() { Text = "Locked", Enabled = false };
+            locked.Checked = lockedMode;
+
+            var OkButton = new Button { Text = "OK", Enabled = !lockedMode };
             OkButton.Click += (sender, e) => OkCommand.Execute(_hbObj);
 
             AbortButton = new Button { Text = "Cancel" };
@@ -39,9 +42,16 @@ namespace Honeybee.UI
                 var url = $"https://www.ladybug.tools/honeybee-schema/model.html#tag/{typeof(T).Name.ToLower()}_model";
                 System.Diagnostics.Process.Start(url);
             };
+
+            var buttonSource = new Button { Text = "Schema Data" };
+            buttonSource.Click += (s, e) =>
+            {
+                Dialog_Message.Show(this, _hbObj.ToJson(true));
+            };
+
             layout.AddRow(docLink);
 
-            layout.AddSeparateRow(null, OkButton, AbortButton, null);
+            layout.AddSeparateRow(locked, null, OkButton, AbortButton, null, buttonSource) ;
             layout.AddRow(null);
             Content = layout;
 

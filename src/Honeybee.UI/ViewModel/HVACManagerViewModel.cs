@@ -166,23 +166,23 @@ namespace Honeybee.UI
                 return;
             }
 
-            if (selected.Locked)
-            {
-                MessageBox.Show(_control, "You cannot edit an item of system library! Try to duplicate it first!");
-                return;
-            }
+            //if (selected.Locked)
+            //{
+            //    MessageBox.Show(_control, "You cannot edit an item of system library! Try to duplicate it first!");
+            //    return;
+            //}
 
             var selectedObj = selected.HVAC;
             var dup = selectedObj.Duplicate() as HB.Energy.IHvac;
             HB.Energy.IHvac dialog_rc = null;
             if (dup is IdealAirSystemAbridged obj)
             {
-                var dialog = new Dialog_IdealAirLoad(obj);
+                var dialog = new Dialog_IdealAirLoad(obj, selected.Locked);
                 dialog_rc = dialog.ShowModal(_control);
             }
             else
             {
-                var dialog = new Dialog_OpsHVACs(dup);
+                var dialog = new Dialog_OpsHVACs(dup, selected.Locked);
                 dialog_rc = dialog.ShowModal(_control);
             }
 

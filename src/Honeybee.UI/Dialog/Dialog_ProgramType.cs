@@ -28,7 +28,7 @@ namespace Honeybee.UI
 
        
 
-        public Dialog_ProgramType(HB.ModelEnergyProperties libSource, HB.ProgramTypeAbridged ProgramType)
+        public Dialog_ProgramType(HB.ModelEnergyProperties libSource, HB.ProgramTypeAbridged ProgramType, bool lockedMode = false)
         {
             try
             {
@@ -63,12 +63,18 @@ namespace Honeybee.UI
                 //Generate ProgramType Panel
                 var pTypePanel = GenProgramTypePanel();
 
-                DefaultButton = new Button { Text = "OK" };
-                DefaultButton.Click += (sender, e) => OkCommand.Execute(_vm.hbObj);
+                var locked = new CheckBox() { Text = "Locked", Enabled = false };
+                locked.Checked = lockedMode;
+
+                var OkButton = new Button { Text = "OK", Enabled = !lockedMode };
+                OkButton.Click += (sender, e) => OkCommand.Execute(_vm.hbObj);
 
                 AbortButton = new Button { Text = "Cancel" };
                 AbortButton.Click += (sender, e) => Close();
 
+                // Json Data
+                var hbData = new Button { Text = "Schema Data" };
+                hbData.Click += (sender, e) => Dialog_Message.Show(this, _vm.hbObj.ToJson(true), "Schema Data");
 
                 var panelLeft = new DynamicLayout();
                 panelLeft.DefaultPadding = new Padding(5);
@@ -77,8 +83,6 @@ namespace Honeybee.UI
                 //panelLeft.Width = 360;
 
                 panelLeft.AddSeparateRow(pTypePanel);
-                panelLeft.AddSeparateRow(null);
-                panelLeft.AddSeparateRow(DefaultButton, AbortButton, null);
                 panelLeft.AddSeparateRow(null);
 
 
@@ -163,16 +167,10 @@ namespace Honeybee.UI
 
 
                 //Create layout
-                Content = new TableLayout()
-                {
-                    Padding = new Padding(10),
-                    Spacing = new Size(5, 5),
-                    Rows =
-                {
-                    new TableRow(panelLeft, rightTab)
-                }
-                };
-
+                var layout = new DynamicLayout() { DefaultPadding = new Padding(5), DefaultSpacing = new Size(5, 5) };
+                layout.AddSeparateRow(panelLeft, rightTab);
+                layout.AddSeparateRow(locked, null, OkButton, AbortButton, null, hbData);
+                Content = layout;
 
             }
             catch (Exception e)
@@ -205,9 +203,7 @@ namespace Honeybee.UI
 
             _serviceWaterGroup = GenServiceHotWaterPanel();
 
-            // Json Data
-            var hbData = new Button { Text = "Schema Data" };
-            hbData.Click += (sender, e) => Dialog_Message.Show(Config.Owner, _vm.hbObj.ToJson(true), "Schema Data");
+        
 
             //Left panel
             //var panelLeft = new TableLayout() { DataContext = _vm };
@@ -236,7 +232,6 @@ namespace Honeybee.UI
             pTypePanel.AddSeparateRow(_setpoinGroup);
             pTypePanel.AddSeparateRow(_serviceWaterGroup);
             pTypePanel.AddSpace();
-            pTypePanel.AddSeparateRow(hbData);
             pTypePanel.AddSeparateRow(null);
             pTypePanel.EndScrollable();
             //panelLeft.EndVertical();

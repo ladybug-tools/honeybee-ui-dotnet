@@ -24,7 +24,7 @@ namespace Honeybee.UI
             }
         }
         private ModelRadianceProperties ModelRadianceProperties { get; set; }
-        public Dialog_ModifierSet(ModelRadianceProperties libSource, HB.ModifierSetAbridged modifierSet)
+        public Dialog_ModifierSet(ModelRadianceProperties libSource, HB.ModifierSetAbridged modifierSet, bool lockedMode = false)
         {
             libSource.FillNulls();
 
@@ -214,7 +214,10 @@ namespace Honeybee.UI
             panelAll.AddRow(panelLeft, panelRight);
 
 
-            var OKButton = new Button { Text = "OK" };
+            var locked = new CheckBox() { Text = "Locked", Enabled = false };
+            locked.Checked = lockedMode;
+
+            var OKButton = new Button { Text = "OK", Enabled = !lockedMode };
             OKButton.Click += (sender, e) => OkCommand.Execute(mSet);
 
             AbortButton = new Button { Text = "Cancel" };
@@ -227,7 +230,7 @@ namespace Honeybee.UI
             {
                 Padding = new Padding(5, 10, 5, 5),
                 Spacing = new Size(10, 10),
-                Rows = { new TableRow(null, OKButton, this.AbortButton, null, hbData) }
+                Rows = { new TableRow(locked, null, OKButton, this.AbortButton, null, hbData) }
             };
 
 

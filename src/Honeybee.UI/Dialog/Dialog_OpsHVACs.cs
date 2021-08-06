@@ -7,7 +7,7 @@ namespace Honeybee.UI
     public class Dialog_OpsHVACs : Dialog_ResourceEditor<HoneybeeSchema.Energy.IHvac>
     {
         //private ModelEnergyProperties ModelEnergyProperties { get; set; }
-        public Dialog_OpsHVACs(HoneybeeSchema.Energy.IHvac hvac = default)
+        public Dialog_OpsHVACs(HoneybeeSchema.Energy.IHvac hvac = default, bool lockedMode = false)
         {
             //this.ModelEnergyProperties = libSource;
             var vm = new OpsHVACsViewModel(hvac);
@@ -94,7 +94,10 @@ namespace Honeybee.UI
             layout.EndGroup();
             //layout.AddSeparateRow(cloneBtn);
 
-            var OKButton = new Button { Text = "OK" };
+            var locked = new CheckBox() { Text = "Locked", Enabled = false };
+            locked.Checked = lockedMode;
+
+            var OKButton = new Button { Text = "OK", Enabled = !lockedMode };
             OKButton.Click += (sender, e) => {
                 var obj = vm.GreateHvac(hvac);
                 OkCommand.Execute(obj);
@@ -103,7 +106,7 @@ namespace Honeybee.UI
             AbortButton = new Button { Text = "Cancel" };
             AbortButton.Click += (sender, e) => Close();
 
-            layout.AddSeparateRow(null, OKButton, this.AbortButton, null);
+            layout.AddSeparateRow(locked, null, OKButton, this.AbortButton, null);
             layout.AddRow(null);
             Content = layout;
 
