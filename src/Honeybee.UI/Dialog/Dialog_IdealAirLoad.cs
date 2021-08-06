@@ -8,7 +8,7 @@ namespace Honeybee.UI
     public class Dialog_IdealAirLoad : Dialog_ResourceEditor<IdealAirSystemAbridged>
     {
         //private ModelEnergyProperties ModelEnergyProperties { get; set; }
-        public Dialog_IdealAirLoad(IdealAirSystemAbridged hvac = default)
+        public Dialog_IdealAirLoad(IdealAirSystemAbridged hvac = default, bool lockedMode = false)
         {
             var sys = hvac ?? new IdealAirSystemAbridged($"IdealAirSystem_{Guid.NewGuid().ToString().Substring(0, 8)}");
             var vm = new IdealAirLoadViewModel(sys);
@@ -106,13 +106,19 @@ namespace Honeybee.UI
             layout.AddRow(coolingLimitNoLimit);
             layout.AddSeparateRow(coolingLimitNumber, coolingLimit);
 
-            var OKButton = new Button { Text = "OK" };
+            var locked = new CheckBox() { Text = "Locked", Enabled = false };
+            locked.Checked = lockedMode;
+
+            var OKButton = new Button { Text = "OK", Enabled = !lockedMode };
             OKButton.Click += (sender, e) => OkCommand.Execute(vm.GreateHvac(hvac));
 
             AbortButton = new Button { Text = "Cancel" };
             AbortButton.Click += (sender, e) => Close();
 
-            layout.AddSeparateRow(null, OKButton, this.AbortButton, null);
+            var hbData = new Button { Text = "Schema Data" };
+            hbData.Click += (sender, e) => Dialog_Message.Show(this, vm.GreateHvac(hvac).ToJson(true), "Schema Data");
+
+            layout.AddSeparateRow(locked, null, OKButton, this.AbortButton, null, hbData);
             layout.AddRow(null);
             Content = layout;
 

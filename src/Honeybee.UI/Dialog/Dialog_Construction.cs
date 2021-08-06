@@ -110,7 +110,7 @@ namespace Honeybee.UI
         //private bool _primMousePressed = false;
         private HB.ModelEnergyProperties ModelEnergyProperties { get; set; }
 
-        public Dialog_Construction(HB.ModelEnergyProperties libSource, HB.Energy.IConstruction construction)
+        public Dialog_Construction(HB.ModelEnergyProperties libSource, HB.Energy.IConstruction construction, bool lockedMode = false)
         {
             try
             {
@@ -125,7 +125,7 @@ namespace Honeybee.UI
                 MinimumSize = new Size(650, 500);
                 this.Icon = DialogHelper.HoneybeeIcon;
 
-                var OkButton = new Button { Text = "OK" };
+                var OkButton = new Button { Text = "OK" , Enabled = !lockedMode};
                 OkButton.Click += (sender, e) =>
                 {
                     // add new material to library source
@@ -200,10 +200,6 @@ namespace Honeybee.UI
               
 
                 leftLayout.AddRow(null);
-                leftLayout.AddRow(buttonSource);
-                leftLayout.AddRow(null);
-
-
 
                 //Right panel
                 var rightGroup = new GroupBox();
@@ -346,7 +342,7 @@ namespace Honeybee.UI
 
                 };
 
-               
+
 
 
 
@@ -355,10 +351,14 @@ namespace Honeybee.UI
                 //split.Panel1 = leftLayout;
                 //split.Panel2 = rightGroup;
 
+                var locked = new CheckBox() { Text = "Locked", Enabled = false };
+                locked.Checked = lockedMode;
+
                 var layout = new DynamicLayout();
+                layout.DefaultSpacing = new Size(5, 5);
                 layout.DefaultPadding = new Padding(5);
                 layout.AddSeparateRow(leftLayout, rightGroup);
-                layout.AddSeparateRow(null, OkButton, AbortButton, null);
+                layout.AddSeparateRow(locked, null, OkButton, AbortButton, null, buttonSource);
                 layout.AddRow(null);
 
                 //Create layout

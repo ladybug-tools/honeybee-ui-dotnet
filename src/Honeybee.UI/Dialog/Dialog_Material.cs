@@ -9,7 +9,7 @@ namespace Honeybee.UI
 
     public class Dialog_Material : Dialog_ResourceEditor<HB.Energy.IMaterial>
     {
-        public Dialog_Material(HB.Energy.IMaterial material)
+        public Dialog_Material(HB.Energy.IMaterial material, bool lockedMode = false)
         {
             try
             {
@@ -23,7 +23,10 @@ namespace Honeybee.UI
                 MinimumSize = new Size(450, 200);
                 this.Icon = DialogHelper.HoneybeeIcon;
 
-                var OkButton = new Button { Text = "OK" };
+                var locked = new CheckBox() { Text = "Locked", Enabled = false };
+                locked.Checked = lockedMode;
+
+                var OkButton = new Button { Text = "OK", Enabled = !lockedMode };
                 OkButton.Click += (sender, e) => OkCommand.Execute(_hbObj);
 
                 AbortButton = new Button { Text = "Cancel" };
@@ -47,8 +50,7 @@ namespace Honeybee.UI
 
                 var materialPanel = GenParmPanel(_hbObj);
                 layout.AddRow(materialPanel);
-                layout.AddRow(buttonSource);
-                layout.AddSeparateRow(null, OkButton, AbortButton, null);
+                layout.AddSeparateRow(locked, null, OkButton, AbortButton, null, buttonSource);
                 layout.AddRow(null);
 
                 //Create layout

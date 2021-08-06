@@ -7,23 +7,28 @@ namespace Honeybee.UI
     public class Dialog_Schedule : Dialog_ResourceEditor<ScheduleRuleset>
     {
         
-        public Dialog_Schedule(ScheduleRuleset scheduleRuleset)
+        public Dialog_Schedule(ScheduleRuleset scheduleRuleset, bool lockedMode = false)
         {
-            Padding = new Padding(5);
+            Padding = new Padding(10);
             Title = $"Schedule - {DialogHelper.PluginName}";
             WindowStyle = WindowStyle.Default;
-            Width = 1100;
+            Width = 1110;
             this.Icon = DialogHelper.HoneybeeIcon;
 
-            var OkButton = new Button { Text = "OK" };
+            var locked = new CheckBox() { Text = "Locked", Enabled = false };
+            locked.Checked = lockedMode;
+
+            var OkButton = new Button { Text = "OK", Enabled = !lockedMode };
             OkButton.Click += (sender, e) => OkCommand.Execute(scheduleRuleset);
 
             AbortButton = new Button { Text = "Cancel" };
             AbortButton.Click += (sender, e) => Close();
 
 
-            var panel = new Panel_Schedule(scheduleRuleset);
-            panel.AddSeparateRow(null, OkButton, AbortButton, null);
+            var sche = new Panel_Schedule(scheduleRuleset);
+            var panel = new DynamicLayout() { DefaultSpacing = new Size(5, 5) };
+            panel.AddRow(sche);
+            panel.AddSeparateRow(locked, OkButton, AbortButton, null);
             Content = panel;
         }
 

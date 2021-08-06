@@ -213,31 +213,31 @@ namespace Honeybee.UI
                 return;
             }
 
-            if (selected.Locked)
-            {
-                MessageBox.Show(_control, "You cannot edit an item of system library!");
-                return;
-            }
+            //if (selected.Locked)
+            //{
+            //    MessageBox.Show(_control, "You cannot edit an item of system library!");
+            //    return;
+            //}
 
             var selectedObj = selected.Construction;
             HB.Energy.IConstruction dialog_rc;
             if (selectedObj is HB.ShadeConstruction shd)
             {
                 var dup = shd.DuplicateShadeConstruction();
-                var dialog = new Honeybee.UI.Dialog_Construction_Shade(dup);
+                var dialog = new Honeybee.UI.Dialog_Construction_Shade(dup, selected.Locked);
                 dialog_rc = dialog.ShowModal(_control);
             }
             else if (selectedObj is HB.AirBoundaryConstructionAbridged airBoundary)
             {
                 var dup = airBoundary.DuplicateAirBoundaryConstructionAbridged();
-                var dialog = new Honeybee.UI.Dialog_Construction_AirBoundary(dup);
+                var dialog = new Honeybee.UI.Dialog_Construction_AirBoundary(dup, selected.Locked);
                 dialog_rc = dialog.ShowModal(_control);
             }
             else
             {
                 // Opaque Construction or Window Construciton
                 var dup = selectedObj.Duplicate() as HB.Energy.IConstruction;
-                var dialog = new Honeybee.UI.Dialog_Construction(this._modelEnergyProperties, dup);
+                var dialog = new Honeybee.UI.Dialog_Construction(this._modelEnergyProperties, dup, selected.Locked);
                 dialog_rc = dialog.ShowModal(_control);
             }
 
