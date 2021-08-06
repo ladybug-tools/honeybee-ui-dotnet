@@ -12,6 +12,21 @@ namespace Honeybee.UI
 
     public class Dialog_Construction : Dialog_ResourceEditor<HB.Energy.IConstruction>
     {
+        private Label _r_label;
+        private Label _r_value;
+        private Label _u_label;
+        private Label _u_value;
+        private Label _uf_label;
+        private Label _uf_value;
+        const string _r_si = "R Value [m2·K/W]";
+        const string _r_ip = "R Value [ft2·F·h/BTU]";
+        const string _u_si = "U Value [W/m2·K]";
+        const string _u_ip = "U Value [BTU/ft2·F·h]";
+        const string _uf_si = "U Factor [W/m2·K]";
+        const string _uf_ip = "U Factor [BTU/ft2·F·h]";
+
+        private bool _showIP = false;
+
         //private List<string> _layers = new List<string>();
         private HB.Energy.IConstruction _hbObj;
         private DynamicLayout _layersPanel;
@@ -149,7 +164,8 @@ namespace Honeybee.UI
 
                 var leftLayout = new DynamicLayout();
                 leftLayout.DefaultSpacing = new Size(5, 5);
-                leftLayout.DefaultPadding = new Padding(10, 5);
+                leftLayout.DefaultPadding = new Padding(5);
+                leftLayout.Height = 600;
 
                 leftLayout.AddRow("Name");
                 var name = new TextBox();
@@ -157,18 +173,14 @@ namespace Honeybee.UI
                 name.TextBinding.Bind(() => _hbObj.DisplayName, v => _hbObj.DisplayName = v);
                 leftLayout.AddRow(name);
 
-                //_layers = _hbObj.Layers;
-                var i = 0;
-                var font = Fonts.Sans(8);
-                var brush = Brushes.Black;
+                
 
-
-                //var group = new GroupBox();
                 var groupContent = new DynamicLayout();
                 groupContent.DefaultSpacing = new Size(5, 5);
                 Action<int, string> actionWhenItemChanged = (int layerIndex, string newValue) => {
                     _layers.RemoveAt(layerIndex);
                     _layers.Insert(layerIndex, newValue);
+                    CalRValue(_hbObj, _showIP);
                 };
 
                 _layersPanel = new DynamicLayout();
@@ -182,7 +194,7 @@ namespace Honeybee.UI
 
                       GenMaterialLayersPanel(_layersPanel, actionWhenItemChanged);
                       _layersPanel.Create();
-
+                      CalRValue(_hbObj, _showIP);
                   }
                   );
                 groupContent.AddSeparateRow(null, "Outside", null);
@@ -191,6 +203,36 @@ namespace Honeybee.UI
                 groupContent.AddSeparateRow(null, "Inside", null);
                 //group.Content = groupContent;
                 leftLayout.AddRow(groupContent);
+                leftLayout.AddRow(null);
+                //leftLayout.AddAutoSized(new Button());
+
+                //leftLayout.AddSeparateRow(new Button());
+                // Thermal properties
+                var thermGp = new GroupBox() { Text = "Construction Thermal Properties" };
+                var thermProp = new DynamicLayout() { DefaultPadding = new Padding(4)};
+                //thermProp.AddSeparateRow("Construction Thermal Properties", null);
+                _r_label = new Label() { Text = _r_si };
+                _u_label = new Label() { Text = _u_si };
+                _uf_label = new Label() { Text = _uf_si };
+                _r_value = new Label() { Text = "Not available" };
+                _u_value = new Label() { Text = "Not available" };
+                _uf_value = new Label() { Text = "Not available" };
+                thermProp.AddSeparateRow(_r_label, ":", _r_value);
+                thermProp.AddSeparateRow(_u_label, ":", _u_value);
+                thermProp.AddSeparateRow(_uf_label, ":", _uf_value);
+                CalRValue(_hbObj, false);
+
+                // unit switchs
+                var unit = new RadioButtonList();
+                unit.Items.Add("Metric");
+                unit.Items.Add("Imperial");
+                unit.SelectedIndex = 0;
+                unit.Spacing = new Size(5, 0);
+                unit.SelectedIndexChanged += (s, e) => CalRValue(_hbObj, unit.SelectedIndex == 1);
+                thermProp.AddSeparateRow("Unit:", unit);
+                thermGp.Content = thermProp;
+                leftLayout.AddRow(thermGp);
+                leftLayout.AddRow(null);
 
                 var buttonSource = new Button { Text = "Schema Data" };
                 buttonSource.Click += (s, e) =>
@@ -199,7 +241,7 @@ namespace Honeybee.UI
                 };
               
 
-                leftLayout.AddRow(null);
+                //leftLayout.AddRow(null);
 
                 //Right panel
                 var rightGroup = new GroupBox();
@@ -223,7 +265,7 @@ namespace Honeybee.UI
 
                 // Library
                 var lib = new GridView();
-                lib.Height = 300;
+                lib.Height = 400;
                 groupPanel.AddRow(lib);
 
                 lib.ShowHeader = false;
@@ -245,9 +287,9 @@ namespace Honeybee.UI
 
                 // material details
                 var detailPanel = new DynamicLayout();
-                var materialDetail = new ListBox();
+                var materialDetail = new TextArea();
                 materialDetail.Height = 150;
-                materialDetail.Items.Add(new ListItem() { Text = "Material Details" });
+                materialDetail.Text = "Material Details";
                 //groupPanel.AddRow(materialDetail);
 
                 var rightSplit = new Splitter();
@@ -311,7 +353,7 @@ namespace Honeybee.UI
                 lib.SelectedItemsChanged += (s, e) => 
                 {
                     //Clear preview first
-                    materialDetail.Items.Clear();
+                    materialDetail.Text = null;
 
                     //Check current selected item from library
                     var selItem = lib.SelectedItem as HB.HoneybeeObject;
@@ -319,8 +361,7 @@ namespace Honeybee.UI
                         return;
 
                     //Update Preview
-                    var layersItems = selItem.ToString(true).Split('\n').Select(_ => new ListItem() { Text = _ });
-                    materialDetail.Items.AddRange(layersItems);
+                    materialDetail.Text = selItem.ToString(true);
 
                 };
 
@@ -328,8 +369,8 @@ namespace Honeybee.UI
                 searchTBox.TextChanged += (sender, e) =>
                 {
                     var input = searchTBox.Text;
-                    materialDetail.Items.Clear();
-                  
+                    materialDetail.Text = null;
+
                     if (string.IsNullOrWhiteSpace(input))
                     {
                         lib.DataStore = allMaterials;
@@ -394,6 +435,7 @@ namespace Honeybee.UI
 
                         //ctrls.AddRow(new TextBox());
                         _layersPanel.Create();
+                        CalRValue(_hbObj, _showIP);
 
                     });
                 _layersPanel.AddRow(dropin);
@@ -560,6 +602,36 @@ namespace Honeybee.UI
             return layerPanel;
         }
 
+        void CalRValue(HB.Energy.IConstruction c, bool ShowIPUnit)
+        {
+            if (c is HB.Energy.IThermalConstruction tc)
+            {
+                var dupLib = this.ModelEnergyProperties.DuplicateModelEnergyProperties();
+                // add all materials to lib
+                foreach (var layer in _layers)
+                {
+                    var m = OpaqueMaterials.FirstOrDefault(_ => _.Identifier == layer);
+                    m = m ?? WindowMaterials.FirstOrDefault(_ => _.Identifier == layer);
+                    var dup = m.Duplicate() as HB.Energy.IMaterial;
+                    dupLib.AddMaterial(dup);
+                }
 
+                tc.CalThermalValues(dupLib);
+
+                _showIP = ShowIPUnit;
+
+                var r = ShowIPUnit ? Math.Round(tc.RValue * 5.678263337, 5) : Math.Round(tc.RValue, 5);
+                var u = ShowIPUnit ? Math.Round(tc.UValue / 5.678263337, 5) : Math.Round(tc.UValue, 5);
+                var uf = ShowIPUnit ? Math.Round(tc.UFactor / 5.678263337, 5) : Math.Round(tc.UFactor, 5);
+
+                _r_value.Text = r < 0 ? "Skylight only" : r.ToString();
+                _u_value.Text = u < 0 ? "Skylight only" : u.ToString();
+                _uf_value.Text = uf.ToString();
+                _r_label.Text = ShowIPUnit ? _r_ip : _r_si;
+                _u_label.Text = ShowIPUnit ? _u_ip : _u_si;
+                _uf_label.Text = ShowIPUnit ? _uf_ip : _uf_si;
+            }
+           
+        }
     }
 }
