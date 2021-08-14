@@ -16,7 +16,7 @@ namespace Honeybee.UI
             Resizable = true;
             Title = $"Materials Manager - {DialogHelper.PluginName}";
             WindowStyle = WindowStyle.Default;
-            MinimumSize = new Size(680, 300);
+            MinimumSize = new Size(800, 300);
             this.Icon = DialogHelper.HoneybeeIcon;
         }
 
@@ -135,6 +135,26 @@ namespace Honeybee.UI
 
             gd.Columns.Add(new GridColumn
             {
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<MaterialViewData, string>(r => r.SHGC) },
+                HeaderText = "SHGC",
+                Sortable = true
+            });
+
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<MaterialViewData, string>(r => r.TSolar) },
+                HeaderText = "TSolar",
+                Sortable = true
+            });
+
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<MaterialViewData, string>(r => r.TVis) },
+                HeaderText = "TVis",
+                Sortable = true
+            });
+            gd.Columns.Add(new GridColumn
+            {
                 DataCell = new CheckBoxCell { Binding = Binding.Delegate<MaterialViewData, bool?>(r => r.Locked) },
                 HeaderText = "Locked",
                 Sortable = true
@@ -178,6 +198,18 @@ namespace Honeybee.UI
                     break;
                 case "UFactor":
                     sortFunc = (MaterialViewData _) => _.UFactor;
+                    isNumber = true;
+                    break;
+                case "SHGC":
+                    sortFunc = (MaterialViewData _) => _.SHGC;
+                    isNumber = true;
+                    break;
+                case "TSolar":
+                    sortFunc = (MaterialViewData _) => _.TSolar;
+                    isNumber = true;
+                    break;
+                case "TVis":
+                    sortFunc = (MaterialViewData _) => _.TVis;
                     isNumber = true;
                     break;
                 case "Locked":

@@ -16,7 +16,7 @@ namespace Honeybee.UI
             Resizable = true;
             Title = $"Construction Manager - {DialogHelper.PluginName}";
             WindowStyle = WindowStyle.Default;
-            MinimumSize = new Size(680, 300);
+            MinimumSize = new Size(800, 300);
             this.Icon = DialogHelper.HoneybeeIcon;
         }
 
@@ -133,6 +133,26 @@ namespace Honeybee.UI
             });
             gd.Columns.Add(new GridColumn
             {
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<ConstructionViewData, string>(r => r.SHGC) },
+                HeaderText = "SHGC",
+                Sortable = true
+            });
+
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<ConstructionViewData, string>(r => r.TSolar) },
+                HeaderText = "TSolar",
+                Sortable = true
+            });
+
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<ConstructionViewData, string>(r => r.TVis) },
+                HeaderText = "TVis",
+                Sortable = true
+            });
+            gd.Columns.Add(new GridColumn
+            {
                 DataCell = new CheckBoxCell { Binding = Binding.Delegate<ConstructionViewData, bool?>(r => r.Locked) },
                 HeaderText = "Locked",
                 Sortable = true
@@ -174,6 +194,18 @@ namespace Honeybee.UI
                     break;
                 case "UFactor":
                     sortFunc = (ConstructionViewData _) => _.UFactor;
+                    isNumber = true;
+                    break;
+                case "SHGC":
+                    sortFunc = (ConstructionViewData _) => _.SHGC;
+                    isNumber = true;
+                    break;
+                case "TSolar":
+                    sortFunc = (ConstructionViewData _) => _.TSolar;
+                    isNumber = true;
+                    break;
+                case "TVis":
+                    sortFunc = (ConstructionViewData _) => _.TVis;
                     isNumber = true;
                     break;
                 case "Locked":
