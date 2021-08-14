@@ -289,6 +289,9 @@ namespace Honeybee.UI
         public string RValue { get; }
         public string UValue { get; }
         public string UFactor { get; }
+        public string TSolar { get; }
+        public string TVis { get; }
+        public string SHGC { get; }
         public bool Locked { get; }
         public string Source { get; }
         public HB.Energy.IConstruction Construction { get; }
@@ -314,7 +317,13 @@ namespace Honeybee.UI
                 this.RValue = ShowIPUnit ? Math.Round(tc.RValue * 5.678263337, 5).ToString(): Math.Round(tc.RValue, 5).ToString();
                 this.UFactor = ShowIPUnit ? Math.Round(tc.UFactor / 5.678263337, 5).ToString(): Math.Round(tc.UFactor, 5).ToString();
                 this.UValue = ShowIPUnit ? Math.Round(tc.UValue / 5.678263337, 5).ToString() : Math.Round(tc.UValue, 5).ToString();
+                var shgc = Math.Round(tc.SHGC, 5);
+                this.SHGC = shgc == 0 ? null: shgc.ToString();
+                var tsolar = Math.Round(tc.SolarTransmittance, 5);
+                this.TSolar = tsolar == 0 ? null : tsolar.ToString();
             }
+            var tvis = Math.Round(c.VisibleTransmittance, 5);
+            this.TVis = tvis == 0 ? null : tvis.ToString();
             this.Construction = c;
 
             this.SearchableText = $"{this.Name}_{this.CType}";

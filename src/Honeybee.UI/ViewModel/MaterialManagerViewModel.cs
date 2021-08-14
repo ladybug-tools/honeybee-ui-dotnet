@@ -306,6 +306,9 @@ namespace Honeybee.UI
         public string RValue { get; }
         public string UValue { get; }
         public string UFactor { get; }
+        public string TSolar { get; }
+        public string TVis { get; }
+        public string SHGC { get; }
         public string Source { get; }
         public bool Locked { get; }
         public HB.Energy.IMaterial Material { get; }
@@ -340,6 +343,14 @@ namespace Honeybee.UI
             if (c is HB.EnergyWindowMaterialSimpleGlazSys win)
             {
                 this.UFactor = ShowIPUnit ? Math.Round(win.UFactor / 5.678263337, 5).ToString() : Math.Round(win.UFactor, 5).ToString();
+                this.SHGC = Math.Round(win.Shgc, 5).ToString();
+                this.TSolar = Math.Round(win.SolarTransmittance, 5).ToString();
+                this.TVis = Math.Round(win.Vt, 5).ToString();
+            }
+            else if (c is HB.EnergyWindowMaterialGlazing glz)
+            {
+                this.TSolar = Math.Round(glz.SolarTransmittance, 5).ToString();
+                this.TVis = Math.Round(glz.VisibleTransmittance, 5).ToString();
             }
             this.Material = c;
 
