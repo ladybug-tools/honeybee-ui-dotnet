@@ -121,7 +121,7 @@ namespace Honeybee.UI
 
             gd.Columns.Add(new GridColumn
             {
-                DataCell = new TextBoxCell { Binding = Binding.Delegate<ConstructionViewData, string>(r => r.UFactor) },
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<ConstructionViewData, string>(r => r.UValue) },
                 HeaderText = "UValue",
                 Sortable = true
             });
