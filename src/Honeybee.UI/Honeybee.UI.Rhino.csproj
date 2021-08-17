@@ -11,7 +11,7 @@
     <Copyright>Copyright © 2020 Ladybug Tools LLC</Copyright>
     <PackageProjectUrl>https://github.com/ladybug-tools/honeybee-ui-dotnet</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ladybug-tools/honeybee-ui-dotnet</RepositoryUrl>
-    <Version>0.0.0.60-dev</Version>
+    <Version>0.0.0.63-dev</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -33,7 +33,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="HoneybeeSchema" Version="1.44.2.5" />
+    <PackageReference Include="HoneybeeSchema" Version="1.44.2.6" />
     <PackageReference Include="RhinoCommon" Version="6.23.20055.13111">
         <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	  </PackageReference>
