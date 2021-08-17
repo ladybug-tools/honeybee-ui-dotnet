@@ -329,6 +329,8 @@ namespace Honeybee.UI
                 {
                     if (e.Buttons != MouseButtons.Primary)
                         return;
+                    if (lib.SelectedItem == null)
+                        return;
 
                     var dragableArea = lib.Bounds;
                     dragableArea.Width -= 20;
