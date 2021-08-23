@@ -611,6 +611,19 @@ namespace Honeybee.UI
         {
             if (c is HB.Energy.IThermalConstruction tc)
             {
+                if (_layers.Count == 0)
+                {
+                    var notAva = "Not available";
+                    _r_value.Text = notAva;
+                    _u_value.Text = notAva;
+                    _uf_value.Text = notAva;
+                    _r_label.Text = notAva;
+                    _u_label.Text = notAva;
+                    _uf_label.Text = notAva;
+                    return;
+                }
+                   
+
                 var dupLib = this.ModelEnergyProperties.DuplicateModelEnergyProperties();
                 // add all materials to lib
                 foreach (var layer in _layers)
