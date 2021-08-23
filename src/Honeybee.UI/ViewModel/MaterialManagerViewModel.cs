@@ -35,6 +35,7 @@ namespace Honeybee.UI
             this._systemData =
                 HB.Helper.EnergyLibrary.StandardsOpaqueMaterials.Select(_ => new MaterialViewData(_.Value, ShowIPUnit: false))
                 .Concat(HB.Helper.EnergyLibrary.StandardsWindowMaterials.Select(_ => new MaterialViewData(_.Value, ShowIPUnit: false)))
+                .Concat(HB.Helper.EnergyLibrary.UserMaterials.Select(_ => new MaterialViewData(_, ShowIPUnit: false)))
                 .ToList();
             this._allData = _userData.Concat(_systemData).ToList();
 
@@ -320,7 +321,9 @@ namespace Honeybee.UI
         private static IEnumerable<string> LBTLibraryIds =
          HB.ModelEnergyProperties.Default.MaterialList.Select(_ => _.Identifier);
 
-        private static IEnumerable<string> LockedLibraryIds = LBTLibraryIds.Concat(NRELLibraryIds);
+        private static IEnumerable<string> UserLibIds = HB.Helper.EnergyLibrary.UserMaterials.Select(_ => _.Identifier);
+
+        private static IEnumerable<string> LockedLibraryIds = LBTLibraryIds.Concat(NRELLibraryIds).Concat(UserLibIds);
 
         public MaterialViewData(HB.Energy.IMaterial c, bool ShowIPUnit = false)
         {
@@ -361,6 +364,7 @@ namespace Honeybee.UI
 
             if (LBTLibraryIds.Contains(c.Identifier)) this.Source = "LBT";
             else if (NRELLibraryIds.Contains(c.Identifier)) this.Source = "DoE NREL";
+            else if (UserLibIds.Contains(c.Identifier)) this.Source = "User";
         }
 
     

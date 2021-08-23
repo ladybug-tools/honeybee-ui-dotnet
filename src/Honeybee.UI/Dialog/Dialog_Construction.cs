@@ -88,6 +88,7 @@ namespace Honeybee.UI
                 if (_opaqueMaterials == null)
                 {
                     var libObjs = HB.Helper.EnergyLibrary.StandardsOpaqueMaterials.Values.ToList();
+                    libObjs.AddRange(HB.Helper.EnergyLibrary.UserMaterials.OfType<HB.Energy.IOpaqueMaterial>());
 
                     var inModelObjs = this.ModelEnergyProperties.Materials
                         .Where(_ => !_.Obj.GetType().Name.Contains("EnergyWindow"))
@@ -109,6 +110,8 @@ namespace Honeybee.UI
                 if (_windowMaterials == null)
                 {
                     var libObjs = HB.Helper.EnergyLibrary.StandardsWindowMaterials.Values.ToList();
+                    libObjs.AddRange(HB.Helper.EnergyLibrary.UserMaterials.Where(_=> !(_ is HB.Energy.IOpaqueMaterial)));
+
                     var inModelObjs = this.ModelEnergyProperties.Materials
                         .Where(_ => _.Obj.GetType().Name.Contains("EnergyWindow"))
                         .OfType<HB.Energy.IMaterial>();

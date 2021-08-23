@@ -33,11 +33,14 @@ namespace Honeybee.UI
             ConstructionViewData.LibSource = libSource.DuplicateModelEnergyProperties();
             ConstructionViewData.LibSource.AddMaterials(HB.Helper.EnergyLibrary.StandardsOpaqueMaterials.Values);
             ConstructionViewData.LibSource.AddMaterials(HB.Helper.EnergyLibrary.StandardsWindowMaterials.Values);
+            ConstructionViewData.LibSource.AddMaterials(HB.Helper.EnergyLibrary.UserMaterials);
+
 
             this._userData = libSource.ConstructionList.Select(_ => new ConstructionViewData(_, ShowIPUnit: false)).ToList();
             this._systemData = 
                 HB.Helper.EnergyLibrary.StandardsOpaqueConstructions.Select(_ => new ConstructionViewData(_.Value, ShowIPUnit: false))
                 .Concat(HB.Helper.EnergyLibrary.StandardsWindowConstructions.Select(_ => new ConstructionViewData(_.Value, ShowIPUnit: false)))
+                .Concat(HB.Helper.EnergyLibrary.UserConstructions.Select(_ => new ConstructionViewData(_, ShowIPUnit: false)))
                 .ToList();
             this._allData = _userData.Concat(_systemData).ToList();
 
@@ -305,7 +308,9 @@ namespace Honeybee.UI
         private static IEnumerable<string> LBTLibraryIds =
          HB.ModelEnergyProperties.Default.ConstructionList.Select(_ => _.Identifier);
 
-        private static IEnumerable<string> SystemLibraryIds = LBTLibraryIds.Concat(NRELLibraryIds);
+        private static IEnumerable<string> UserLibIds = HB.Helper.EnergyLibrary.UserConstructions.Select(_ => _.Identifier);
+
+        private static IEnumerable<string> SystemLibraryIds = LBTLibraryIds.Concat(NRELLibraryIds).Concat(UserLibIds);
 
         public ConstructionViewData(HB.Energy.IConstruction c, bool ShowIPUnit)
         {
@@ -332,6 +337,7 @@ namespace Honeybee.UI
             this.Locked = SystemLibraryIds.Contains(c.Identifier);
             if (LBTLibraryIds.Contains(c.Identifier)) this.Source = "LBT";
             else if (NRELLibraryIds.Contains(c.Identifier)) this.Source = "DoE NREL";
+            else if (UserLibIds.Contains(c.Identifier)) this.Source = "User";
         }
 
         public List<HB.Energy.IMaterial> GetMaterials()
