@@ -23,8 +23,7 @@ namespace Honeybee.UI
             ScheduleRulesetViewData.TypeLimits = _typeLimits;
 
             this._userData = libSource.ScheduleList.OfType<ScheduleRulesetAbridged>().Select(_ => new ScheduleRulesetViewData(_)).ToList();
-            //TODO: wait until a ScheduleRuleset library is added
-            this._systemData = new List<ScheduleRulesetViewData>();
+            this._systemData = HB.Helper.EnergyLibrary.UserSchedules.OfType<ScheduleRulesetAbridged>().Select(_ => new ScheduleRulesetViewData(_)).ToList();
             this._allData = _userData.Concat(_systemData).ToList();
 
          
@@ -224,7 +223,8 @@ namespace Honeybee.UI
         private static IEnumerable<string> LBTLibraryIds =
          HB.ModelEnergyProperties.Default.ScheduleList.Select(_ => _.Identifier);
 
-        private static IEnumerable<string> LockedLibraryIds = LBTLibraryIds;
+        private static IEnumerable<string> UserLibIds = HB.Helper.EnergyLibrary.UserProgramtypes.Select(_ => _.Identifier);
+        private static IEnumerable<string> LockedLibraryIds = LBTLibraryIds.Concat(UserLibIds);
 
         public ScheduleRulesetViewData(HB.ScheduleRulesetAbridged c)
         {
@@ -241,7 +241,7 @@ namespace Honeybee.UI
             this.Locked = LockedLibraryIds.Contains(c.Identifier);
 
             if (LBTLibraryIds.Contains(c.Identifier)) this.Source = "LBT";
-            //else if (NRELLibraryIds.Contains(this.Name)) this.Source = "DoE NREL";
+            else if (UserLibIds.Contains(c.Identifier)) this.Source = "User";
         }
 
 

@@ -16,8 +16,7 @@ namespace Honeybee.UI
             _modelEnergyProperties = libSource;
 
             this._userData = libSource.ConstructionSetList.OfType<ConstructionSetAbridged>().Select(_ => new ConstructionSetViewData(_)).ToList();
-            //TODO: wait until a ConstructionSet library is added
-            this._systemData = new List<ConstructionSetViewData>();
+            this._systemData = HB.Helper.EnergyLibrary.UserConstructionSets.OfType<ConstructionSetAbridged>().Select(_ => new ConstructionSetViewData(_)).ToList();
             this._allData = _userData.Concat(_systemData).ToList();
 
          
@@ -199,7 +198,8 @@ namespace Honeybee.UI
         private static IEnumerable<string> LBTLibraryIds =
          HB.ModelEnergyProperties.Default.ConstructionSetList.Select(_ => _.Identifier);
 
-        private static IEnumerable<string> LockedLibraryIds = LBTLibraryIds;
+        private static IEnumerable<string> UserLibIds = HB.Helper.EnergyLibrary.UserConstructionSets.Select(_ => _.Identifier);
+        private static IEnumerable<string> LockedLibraryIds = LBTLibraryIds.Concat(UserLibIds);
 
         public ConstructionSetViewData(HB.ConstructionSetAbridged c)
         {
@@ -221,7 +221,7 @@ namespace Honeybee.UI
             this.Locked = LockedLibraryIds.Contains(c.Identifier);
 
             if (LBTLibraryIds.Contains(c.Identifier)) this.Source = "LBT";
-            //else if (NRELLibraryIds.Contains(this.Name)) this.Source = "DoE NREL";
+            else if (UserLibIds.Contains(c.Identifier)) this.Source = "User";
         }
 
 
