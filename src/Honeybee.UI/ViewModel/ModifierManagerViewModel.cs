@@ -18,8 +18,7 @@ namespace Honeybee.UI
             _modelEnergyProperties = libSource;
 
             this._userData = libSource.ModifierList.Select(_ => new ModifierViewData(_)).ToList();
-            //TODO: wait until a modifier library is added
-            this._systemData = new List<ModifierViewData>();
+            this._systemData = HB.Helper.EnergyLibrary.UserModifiers.Select(_ => new ModifierViewData(_)).ToList();
             this._allData = _userData.Concat(_systemData).ToList();
 
 
@@ -324,7 +323,8 @@ namespace Honeybee.UI
         private static IEnumerable<string> LBTLibraryIds =
          HB.ModelRadianceProperties.Default.ModifierList.Select(_ => _.Identifier);
 
-        private static IEnumerable<string> LockedLibraryIds = LBTLibraryIds;
+        private static IEnumerable<string> UserLibIds = HB.Helper.EnergyLibrary.UserModifiers.Select(_ => _.Identifier);
+        private static IEnumerable<string> LockedLibraryIds = LBTLibraryIds.Concat(UserLibIds);
 
         public ModifierViewData(HB.Radiance.IModifier c)
         {
@@ -370,7 +370,7 @@ namespace Honeybee.UI
             this.Locked = LockedLibraryIds.Contains(c.Identifier);
 
             if (LBTLibraryIds.Contains(c.Identifier)) this.Source = "LBT";
-            //else if (NRELLibraryIds.Contains(this.Name)) this.Source = "DoE NREL";
+            else if (UserLibIds.Contains(c.Identifier)) this.Source = "User";
         }
 
 
