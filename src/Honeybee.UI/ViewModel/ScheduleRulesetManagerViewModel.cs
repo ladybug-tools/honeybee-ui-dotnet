@@ -18,9 +18,11 @@ namespace Honeybee.UI
         {
             _modelEnergyProperties = libSource;
 
+            libSource.AddScheduleTypeLimits(HB.Helper.EnergyLibrary.UserScheduleTypeLimits);
             var schTypes = libSource.ScheduleTypeLimits;
             _typeLimits = schTypes.Select(_ => _.DuplicateScheduleTypeLimit()).ToList();
             ScheduleRulesetViewData.TypeLimits = _typeLimits;
+
 
             this._userData = libSource.ScheduleList.OfType<ScheduleRulesetAbridged>().Select(_ => new ScheduleRulesetViewData(_)).ToList();
             this._systemData = HB.Helper.EnergyLibrary.UserSchedules.OfType<ScheduleRulesetAbridged>().Select(_ => new ScheduleRulesetViewData(_)).ToList();
@@ -223,7 +225,7 @@ namespace Honeybee.UI
         private static IEnumerable<string> LBTLibraryIds =
          HB.ModelEnergyProperties.Default.ScheduleList.Select(_ => _.Identifier);
 
-        private static IEnumerable<string> UserLibIds = HB.Helper.EnergyLibrary.UserProgramtypes.Select(_ => _.Identifier);
+        private static IEnumerable<string> UserLibIds = HB.Helper.EnergyLibrary.UserSchedules.Select(_ => _.Identifier);
         private static IEnumerable<string> LockedLibraryIds = LBTLibraryIds.Concat(UserLibIds);
 
         public ScheduleRulesetViewData(HB.ScheduleRulesetAbridged c)
@@ -233,7 +235,7 @@ namespace Honeybee.UI
             this.ScheduleRuleset = c;
 
             var typeLimit = TypeLimits.FirstOrDefault(_ => _.Identifier == c.ScheduleTypeLimit);
-            this.TypeLimit =  typeLimit.DisplayName ?? typeLimit.Identifier;
+            this.TypeLimit =  typeLimit?.DisplayName ?? typeLimit?.Identifier;
 
             this.SearchableText = $"{this.Name}_{this.TypeLimit}";
 
