@@ -15,8 +15,9 @@ namespace Honeybee.UI
             _modelEnergyProperties = libSource;
 
             this._userData = libSource.ProgramTypeList.OfType<ProgramTypeAbridged>().Select(_ => new ProgramTypeViewData(_)).ToList();
-            this._systemData = HB.Helper.EnergyLibrary.UserProgramtypes.OfType<ProgramTypeAbridged>().Select(_ => new ProgramTypeViewData(_)).ToList();
-            this._allData = _userData.Concat(_systemData).ToList();
+            this._systemData = HB.Helper.EnergyLibrary.UserProgramtypes.OfType<ProgramTypeAbridged>().Select(_ => new ProgramTypeViewData(_))
+                .Concat(ModelEnergyProperties.Default.ProgramTypes.OfType<ProgramTypeAbridged>().Select(_ => new ProgramTypeViewData(_))).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct(new ManagerItemComparer<ProgramTypeViewData>()).ToList();
 
             ResetDataCollection();
 
@@ -205,7 +206,7 @@ namespace Honeybee.UI
         private static IEnumerable<string> UserLibIds = HB.Helper.EnergyLibrary.UserProgramtypes.Select(_ => _.Identifier);
         private static IEnumerable<string> LockedLibraryIds = LBTLibraryIds.Concat(UserLibIds);
 
-        public ProgramTypeViewData(HB.ProgramTypeAbridged c)
+        public ProgramTypeViewData(HB.ProgramTypeAbridged c) 
         {
             this.Name = c.DisplayName ?? c.Identifier;
             //this.CType = c.GetType().Name;
@@ -229,7 +230,6 @@ namespace Honeybee.UI
             else if (UserLibIds.Contains(c.Identifier)) this.Source = "User";
         }
 
-   
     }
 
 }

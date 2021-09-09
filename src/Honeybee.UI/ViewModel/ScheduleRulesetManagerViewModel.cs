@@ -18,15 +18,19 @@ namespace Honeybee.UI
         {
             _modelEnergyProperties = libSource;
 
-            libSource.AddScheduleTypeLimits(HB.Helper.EnergyLibrary.UserScheduleTypeLimits);
+            libSource.AddScheduleTypeLimits(HB.Helper.EnergyLibrary.UserScheduleTypeLimits); 
+            libSource.AddScheduleTypeLimits(ModelEnergyProperties.Default.ScheduleTypeLimits);
             var schTypes = libSource.ScheduleTypeLimits;
             _typeLimits = schTypes.Select(_ => _.DuplicateScheduleTypeLimit()).ToList();
             ScheduleRulesetViewData.TypeLimits = _typeLimits;
 
 
             this._userData = libSource.ScheduleList.OfType<ScheduleRulesetAbridged>().Select(_ => new ScheduleRulesetViewData(_)).ToList();
-            this._systemData = HB.Helper.EnergyLibrary.UserSchedules.OfType<ScheduleRulesetAbridged>().Select(_ => new ScheduleRulesetViewData(_)).ToList();
-            this._allData = _userData.Concat(_systemData).ToList();
+            this._systemData = HB.Helper.EnergyLibrary.UserSchedules.OfType<ScheduleRulesetAbridged>().Select(_ => new ScheduleRulesetViewData(_))
+                .Concat(ModelEnergyProperties.Default.Schedules.OfType<ScheduleRulesetAbridged>().Select(_ => new ScheduleRulesetViewData(_))).ToList();
+            var aa = _userData.Concat(_systemData);
+            var bb = aa.Distinct();
+            this._allData = _userData.Concat(_systemData).Distinct(new ManagerItemComparer<ScheduleRulesetViewData>()).ToList();
 
          
             ResetDataCollection();

@@ -36,8 +36,9 @@ namespace Honeybee.UI
                 HB.Helper.EnergyLibrary.StandardsOpaqueMaterials.Select(_ => new MaterialViewData(_.Value, ShowIPUnit: false))
                 .Concat(HB.Helper.EnergyLibrary.StandardsWindowMaterials.Select(_ => new MaterialViewData(_.Value, ShowIPUnit: false)))
                 .Concat(HB.Helper.EnergyLibrary.UserMaterials.Select(_ => new MaterialViewData(_, ShowIPUnit: false)))
+                .Concat(ModelEnergyProperties.Default.MaterialList.Select(_ => new MaterialViewData(_, ShowIPUnit: false)))
                 .ToList();
-            this._allData = _userData.Concat(_systemData).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct(new ManagerItemComparer<MaterialViewData>()).ToList();
 
 
             ResetDataCollection();
