@@ -16,8 +16,10 @@ namespace Honeybee.UI
             _modelEnergyProperties = libSource;
 
             this._userData = libSource.ConstructionSetList.OfType<ConstructionSetAbridged>().Select(_ => new ConstructionSetViewData(_)).ToList();
-            this._systemData = HB.Helper.EnergyLibrary.UserConstructionSets.OfType<ConstructionSetAbridged>().Select(_ => new ConstructionSetViewData(_)).ToList();
-            this._allData = _userData.Concat(_systemData).ToList();
+            this._systemData = HB.Helper.EnergyLibrary.UserConstructionSets.OfType<ConstructionSetAbridged>().Select(_ => new ConstructionSetViewData(_))
+                .Concat(ModelEnergyProperties.Default.ConstructionSets.OfType<ConstructionSetAbridged>().Select(_ => new ConstructionSetViewData(_)))
+                .ToList();
+            this._allData = _userData.Concat(_systemData).Distinct(new ManagerItemComparer<ConstructionSetViewData>()).ToList();
 
          
             ResetDataCollection();

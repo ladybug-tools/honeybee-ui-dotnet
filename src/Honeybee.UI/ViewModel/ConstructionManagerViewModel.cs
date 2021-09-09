@@ -34,15 +34,16 @@ namespace Honeybee.UI
             ConstructionViewData.LibSource.AddMaterials(HB.Helper.EnergyLibrary.StandardsOpaqueMaterials.Values);
             ConstructionViewData.LibSource.AddMaterials(HB.Helper.EnergyLibrary.StandardsWindowMaterials.Values);
             ConstructionViewData.LibSource.AddMaterials(HB.Helper.EnergyLibrary.UserMaterials);
-
+            ConstructionViewData.LibSource.AddMaterials(ModelEnergyProperties.Default.MaterialList);
 
             this._userData = libSource.ConstructionList.Select(_ => new ConstructionViewData(_, ShowIPUnit: false)).ToList();
             this._systemData = 
                 HB.Helper.EnergyLibrary.StandardsOpaqueConstructions.Select(_ => new ConstructionViewData(_.Value, ShowIPUnit: false))
                 .Concat(HB.Helper.EnergyLibrary.StandardsWindowConstructions.Select(_ => new ConstructionViewData(_.Value, ShowIPUnit: false)))
                 .Concat(HB.Helper.EnergyLibrary.UserConstructions.Select(_ => new ConstructionViewData(_, ShowIPUnit: false)))
+                .Concat(ModelEnergyProperties.Default.ConstructionList.Select(_ => new ConstructionViewData(_, ShowIPUnit: false)))
                 .ToList();
-            this._allData = _userData.Concat(_systemData).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct(new ManagerItemComparer<ConstructionViewData>()).ToList();
 
             ResetDataCollection();
         }

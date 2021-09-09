@@ -16,8 +16,10 @@ namespace Honeybee.UI
             _modelRadianceProperties = libSource;
 
             this._userData = libSource.ModifierSetList.OfType<ModifierSetAbridged>().Select(_ => new ModifierSetViewData(_)).ToList();
-            this._systemData = HB.Helper.EnergyLibrary.UserModifierSets.OfType<ModifierSetAbridged>().Select(_ => new ModifierSetViewData(_)).ToList();
-            this._allData = _userData.Concat(_systemData).ToList();
+            this._systemData = HB.Helper.EnergyLibrary.UserModifierSets.OfType<ModifierSetAbridged>().Select(_ => new ModifierSetViewData(_))
+                .Concat(ModelRadianceProperties.Default.ModifierSets.OfType<ModifierSetAbridged>().Select(_ => new ModifierSetViewData(_))).ToList();
+       
+            this._allData = _userData.Concat(_systemData).Distinct(new ManagerItemComparer<ModifierSetViewData>()).ToList();
 
          
             ResetDataCollection();
