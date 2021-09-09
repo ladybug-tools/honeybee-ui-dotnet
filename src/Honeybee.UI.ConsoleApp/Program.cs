@@ -353,7 +353,23 @@ namespace Honeybee.UI.ConsoleApp
                         }
                     }
                 };
-              
+
+                var matchRooms_btn = new Button() { Text = "MatchRooms" };
+                matchRooms_btn.Click += (s, e) =>
+                {
+                    var source = new Room("id", new List<Face>(), new RoomPropertiesAbridged(energy: new RoomEnergyPropertiesAbridged("my construction")), displayName: "SourceName");
+                    var target = new Room("id", new List<Face>(), new RoomPropertiesAbridged());
+                    var dia = new Dialog_MatchRoomProperties(source, new List<Room>() { target });
+                    var rc = dia.ShowModal(Config.Owner);
+                    if (rc != null)
+                    {
+                        foreach (var item in rc)
+                        {
+                            Console.WriteLine(item.ToJson());
+                        }
+                    }
+                };
+
 
                 panel.AddSeparateRow(RoomPropertybtn, RoomPropertybtn2, null);
                 panel.AddSeparateRow(facePropertybtn, facePropertybtn2, null);
@@ -372,6 +388,7 @@ namespace Honeybee.UI.ConsoleApp
                 panel.AddSeparateRow(opsProgramType);
                 panel.AddSeparateRow(opsHVACs);
                 panel.AddSeparateRow(HVACManager);
+                panel.AddSeparateRow(matchRooms_btn);
                 panel.AddSeparateRow(null);
                 Content = panel;
             }
