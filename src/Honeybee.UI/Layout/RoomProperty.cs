@@ -795,7 +795,7 @@ namespace Honeybee.UI.View
             var ltnByProgram = new CheckBox() { Text = vm.NoControl };
             ltnByProgram.CheckedBinding.Bind(vm, _ => _.VentilationControl.IsCheckboxChecked);
 
-            var gp = new GroupBox() { Text = "Ventilation Controls" };
+            var gp = new GroupBox() { Text = "Window Ventilation Controls" };
             gp.Content = new StackLayout(ltnByProgram, layout) { Spacing = 4, Padding = new Padding(4) };
 
             return gp;
