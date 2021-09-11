@@ -28,8 +28,6 @@ namespace Honeybee.UI
             this._userData = libSource.ScheduleList.OfType<ScheduleRulesetAbridged>().Select(_ => new ScheduleRulesetViewData(_)).ToList();
             this._systemData = HB.Helper.EnergyLibrary.UserSchedules.OfType<ScheduleRulesetAbridged>().Select(_ => new ScheduleRulesetViewData(_))
                 .Concat(ModelEnergyProperties.Default.Schedules.OfType<ScheduleRulesetAbridged>().Select(_ => new ScheduleRulesetViewData(_))).ToList();
-            var aa = _userData.Concat(_systemData);
-            var bb = aa.Distinct();
             this._allData = _userData.Concat(_systemData).Distinct(new ManagerItemComparer<ScheduleRulesetViewData>()).ToList();
 
          
@@ -79,11 +77,12 @@ namespace Honeybee.UI
                     MessageBox.Show(_control, "Nothing is selected!");
                     return null;
                 }
-                //else if (!this._userData.Contains(d))
-                //{
-                //    // user selected an item from system library, now add it to model EnergyProperties
-                //    this._modelEnergyProperties.AddSchedules(d.ScheduleRuleset);
-                //}
+                else if (!this._userData.Contains(d))
+                {
+                    // user selected an item from system library, now add it to model EnergyProperties
+                    var engLib = d.CheckResources(SystemEnergyLib);
+                    this._modelEnergyProperties.MergeWith(engLib);
+                }
 
                 itemsToReturn.Add(d.ScheduleRuleset);
             }
@@ -217,7 +216,7 @@ namespace Honeybee.UI
     internal class ScheduleRulesetViewData: ManagerViewDataBase
     {
         public string TypeLimit { get; }
-        public string Source { get; }
+        public string Source { get; } = "Model";
         public bool Locked { get; }
         public HB.Energy.ISchedule ScheduleRuleset { get; }
 
@@ -250,7 +249,15 @@ namespace Honeybee.UI
             else if (UserLibIds.Contains(c.Identifier)) this.Source = "User";
         }
 
+        internal HB.ModelEnergyProperties CheckResources(HB.ModelEnergyProperties libSource)
+        {
+            
+            var eng = new ModelEnergyProperties();
+            eng.AddSchedule(this.ScheduleRuleset);
 
+            return eng.DuplicateModelEnergyProperties();
+
+        }
     }
 
 }

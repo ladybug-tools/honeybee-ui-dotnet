@@ -15,8 +15,7 @@ namespace Honeybee.UI
             _modelEnergyProperties = libSource;
 
             this._userData = libSource.ProgramTypeList.OfType<ProgramTypeAbridged>().Select(_ => new ProgramTypeViewData(_)).ToList();
-            this._systemData = HB.Helper.EnergyLibrary.UserProgramtypes.OfType<ProgramTypeAbridged>().Select(_ => new ProgramTypeViewData(_))
-                .Concat(ModelEnergyProperties.Default.ProgramTypes.OfType<ProgramTypeAbridged>().Select(_ => new ProgramTypeViewData(_))).ToList();
+            this._systemData = SystemEnergyLib.ProgramTypeList.OfType<ProgramTypeAbridged>().Select(_ => new ProgramTypeViewData(_)).ToList();
             this._allData = _userData.Concat(_systemData).Distinct(new ManagerItemComparer<ProgramTypeViewData>()).ToList();
 
             ResetDataCollection();
@@ -65,11 +64,12 @@ namespace Honeybee.UI
                     MessageBox.Show(_control, "Nothing is selected!");
                     return null;
                 }
-                //else if (!this._userData.Contains(d))
-                //{
-                //    // user selected an item from system library, now add it to model EnergyProperties
-                //    this._modelEnergyProperties.AddProgramType(d.ProgramType);
-                //}
+                else if (!this._userData.Contains(d))
+                {
+                    // user selected an item from system library, now add it to model EnergyProperties
+                    var engLib = d.CheckResources(SystemEnergyLib);
+                    this._modelEnergyProperties.MergeWith(engLib);
+                }
 
                 itemsToReturn.Add(d.ProgramType);
             }
@@ -196,15 +196,17 @@ namespace Honeybee.UI
         public bool HasVentilation { get; }
         public bool HasSetpoint { get; }
         public bool HasServiceHotWater { get; }
-        public string Source { get; }
+        public string Source { get; } = "Model";
         public bool Locked { get; }
         public HB.Energy.IProgramtype ProgramType { get; }
-      
+
+        private static IEnumerable<string> NRELLibraryIds = ModelEnergyProperties.StandardLib.ProgramTypeList.Select(_ => _.Identifier);
+
         private static IEnumerable<string> LBTLibraryIds =
          HB.ModelEnergyProperties.Default.ProgramTypeList.Select(_ => _.Identifier);
 
         private static IEnumerable<string> UserLibIds = HB.Helper.EnergyLibrary.UserProgramtypes.Select(_ => _.Identifier);
-        private static IEnumerable<string> LockedLibraryIds = LBTLibraryIds.Concat(UserLibIds);
+        private static IEnumerable<string> LockedLibraryIds = LBTLibraryIds.Concat(UserLibIds).Concat(NRELLibraryIds);
 
         public ProgramTypeViewData(HB.ProgramTypeAbridged c) 
         {
@@ -227,9 +229,24 @@ namespace Honeybee.UI
             this.Locked = LockedLibraryIds.Contains(c.Identifier);
 
             if (LBTLibraryIds.Contains(c.Identifier)) this.Source = "LBT";
+            else if (NRELLibraryIds.Contains(c.Identifier)) this.Source = "DoE NREL";
             else if (UserLibIds.Contains(c.Identifier)) this.Source = "User";
         }
 
+        internal HB.ModelEnergyProperties CheckResources(HB.ModelEnergyProperties libSource)
+        {
+            var eng = new ModelEnergyProperties();
+            eng.AddProgramType(this.ProgramType);
+
+            var names = (this.ProgramType as ProgramTypeAbridged).GetAllSchedules();
+            var sches = names
+                 .Select(_ => libSource.ScheduleList.FirstOrDefault(m => m.Identifier == _));
+
+            eng.AddSchedules(sches);
+            eng.AddScheduleTypeLimits(libSource.ScheduleTypeLimits);
+            return eng.DuplicateModelEnergyProperties();
+
+        }
     }
 
 }

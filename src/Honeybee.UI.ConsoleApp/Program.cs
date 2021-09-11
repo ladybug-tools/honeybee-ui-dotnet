@@ -25,7 +25,7 @@ namespace Honeybee.UI.ConsoleApp
                 //ClientSize = new Eto.Drawing.Size(400, 300);
                 Title = "Eto.Forms";
                 Width = 400;
-                var md = new Model("id", ModelProperties.Default );
+                var md = new Model("id", new ModelProperties(new ModelEnergyProperties(), new ModelRadianceProperties()) );
 
                 var panel = new DynamicLayout();
 
@@ -58,7 +58,7 @@ namespace Honeybee.UI.ConsoleApp
 
                 RoomPropertybtn2.Click += (s, e) =>
                 {
-                    md.Properties.Energy.Hvacs = null;
+                    //md.Properties.Energy?.Hvacs = null;
                     var dialog = new Honeybee.UI.Dialog_RoomProperty(md.Properties, new List<Room>() { rm2 });
                     //dialog.SetSensorPositionPicker(() => { return new List<double>(); });
                     dialog.SetInternalMassPicker(() => 22);

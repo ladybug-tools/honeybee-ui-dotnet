@@ -10,15 +10,13 @@ namespace Honeybee.UI
     internal class ConstructionSetManagerViewModel : ManagerBaseViewModel<ConstructionSetViewData>
     {
         private HB.ModelEnergyProperties _modelEnergyProperties { get; set; }
-     
+    
         public ConstructionSetManagerViewModel(HB.ModelEnergyProperties libSource, Control control = default):base(control)
         {
             _modelEnergyProperties = libSource;
 
             this._userData = libSource.ConstructionSetList.OfType<ConstructionSetAbridged>().Select(_ => new ConstructionSetViewData(_)).ToList();
-            this._systemData = HB.Helper.EnergyLibrary.UserConstructionSets.OfType<ConstructionSetAbridged>().Select(_ => new ConstructionSetViewData(_))
-                .Concat(ModelEnergyProperties.Default.ConstructionSets.OfType<ConstructionSetAbridged>().Select(_ => new ConstructionSetViewData(_)))
-                .ToList();
+            this._systemData = SystemEnergyLib.ConstructionSetList.OfType<ConstructionSetAbridged>().Select(_ => new ConstructionSetViewData(_)).ToList();
             this._allData = _userData.Concat(_systemData).Distinct(new ManagerItemComparer<ConstructionSetViewData>()).ToList();
 
          
@@ -36,7 +34,6 @@ namespace Honeybee.UI
         {
 
             UpdateLibSource();
-
             var itemsToReturn = new List<HB.Energy.IBuildingConstructionset>();
 
             if (selectedOnly)
@@ -47,11 +44,12 @@ namespace Honeybee.UI
                     MessageBox.Show(_control, "Nothing is selected!");
                     return null;
                 }
-                //else if (!this._userData.Contains(d))
-                //{
-                //    // user selected an item from system library, now add it to model EnergyProperties
-                //    this._modelEnergyProperties.AddSchedules(d.ConstructionSet);
-                //}
+                else if (!this._userData.Contains(d))
+                {
+                    // user selected an item from system library, now add it to model EnergyProperties
+                    var engLib = d.CheckResources(SystemEnergyLib);
+                    this._modelEnergyProperties.MergeWith(engLib);
+                }
 
                 itemsToReturn.Add(d.ConstructionSet);
             }
@@ -188,20 +186,18 @@ namespace Honeybee.UI
         public bool HasFloorSet { get; }
         public bool HasRoofCeilingSet { get; }
         public bool HasShadeSet { get; }
-        public string Source { get; }
+        public string Source { get; } = "Model";
         public bool Locked { get; }
         public HB.ConstructionSetAbridged ConstructionSet { get; }
 
         public static List<ScheduleTypeLimit> TypeLimits;
-        //private static IEnumerable<string> NRELLibraryIds =
-        //    HB.Helper.EnergyLibrary.StandardsOpaqueConstructionSets.Keys
-        //    .Concat(HB.Helper.EnergyLibrary.StandardsWindowConstructionSets.Keys);
+        private static IEnumerable<string> NRELLibraryIds = ModelEnergyProperties.StandardLib.ConstructionSetList.Select(_ => _.Identifier);
 
         private static IEnumerable<string> LBTLibraryIds =
          HB.ModelEnergyProperties.Default.ConstructionSetList.Select(_ => _.Identifier);
 
         private static IEnumerable<string> UserLibIds = HB.Helper.EnergyLibrary.UserConstructionSets.Select(_ => _.Identifier);
-        private static IEnumerable<string> LockedLibraryIds = LBTLibraryIds.Concat(UserLibIds);
+        private static IEnumerable<string> LockedLibraryIds = LBTLibraryIds.Concat(UserLibIds).Concat(NRELLibraryIds);
 
         public ConstructionSetViewData(HB.ConstructionSetAbridged c)
         {
@@ -223,9 +219,30 @@ namespace Honeybee.UI
             this.Locked = LockedLibraryIds.Contains(c.Identifier);
 
             if (LBTLibraryIds.Contains(c.Identifier)) this.Source = "LBT";
+            else if (NRELLibraryIds.Contains(c.Identifier)) this.Source = "DoE NREL";
             else if (UserLibIds.Contains(c.Identifier)) this.Source = "User";
         }
 
+        internal HB.ModelEnergyProperties CheckResources(HB.ModelEnergyProperties libSource)
+        {
+            var eng = new ModelEnergyProperties();
+            eng.AddConstructionSet(this.ConstructionSet);
+
+            var cSet = this.ConstructionSet;
+            // get constructions
+            var cNames = cSet.GetAllConstructions();
+            var cons = cNames.Select(_ => libSource.ConstructionList.FirstOrDefault(c => c.Identifier == _));
+            eng.AddConstructions(cons);
+
+            // get all materials
+            var mats = cons
+                .SelectMany(_ => _.GetAbridgedConstructionMaterials())
+                .Select(_ => libSource.MaterialList.FirstOrDefault(m => m.Identifier == _));
+
+            eng.AddMaterials(mats);
+
+            return eng.DuplicateModelEnergyProperties();
+        }
 
     }
 

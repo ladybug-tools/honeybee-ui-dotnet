@@ -18,8 +18,7 @@ namespace Honeybee.UI
             _modelEnergyProperties = libSource;
 
             this._userData = libSource.ModifierList.Select(_ => new ModifierViewData(_)).ToList();
-            this._systemData = HB.Helper.EnergyLibrary.UserModifiers.Select(_ => new ModifierViewData(_))
-                .Concat(ModelRadianceProperties.Default.ModifierList.Select(_ => new ModifierViewData(_))).ToList();
+            this._systemData = SystemRadianceLib.ModifierList.Select(_ => new ModifierViewData(_)).ToList();
             this._allData = _userData.Concat(_systemData).Distinct(new ManagerItemComparer<ModifierViewData>()).ToList();
 
 
@@ -313,7 +312,7 @@ namespace Honeybee.UI
         public string Reflectance { get; }
         public string Transmittance { get; }
         public string Emittance { get; }
-        public string Source { get; }
+        public string Source { get; } = "Model";
         public bool Locked { get; }
         public HB.Radiance.IModifier Modifier { get; }
 

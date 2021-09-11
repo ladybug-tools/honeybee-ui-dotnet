@@ -15,7 +15,7 @@ namespace Honeybee.UI
             Padding = new Padding(5);
             Title = $"Program Type Manager - {DialogHelper.PluginName}";
             WindowStyle = WindowStyle.Default;
-            Width = 800;
+            Width = 900;
 
             this.Icon = DialogHelper.HoneybeeIcon;
         }

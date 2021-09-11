@@ -32,12 +32,7 @@ namespace Honeybee.UI
             _modelEnergyProperties = libSource;
 
             this._userData = libSource.MaterialList.Select(_ => new MaterialViewData(_, ShowIPUnit: false)).ToList();
-            this._systemData =
-                HB.Helper.EnergyLibrary.StandardsOpaqueMaterials.Select(_ => new MaterialViewData(_.Value, ShowIPUnit: false))
-                .Concat(HB.Helper.EnergyLibrary.StandardsWindowMaterials.Select(_ => new MaterialViewData(_.Value, ShowIPUnit: false)))
-                .Concat(HB.Helper.EnergyLibrary.UserMaterials.Select(_ => new MaterialViewData(_, ShowIPUnit: false)))
-                .Concat(ModelEnergyProperties.Default.MaterialList.Select(_ => new MaterialViewData(_, ShowIPUnit: false)))
-                .ToList();
+            this._systemData = SystemEnergyLib.MaterialList.Select(_ => new MaterialViewData(_, ShowIPUnit: false)).ToList();
             this._allData = _userData.Concat(_systemData).Distinct(new ManagerItemComparer<MaterialViewData>()).ToList();
 
 
@@ -311,7 +306,7 @@ namespace Honeybee.UI
         public string TSolar { get; }
         public string TVis { get; }
         public string SHGC { get; }
-        public string Source { get; }
+        public string Source { get; } = "Model";
         public bool Locked { get; }
         public HB.Energy.IMaterial Material { get; }
 

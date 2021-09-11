@@ -17,7 +17,7 @@ namespace Honeybee.UI
             _modelEnergyProperties = libSource;
 
             this._userData = libSource.HVACList.Select(_ => new HVACViewData(_)).ToList();
-            this._systemData = ModelEnergyProperties.Default.HVACList.Select(_ => new HVACViewData(_)).ToList();
+            this._systemData = SystemEnergyLib.HVACList.Select(_ => new HVACViewData(_)).ToList();
             this._allData = _userData.Concat(_systemData).Distinct(new ManagerItemComparer<HVACViewData>()).ToList();
 
             ResetDataCollection();
@@ -225,7 +225,7 @@ namespace Honeybee.UI
     internal class HVACViewData: ManagerViewDataBase
     {
         public string CType { get; }
-        public string Source { get; }
+        public string Source { get; } = "Model";
         public bool Locked { get; }
         public HB.Energy.IHvac HVAC { get; }
 
