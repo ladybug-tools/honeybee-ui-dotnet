@@ -31,18 +31,11 @@ namespace Honeybee.UI
 
             // for calculating R/U values 
             ConstructionViewData.LibSource = libSource.DuplicateModelEnergyProperties();
-            ConstructionViewData.LibSource.AddMaterials(HB.Helper.EnergyLibrary.StandardsOpaqueMaterials.Values);
-            ConstructionViewData.LibSource.AddMaterials(HB.Helper.EnergyLibrary.StandardsWindowMaterials.Values);
-            ConstructionViewData.LibSource.AddMaterials(HB.Helper.EnergyLibrary.UserMaterials);
-            ConstructionViewData.LibSource.AddMaterials(ModelEnergyProperties.Default.MaterialList);
+            ConstructionViewData.LibSource.AddMaterials(SystemEnergyLib.MaterialList);
+
 
             this._userData = libSource.ConstructionList.Select(_ => new ConstructionViewData(_, ShowIPUnit: false)).ToList();
-            this._systemData = 
-                HB.Helper.EnergyLibrary.StandardsOpaqueConstructions.Select(_ => new ConstructionViewData(_.Value, ShowIPUnit: false))
-                .Concat(HB.Helper.EnergyLibrary.StandardsWindowConstructions.Select(_ => new ConstructionViewData(_.Value, ShowIPUnit: false)))
-                .Concat(HB.Helper.EnergyLibrary.UserConstructions.Select(_ => new ConstructionViewData(_, ShowIPUnit: false)))
-                .Concat(ModelEnergyProperties.Default.ConstructionList.Select(_ => new ConstructionViewData(_, ShowIPUnit: false)))
-                .ToList();
+            this._systemData = SystemEnergyLib.ConstructionList.Select(_ => new ConstructionViewData(_, ShowIPUnit: false)).ToList();
             this._allData = _userData.Concat(_systemData).Distinct(new ManagerItemComparer<ConstructionViewData>()).ToList();
 
             ResetDataCollection();
@@ -93,9 +86,8 @@ namespace Honeybee.UI
                 else if (!this._userData.Contains(d))
                 {
                     // user selected an item from system library, now add it to model EnergyProperties
-                    var mats = d.GetMaterials();
-                    this._modelEnergyProperties.AddMaterials(mats);
-                    this._modelEnergyProperties.AddConstruction(d.Construction);
+                    var engLib = d.CheckResources(SystemEnergyLib);
+                    this._modelEnergyProperties.MergeWith(engLib);
                 }
                
                 itemsToReturn.Add(d.Construction);
@@ -297,7 +289,7 @@ namespace Honeybee.UI
         public string TVis { get; }
         public string SHGC { get; }
         public bool Locked { get; }
-        public string Source { get; }
+        public string Source { get; } = "Model";
         public HB.Energy.IConstruction Construction { get; }
 
         public static HB.ModelEnergyProperties LibSource { get; set; }
@@ -341,27 +333,16 @@ namespace Honeybee.UI
             else if (UserLibIds.Contains(c.Identifier)) this.Source = "User";
         }
 
-        public List<HB.Energy.IMaterial> GetMaterials()
+        internal HB.ModelEnergyProperties CheckResources(HB.ModelEnergyProperties libSource)
         {
-            var layers = new List<string>();
-            if (this.Construction is HB.OpaqueConstructionAbridged obj)
-            {
-                layers =  obj.Materials;
-            }
-            else if (this.Construction is HB.WindowConstructionAbridged win)
-            {
-                layers = win.Materials;
-            }
+            var eng = new ModelEnergyProperties();
+            var layers = this.Construction.GetAbridgedConstructionMaterials();
+            var mats = layers
+                 .Select(_ => libSource.MaterialList.FirstOrDefault(m => m.Identifier == _));
 
-            var materials = new List<HB.Energy.IMaterial>();
-            foreach (var layer in layers)
-            {
-                var m = LibSource.MaterialList.FirstOrDefault(_ => _.Identifier == layer);
-                var dup = m.Duplicate() as HB.Energy.IMaterial;
-                dup.DisplayName = m.DisplayName ?? m.Identifier;
-                materials.Add(dup);
-            }
-            return materials;
+            eng.AddMaterials(mats);
+            return eng.DuplicateModelEnergyProperties();
+          
         }
     }
 

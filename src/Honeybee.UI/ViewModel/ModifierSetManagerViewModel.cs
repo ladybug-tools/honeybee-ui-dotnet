@@ -16,12 +16,9 @@ namespace Honeybee.UI
             _modelRadianceProperties = libSource;
 
             this._userData = libSource.ModifierSetList.OfType<ModifierSetAbridged>().Select(_ => new ModifierSetViewData(_)).ToList();
-            this._systemData = HB.Helper.EnergyLibrary.UserModifierSets.OfType<ModifierSetAbridged>().Select(_ => new ModifierSetViewData(_))
-                .Concat(ModelRadianceProperties.Default.ModifierSets.OfType<ModifierSetAbridged>().Select(_ => new ModifierSetViewData(_))).ToList();
-       
+            this._systemData = SystemRadianceLib.ModifierSetList.OfType<ModifierSetAbridged>().Select(_ => new ModifierSetViewData(_)).ToList();
             this._allData = _userData.Concat(_systemData).Distinct(new ManagerItemComparer<ModifierSetViewData>()).ToList();
 
-         
             ResetDataCollection();
         }
 
@@ -47,11 +44,12 @@ namespace Honeybee.UI
                     MessageBox.Show(_control, "Nothing is selected!");
                     return null;
                 }
-                //else if (!this._userData.Contains(d))
-                //{
-                //    // user selected an item from system library, now add it to model EnergyProperties
-                //    this._modelEnergyProperties.AddSchedules(d.ModifierSet);
-                //}
+                else if (!this._userData.Contains(d))
+                {
+                    // user selected an item from system library, now add it to model EnergyProperties
+                    var engLib = d.CheckResources(SystemRadianceLib);
+                    this._modelRadianceProperties.MergeWith(engLib);
+                }
 
                 itemsToReturn.Add(d.ModifierSet);
             }
@@ -169,7 +167,7 @@ namespace Honeybee.UI
         public bool HasFloorSet { get; }
         public bool HasRoofCeilingSet { get; }
         public bool HasShadeSet { get; }
-        public string Source { get; }
+        public string Source { get; } = "Model";
         public bool Locked { get; }
         public HB.ModifierSetAbridged ModifierSet { get; }
 
@@ -207,7 +205,18 @@ namespace Honeybee.UI
             else if (UserLibIds.Contains(c.Identifier)) this.Source = "User";
         }
 
+        internal HB.ModelRadianceProperties CheckResources(HB.ModelRadianceProperties libSource)
+        {
+            var eng = new ModelRadianceProperties();
+            eng.AddModifierSet(this.ModifierSet);
 
+
+            var names = this.ModifierSet.GetAllModifiers();
+            var mods = names.Select(_ => libSource.ModifierList.FirstOrDefault(c => c.Identifier == _));
+            eng.AddModifiers(mods);
+
+            return eng.DuplicateModelRadianceProperties();
+        }
     }
 
 }
