@@ -103,16 +103,37 @@ namespace Honeybee.UI
      
         private void ShowConstructionDialog(HB.Energy.IConstruction c)
         {
-            var dialog = new Honeybee.UI.Dialog_Construction(this._modelEnergyProperties, c);
-            var dialog_rc = dialog.ShowModal(_control);
+           
+
+            var selectedObj = c;
+            HB.Energy.IConstruction dialog_rc;
+            if (selectedObj is HB.ShadeConstruction shd)
+            {
+                var dup = shd.DuplicateShadeConstruction();
+                var dialog = new Honeybee.UI.Dialog_Construction_Shade(dup);
+                dialog_rc = dialog.ShowModal(_control);
+            }
+            else if (selectedObj is HB.AirBoundaryConstructionAbridged airBoundary)
+            {
+                var dup = airBoundary.DuplicateAirBoundaryConstructionAbridged();
+                var dialog = new Honeybee.UI.Dialog_Construction_AirBoundary(this._modelEnergyProperties, dup);
+                dialog_rc = dialog.ShowModal(_control);
+            }
+            else
+            {
+                // Opaque Construction or Window Construciton
+                var dup = selectedObj.Duplicate() as HB.Energy.IConstruction;
+                var dialog = new Honeybee.UI.Dialog_Construction(this._modelEnergyProperties, dup);
+                dialog_rc = dialog.ShowModal(_control);
+            }
+
             if (dialog_rc != null)
             {
                 AddUserData(dialog_rc);
                 ResetDataCollection();
             }
-
         }
-      
+
 
         public ICommand AddOpaqueConstructionCommand => new RelayCommand(() => {
             var id = Guid.NewGuid().ToString();
@@ -226,7 +247,7 @@ namespace Honeybee.UI
             else if (selectedObj is HB.AirBoundaryConstructionAbridged airBoundary)
             {
                 var dup = airBoundary.DuplicateAirBoundaryConstructionAbridged();
-                var dialog = new Honeybee.UI.Dialog_Construction_AirBoundary(dup, selected.Locked);
+                var dialog = new Honeybee.UI.Dialog_Construction_AirBoundary(this._modelEnergyProperties, dup, selected.Locked);
                 dialog_rc = dialog.ShowModal(_control);
             }
             else
