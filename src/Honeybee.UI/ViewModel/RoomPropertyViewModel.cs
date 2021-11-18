@@ -189,6 +189,13 @@ namespace Honeybee.UI.ViewModel
             set { this.Set(() => _internalMass = value, nameof(InternalMass)); }
         }
 
+        private ProcessLoadViewModel _processLoad;
+        public ProcessLoadViewModel ProcessLoad
+        {
+            get => _processLoad;
+            set { this.Set(() => _processLoad = value, nameof(ProcessLoad)); }
+        }
+
         private VentilationControlViewModel _ventilationControl;
         public VentilationControlViewModel VentilationControl
         {
@@ -332,6 +339,10 @@ namespace Honeybee.UI.ViewModel
             var allSHW = rooms.Select(_ => _.Properties.Energy?.ServiceHotWater).Distinct().ToList();
             this.ServiceHotWater = new ServiceHotWaterViewModel(libSource, allSHW, (s) => _refHBObj.Properties.Energy.ServiceHotWater = s as ServiceHotWaterAbridged);
 
+            // Process load
+            var allProcessLoads = rooms.Select(_ => _.Properties.Energy?.ProcessLoads?.FirstOrDefault()).Distinct().ToList();
+            this.ProcessLoad = new ProcessLoadViewModel(libSource, allProcessLoads, (s) => _refHBObj.Properties.Energy.ProcessLoads = new List<ProcessAbridged>() { s as ProcessAbridged });
+
             // InternalMass
             if (rooms.Select(_ => _.Properties.Energy?.InternalMasses).Any(_=>_?.Count>1))
             {
@@ -399,6 +410,8 @@ namespace Honeybee.UI.ViewModel
                 item.Properties.Energy.Ventilation = this.Ventilation.MatchObj(item.Properties.Energy.Ventilation);
                 item.Properties.Energy.Setpoint = this.Setpoint.MatchObj(item.Properties.Energy.Setpoint);
                 item.Properties.Energy.ServiceHotWater = this.ServiceHotWater.MatchObj(item.Properties.Energy.ServiceHotWater);
+                var processLoad = this.ProcessLoad.MatchObj(item.Properties.Energy.ProcessLoads?.FirstOrDefault());
+                item.Properties.Energy.ProcessLoads = processLoad == null ? null:  new List<ProcessAbridged>() { processLoad };
 
                 // internal mass
                 var internalMass = this.InternalMass.MatchObj(item.Properties.Energy.InternalMasses?.FirstOrDefault());
