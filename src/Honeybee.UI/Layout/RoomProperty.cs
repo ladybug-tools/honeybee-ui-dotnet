@@ -197,6 +197,9 @@ namespace Honeybee.UI.View
             //Get InternalMass
             layout.AddRow(GenInternalMassPanel());
 
+            //Get process load
+            layout.AddRow(GenProcessLoadPanel());
+
             layout.AddRow(null);
 
             layout.EndScrollable();
@@ -730,6 +733,92 @@ namespace Honeybee.UI.View
             ltnByProgram.CheckedBinding.Bind(vm, _ => _.InternalMass.IsCheckboxChecked);
 
             var gp = new GroupBox() { Text = "Internal Mass" };
+            gp.Content = new StackLayout(ltnByProgram, layout) { Spacing = 4, Padding = new Padding(4) };
+
+            return gp;
+        }
+
+        private GroupBox GenProcessLoadPanel()
+        {
+            var vm = this._vm;
+
+            var layout = new DynamicLayout();
+            layout.Bind((t) => t.Enabled, vm, v => v.ProcessLoad.IsPanelEnabled);
+            layout.Bind((t) => t.Visible, vm, v => v.ProcessLoad.IsPanelEnabled);
+
+
+            layout.DefaultSpacing = new Size(4, 4);
+            layout.DefaultPadding = new Padding(4);
+
+
+            var watts = new DoubleText();
+            watts.Width = 250;
+            watts.ReservedText = _vm.Varies;
+            watts.SetDefault(_vm.ProcessLoad.Default.Watts);
+            watts.TextBinding.Bind(vm, _ => _.ProcessLoad.Watts.NumberText);
+            layout.AddRow("Watts:");
+            layout.AddRow(watts);
+
+
+            var fuelTypeText = new TextBox();
+            fuelTypeText.Bind(_ => _.Text, _vm, _ => _.ProcessLoad.FuelTypeText);
+            var fuelTypeDP = new EnumDropDown<HB.FuelTypes>() { Height = 24 };
+            fuelTypeDP.SelectedValueBinding.Bind(_vm, (_) => _.ProcessLoad.FuelType);
+            fuelTypeDP.Visible = false;
+            fuelTypeText.MouseDown += (s, e) => {
+                fuelTypeText.Visible = false;
+                fuelTypeDP.Visible = true;
+            };
+            fuelTypeDP.LostFocus += (s, e) => {
+                fuelTypeText.Visible = true;
+                fuelTypeDP.Visible = false;
+            };
+            var typeDp = new DynamicLayout();
+            typeDp.AddRow(fuelTypeText);
+            typeDp.AddRow(fuelTypeDP);
+            layout.AddRow("Fuel Type:");
+            layout.AddRow(typeDp);
+
+
+            var sch = new Button();
+            sch.TextBinding.Bind(vm, _ => _.ProcessLoad.Schedule.BtnName);
+            sch.Bind(_ => _.Command, vm, _ => _.ProcessLoad.ScheduleCommand);
+            layout.AddRow("Schedule:");
+            layout.AddRow(sch);
+
+            var radFraction = new DoubleText();
+            radFraction.ReservedText = _vm.Varies;
+            radFraction.SetDefault(_vm.ProcessLoad.Default.RadiantFraction);
+            radFraction.TextBinding.Bind(vm, _ => _.ProcessLoad.RadiantFraction.NumberText);
+            layout.AddRow("Radiant Fraction:");
+            layout.AddRow(radFraction);
+
+            var visFraction = new DoubleText();
+            visFraction.ReservedText = _vm.Varies;
+            visFraction.SetDefault(_vm.ProcessLoad.Default.LatentFraction);
+            visFraction.TextBinding.Bind(vm, _ => _.ProcessLoad.LatentFraction.NumberText);
+            layout.AddRow("Latent Fraction:");
+            layout.AddRow(visFraction);
+
+            var airFraction = new DoubleText();
+            airFraction.ReservedText = _vm.Varies;
+            airFraction.SetDefault(_vm.ProcessLoad.Default.LostFraction);
+            airFraction.TextBinding.Bind(vm, _ => _.ProcessLoad.LostFraction.NumberText);
+            layout.AddRow("Lost Fraction:");
+            layout.AddRow(airFraction);
+
+            var endUse = new StringText();
+            endUse.TextBinding.Bind(_vm, (_) => _.ProcessLoad.EndUseCategory);
+            layout.AddRow("End Use Category:");
+            layout.AddRow(endUse);
+
+            layout.AddRow(null);
+
+
+            var ltnByProgram = new CheckBox() { Text = vm.ByProgramType };
+            ltnByProgram.CheckedBinding.Bind(vm, _ => _.ProcessLoad.IsCheckboxChecked);
+
+            var gp = new GroupBox() { Text = "Process Load" };
             gp.Content = new StackLayout(ltnByProgram, layout) { Spacing = 4, Padding = new Padding(4) };
 
             return gp;
