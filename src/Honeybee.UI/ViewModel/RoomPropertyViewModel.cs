@@ -19,6 +19,7 @@ namespace Honeybee.UI.ViewModel
         public string ByProgramType => "By Room Program Type";
         public string ByGlobalModifierSet => "By Global Modifier Set";
         public string NoControl => "No Control";
+        public string NoUserData => "No UserData (or No Override)";
 
         private Room _refHBObj;
   
@@ -209,6 +210,18 @@ namespace Honeybee.UI.ViewModel
             get => _daylightingControl;
             set { this.Set(() => _daylightingControl = value, nameof(DaylightingControl)); }
         }
+
+
+        #endregion
+
+        #region UserData
+        private UserDataViewModel _userData;
+        public UserDataViewModel UserData
+        {
+            get => _userData;
+            set { this.Set(() => _userData = value, nameof(UserData)); }
+        }
+
         #endregion
 
 
@@ -361,6 +374,12 @@ namespace Honeybee.UI.ViewModel
             var allDltCtrls = rooms.Select(_ => _.Properties.Energy?.DaylightingControl).Distinct().ToList();
             this.DaylightingControl = new DaylightingControlViewModel(libSource, allDltCtrls, (s) => _refHBObj.Properties.Energy.DaylightingControl = s);
 
+
+            // User data
+            var allUserData = rooms.Select(_ => _.UserData).Distinct().ToList();
+            this.UserData = this.UserData ?? new UserDataViewModel(allUserData, (s) => _refHBObj.UserData = s, _control);
+
+
             this._hbObjs = rooms.Select(_ => _.DuplicateRoom()).ToList();
 
         }
@@ -421,6 +440,9 @@ namespace Honeybee.UI.ViewModel
                 item.Properties.Energy.WindowVentControl = this.VentilationControl.MatchObj(item.Properties.Energy.WindowVentControl);
                 item.Properties.Energy.DaylightingControl = this.DaylightingControl.MatchObj(item.Properties.Energy.DaylightingControl);
 
+                // User data
+                item.UserData = this.UserData.MatchObj();
+
             }
 
             return this._hbObjs;
@@ -470,8 +492,8 @@ namespace Honeybee.UI.ViewModel
             }
         });
 
-        public ICommand HBDataBtnClick => new RelayCommand(() => {
-
+        public ICommand HBDataBtnClick => new RelayCommand(() => 
+        {
             Honeybee.UI.Dialog_Message.Show(this._control, this._refHBObj.ToJson(true), "Schema Data");
         });
 
