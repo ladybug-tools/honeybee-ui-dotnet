@@ -12,14 +12,13 @@ namespace Honeybee.UI.ViewModel
 
     public class RoomPropertyViewModel : ViewModelBase
     {
-        public string Varies => "<varies>";
         public string Unconditioned => "Unconditioned";
         public string Unoccupied => "Unoccupied, No Loads";
         public string ByGlobalConstructionSet => "By Global Construction Set";
         public string ByProgramType => "By Room Program Type";
         public string ByGlobalModifierSet => "By Global Modifier Set";
         public string NoControl => "No Control";
-        public string NoUserData => "No UserData (or No Override)";
+        
 
         private Room _refHBObj;
   
