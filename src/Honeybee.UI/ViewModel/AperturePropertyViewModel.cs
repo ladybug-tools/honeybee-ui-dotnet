@@ -154,7 +154,15 @@ namespace Honeybee.UI.ViewModel
 
         #endregion
 
+        #region UserData
+        private UserDataViewModel _userData;
+        public UserDataViewModel UserData
+        {
+            get => _userData;
+            set { this.Set(() => _userData = value, nameof(UserData)); }
+        }
 
+        #endregion
 
         private View.ApertureProperty _control;
         private ModelProperties _libSource { get; set; }
@@ -260,7 +268,11 @@ namespace Honeybee.UI.ViewModel
             // VentOpening
             var vents = objs.Select(_ => _.Properties.Energy?.VentOpening).Distinct().ToList();
             this.VentilationOpening = new VentilationOpeningViewModel(libSource, vents, _ => _refHBObj.Properties.Energy.VentOpening = _);
-         
+
+
+            // User data
+            var allUserData = objs.Select(_ => _.UserData).Distinct().ToList();
+            this.UserData = this.UserData ?? new UserDataViewModel(allUserData, (s) => _refHBObj.UserData = s, _control);
 
             this._hbObjs = objs.Select(_ => _.DuplicateAperture()).ToList();
         }
@@ -316,6 +328,10 @@ namespace Honeybee.UI.ViewModel
 
                 if (!this._isDynamicGroupIdentifierVaries)
                     item.Properties.Radiance.DynamicGroupIdentifier = refObj.Properties.Radiance.DynamicGroupIdentifier;
+
+
+                // User data
+                item.UserData = this.UserData.MatchObj();
             }
 
             return this._hbObjs;
