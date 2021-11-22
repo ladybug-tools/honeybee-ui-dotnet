@@ -10,6 +10,15 @@ namespace Honeybee.UI
     {
         public string Varies => "<varies>";
         public string NoUserData => "No UserData (or No Override)";
+        public string Unconditioned => "Unconditioned";
+        public string Unoccupied => "Unoccupied, No Loads";
+        public string ByGlobalConstructionSet => "By Global Construction Set";
+        public string ByProgramType => "By Room Program Type";
+        public string ByGlobalModifierSet => "By Global Modifier Set";
+        public string NoControl => "No Control";
+        public string ByGlobalSetting => "By Global Setting";
+        public string ByParentSetting => "By Parent Setting";
+        public string NoSchedule => "No Control Schedule";
 
         private static HoneybeeSchema.ModelEnergyProperties _systemEnergyLib;
         internal static HoneybeeSchema.ModelEnergyProperties SystemEnergyLib
