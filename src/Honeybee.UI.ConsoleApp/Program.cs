@@ -137,6 +137,21 @@ namespace Honeybee.UI.ConsoleApp
                     }
                 };
 
+                var doorPropertybtn = new Button() { Text = "1 Door Property" };
+                var door = new Door("aptId", new Face3D(new List<List<double>>()), new Outdoors(), new DoorPropertiesAbridged());
+                doorPropertybtn.Click += (s, e) =>
+                {
+                    var dialog = new Honeybee.UI.Dialog_DoorProperty(md.Properties, new List<Door>() { door });
+                    var dialog_rc = dialog.ShowModal();
+                    if (dialog_rc != null)
+                    {
+                        foreach (var item in dialog_rc)
+                        {
+                            Console.WriteLine(item.ToJson(true));
+                        }
+
+                    }
+                };
 
                 var shdPropertybtn = new Button() { Text = "1 Shade Property" };
                 var shd = new Shade("shdId", new Face3D(new List<List<double>>()),  new ShadePropertiesAbridged(new ShadeEnergyPropertiesAbridged("aa"), new ShadeRadiancePropertiesAbridged("bb", "cc")));
@@ -374,6 +389,7 @@ namespace Honeybee.UI.ConsoleApp
                 panel.AddSeparateRow(RoomPropertybtn, RoomPropertybtn2, null);
                 panel.AddSeparateRow(facePropertybtn, facePropertybtn2, null);
                 panel.AddSeparateRow(aptPropertybtn, aptPropertybtn2, null);
+                panel.AddSeparateRow(doorPropertybtn, null);
                 panel.AddSeparateRow(shdPropertybtn, shdPropertybtn2, null);
                 panel.AddSeparateRow(Messagebtn);
                 panel.AddSeparateRow(conbtn, cSetbtn, cSetManager, cSetSel_btn, null);

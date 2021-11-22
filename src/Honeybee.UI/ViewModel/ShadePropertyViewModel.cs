@@ -90,7 +90,15 @@ namespace Honeybee.UI.ViewModel
 
         #endregion
 
+        #region UserData
+        private UserDataViewModel _userData;
+        public UserDataViewModel UserData
+        {
+            get => _userData;
+            set { this.Set(() => _userData = value, nameof(UserData)); }
+        }
 
+        #endregion
 
         private View.ShadeProperty _control;
         private ModelProperties _libSource { get; set; }
@@ -185,6 +193,10 @@ namespace Honeybee.UI.ViewModel
             else
                 this.TransmittanceSchedule.SetPropetyObj(sch);
 
+            // User data
+            var allUserData = objs.Select(_ => _.UserData).Distinct().ToList();
+            this.UserData = this.UserData ?? new UserDataViewModel(allUserData, (s) => _refHBObj.UserData = s, _control);
+
 
             this._hbObjs = objs.Select(_ => _.DuplicateShade()).ToList();
         }
@@ -225,6 +237,9 @@ namespace Honeybee.UI.ViewModel
 
                 if (!this._isDynamicGroupIdentifierVaries)
                     item.Properties.Radiance.DynamicGroupIdentifier = refObj.Properties.Radiance.DynamicGroupIdentifier;
+
+                // User data
+                item.UserData = this.UserData.MatchObj();
             }
 
             return this._hbObjs;

@@ -313,7 +313,8 @@ namespace Honeybee.UI.View
             gd.Columns.Add(new GridColumn
             {
                 DataCell = new TextBoxCell { Binding = Binding.Delegate<UserDataItem, string>(r => r.Value) },
-                HeaderText = "Value"
+                HeaderText = "Value",
+                Width = 250
             });
 
             layout.AddRow(gd);
