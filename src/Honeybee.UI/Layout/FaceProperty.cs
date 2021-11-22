@@ -46,9 +46,21 @@ namespace Honeybee.UI.View
             layout.DefaultSpacing = new Size(4, 4);
             layout.DefaultPadding = new Padding(4);
 
-            layout.AddRow(GenGeneralPanel());
-            layout.AddRow(GenRadiancePanel());
-            layout.AddRow(GenEnergyPanel());
+            var tb = new TabControl();
+
+            var general = new DynamicLayout();
+            general.DefaultSpacing = new Size(4, 4);
+            general.DefaultPadding = new Padding(4);
+
+            general.AddRow(GenGeneralPanel());
+            general.AddRow(GenRadiancePanel());
+            general.AddRow(GenEnergyPanel());
+            tb.Pages.Add(new TabPage(general) { Text = "General" });
+
+            var userData = GenUserDataPanel();
+            tb.Pages.Add(new TabPage(userData) { Text = "User Data" });
+            layout.AddRow(tb);
+
 
             layout.Add(null);
             var data_button = new Button { Text = "Schema Data" };
@@ -268,7 +280,57 @@ namespace Honeybee.UI.View
             return layout;
         }
 
+        private GroupBox GenUserDataPanel()
+        {
+            var vm = this._vm;
 
+            var layout = new DynamicLayout();
+            layout.Bind((t) => t.Enabled, vm, v => v.UserData.IsPanelEnabled);
+
+            layout.DefaultSpacing = new Size(4, 4);
+            layout.DefaultPadding = new Padding(4);
+
+            var add = new Button() { Text = "Add" };
+            var edit = new Button() { Text = "Edit" };
+            var remove = new Button() { Text = "Remove" };
+            layout.AddSeparateRow(null, add, edit, remove);
+
+            var gd = new GridView();
+            gd.Width = 350;
+            gd.Height = 460;
+            gd.Bind(_ => _.DataStore, _vm, _ => _.UserData.GridViewDataCollection);
+            gd.SelectedItemsChanged += (s, e) =>
+            {
+                _vm.UserData.SelectedItem = gd.SelectedItem as UserDataItem;
+            };
+
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<UserDataItem, string>(r => r.Key) },
+                HeaderText = "Key",
+                Width = 100
+            });
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<UserDataItem, string>(r => r.Value) },
+                HeaderText = "Value"
+            });
+
+            layout.AddRow(gd);
+            layout.AddRow(null);
+
+            add.Bind(_ => _.Command, vm, _ => _.UserData.AddDataCommand);
+            edit.Bind(_ => _.Command, vm, _ => _.UserData.EditDataCommand);
+            remove.Bind(_ => _.Command, vm, _ => _.UserData.RemoveDataCommand);
+
+            var ltnByProgram = new CheckBox() { Text = vm.NoUserData };
+            ltnByProgram.CheckedBinding.Bind(vm, _ => _.UserData.IsCheckboxChecked);
+
+            var gp = new GroupBox() { Text = "User Data" };
+            gp.Content = new StackLayout(ltnByProgram, layout) { Spacing = 4, Padding = new Padding(4)};
+
+            return gp;
+        }
 
     }
 

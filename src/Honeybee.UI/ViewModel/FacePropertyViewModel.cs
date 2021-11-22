@@ -9,7 +9,6 @@ namespace Honeybee.UI.ViewModel
 {
     public class FacePropertyViewModel : ViewModelBase
     {
-        public string Varies => "<varies>";
         public string ByParentSetting => "By Parent Setting";
         private Face _refHBObj;
 
@@ -163,7 +162,15 @@ namespace Honeybee.UI.ViewModel
         }
         #endregion
 
+        #region UserData
+        private UserDataViewModel _userData;
+        public UserDataViewModel UserData
+        {
+            get => _userData;
+            set { this.Set(() => _userData = value, nameof(UserData)); }
+        }
 
+        #endregion
 
 
 
@@ -265,7 +272,12 @@ namespace Honeybee.UI.ViewModel
          
             var afns = objs.Select(_ => _.Properties.Energy?.VentCrack).Distinct().ToList();
             this.AFNCrack = new AFNCrackViewModel(libSource, afns, _ => _refHBObj.Properties.Energy.VentCrack = _);
-            
+
+
+            // User data
+            var allUserData = objs.Select(_ => _.UserData).Distinct().ToList();
+            this.UserData = this.UserData ?? new UserDataViewModel(allUserData, (s) => _refHBObj.UserData = s, _control);
+
             this._hbObjs = objs.Select(_ => _.DuplicateFace()).ToList();
         }
 
@@ -314,6 +326,9 @@ namespace Honeybee.UI.ViewModel
                 if (!this.ModifierBlk.IsVaries)
                     item.Properties.Radiance.ModifierBlk = refObj.Properties.Radiance.ModifierBlk;
 
+
+                // User data
+                item.UserData = this.UserData.MatchObj();
             }
 
             return this._hbObjs;

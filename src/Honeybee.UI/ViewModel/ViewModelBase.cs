@@ -8,6 +8,9 @@ namespace Honeybee.UI
 {
     public abstract class ViewModelBase : INotifyPropertyChanged
     {
+        public string Varies => "<varies>";
+        public string NoUserData => "No UserData (or No Override)";
+
         private static HoneybeeSchema.ModelEnergyProperties _systemEnergyLib;
         internal static HoneybeeSchema.ModelEnergyProperties SystemEnergyLib
         {
