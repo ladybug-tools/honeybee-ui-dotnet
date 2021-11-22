@@ -10,9 +10,6 @@ namespace Honeybee.UI.ViewModel
     // duplicted from AperturePropertyViewModel, expect the difference of IsGlass property
     public class DoorPropertyViewModel : ViewModelBase
     {
-        public string Varies => "<varies>";
-        public string ByGlobalSetting => "By Global Setting";
-        public string NoControl => "No Control";
         private Door _refHBObj;
 
         private List<Door> _hbObjs;

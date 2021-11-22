@@ -9,9 +9,6 @@ namespace Honeybee.UI.ViewModel
 {
     public class AperturePropertyViewModel : ViewModelBase
     {
-        public string Varies => "<varies>";
-        public string ByGlobalSetting => "By Global Setting";
-        public string NoControl => "No Control";
         private Aperture _refHBObj;
 
         private List<Aperture> _hbObjs;

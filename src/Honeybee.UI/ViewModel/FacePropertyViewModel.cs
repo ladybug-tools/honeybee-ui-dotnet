@@ -9,7 +9,6 @@ namespace Honeybee.UI.ViewModel
 {
     public class FacePropertyViewModel : ViewModelBase
     {
-        public string ByParentSetting => "By Parent Setting";
         private Face _refHBObj;
 
         private List<Face> _hbObjs;

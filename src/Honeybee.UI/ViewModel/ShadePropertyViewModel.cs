@@ -9,9 +9,6 @@ namespace Honeybee.UI.ViewModel
 {
     public class ShadePropertyViewModel : ViewModelBase
     {
-        public string Varies => "<varies>";
-        public string ByGlobalSetting => "By Global Setting";
-        public string NoSchedule => "No Control Schedule";
         private Shade _refHBObj;
 
         private List<Shade> _hbObjs;
