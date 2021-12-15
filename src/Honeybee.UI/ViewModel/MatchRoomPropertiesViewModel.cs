@@ -183,10 +183,10 @@ namespace Honeybee.UI
 
         public List<HB.Room> GetUpdatedRooms()
         {
-            var s = this._sourceRoom;
             var rooms = this._targetRooms.ToList();
             foreach (var room in rooms)
             {
+                var s = this._sourceRoom.DuplicateRoom();
                 if (Name) room.DisplayName = s.DisplayName;
                 if (Story) room.Story = s.Story;
                 if (Multiplier) room.Multiplier = s.Multiplier;
