@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>NET45</TargetFramework>
+    <TargetFramework>NET452</TargetFramework>
     <Authors>Ladybug Tools</Authors>
     <Company>LadybugTools LLC</Company>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
@@ -33,7 +33,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="HoneybeeSchema" Version="1.47.0.0" />
+    <PackageReference Include="HoneybeeSchema" Version="1.47.0.1" />
     <PackageReference Include="RhinoCommon" Version="6.23.20055.13111">
         <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	  </PackageReference>
