@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;NET452</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;</TargetFrameworks>
     <Authors>Ladybug Tools</Authors>
     <Company>LadybugTools LLC</Company>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
@@ -26,7 +26,7 @@
 
   <ItemGroup>
     <PackageReference Include="HoneybeeSchema" Version="1.47.0.1" />
-    <PackageReference Include="Eto.Forms" Version="2.5.11" />
+    <PackageReference Include="Eto.Forms" Version="2.6.0" />
   </ItemGroup>
 
 </Project>
