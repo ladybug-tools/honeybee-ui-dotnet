@@ -332,33 +332,35 @@ namespace Honeybee.UI
             this.CType = c.GetType().Name;
           
             this.Modifier = c;
+            c.CalVisualValues();
             switch (c)
             {
                 case HB.Plastic p:
-                    this.Reflectance = Math.Round((p.RReflectance + p.GReflectance + p.BReflectance) / 3, 5).ToString();
+                    this.Reflectance = Math.Round(p.Reflectance, 5).ToString();
                     break;
                 case HB.Glass g:
-                    this.Transmittance = Math.Round((g.RTransmissivity + g.GTransmissivity + g.BTransmissivity) / 3, 5).ToString();
+                    this.Transmittance = Math.Round(g.Transmittance, 5).ToString();
+                    this.Reflectance = Math.Round(g.Reflectance, 5).ToString();
                     break;
                 case HB.BSDF b:
-                    this.Reflectance = Math.Round((b.FrontDiffuseReflectance?.FirstOrDefault()).GetValueOrDefault(), 5).ToString();
-                    this.Transmittance = Math.Round((b.DiffuseTransmittance?.FirstOrDefault()).GetValueOrDefault(), 5).ToString();
+                    this.Reflectance = Math.Round(b.Reflectance, 5).ToString();
+                    this.Transmittance = Math.Round(b.Transmittance, 5).ToString();
                     break;
                 case HB.Glow glow:
-                    this.Emittance = Math.Round((glow.BEmittance + glow.GEmittance + glow.REmittance) / 3, 5).ToString();
+                    this.Emittance = Math.Round(glow.Emittance, 5).ToString();
                     break;
                 case HB.Light l:
-                    this.Emittance = Math.Round((l.BEmittance + l.GEmittance + l.REmittance)/3, 5).ToString();
+                    this.Emittance = Math.Round(l.Emittance, 5).ToString();
                     break;
                 case HB.Trans t:
-                    this.Transmittance = Math.Round(t.TransmittedDiff, 5).ToString();
-                    this.Reflectance = Math.Round((t.RReflectance + t.GReflectance + t.BReflectance) / 3, 5).ToString();
+                    this.Transmittance = Math.Round(t.Transmittance, 5).ToString();
+                    this.Reflectance = Math.Round(t.Reflectance, 5).ToString();
                     break;
                 case HB.Metal m:
-                    this.Reflectance = Math.Round((m.RReflectance + m.GReflectance + m.BReflectance) / 3, 5).ToString();
+                    this.Reflectance = Math.Round(m.Reflectance, 5).ToString();
                     break;
                 case HB.Mirror mr:
-                    this.Reflectance = Math.Round((mr.RReflectance + mr.GReflectance + mr.BReflectance) / 3, 5).ToString();
+                    this.Reflectance = Math.Round(mr.Reflectance, 5).ToString();
                     break;
                 default:
                     break;
