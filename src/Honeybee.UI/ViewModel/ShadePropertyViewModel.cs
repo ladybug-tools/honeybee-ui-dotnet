@@ -245,7 +245,7 @@ namespace Honeybee.UI.ViewModel
                     item.Properties.Radiance.DynamicGroupIdentifier = refObj.Properties.Radiance.DynamicGroupIdentifier;
 
                 // User data
-                item.UserData = this.UserData.MatchObj();
+                item.UserData = this.UserData.MatchObj(item.UserData);
             }
 
             return this._hbObjs;
