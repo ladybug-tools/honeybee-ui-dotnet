@@ -78,7 +78,21 @@ namespace Honeybee.UI
             return found.DisplayName ?? found.Identifier;
         }
 
-       
+        private static HoneybeeSchema.ModelEnergyProperties _systemEnergyLib;
+        internal static HoneybeeSchema.ModelEnergyProperties SystemEnergyLib
+        {
+            get
+            {
+                if (_systemEnergyLib == null)
+                {
+                    var eng = HoneybeeSchema.ModelEnergyProperties.Default;
+                    eng.MergeWith(HoneybeeSchema.Helper.EnergyLibrary.StandardEnergyLibrary);
+                    eng.MergeWith(HoneybeeSchema.Helper.EnergyLibrary.UserEnergyLibrary);
+                    _systemEnergyLib = eng;
+                }
+                return _systemEnergyLib;
+            }
+        }
         private IEnumerable<HB.Energy.IMaterial> _opaqueMaterials;
 
         public IEnumerable<HB.Energy.IMaterial> OpaqueMaterials
@@ -87,14 +101,10 @@ namespace Honeybee.UI
 
                 if (_opaqueMaterials == null)
                 {
-                    var libObjs = HB.Helper.EnergyLibrary.StandardsOpaqueMaterials.Values.ToList();
-                    libObjs.AddRange(HB.Helper.EnergyLibrary.UserMaterials.OfType<HB.Energy.IOpaqueMaterial>());
+                    var libObjs = SystemEnergyLib.MaterialList.OfType<HB.Energy.IOpaqueMaterial>();
+                    var inModelObjs = this.ModelEnergyProperties.MaterialList.OfType<HB.Energy.IOpaqueMaterial>();
 
-                    var inModelObjs = this.ModelEnergyProperties.Materials
-                        .Where(_ => !_.Obj.GetType().Name.Contains("EnergyWindow"))
-                        .OfType<HB.Energy.IMaterial>();
-
-                    libObjs.AddRange(inModelObjs);
+                    libObjs = libObjs.Concat(inModelObjs);
                     _opaqueMaterials = libObjs;
                 }
                
@@ -109,15 +119,11 @@ namespace Honeybee.UI
             {
                 if (_windowMaterials == null)
                 {
-                    var libObjs = HB.Helper.EnergyLibrary.StandardsWindowMaterials.Values.ToList();
-                    libObjs.AddRange(HB.Helper.EnergyLibrary.UserMaterials.Where(_=> !(_ is HB.Energy.IOpaqueMaterial)));
+                    var libObjs = SystemEnergyLib.MaterialList.Where(_ => !(_ is HB.Energy.IOpaqueMaterial));
+                    var inModelObjs = this.ModelEnergyProperties.MaterialList.Where(_ => !(_ is HB.Energy.IOpaqueMaterial));
 
-                    var inModelObjs = this.ModelEnergyProperties.Materials
-                        .Where(_ => _.Obj.GetType().Name.Contains("EnergyWindow"))
-                        .OfType<HB.Energy.IMaterial>();
-                        
+                    libObjs = libObjs.Concat(inModelObjs);
 
-                    libObjs.AddRange(inModelObjs);
                     _windowMaterials = libObjs;
                 }
                 
