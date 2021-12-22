@@ -18,6 +18,7 @@ namespace Honeybee.UI
                 Title = title ?? DialogHelper.PluginName;
                 WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(450, 400);
+                Width = 500;
 
                 DefaultButton = new Button { Text = "OK" };
                 DefaultButton.Click += (sender, e) => Close();
