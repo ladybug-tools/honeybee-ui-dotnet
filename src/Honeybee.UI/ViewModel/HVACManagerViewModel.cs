@@ -26,7 +26,13 @@ namespace Honeybee.UI
         private void AddUserData(HB.Energy.IHvac item)
         {
             var newItem = CheckObjName(item);
-            this._userData.Insert(0, new HVACViewData(newItem));
+            var newDataView = new HVACViewData(newItem);
+            if (!this._userData.Contains(newDataView))
+            {
+                // user selected an item from system library, now add it to model EnergyProperties
+                this._modelEnergyProperties.AddHVAC(newDataView.HVAC);
+            }
+            this._userData.Insert(0, newDataView);
             this._allData = _userData.Concat(_systemData).ToList();
         }
         private void ReplaceUserData(HVACViewData oldObj, HB.Energy.IHvac newObj)

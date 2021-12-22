@@ -122,7 +122,15 @@ namespace Honeybee.UI
             if (dialog_rc == null) return;
 
             var newItem = CheckObjName(dialog_rc);
-            this._userData.Insert(0, new ScheduleRulesetViewData(ToAbridged(newItem)));
+            var newViewdata = new ScheduleRulesetViewData(ToAbridged(newItem));
+            if (!this._userData.Contains(newViewdata))
+            {
+                // add resources to model EnergyProperties
+                var engLib = newViewdata.CheckResources(SystemEnergyLib);
+                this._modelEnergyProperties.MergeWith(engLib);
+            }
+
+            this._userData.Insert(0, newViewdata);
             this._allData = _userData.Concat(_systemData).ToList();
             ResetDataCollection();
         });
@@ -149,7 +157,15 @@ namespace Honeybee.UI
             if (dialog_rc == null) return;
 
             var newItem = CheckObjName(dialog_rc);
-            this._userData.Insert(0, new ScheduleRulesetViewData(ToAbridged(newItem)));
+            var newViewdata = new ScheduleRulesetViewData(ToAbridged(newItem));
+            if (!this._userData.Contains(newViewdata))
+            {
+                // add resources to model EnergyProperties
+                var engLib = newViewdata.CheckResources(SystemEnergyLib);
+                this._modelEnergyProperties.MergeWith(engLib);
+            }
+
+            this._userData.Insert(0, newViewdata);
             this._allData = _userData.Concat(_systemData).ToList();
             ResetDataCollection();
 

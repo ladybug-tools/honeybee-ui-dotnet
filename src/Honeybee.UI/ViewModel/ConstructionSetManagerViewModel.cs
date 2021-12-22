@@ -114,7 +114,15 @@ namespace Honeybee.UI
 
             if (dialog_rc == null) return;
             var newItem = CheckObjName(dialog_rc);
-            this._userData.Insert(0, new ConstructionSetViewData(newItem));
+            var newViewData = new ConstructionSetViewData(newItem);
+            if (!this._userData.Contains(newViewData))
+            {
+                // add resources to model EnergyProperties
+                var engLib = newViewData.CheckResources(SystemEnergyLib);
+                this._modelEnergyProperties.MergeWith(engLib);
+            }
+
+            this._userData.Insert(0, newViewData);
             this._allData = _userData.Concat(_systemData).ToList();
             ResetDataCollection();
 
