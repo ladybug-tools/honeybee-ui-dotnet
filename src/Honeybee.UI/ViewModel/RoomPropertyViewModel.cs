@@ -371,7 +371,7 @@ namespace Honeybee.UI.ViewModel
 
             // User data
             var allUserData = rooms.Select(_ => _.UserData).Distinct().ToList();
-            this.UserData = this.UserData ?? new UserDataViewModel(allUserData, (s) => _refHBObj.UserData = s, _control);
+            this.UserData = new UserDataViewModel(allUserData, (s) => _refHBObj.UserData = s, _control);
 
 
             this._hbObjs = rooms.Select(_ => _.DuplicateRoom()).ToList();
