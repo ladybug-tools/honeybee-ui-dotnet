@@ -15,6 +15,26 @@ namespace Honeybee.UI
             this.Key = key;
             this.Value = value;
         }
+
+        public static List<UserDataItem> FromJObject(object obj)
+        {
+            var uds = new List<UserDataItem>();
+            Newtonsoft.Json.Linq.JObject jObj = null;
+            if (obj is string) 
+                jObj = Newtonsoft.Json.Linq.JObject.Parse(obj?.ToString());
+            else if (obj is Newtonsoft.Json.Linq.JObject j)
+                jObj = j;
+
+            if (jObj != null)
+            {
+                uds = jObj.Children()
+                   .OfType<Newtonsoft.Json.Linq.JProperty>()
+                   .Select(_ => new UserDataItem(_.Name, _.Value.ToString()))
+                   .ToList();
+            }
+            return uds;
+            
+        }
     }
 
 
@@ -71,7 +91,7 @@ namespace Honeybee.UI
             this.control = control;
             this.SetHBProperty = setAction;
 
-            this.refObjProperty = allUserData.FirstOrDefault() as List<UserDataItem> ?? new List<UserDataItem>();
+            this.refObjProperty = UserDataItem.FromJObject(allUserData.FirstOrDefault()) ?? new List<UserDataItem>();
             
 
             if (allUserData.Distinct().Count() == 1 && allUserData.FirstOrDefault() == null)
