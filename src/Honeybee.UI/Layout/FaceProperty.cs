@@ -47,7 +47,7 @@ namespace Honeybee.UI.View
             layout.DefaultPadding = new Padding(4);
 
             var tb = new TabControl();
-
+            tb.Bind(_ => _.SelectedIndex, vm, _ => _.TabIndex);
             var general = new DynamicLayout();
             general.DefaultSpacing = new Size(4, 4);
             general.DefaultPadding = new Padding(4);

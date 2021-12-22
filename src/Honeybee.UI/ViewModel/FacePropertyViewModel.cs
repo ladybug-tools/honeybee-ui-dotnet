@@ -13,6 +13,12 @@ namespace Honeybee.UI.ViewModel
 
         private List<Face> _hbObjs;
 
+        public int TabIndex
+        {
+            get => 0;
+            private set { this.Set(null, nameof(TabIndex)); }
+        }
+
         public string Identifier
         {
             get => _refHBObj.Identifier;
@@ -189,6 +195,7 @@ namespace Honeybee.UI.ViewModel
 
         public void Update(ModelProperties libSource, List<Face> objs)
         {
+            this.TabIndex = 0;
             this._libSource = libSource;
             this._refHBObj = objs.FirstOrDefault().DuplicateFace();
             var defaultEnergy = new FaceEnergyPropertiesAbridged();

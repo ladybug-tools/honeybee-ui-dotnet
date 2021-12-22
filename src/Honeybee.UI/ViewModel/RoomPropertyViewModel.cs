@@ -20,6 +20,12 @@ namespace Honeybee.UI.ViewModel
 
         private List<Room> _hbObjs;
 
+        public int TabIndex
+        {
+            get => 0;
+            private set { this.Set(null, nameof(TabIndex)); }
+        }
+
         #region RoomProperty
 
         public string Identifier
@@ -233,6 +239,7 @@ namespace Honeybee.UI.ViewModel
         
         public void Update(ModelProperties libSource, List<Room> rooms)
         {
+            this.TabIndex = 0;
             this._libSource = libSource;
             this._refHBObj = rooms.FirstOrDefault().DuplicateRoom();
             var defaultEnergy = new RoomEnergyPropertiesAbridged();
