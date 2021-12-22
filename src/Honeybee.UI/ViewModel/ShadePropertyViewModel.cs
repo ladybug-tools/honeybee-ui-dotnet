@@ -12,6 +12,11 @@ namespace Honeybee.UI.ViewModel
         private Shade _refHBObj;
 
         private List<Shade> _hbObjs;
+        public int TabIndex
+        {
+            get => 0;
+            private set { this.Set(null, nameof(TabIndex)); }
+        }
 
         public string Identifier
         {
@@ -115,6 +120,7 @@ namespace Honeybee.UI.ViewModel
 
         public void Update(ModelProperties libSource, List<Shade> objs)
         {
+            this.TabIndex = 0;
             this._libSource = libSource;
             this._refHBObj = objs.FirstOrDefault().DuplicateShade();
             var defaultEnergy = new ShadeEnergyPropertiesAbridged();

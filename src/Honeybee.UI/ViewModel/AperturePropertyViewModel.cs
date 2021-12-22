@@ -12,6 +12,11 @@ namespace Honeybee.UI.ViewModel
         private Aperture _refHBObj;
 
         private List<Aperture> _hbObjs;
+        public int TabIndex
+        {
+            get => 0;
+            private set { this.Set(null, nameof(TabIndex)); }
+        }
 
         public string Identifier
         {
@@ -179,6 +184,7 @@ namespace Honeybee.UI.ViewModel
 
         public void Update(ModelProperties libSource, List<Aperture> objs)
         {
+            this.TabIndex = 0;
             this._libSource = libSource;
             this._refHBObj = objs.FirstOrDefault().DuplicateAperture();
             var defaultEnergy = new ApertureEnergyPropertiesAbridged();
