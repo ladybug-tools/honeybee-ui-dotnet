@@ -44,7 +44,14 @@ namespace Honeybee.UI
         private void AddUserData(HB.Energy.IConstruction item)
         {
             var newItem = CheckObjName(item);
-            this._userData.Insert(0, new ConstructionViewData(newItem, this.UseIPUnit));
+            var newViewData = new ConstructionViewData(newItem, this.UseIPUnit);
+            if (!this._userData.Contains(newViewData))
+            {
+                // add resources to model EnergyProperties
+                var engLib = newViewData.CheckResources(SystemEnergyLib);
+                this._modelEnergyProperties.MergeWith(engLib);
+            }
+            this._userData.Insert(0, newViewData);
             this._allData = _userData.Concat(_systemData).ToList();
         }
         private void ReplaceUserData(ConstructionViewData oldObj, HB.Energy.IConstruction newObj)

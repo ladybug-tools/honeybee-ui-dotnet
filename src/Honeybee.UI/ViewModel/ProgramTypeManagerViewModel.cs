@@ -25,7 +25,14 @@ namespace Honeybee.UI
         private void AddUserData(ProgramTypeAbridged item)
         {
             var newItem = CheckObjName(item);
-            this._userData.Insert(0, new ProgramTypeViewData(newItem));
+            var newViewData = new ProgramTypeViewData(newItem);
+            if (!this._userData.Contains(newViewData))
+            {
+                // add resources to model EnergyProperties
+                var engLib = newViewData.CheckResources(SystemEnergyLib);
+                this._modelEnergyProperties.MergeWith(engLib);
+            }
+            this._userData.Insert(0, newViewData);
             this._allData = _userData.Concat(_systemData).ToList();
         }
         private void ReplaceUserData(ProgramTypeViewData oldObj, ProgramTypeAbridged newObj)
@@ -89,17 +96,6 @@ namespace Honeybee.UI
             var sches = dialog_rc.schedules?.Select(_=>_.DuplicateScheduleRulesetAbridged());
             if (type != null)
             {
-                // add schedules
-                var existingScheduleIds = this._modelEnergyProperties.ScheduleList.Select(_ => _.Identifier);
-                foreach (var sch in sches)
-                {
-                    if (existingScheduleIds.Any(_ => _ == sch.Identifier))
-                        continue;
-                    this._modelEnergyProperties.AddSchedule(sch);
-                }
-
-                this._modelEnergyProperties.AddProgramType(type);
-
                 AddUserData(type);
                 ResetDataCollection();
             }
