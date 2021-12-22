@@ -442,7 +442,7 @@ namespace Honeybee.UI.ViewModel
                 item.Properties.Energy.DaylightingControl = this.DaylightingControl.MatchObj(item.Properties.Energy.DaylightingControl);
 
                 // User data
-                item.UserData = this.UserData.MatchObj();
+                item.UserData = this.UserData.MatchObj(item.UserData);
 
             }
 

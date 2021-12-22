@@ -9,7 +9,7 @@ namespace Honeybee.UI
     public abstract class ViewModelBase : INotifyPropertyChanged
     {
         public string Varies => "<varies>";
-        public string NoUserData => "No UserData (or No Override)";
+        public string NoUserData => "No UserData";
         public string Unconditioned => "Unconditioned";
         public string Unoccupied => "Unoccupied, No Loads";
         public string ByGlobalConstructionSet => "By Global Construction Set";

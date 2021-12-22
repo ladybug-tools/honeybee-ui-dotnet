@@ -334,7 +334,7 @@ namespace Honeybee.UI.ViewModel
 
 
                 // User data
-                item.UserData = this.UserData.MatchObj();
+                item.UserData = this.UserData.MatchObj(item.UserData);
             }
 
             return this._hbObjs;

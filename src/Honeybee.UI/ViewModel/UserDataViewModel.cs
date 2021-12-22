@@ -99,14 +99,24 @@ namespace Honeybee.UI
                 this.IsCheckboxChecked = true;
             }
 
+            if (allUserData.Distinct().Count() > 1)
+            {
+                //multiple objects
+                // set refObj to varies
+                this.refObjProperty = new List<UserDataItem>() { new UserDataItem(this.Varies, this.Varies) };
+            }
+
             this.GridViewDataCollection = new DataStoreCollection<UserDataItem>(this.refObjProperty);
         }
 
-        public object MatchObj()
+        public object MatchObj(object obj)
         {
             // by room program type
             if (this.IsCheckboxChecked)
                 return null;
+
+            if (this.refObjProperty.Any(_=> _?.Key == this.Varies))
+                return obj;
 
             var dic = UserItemsToDic(this.refObjProperty);
             var s = Newtonsoft.Json.JsonConvert.SerializeObject(dic);
