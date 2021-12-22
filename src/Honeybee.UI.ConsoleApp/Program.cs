@@ -36,6 +36,9 @@ namespace Honeybee.UI.ConsoleApp
                 var RoomPropertybtn = new Button() { Text = "2 Rooms Property" };
                 var rm1 = new Room("id1", new List<Face>(), new RoomPropertiesAbridged(new RoomEnergyPropertiesAbridged("aaa", lighting: ltn)), "name1", multiplier: 1, story: "11");
                 var rm2 = new Room($"Room_{Guid.NewGuid()}", new List<Face>(), new RoomPropertiesAbridged(new RoomEnergyPropertiesAbridged("bbb", lighting: ltn2, people:ppl, daylightingControl: dlightCtrl)), "name2", multiplier: 2, story: "22");
+                rm2.UserData = new { RhinoLayer = "layer 01", Color = "Red" };
+                rm2 = rm2.DuplicateRoom();
+
                 var rms = new List<Room>() { rm1, rm2 };
                 RoomPropertybtn.Click += (s, e) =>
                 {
@@ -65,11 +68,9 @@ namespace Honeybee.UI.ConsoleApp
                     var dialog_rc = dialog.ShowModal();
                     if (dialog_rc != null)
                     {
-                        foreach (var item in dialog_rc)
-                        {
-                            Console.WriteLine(item.ToJson(true));
-                        }
-
+                        rm2 = dialog_rc.FirstOrDefault();
+                        Console.WriteLine(rm2.ToJson(true));
+                        
                     }
                 };
 
