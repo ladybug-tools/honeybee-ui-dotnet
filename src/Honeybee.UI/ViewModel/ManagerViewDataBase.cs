@@ -10,7 +10,7 @@ namespace Honeybee.UI
         public bool Equals(ManagerViewDataBase other)
         {
             if (Object.ReferenceEquals(this, other)) return true;
-
+            
             if (Object.ReferenceEquals(this, null) || Object.ReferenceEquals(other, null))
                 return false;
 

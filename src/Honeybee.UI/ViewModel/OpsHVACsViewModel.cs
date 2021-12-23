@@ -215,17 +215,39 @@ namespace Honeybee.UI
             if (hvac == null)
                 return;
 
-            this.Name = hvac.DisplayName;
-
+        
             var dummy = new VAV("dummy");
             // vintage
             var vintage = hvac.GetType().GetProperty(nameof(dummy.Vintage))?.GetValue(hvac);
             if (vintage is Vintages v)
                 this.Vintage = v.ToString();
 
+     
+
+            if (this.IsAllAirGroup(hvac))
+            {
+                HvacGroup = HvacGroups[0];
+
+                // Economizer
+                Economizer = hvac.GetType().GetProperty(nameof(dummy.EconomizerType))?.GetValue(hvac)?.ToString();
+                
+            }
+            else if (this.IsDOASGroup(hvac))
+            {
+                HvacGroup = HvacGroups[1];
+
+            }
+            else if (this.IsOtherGroup(hvac))
+            {
+                HvacGroup = HvacGroups[2];
+            }
+
             // equipment type
             var eqpType = hvac.GetType().GetProperty(nameof(dummy.EquipmentType))?.GetValue(hvac);
             this.HvacEquipmentType = eqpType.ToString();
+
+
+            this.Name = hvac.DisplayName;
 
             // LatentHeatRecovery
             var lat = hvac.GetType()?.GetProperty(nameof(dummy.LatentHeatRecovery))?.GetValue(hvac);
@@ -241,31 +263,6 @@ namespace Honeybee.UI
             {
                 if (double.TryParse(sen.ToString(), out var senValue))
                     SensibleHR = senValue;
-            }
-
-
-            if (this.IsAllAirGroup(hvac))
-            {
-                EconomizerVisable = true;
-                LatentHRVisable = true;
-                SensibleHRVisable = true;
-
-                // Economizer
-                Economizer = hvac.GetType().GetProperty(nameof(dummy.EconomizerType))?.GetValue(hvac)?.ToString();
-            
-            }
-            else if (this.IsDOASGroup(hvac))
-            {
-                EconomizerVisable = false;
-                LatentHRVisable = true;
-                SensibleHRVisable = true;
-
-            }
-            else if (this.IsOtherGroup(hvac))
-            {
-                EconomizerVisable = false;
-                LatentHRVisable = false;
-                SensibleHRVisable = false;
             }
 
         }
