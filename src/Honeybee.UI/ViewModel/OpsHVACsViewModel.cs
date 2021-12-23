@@ -228,18 +228,18 @@ namespace Honeybee.UI
             this.HvacEquipmentType = eqpType.ToString();
 
             // LatentHeatRecovery
-            var lat = hvac.GetType()?.GetProperty(nameof(dummy.LatentHeatRecovery))?.GetValue(hvac) as AnyOf<Autosize, double>;
+            var lat = hvac.GetType()?.GetProperty(nameof(dummy.LatentHeatRecovery))?.GetValue(hvac);
             if (lat != null)
             {
-                if (double.TryParse(lat.Obj.ToString(), out var latValue))
+                if (double.TryParse(lat.ToString(), out var latValue))
                     LatentHR = latValue;
             }
 
             // SensibleHeatRecovery
-            var sen = hvac.GetType()?.GetProperty(nameof(dummy.SensibleHeatRecovery))?.GetValue(hvac) as AnyOf<Autosize, double>;
+            var sen = hvac.GetType()?.GetProperty(nameof(dummy.SensibleHeatRecovery))?.GetValue(hvac);
             if (sen != null)
             {
-                if (double.TryParse(sen.Obj.ToString(), out var senValue))
+                if (double.TryParse(sen.ToString(), out var senValue))
                     SensibleHR = senValue;
             }
 
