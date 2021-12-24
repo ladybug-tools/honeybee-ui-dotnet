@@ -109,7 +109,8 @@ namespace Honeybee.UI
             var name = $"{dup.DisplayName ?? dup.Identifier}_dup";
             dup.Identifier = name;
             dup.DisplayName = name;
-            var dialog = new Honeybee.UI.Dialog_ConstructionSet(this._modelEnergyProperties, dup);
+            var lib = this._modelEnergyProperties;
+            var dialog = new Honeybee.UI.Dialog_ConstructionSet(ref lib, dup);
             var dialog_rc = dialog.ShowModal(_control);
 
             if (dialog_rc == null) return;
@@ -143,7 +144,8 @@ namespace Honeybee.UI
             //}
 
             var dup = selected.ConstructionSet.Duplicate() as ConstructionSetAbridged;
-            var dialog = new Honeybee.UI.Dialog_ConstructionSet(this._modelEnergyProperties, dup, selected.Locked);
+            var lib = this._modelEnergyProperties;
+            var dialog = new Honeybee.UI.Dialog_ConstructionSet(ref lib, dup, selected.Locked);
             var dialog_rc = dialog.ShowModal(_control);
 
             if (dialog_rc == null) return;

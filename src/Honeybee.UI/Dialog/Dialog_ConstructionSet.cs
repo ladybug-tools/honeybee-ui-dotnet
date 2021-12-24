@@ -13,70 +13,12 @@ namespace Honeybee.UI
     public class Dialog_ConstructionSet: Dialog_ResourceEditor<HB.ConstructionSetAbridged>
     {
 
-        private static IEnumerable<HB.Energy.IConstruction> _opaqueConstructions;
-
-        public IEnumerable<HB.Energy.IConstruction> OpaqueConstructions
-        {
-            get
-            {
-                var libObjs = HB.Helper.EnergyLibrary.StandardsOpaqueConstructions.Values.ToList();
-                var inModelObjs = this.ModelEnergyProperties.Constructions.OfType<HB.OpaqueConstructionAbridged>();
-
-                libObjs.AddRange(inModelObjs);
-                _opaqueConstructions = libObjs;
-
-                return _opaqueConstructions;
-            }
-        }
-
-        private static IEnumerable<HB.Energy.IConstruction> _windowConstructions;
-
-        public IEnumerable<HB.Energy.IConstruction> WindowConstructions
-        {
-            get
-            {
-                var libObjs = HB.Helper.EnergyLibrary.StandardsWindowConstructions.Values.ToList();
-                var inModelObjs = this.ModelEnergyProperties.Constructions.OfType<HB.WindowConstructionAbridged>();
-
-                libObjs.AddRange(inModelObjs);
-                _windowConstructions = libObjs;
-
-                return _windowConstructions;
-            }
-        }
-
-        private static IEnumerable<HB.Energy.IConstruction> _airBoundaryConstructions;
-
-        public IEnumerable<HB.Energy.IConstruction> AirBoundaryConstructions
-        {
-            get
-            {
-                _airBoundaryConstructions = _airBoundaryConstructions ?? this.ModelEnergyProperties.Constructions.OfType<HB.AirBoundaryConstructionAbridged>().ToList();
-                return _airBoundaryConstructions;
-            }
-        }
-
-        private static IEnumerable<HB.Energy.IConstruction> _shadeConstructions;
-
-        public IEnumerable<HB.Energy.IConstruction> ShadeConstructions
-        {
-            get
-            {
-                _shadeConstructions = _shadeConstructions ?? this.ModelEnergyProperties.Constructions.OfType<HB.ShadeConstruction>().ToList();
-                return _shadeConstructions;
-            }
-        }
-
-        private HB.ModelEnergyProperties ModelEnergyProperties { get; set; }
-        public Dialog_ConstructionSet(HB.ModelEnergyProperties libSource, HB.ConstructionSetAbridged constructionSet, bool lockedMode = false)
+        private ConstructionSetViewModel _vm;
+        public Dialog_ConstructionSet(ref HB.ModelEnergyProperties libSource, HB.ConstructionSetAbridged constructionSet, bool lockedMode = false)
         {
             try
             {
-                libSource.FillNulls();
-
-                this.ModelEnergyProperties = libSource;
-                var cSet = constructionSet ?? new HB.ConstructionSetAbridged(identifier: Guid.NewGuid().ToString());
-                //cSet.WallSet = new WallConstructionSetAbridged("interior C");
+                _vm = new ConstructionSetViewModel(this, ref libSource, constructionSet);
 
                 Padding = new Padding(5);
                 Resizable = true;
@@ -85,209 +27,18 @@ namespace Honeybee.UI
                 MinimumSize = new Size(450, 600);
                 this.Icon = DialogHelper.HoneybeeIcon;
 
-                IEnumerable<HB.Energy.IConstruction> constrs = OpaqueConstructions;
 
-                // Construction List
-                var lib = new GridView();
-                lib.Height = 450;
-                lib.Width = 300;
+                var nameTbx = new TextBox() { Enabled = !lockedMode };
+                nameTbx.TextBinding.Bind(_vm, _ => _.Name);
 
-                lib.ShowHeader = false;
-                var nameCol = new GridColumn() { DataCell = new TextBoxCell(0) };
-                lib.Columns.Add(nameCol);
-
-                // Library items
-                lib.DataStore = constrs;
-
-
-                var idCell = new TextBoxCell
-                {
-                    Binding = Binding.Delegate<HB.Energy.IIDdEnergyBaseModel, string>(r => r.DisplayName ?? r.Identifier)
-                };
-                lib.Columns.Add(new GridColumn() { DataCell = idCell });
-
-                // Construction Layers
-                var constructionLayersLBox = new ListBox();
-                constructionLayersLBox.Height = 150;
-                constructionLayersLBox.Items.Add(new ListItem() { Text = "Construction Details" });
-
-          
-                lib.MouseMove += (sender, e) =>
-                {
-                    if (e.Buttons != MouseButtons.Primary)
-                        return;
-
-                    var dragableArea = lib.Bounds;
-                    dragableArea.Width -= 20;
-                    dragableArea.Height -= 20;
-                    var iscontained = e.Location.Y < dragableArea.Height && e.Location.X < dragableArea.Width;
-                    //name.Text = $"{dragableArea.Width}x{dragableArea.Height}, {new Point(e.Location).X}:{new Point(e.Location).Y}, {dragableArea.Contains(new Point(e.Location))}";
-                    if (!iscontained)
-                        return;
-
-                    if (lib.SelectedItem == null)
-                        return;
-
-                    var selected = (lib.SelectedItem as HB.HoneybeeObject).ToJson();
-                    var data = new DataObject();
-                    data.SetString(selected, "HBObj");
-                    lib.DoDragDrop(data, DragEffects.Move);
-                    e.Handled = true;
-
-                };
-                lib.SelectedItemsChanged += (s, e) => 
-                {
-                    //Clear preview first
-                    constructionLayersLBox.Items.Clear();
-
-                    //Check current selected item from library
-                    var selItem = lib.SelectedItem as HB.HoneybeeObject;
-                    if (selItem == null)
-                        return;
-
-                    //Update Preview
-                    var selectedConst = selItem;
-                    var layers = new List<string>();
-                    if (selectedConst is HB.OpaqueConstructionAbridged opq)
-                    {
-                        layers.Add("----------------Outer------------------");
-                        layers.AddRange(opq.Materials);
-                        layers.Add("----------------Inner------------------");
-                    }
-                    else if (selectedConst is HB.WindowConstructionAbridged win)
-                    {
-                        layers.Add("----------------Outer------------------");
-                        layers.AddRange(win.Materials);
-                        layers.Add("----------------Inner------------------");
-                    }
-                    else if (selectedConst is HB.ShadeConstruction shd)
-                    {
-                        layers.Add($"{nameof(shd.SolarReflectance)}: {shd.SolarReflectance}");
-                        layers.Add($"{nameof(shd.VisibleReflectance)}: {shd.VisibleReflectance}");
-                        layers.Add($"{nameof(shd.IsSpecular)}: {shd.IsSpecular}");
-                    }
-                    else if (selectedConst is HB.AirBoundaryConstructionAbridged air)
-                    {
-                        layers.Add($"{nameof(air.AirMixingPerArea)}: {air.AirMixingPerArea}");
-                        layers.Add($"{nameof(air.AirMixingSchedule)}: {air.AirMixingSchedule}");
-                    }
-                    var layersItems = layers.Select(_ => new ListItem() { Text = _});
-                    constructionLayersLBox.Items.Clear();
-                    constructionLayersLBox.Items.AddRange(layersItems);
-
-                };
-
-
-                var searchTBox = new TextBox() { PlaceholderText= "Search"};
-                
-                searchTBox.TextChanged += (sender, e) =>
-                {
-                    var input = searchTBox.Text;
-                    if (string.IsNullOrWhiteSpace(input))
-                    {
-                        lib.DataStore = constrs;
-                        return;
-                    }
-                    var regexPatten = ".*" + input.Replace(" ", "(.*)") + ".*";
-                    var filtered = constrs.Where(_ => Regex.IsMatch(_.Identifier, regexPatten, RegexOptions.IgnoreCase) || (_.DisplayName != null? Regex.IsMatch(_.DisplayName, regexPatten, RegexOptions.IgnoreCase) : false));
-                    lib.DataStore = filtered;
-
-                };
-
-                var constructionTypes = new DropDown();
-                constructionTypes.Items.Add(new ListItem() { Key = "Opaque", Text = "Opaque Construction" });
-                constructionTypes.Items.Add(new ListItem() { Key = "Window", Text = "Window Construction" });
-                constructionTypes.Items.Add(new ListItem() { Key = "Shade", Text = "Shade Construction" });
-                constructionTypes.Items.Add(new ListItem() { Key = "AirBoundary", Text = "AirBoundary Construction" });
-                constructionTypes.SelectedIndex = 0;
-                constructionTypes.SelectedIndexChanged += (sender, e) =>
-                {
-                    var selectedType = constructionTypes.SelectedKey;
-                    switch (selectedType)
-                    {
-                        case "Opaque":
-                            constrs = OpaqueConstructions;
-                            break;
-                        case "Window":
-                            constrs = WindowConstructions;
-                            break;
-                        case "Shade":
-                            constrs = ShadeConstructions;
-                            break;
-                        case "AirBoundary":
-                            constrs = AirBoundaryConstructions;
-                            break;
-                        default:
-                            break;
-                    }
-
-                    searchTBox.Text = null;
-                    lib.DataStore = constrs;
-
-
-                };
-
-                Func<HB.Energy.IConstruction> getSelected = () => 
-                {
-                    if (lib.SelectedRow == -1)
-                        return null;
-                    return lib.SelectedItem as HB.Energy.IConstruction; 
-                }; 
-
-                //WallConstructionSetAbridged
-                cSet.WallSet = cSet.WallSet ?? new HB.WallConstructionSetAbridged();
-                var setWallSetActions = new List<(string, string, Action<HB.Energy.IConstruction>, Type)>() { };
-                setWallSetActions.Add(("Exterior", cSet.WallSet.ExteriorConstruction, (cons) => cSet.WallSet.ExteriorConstruction = cons?.Identifier, typeof(HB.OpaqueConstructionAbridged)));
-                setWallSetActions.Add(("Ground", cSet.WallSet.GroundConstruction, (cons) => cSet.WallSet.GroundConstruction = cons?.Identifier, typeof(HB.OpaqueConstructionAbridged)));
-                setWallSetActions.Add(("Interior", cSet.WallSet.InteriorConstruction, (cons) => cSet.WallSet.InteriorConstruction = cons?.Identifier, typeof(HB.OpaqueConstructionAbridged)));
-                var wallGroup = GenPanelOpaqueConstrSet("Wall Construction Set", getSelected, setWallSetActions);
-
-                //FloorConstructionSetAbridged
-                cSet.FloorSet = cSet.FloorSet ?? new HB.FloorConstructionSetAbridged();
-                var setfloorSetActions = new List<(string, string, Action<HB.Energy.IConstruction>, Type)>() { };
-                setfloorSetActions.Add(("Exterior", cSet.FloorSet.ExteriorConstruction, (cons) => cSet.FloorSet.ExteriorConstruction = cons?.Identifier, typeof(HB.OpaqueConstructionAbridged)));
-                setfloorSetActions.Add(("Ground", cSet.FloorSet.GroundConstruction, (cons) => cSet.FloorSet.GroundConstruction = cons?.Identifier, typeof(HB.OpaqueConstructionAbridged)));
-                setfloorSetActions.Add(("Interior", cSet.FloorSet.InteriorConstruction, (cons) => cSet.FloorSet.InteriorConstruction = cons?.Identifier, typeof(HB.OpaqueConstructionAbridged)));
-                var floorGroup = GenPanelOpaqueConstrSet("Floor Construction Set", getSelected, setfloorSetActions);
-
-                //RoofCeilingConstructionSetAbridged
-                cSet.RoofCeilingSet = cSet.RoofCeilingSet ?? new HB.RoofCeilingConstructionSetAbridged();
-                var setRoofSetActions = new List<(string, string, Action<HB.Energy.IConstruction>, Type)>() { };
-                setRoofSetActions.Add(("Exterior", cSet.RoofCeilingSet.ExteriorConstruction, (cons) => cSet.RoofCeilingSet.ExteriorConstruction = cons?.Identifier, typeof(HB.OpaqueConstructionAbridged)));
-                setRoofSetActions.Add(("Ground", cSet.RoofCeilingSet.GroundConstruction, (cons) => cSet.RoofCeilingSet.GroundConstruction = cons?.Identifier, typeof(HB.OpaqueConstructionAbridged)));
-                setRoofSetActions.Add(("Interior", cSet.RoofCeilingSet.InteriorConstruction, (cons) => cSet.RoofCeilingSet.InteriorConstruction = cons?.Identifier, typeof(HB.OpaqueConstructionAbridged)));
-                var roofCeilingGroup = GenPanelOpaqueConstrSet("Roof/Ceiling Construction Set", getSelected, setRoofSetActions);
-
-                //ApertureConstructionSetAbridged
-                cSet.ApertureSet = cSet.ApertureSet ?? new HB.ApertureConstructionSetAbridged();
-                var setApertureSetActions = new List<(string, string, Action<HB.Energy.IConstruction>, Type)>() { };
-                setApertureSetActions.Add(("Exterior", cSet.ApertureSet.WindowConstruction, (cons) => cSet.ApertureSet.WindowConstruction = cons?.Identifier, typeof(HB.WindowConstructionAbridged)));
-                setApertureSetActions.Add(("Operable", cSet.ApertureSet.OperableConstruction, (cons) => cSet.ApertureSet.OperableConstruction = cons?.Identifier, typeof(HB.WindowConstructionAbridged)));
-                setApertureSetActions.Add(("Skylight", cSet.ApertureSet.SkylightConstruction, (cons) => cSet.ApertureSet.SkylightConstruction = cons?.Identifier, typeof(HB.WindowConstructionAbridged)));
-                setApertureSetActions.Add(("Interior", cSet.ApertureSet.InteriorConstruction, (cons) => cSet.ApertureSet.InteriorConstruction = cons?.Identifier, typeof(HB.WindowConstructionAbridged)));
-                var apertureGroup = GenPanelOpaqueConstrSet("Aperture Construction Set", getSelected, setApertureSetActions);
-
-                //DoorConstructionSetAbridged
-                cSet.DoorSet = cSet.DoorSet ?? new HB.DoorConstructionSetAbridged();
-                var setDoorSetActions = new List<(string, string, Action<HB.Energy.IConstruction>, Type)>() { };
-                setDoorSetActions.Add(("Exterior", cSet.DoorSet.ExteriorConstruction, (cons) => cSet.DoorSet.ExteriorConstruction = cons?.Identifier, typeof(HB.OpaqueConstructionAbridged)));
-                setDoorSetActions.Add(("Interior", cSet.DoorSet.InteriorConstruction, (cons) => cSet.DoorSet.InteriorConstruction = cons?.Identifier, typeof(HB.OpaqueConstructionAbridged)));
-                setDoorSetActions.Add(("Exterior Glass", cSet.DoorSet.ExteriorGlassConstruction, (cons) => cSet.DoorSet.ExteriorGlassConstruction = cons?.Identifier, typeof(HB.WindowConstructionAbridged)));
-                setDoorSetActions.Add(("Interior Glass", cSet.DoorSet.InteriorGlassConstruction, (cons) => cSet.DoorSet.InteriorGlassConstruction = cons?.Identifier, typeof(HB.WindowConstructionAbridged)));
-                setDoorSetActions.Add(("Overhead", cSet.DoorSet.OverheadConstruction, (cons) => cSet.DoorSet.OverheadConstruction = cons?.Identifier, typeof(HB.OpaqueConstructionAbridged)));
-                var doorGroup = GenPanelOpaqueConstrSet("Door Construction Set", getSelected, setDoorSetActions);
-
-                //ShadeConstruction
-                //var shadeSet = cSet.ShadeConstruction;
-                var setShadeSetActions = new List<(string, string, Action<HB.Energy.IConstruction>, Type)>() { };
-                setShadeSetActions.Add(("Shade", cSet.ShadeConstruction, (cons) => cSet.ShadeConstruction = cons?.Identifier, typeof(HB.ShadeConstruction)));
-                var shadeGroup = GenPanelOpaqueConstrSet("Shade Construction", getSelected, setShadeSetActions);
-
-                //AirBoundaryConstruction
-                var setAirBdActions = new List<(string, string, Action<HB.Energy.IConstruction>, Type)>() { };
-                setAirBdActions.Add(("Air Boundary", cSet.AirBoundaryConstruction, (cons) => cSet.AirBoundaryConstruction = cons?.Identifier, typeof(HB.AirBoundaryConstructionAbridged)));
-                var airBdGroup = GenPanelOpaqueConstrSet("Air Boundary Construction", getSelected, setAirBdActions);
-      
+                var wallGroup = GenWallSetPanel(lockedMode);
+                var floorGroup = GenFloorSetPanel(lockedMode);
+                var roofGroup = GenRoofSetPanel(lockedMode);
+                var apertureGroup = GenApertureSetPanel(lockedMode);
+                var doorGroup = GenDoorSetPanel(lockedMode);
+                var shadeGroup = GenShadeSetPanel(lockedMode);
+                var airBdGroup = GenAirBoundarySetPanel(lockedMode);
+            
 
                 //Left panel
                 var panelLeft = new DynamicLayout();
@@ -297,40 +48,34 @@ namespace Honeybee.UI
                 panelNames.Spacing = new Size(5, 5);
                 panelLeft.BeginScrollable(BorderType.None);
                 panelLeft.Height = 600;
-                var nameTbx = new TextBox();
-                cSet.DisplayName = cSet.DisplayName ?? $"New ConstructionSet {cSet.Identifier.Substring(0, 5)}";
-                nameTbx.TextBinding.Bind(cSet, c => c.DisplayName);
-                panelNames.AddRow(new Label() { Text = "Name:", Width = 75 }, nameTbx);
+
+
+                panelLeft.AddRow("Name");
+                panelLeft.AddRow(nameTbx);
                 panelLeft.AddRow(panelNames);
                 panelLeft.AddRow(wallGroup);
                 panelLeft.AddRow(floorGroup);
-                panelLeft.AddRow(roofCeilingGroup);
+                panelLeft.AddRow(roofGroup);
                 panelLeft.AddRow(apertureGroup);
                 panelLeft.AddRow(doorGroup);
                 panelLeft.AddRow(shadeGroup);
                 panelLeft.AddRow(airBdGroup);
 
-                var panelRight = new DynamicLayout();
-                panelRight.Padding = new Padding(5);
-                panelRight.AddRow(constructionTypes);
-                panelRight.AddRow(searchTBox);
-                panelRight.AddRow(lib);
-                panelRight.AddRow(constructionLayersLBox);
-
-                var panelAll = new DynamicLayout() { };
-                panelAll.AddRow(panelLeft, panelRight);
-
                 var locked = new CheckBox() { Text = "Locked", Enabled = false };
                 locked.Checked = lockedMode;
 
                 var OkButton = new Button { Text = "OK" , Enabled = !lockedMode };
-                OkButton.Click += (sender, e) => OkCommand.Execute(cSet);
+                OkButton.Click += (sender, e) => 
+                {
+                    var obj = _vm.GetHBObject();
+                    Close(obj);
+                };
 
                 AbortButton = new Button { Text = "Cancel" };
                 AbortButton.Click += (sender, e) => Close();
 
                 var hbData = new Button { Text = "Schema Data" };
-                hbData.Click += (sender, e) => Dialog_Message.Show(this, cSet.ToJson(true), "Schema Data");
+                hbData.Command = _vm.HBDataBtnClick;
 
                 var buttons = new TableLayout
                 {
@@ -347,7 +92,7 @@ namespace Honeybee.UI
                     Spacing = new Size(5, 5),
                     Rows =
                 {
-                    panelAll,
+                    panelLeft,
                     new TableRow(buttons),
                     null
                 }
@@ -357,158 +102,312 @@ namespace Honeybee.UI
             }
             catch (Exception e)
             {
-                throw e;
+                Dialog_Message.Show(e.ToString());
+                //throw e;
             }
 
 
         }
-        private Eto.Drawing.Color _defaultTextBackgroundColor = new TextBox().BackgroundColor;
 
-        Control GenDropInArea(string currentValue, Action<HB.Energy.IConstruction> setAction, Type setType)
+   
+        private GroupBox GenWallSetPanel(bool lockedMode)
         {
-            //var width = 300;
-            //var height = 60;
+            var vm = this._vm;
 
-            var layerPanel = new PixelLayout();
-            var dropInValue = new TextBox() { PlaceholderText = "Drag from library" };
-            dropInValue.Width = 300;
-            dropInValue.Enabled = false;
-            dropInValue.Text = currentValue;
-            dropInValue.Height = 25;
-          
-            var backGround = Eto.Drawing.Color.FromArgb(230, 230, 230);
-            //dropInValue.BackgroundColor = backGround;
+            var layout = new DynamicLayout() { Enabled = !lockedMode};
 
-            var dropIn = new Drawable();
-            dropIn.AllowDrop = true;
-            dropIn.Width = dropInValue.Width;
-            dropIn.Height = 25;
-            dropIn.BackgroundColor = Colors.Transparent;
+            layout.DefaultSpacing = new Size(4, 4);
+            layout.DefaultPadding = new Padding(4);
 
-            var deleteBtn = new Button();
-            deleteBtn.Text = "✕";
-            deleteBtn.Width = 24;
-            deleteBtn.Height = 24;
-            deleteBtn.Visible = !string.IsNullOrEmpty(currentValue);
-            deleteBtn.Click += (s, e) => 
-            {
-                dropInValue.Text = null;
-                deleteBtn.Visible = false;
-                setAction(null);
-                
-            };
+            var ext = new Button();
+            ext.Command = vm.WallExtSet.SelectConstrucitonCommand;
+            ext.TextBinding.Bind(vm, _ => _.WallExtSet.BtnName);
+            ext.Bind(_ => _.Enabled, vm, _ => _.WallExtSet.IsBtnEnabled);
+            var extByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            extByGlobal.CheckedBinding.Bind(vm, _ => _.WallExtSet.IsCheckboxChecked);
+            layout.AddSeparateRow("Exterior", null, extByGlobal);
+            layout.AddRow(ext);
 
-            dropIn.DragLeave += (sender, e) =>
-            {
-                dropInValue.BackgroundColor = _defaultTextBackgroundColor;
-            };
-            dropIn.DragOver += (sender, e) =>
-            {
-                e.Effects = DragEffects.Move;
-                dropInValue.BackgroundColor = Colors.Gray;
-            };
-            dropIn.DragDrop += (sender, e) =>
-            {
-                // Get drop-in object
-                var value = e.Data.GetString("HBObj");
+            var gnd = new Button();
+            gnd.Command = vm.WallGndSet.SelectConstrucitonCommand;
+            gnd.TextBinding.Bind(vm, _ => _.WallGndSet.BtnName);
+            gnd.Bind(_ => _.Enabled, vm, _ => _.WallGndSet.IsBtnEnabled);
+            var gndByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            gndByGlobal.CheckedBinding.Bind(vm.WallGndSet, _ => _.IsCheckboxChecked);
+            layout.AddSeparateRow("Ground", null, gndByGlobal);
+            layout.AddRow(gnd);
 
-                HB.Energy.IConstruction newValue = null;
-                try
-                {
-                    newValue = setType.GetMethod("FromJson").Invoke(null, new object[] { value }) as HB.Energy.IConstruction;
-                }
-                catch (TargetInvocationException ex)
-                {
-                    newValue = null;
-                }
-                if (newValue == null)
-                {
-                    MessageBox.Show(this, $"{setType.Name.Replace("Abridged", "")} is required!");
-                    return;
-                }
+            var itr = new Button();
+            itr.Command = vm.WallIntSet.SelectConstrucitonCommand;
+            itr.TextBinding.Bind(vm, _ => _.WallIntSet.BtnName);
+            itr.Bind(_ => _.Enabled, vm, _ => _.WallIntSet.IsBtnEnabled);
+            var itrByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            itrByGlobal.CheckedBinding.Bind(vm, _ => _.WallIntSet.IsCheckboxChecked);
+            layout.AddSeparateRow("Interior", null, itrByGlobal);
+            layout.AddRow(itr);
 
+            layout.AddRow(null);
 
-                deleteBtn.Visible = true;
-                dropInValue.Text = newValue.DisplayName?? newValue.Identifier;
-                setAction(newValue);
+            var gp = new GroupBox() { Text = "Wall Construction Set" };
+            gp.Content = layout;
 
-            };
-
-       
-            layerPanel.Add(dropInValue, 0, 0);
-            layerPanel.Add(dropIn, 0, 0);
-            layerPanel.Add(deleteBtn, dropInValue.Width-24, 0);
-            return layerPanel;
+            return gp;
         }
 
-
-        DynamicLayout GenTextBoxWithBtn(string currentValue, Func<HB.Energy.IConstruction> getSelected, Action<HB.Energy.IConstruction> setAction, Type setType)
+        private GroupBox GenFloorSetPanel(bool lockedMode)
         {
-            var panel = new DynamicLayout();
-            var tbx = new TextBox() { PlaceholderText = "By Global" };
-            tbx.Width = 300;
-            tbx.Enabled = false;
-            tbx.Text = currentValue;
+            var vm = this._vm;
 
-            //tbx.Bindings = Binding.Delegate(() => getFunc().Identifier, (c) => setAction(c));
-            var inWallBtn = new Button() { Text = string.IsNullOrEmpty(currentValue)? "+": "-", Width = 25 };
-            inWallBtn.Click += (sender, e) =>
-            {
-                var txt = inWallBtn.Text;
-                string newC = null;
-                if (txt == "+")
-                {
-                    var selectedConstr = getSelected();
-                    if (selectedConstr == null)
-                        return;
+            var layout = new DynamicLayout() { Enabled = !lockedMode };
 
-                    if (selectedConstr.GetType() != setType)
-                    {
-                        MessageBox.Show(this, $"{selectedConstr.GetType().Name.Replace("Abridged", "")} cannot be set to where {setType.Name.Replace("Abridged", "")} is required!");
-                        return;
-                    }
-                    //var selectedConstr = (tbox.Items[tbox.SelectedIndex] as ListItem).Tag as OpaqueConstructionAbridged;
-                    setAction(selectedConstr);
-                    newC = selectedConstr.DisplayName ?? selectedConstr.Identifier;
+            layout.DefaultSpacing = new Size(4, 4);
+            layout.DefaultPadding = new Padding(4);
 
-                    txt = "-";
-                }
-                else
-                {
-                    newC = null;
-                    setAction(null);
-                    txt = "+";
-                }
+            var ext = new Button();
+            ext.Command = vm.FloorExtSet.SelectConstrucitonCommand;
+            ext.TextBinding.Bind(vm, _ => _.FloorExtSet.BtnName);
+            ext.Bind(_ => _.Enabled, vm, _ => _.FloorExtSet.IsBtnEnabled);
+            var extByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            extByGlobal.CheckedBinding.Bind(vm, _ => _.FloorExtSet.IsCheckboxChecked);
+            layout.AddSeparateRow("Exterior", null, extByGlobal);
+            layout.AddRow(ext);
 
-                tbx.Text = newC;
-                inWallBtn.Text = txt;
-            };
+            var gnd = new Button();
+            gnd.Command = vm.FloorGndSet.SelectConstrucitonCommand;
+            gnd.TextBinding.Bind(vm, _ => _.FloorGndSet.BtnName);
+            gnd.Bind(_ => _.Enabled, vm, _ => _.FloorGndSet.IsBtnEnabled);
+            var gndByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            gndByGlobal.CheckedBinding.Bind(vm.FloorGndSet, _ => _.IsCheckboxChecked);
+            layout.AddSeparateRow("Ground", null, gndByGlobal);
+            layout.AddRow(gnd);
 
-            panel.AddRow(tbx, inWallBtn);
-            return panel;
+            var itr = new Button();
+            itr.Command = vm.FloorIntSet.SelectConstrucitonCommand;
+            itr.TextBinding.Bind(vm, _ => _.FloorIntSet.BtnName);
+            itr.Bind(_ => _.Enabled, vm, _ => _.FloorIntSet.IsBtnEnabled);
+            var itrByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            itrByGlobal.CheckedBinding.Bind(vm, _ => _.FloorIntSet.IsCheckboxChecked);
+            layout.AddSeparateRow("Interior", null, itrByGlobal);
+            layout.AddRow(itr);
+
+            layout.AddRow(null);
+
+            var gp = new GroupBox() { Text = "Floor Construction Set" };
+            gp.Content = layout;
+
+            return gp;
         }
 
-        private GroupBox GenPanelOpaqueConstrSet(string groupName, Func<HB.Energy.IConstruction> getSelected, IEnumerable<(string label, string currentValue, Action<HB.Energy.IConstruction> setAction, Type setType)> setActions)
+        private GroupBox GenRoofSetPanel(bool lockedMode)
         {
-            
-            //Wall Construction Set
-            var wallGroup = new GroupBox() { Text = groupName };
-            var wallLayout = new DynamicLayout() { Spacing = new Size(3, 3), Padding = new Padding(5) };
+            var vm = this._vm;
 
-            foreach (var item in setActions)
-            {
-                var inWall = GenDropInArea(item.currentValue, item.setAction, item.setType);
-                wallLayout.AddRow(new Label() { Text = item.label, Width = 75 }, inWall);
-            }
-           
-            //var exWall = GenTextBoxWithBtn(getSelected, (cons) => c.ExteriorConstruction = cons.Identifier);
-            //var gWall =  GenTextBoxWithBtn(getSelected, (cons) => c.GroundConstruction = cons.Identifier);
+            var layout = new DynamicLayout() { Enabled = !lockedMode };
 
-            //wallLayout.AddRow(new Label() { Text = "Exterior", Width = 75 }, exWall, null);
-            //wallLayout.AddRow(new Label() { Text = "Ground", Width = 75 }, gWall, null);
-            wallGroup.Content = wallLayout;
-            return wallGroup;
+            layout.DefaultSpacing = new Size(4, 4);
+            layout.DefaultPadding = new Padding(4);
 
+            var ext = new Button();
+            ext.Command = vm.RoofExtSet.SelectConstrucitonCommand;
+            ext.TextBinding.Bind(vm, _ => _.RoofExtSet.BtnName);
+            ext.Bind(_ => _.Enabled, vm, _ => _.RoofExtSet.IsBtnEnabled);
+            var extByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            extByGlobal.CheckedBinding.Bind(vm, _ => _.RoofExtSet.IsCheckboxChecked);
+            layout.AddSeparateRow("Exterior", null, extByGlobal);
+            layout.AddRow(ext);
+
+            var gnd = new Button();
+            gnd.Command = vm.RoofGndSet.SelectConstrucitonCommand;
+            gnd.TextBinding.Bind(vm, _ => _.RoofGndSet.BtnName);
+            gnd.Bind(_ => _.Enabled, vm, _ => _.RoofGndSet.IsBtnEnabled);
+            var gndByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            gndByGlobal.CheckedBinding.Bind(vm.RoofGndSet, _ => _.IsCheckboxChecked);
+            layout.AddSeparateRow("Ground", null, gndByGlobal);
+            layout.AddRow(gnd);
+
+            var itr = new Button();
+            itr.Command = vm.RoofIntSet.SelectConstrucitonCommand;
+            itr.TextBinding.Bind(vm, _ => _.RoofIntSet.BtnName);
+            itr.Bind(_ => _.Enabled, vm, _ => _.RoofIntSet.IsBtnEnabled);
+            var itrByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            itrByGlobal.CheckedBinding.Bind(vm, _ => _.RoofIntSet.IsCheckboxChecked);
+            layout.AddSeparateRow("Interior", null, itrByGlobal);
+            layout.AddRow(itr);
+
+            layout.AddRow(null);
+
+            var gp = new GroupBox() { Text = "Roof Construction Set" };
+            gp.Content = layout;
+
+            return gp;
+        }
+
+        private GroupBox GenApertureSetPanel(bool lockedMode)
+        {
+            var vm = this._vm;
+
+            var layout = new DynamicLayout() { Enabled = !lockedMode };
+
+            layout.DefaultSpacing = new Size(4, 4);
+            layout.DefaultPadding = new Padding(4);
+
+            var ext = new Button();
+            ext.Command = vm.ApertureExtSet.SelectConstrucitonCommand;
+            ext.TextBinding.Bind(vm, _ => _.ApertureExtSet.BtnName);
+            ext.Bind(_ => _.Enabled, vm, _ => _.ApertureExtSet.IsBtnEnabled);
+            var extByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            extByGlobal.CheckedBinding.Bind(vm, _ => _.ApertureExtSet.IsCheckboxChecked);
+            layout.AddSeparateRow("Exterior", null, extByGlobal);
+            layout.AddRow(ext);
+
+            var itr = new Button();
+            itr.Command = vm.ApertureIntSet.SelectConstrucitonCommand;
+            itr.TextBinding.Bind(vm, _ => _.ApertureIntSet.BtnName);
+            itr.Bind(_ => _.Enabled, vm, _ => _.ApertureIntSet.IsBtnEnabled);
+            var itrByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            itrByGlobal.CheckedBinding.Bind(vm, _ => _.ApertureIntSet.IsCheckboxChecked);
+            layout.AddSeparateRow("Interior", null, itrByGlobal);
+            layout.AddRow(itr);
+
+            var gnd = new Button();
+            gnd.Command = vm.ApertureOptSet.SelectConstrucitonCommand;
+            gnd.TextBinding.Bind(vm, _ => _.ApertureOptSet.BtnName);
+            gnd.Bind(_ => _.Enabled, vm, _ => _.ApertureOptSet.IsBtnEnabled);
+            var gndByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            gndByGlobal.CheckedBinding.Bind(vm.ApertureOptSet, _ => _.IsCheckboxChecked);
+            layout.AddSeparateRow("Operable", null, gndByGlobal);
+            layout.AddRow(gnd);
+
+            var sky = new Button();
+            sky.Command = vm.ApertureSkySet.SelectConstrucitonCommand;
+            sky.TextBinding.Bind(vm, _ => _.ApertureSkySet.BtnName);
+            sky.Bind(_ => _.Enabled, vm, _ => _.ApertureSkySet.IsBtnEnabled);
+            var skyByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            skyByGlobal.CheckedBinding.Bind(vm.ApertureSkySet, _ => _.IsCheckboxChecked);
+            layout.AddSeparateRow("Skylight", null, skyByGlobal);
+            layout.AddRow(sky);
+
+
+            layout.AddRow(null);
+
+            var gp = new GroupBox() { Text = "Aperture Construction Set" };
+            gp.Content = layout;
+
+            return gp;
+        }
+
+        private GroupBox GenDoorSetPanel(bool lockedMode)
+        {
+            var vm = this._vm;
+
+            var layout = new DynamicLayout() { Enabled = !lockedMode };
+
+            layout.DefaultSpacing = new Size(4, 4);
+            layout.DefaultPadding = new Padding(4);
+
+            var ext = new Button();
+            ext.Command = vm.DoorExtSet.SelectConstrucitonCommand;
+            ext.TextBinding.Bind(vm, _ => _.DoorExtSet.BtnName);
+            ext.Bind(_ => _.Enabled, vm, _ => _.DoorExtSet.IsBtnEnabled);
+            var extByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            extByGlobal.CheckedBinding.Bind(vm, _ => _.DoorExtSet.IsCheckboxChecked);
+            layout.AddSeparateRow("Exterior", null, extByGlobal);
+            layout.AddRow(ext);
+
+            var itr = new Button();
+            itr.Command = vm.DoorIntSet.SelectConstrucitonCommand;
+            itr.TextBinding.Bind(vm, _ => _.DoorIntSet.BtnName);
+            itr.Bind(_ => _.Enabled, vm, _ => _.DoorIntSet.IsBtnEnabled);
+            var itrByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            itrByGlobal.CheckedBinding.Bind(vm, _ => _.DoorIntSet.IsCheckboxChecked);
+            layout.AddSeparateRow("Interior", null, itrByGlobal);
+            layout.AddRow(itr);
+
+            var gnd = new Button();
+            gnd.Command = vm.DoorExtGlassSet.SelectConstrucitonCommand;
+            gnd.TextBinding.Bind(vm, _ => _.DoorExtGlassSet.BtnName);
+            gnd.Bind(_ => _.Enabled, vm, _ => _.DoorExtGlassSet.IsBtnEnabled);
+            var gndByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            gndByGlobal.CheckedBinding.Bind(vm.DoorExtGlassSet, _ => _.IsCheckboxChecked);
+            layout.AddSeparateRow("Exterior Glass", null, gndByGlobal);
+            layout.AddRow(gnd);
+
+            var IntGlass = new Button();
+            IntGlass.Command = vm.DoorIntGlassSet.SelectConstrucitonCommand;
+            IntGlass.TextBinding.Bind(vm, _ => _.DoorIntGlassSet.BtnName);
+            IntGlass.Bind(_ => _.Enabled, vm, _ => _.DoorIntGlassSet.IsBtnEnabled);
+            var IntGlassByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            IntGlassByGlobal.CheckedBinding.Bind(vm.DoorIntGlassSet, _ => _.IsCheckboxChecked);
+            layout.AddSeparateRow("Interior Glass", null, IntGlassByGlobal);
+            layout.AddRow(IntGlass);
+
+            var overhead = new Button();
+            overhead.Command = vm.DoorOverheadSet.SelectConstrucitonCommand;
+            overhead.TextBinding.Bind(vm, _ => _.DoorOverheadSet.BtnName);
+            overhead.Bind(_ => _.Enabled, vm, _ => _.DoorOverheadSet.IsBtnEnabled);
+            var overheadByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            overheadByGlobal.CheckedBinding.Bind(vm.DoorOverheadSet, _ => _.IsCheckboxChecked);
+            layout.AddSeparateRow("Overhead", null, overheadByGlobal);
+            layout.AddRow(overhead);
+
+            layout.AddRow(null);
+
+            var gp = new GroupBox() { Text = "Door Construction Set" };
+            gp.Content = layout;
+
+            return gp;
+        }
+
+        private GroupBox GenShadeSetPanel(bool lockedMode)
+        {
+            var vm = this._vm;
+
+            var layout = new DynamicLayout() { Enabled = !lockedMode };
+
+            layout.DefaultSpacing = new Size(4, 4);
+            layout.DefaultPadding = new Padding(4);
+
+            var ext = new Button();
+            ext.Command = vm.ShadeSet.SelectConstrucitonCommand;
+            ext.TextBinding.Bind(vm, _ => _.ShadeSet.BtnName);
+            ext.Bind(_ => _.Enabled, vm, _ => _.ShadeSet.IsBtnEnabled);
+            var extByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            extByGlobal.CheckedBinding.Bind(vm, _ => _.ShadeSet.IsCheckboxChecked);
+            layout.AddSeparateRow("Shade", null, extByGlobal);
+            layout.AddRow(ext);
+
+            layout.AddRow(null);
+
+            var gp = new GroupBox() { Text = "Shade Construction" };
+            gp.Content = layout;
+
+            return gp;
+        }
+        
+        private GroupBox GenAirBoundarySetPanel(bool lockedMode)
+        {
+            var vm = this._vm;
+
+            var layout = new DynamicLayout() { Enabled = !lockedMode };
+
+            layout.DefaultSpacing = new Size(4, 4);
+            layout.DefaultPadding = new Padding(4);
+
+            var ext = new Button();
+            ext.Command = vm.AirBoundarySet.SelectConstrucitonCommand;
+            ext.TextBinding.Bind(vm, _ => _.AirBoundarySet.BtnName);
+            ext.Bind(_ => _.Enabled, vm, _ => _.AirBoundarySet.IsBtnEnabled);
+            var extByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            extByGlobal.CheckedBinding.Bind(vm, _ => _.AirBoundarySet.IsCheckboxChecked);
+            layout.AddSeparateRow("Air Boundary", null, extByGlobal);
+            layout.AddRow(ext);
+
+            layout.AddRow(null);
+
+            var gp = new GroupBox() { Text = "Air Boundary Construction" };
+            gp.Content = layout;
+
+            return gp;
         }
 
 

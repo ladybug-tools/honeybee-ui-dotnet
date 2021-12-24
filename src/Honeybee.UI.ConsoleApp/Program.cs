@@ -194,9 +194,12 @@ namespace Honeybee.UI.ConsoleApp
                 var cSetbtn = new Button() { Text = "ConstructionSet" };
                 cSetbtn.Click += (s, e) =>
                 {
+                    var lib = md.Properties.Energy;
                     var cSet = new HoneybeeSchema.ConstructionSetAbridged(identifier: Guid.NewGuid().ToString());
-                    var dialog = new Honeybee.UI.Dialog_ConstructionSet(md.Properties.Energy, cSet);
-                    dialog.ShowModal(this);
+                    var dialog = new Honeybee.UI.Dialog_ConstructionSet(ref lib, cSet);
+                    var rs = dialog.ShowModal(this);
+                    if (rs != null)
+                        Dialog_Message.Show(this, rs.ToJson());
 
                 };
 
