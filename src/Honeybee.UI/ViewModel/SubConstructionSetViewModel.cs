@@ -29,11 +29,7 @@ namespace Honeybee.UI
             {
                 var rs = dialog_rc[0];
                 this.SetPropetyObj(rs);
-
-                var matNames = rs.GetAbridgedConstructionMaterials();
-                var mats = SystemEnergyLib.MaterialList.Where(_ => matNames.Contains(_.Identifier));
                 _libSource.AddConstruction(rs);
-                _libSource.AddMaterials(mats);
             }
         });
     }
