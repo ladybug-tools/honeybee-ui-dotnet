@@ -56,7 +56,8 @@ namespace Honeybee.UI
 
                     cSet.DisplayName =  $"{vm.FullConstructionSet}_dup";
                     cSet.Identifier = id;
-                    var dialog = new Honeybee.UI.Dialog_ConstructionSet(this.ModelEnergyProperties, cSet);
+                    var lib = this.ModelEnergyProperties;
+                    var dialog = new Honeybee.UI.Dialog_ConstructionSet(ref lib, cSet);
                     var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
                     {

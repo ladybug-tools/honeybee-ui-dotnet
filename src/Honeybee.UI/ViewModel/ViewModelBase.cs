@@ -8,6 +8,7 @@ namespace Honeybee.UI
 {
     public abstract class ViewModelBase : INotifyPropertyChanged
     {
+        public static string None => "<None>";
         public string Varies => "<varies>";
         public string NoUserData => "No UserData";
         public string Unconditioned => "Unconditioned";

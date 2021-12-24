@@ -15,8 +15,6 @@ namespace Honeybee.UI
     public class CheckboxPanelViewModel<T> : ViewModelBase 
         where T: IHoneybeeObject
     {
-        public string Varies => "<varies>";
-        //public bool IsVaries { get; private set; }
         private T _refObjProperty;
         protected T refObjProperty
         {
