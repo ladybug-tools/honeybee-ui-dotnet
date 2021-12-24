@@ -13,7 +13,11 @@ namespace Honeybee.UI
         {
             HoneybeeSchema.Energy.IConstruction c = null;
             if (!string.IsNullOrEmpty(cName))
-                c = SystemEnergyLib.ConstructionList.FirstOrDefault(_ => _.Identifier == cName);
+            {
+                // check in-model lib source before system lib
+                c = libSource.ConstructionList.FirstOrDefault(_ => _.Identifier == cName);
+                c = c ?? SystemEnergyLib.ConstructionList.FirstOrDefault(_ => _.Identifier == cName);
+            }
 
             this.SetPropetyObj(c);
 
