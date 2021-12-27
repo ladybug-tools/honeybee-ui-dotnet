@@ -133,7 +133,8 @@ namespace Honeybee.UI
                     numberTB.Provider = new NumericMaskedTextProvider() { AllowDecimal = true };
                     numberTB.TextBinding.Bind(
                         () => numberValue.ToString(), 
-                        (v) => { 
+                        (v) => {
+                            v = v.StartsWith(".") ? $"{0}{v}" : v;
                             item.SetValue(hbObj, Convert.ChangeType(v, type));
                             CalRValue(hbObj, _showIP);
                             }
