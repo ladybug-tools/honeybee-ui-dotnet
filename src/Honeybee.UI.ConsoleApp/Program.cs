@@ -163,6 +163,7 @@ namespace Honeybee.UI.ConsoleApp
                     var dialog_rc = dialog.ShowModal();
                     if (dialog_rc != null)
                     {
+                        shd2 = dialog_rc.FirstOrDefault();
                         foreach (var item in dialog_rc)
                         {
                             Console.WriteLine(item.ToJson(true));

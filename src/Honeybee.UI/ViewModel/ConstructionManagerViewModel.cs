@@ -371,6 +371,8 @@ namespace Honeybee.UI
         internal HB.ModelEnergyProperties CheckResources(HB.ModelEnergyProperties libSource)
         {
             var eng = new ModelEnergyProperties();
+            eng.AddConstruction(this.Construction);
+
             var layers = this.Construction.GetAbridgedConstructionMaterials();
             var mats = layers
                  .Select(_ => libSource.MaterialList.FirstOrDefault(m => m.Identifier == _));
