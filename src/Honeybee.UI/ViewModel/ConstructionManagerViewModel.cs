@@ -48,7 +48,7 @@ namespace Honeybee.UI
             if (!this._userData.Contains(newViewData))
             {
                 // add resources to model EnergyProperties
-                var engLib = newViewData.CheckResources(SystemEnergyLib);
+                var engLib = newViewData.CheckResources(ConstructionViewData.LibSource);
                 this._modelEnergyProperties.MergeWith(engLib);
             }
             this._userData.Insert(0, newViewData);
@@ -59,7 +59,14 @@ namespace Honeybee.UI
             var newItem = CheckObjName(newObj, oldObj.Name);
             var index = _userData.IndexOf(oldObj);
             _userData.RemoveAt(index);
-            _userData.Insert(index, new ConstructionViewData(newItem, this.UseIPUnit));
+            var newViewData = new ConstructionViewData(newItem, this.UseIPUnit);
+            if (!this._userData.Contains(newViewData))
+            {
+                // add resources to model EnergyProperties
+                var engLib = newViewData.CheckResources(ConstructionViewData.LibSource);
+                this._modelEnergyProperties.MergeWith(engLib);
+            }
+            _userData.Insert(index, newViewData);
             this._allData = _userData.Concat(_systemData).ToList();
         }
         private void DeleteUserData(ConstructionViewData item)
@@ -93,7 +100,7 @@ namespace Honeybee.UI
                 else if (!this._userData.Contains(d))
                 {
                     // user selected an item from system library, now add it to model EnergyProperties
-                    var engLib = d.CheckResources(SystemEnergyLib);
+                    var engLib = d.CheckResources(ConstructionViewData.LibSource);
                     this._modelEnergyProperties.MergeWith(engLib);
                 }
                
