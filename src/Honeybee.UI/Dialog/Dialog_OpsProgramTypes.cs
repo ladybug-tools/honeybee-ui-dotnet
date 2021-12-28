@@ -1,109 +1,109 @@
-﻿using Eto.Drawing;
-using Eto.Forms;
-using HoneybeeSchema;
-using System;
-using System.Linq;
-using System.Collections.Generic;
+﻿//using Eto.Drawing;
+//using Eto.Forms;
+//using HoneybeeSchema;
+//using System;
+//using System.Linq;
+//using System.Collections.Generic;
 
-namespace Honeybee.UI
-{
-    public class Dialog_OpsProgramTypes : Dialog<(ProgramTypeAbridged programType, IEnumerable<ScheduleRulesetAbridged> schedules)>
-    {
-        private ModelEnergyProperties ModelEnergyProperties { get; set; }
-        public Dialog_OpsProgramTypes(ModelEnergyProperties libSource)
-        {
-            try
-            {
-                libSource.FillNulls();
+//namespace Honeybee.UI
+//{
+//    public class Dialog_OpsProgramTypes : Dialog<(ProgramTypeAbridged programType, IEnumerable<ScheduleRulesetAbridged> schedules)>
+//    {
+//        private ModelProperties ModelProperties { get; set; }
+//        public Dialog_OpsProgramTypes(ref ModelProperties libSource)
+//        {
+//            try
+//            {
+//                libSource.FillNulls();
 
-                this.ModelEnergyProperties = libSource;
-                //var output = simulationOutput;
-                var vm = new OpsProgramTypesViewModel(this.ModelEnergyProperties);
+//                this.ModelProperties = libSource;
+//                //var output = simulationOutput;
+//                var vm = new OpsProgramTypesViewModel(this.ModelProperties);
 
-                Padding = new Padding(5);
-                Resizable = true;
-                Title = $"OpenStudio Standards - {DialogHelper.PluginName}";
-                WindowStyle = WindowStyle.Default;
-                MinimumSize = new Size(450, 300);
-                this.Icon = DialogHelper.HoneybeeIcon;
+//                Padding = new Padding(5);
+//                Resizable = true;
+//                Title = $"OpenStudio Standards - {DialogHelper.PluginName}";
+//                WindowStyle = WindowStyle.Default;
+//                MinimumSize = new Size(450, 300);
+//                this.Icon = DialogHelper.HoneybeeIcon;
 
-                var layout = new DynamicLayout() { DataContext = vm};
-                layout.Spacing = new Size(8, 8);
-                layout.Padding = new Padding(15);
+//                var layout = new DynamicLayout() { DataContext = vm};
+//                layout.Spacing = new Size(8, 8);
+//                layout.Padding = new Padding(15);
 
                 
-                var year = new DropDown();
-                var buildingType = new DropDown();
-                var programType = new DropDown();
-                //var textArea = new RichTextArea() { Height = 200 };
-                var cloneBtn = new Button() { Text = "Clone and Edit" };
+//                var year = new DropDown();
+//                var buildingType = new DropDown();
+//                var programType = new DropDown();
+//                //var textArea = new RichTextArea() { Height = 200 };
+//                var cloneBtn = new Button() { Text = "Clone and Edit" };
 
-                year.DataStore = vm.VintageNames;
-                year.SelectedKeyBinding.BindDataContext((OpsProgramTypesViewModel m) => m.Vintage);
+//                year.DataStore = vm.VintageNames;
+//                year.SelectedKeyBinding.BindDataContext((OpsProgramTypesViewModel m) => m.Vintage);
 
-                buildingType.BindDataContext(c => c.DataStore, (OpsProgramTypesViewModel m) => m.BuildingTypes);
-                buildingType.SelectedKeyBinding.BindDataContext((OpsProgramTypesViewModel m) => m.BuildingType);
+//                buildingType.BindDataContext(c => c.DataStore, (OpsProgramTypesViewModel m) => m.BuildingTypes);
+//                buildingType.SelectedKeyBinding.BindDataContext((OpsProgramTypesViewModel m) => m.BuildingType);
 
-                programType.BindDataContext(c => c.DataStore, (OpsProgramTypesViewModel m) => m.ProgramTypes);
-                programType.SelectedKeyBinding.BindDataContext((OpsProgramTypesViewModel m) => m.ProgramType);
-
-
-                //textArea.TextBinding.BindDataContext((OpsProgramTypesViewModel m) => m.ProgramTypeJson);
-                //textArea.TextBinding.BindDataContext((MessageViewModel m) => m.MessageText);
-                //layout.AddSeparateRow(textArea);
+//                programType.BindDataContext(c => c.DataStore, (OpsProgramTypesViewModel m) => m.ProgramTypes);
+//                programType.SelectedKeyBinding.BindDataContext((OpsProgramTypesViewModel m) => m.ProgramType);
 
 
+//                //textArea.TextBinding.BindDataContext((OpsProgramTypesViewModel m) => m.ProgramTypeJson);
+//                //textArea.TextBinding.BindDataContext((MessageViewModel m) => m.MessageText);
+//                //layout.AddSeparateRow(textArea);
 
-                cloneBtn.Click += (s, e) => {
-                    var program = vm.ProgramTypeWithSches.programType;
-                    var sch = vm.ProgramTypeWithSches.schedules;
-                    program.Identifier = Guid.NewGuid().ToString();
-                    program.DisplayName = $"{vm.FullProgramType}_Dup";
-                    var dialog = new Honeybee.UI.Dialog_ProgramType(this.ModelEnergyProperties, program);
-                    var dialog_rc = dialog.ShowModal(this);
-                    if (dialog_rc != null)
-                    {
-                        Close((dialog_rc, sch));
-                    }
 
-                };
 
-                layout.AddRow("Vintage:");
-                layout.AddRow(year);
-                layout.AddRow("Building Type:");
-                layout.AddRow(buildingType);
-                layout.AddRow("Program Type:");
-                layout.AddRow(programType);
-                //layout.AddRow(textArea);
-                layout.AddSeparateRow(cloneBtn);
+//                cloneBtn.Click += (s, e) => {
+//                    var program = vm.ProgramTypeWithSches.programType;
+//                    var sch = vm.ProgramTypeWithSches.schedules;
+//                    program.Identifier = Guid.NewGuid().ToString();
+//                    program.DisplayName = $"{vm.FullProgramType}_Dup";
+//                    var dialog = new Honeybee.UI.Dialog_ProgramType(this.ModelProperties, program);
+//                    var dialog_rc = dialog.ShowModal(this);
+//                    if (dialog_rc != null)
+//                    {
+//                        Close((dialog_rc, sch));
+//                    }
 
-                DefaultButton = new Button { Text = "OK" };
-                DefaultButton.Click += (sender, e) => {
-                    var programT = vm.ProgramTypeWithSches.programType;
-                    var sch = vm.ProgramTypeWithSches.schedules;
-                    programT.DisplayName = programT.Identifier;
-                    programT.DisplayName = vm.FullProgramType;
-                    programT.Identifier = Guid.NewGuid().ToString();
-                    Close((programT, sch));
-                }; 
+//                };
 
-                AbortButton = new Button { Text = "Cancel" };
-                AbortButton.Click += (sender, e) => Close();
+//                layout.AddRow("Vintage:");
+//                layout.AddRow(year);
+//                layout.AddRow("Building Type:");
+//                layout.AddRow(buildingType);
+//                layout.AddRow("Program Type:");
+//                layout.AddRow(programType);
+//                //layout.AddRow(textArea);
+//                layout.AddSeparateRow(cloneBtn);
 
-                layout.AddSeparateRow(null, this.DefaultButton, this.AbortButton, null);
-                layout.AddRow(null);
-                Content = layout;
+//                DefaultButton = new Button { Text = "OK" };
+//                DefaultButton.Click += (sender, e) => {
+//                    var programT = vm.ProgramTypeWithSches.programType;
+//                    var sch = vm.ProgramTypeWithSches.schedules;
+//                    programT.DisplayName = programT.Identifier;
+//                    programT.DisplayName = vm.FullProgramType;
+//                    programT.Identifier = Guid.NewGuid().ToString();
+//                    Close((programT, sch));
+//                }; 
+
+//                AbortButton = new Button { Text = "Cancel" };
+//                AbortButton.Click += (sender, e) => Close();
+
+//                layout.AddSeparateRow(null, this.DefaultButton, this.AbortButton, null);
+//                layout.AddRow(null);
+//                Content = layout;
               
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+//            }
+//            catch (Exception e)
+//            {
+//                throw e;
+//            }
             
             
-        }
+//        }
         
      
 
-    }
-}
+//    }
+//}

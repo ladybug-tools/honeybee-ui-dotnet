@@ -125,7 +125,7 @@ namespace Honeybee.UI
                     return;
                 }
 
-                var lib = _model.Properties.Energy;
+                var lib = _model.Properties;
                 var dialog = new Dialog_ProgramTypeManager(ref lib);
                 var dialog_rc = dialog.ShowModal(this);
                 if (dialog_rc != null)

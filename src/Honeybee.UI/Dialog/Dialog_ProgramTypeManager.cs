@@ -22,7 +22,7 @@ namespace Honeybee.UI
 
 
 
-        public Dialog_ProgramTypeManager(ref ModelEnergyProperties libSource, bool returnSelectedOnly = false):this()
+        public Dialog_ProgramTypeManager(ref ModelProperties libSource, bool returnSelectedOnly = false):this()
         {
             libSource.FillNulls();
 

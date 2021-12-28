@@ -1,12 +1,7 @@
 ﻿using Eto.Drawing;
 using Eto.Forms;
-using System.Collections.Generic;
-using System.Linq;
 using HB = HoneybeeSchema;
-using HoneybeeSchema;
 using System;
-using System.Text.RegularExpressions;
-using System.Reflection;
 
 namespace Honeybee.UI
 {
@@ -43,16 +38,13 @@ namespace Honeybee.UI
                 //Left panel
                 var panelLeft = new DynamicLayout();
                 panelLeft.DefaultSpacing = new Size(0, 5);
-                var panelNames = new DynamicLayout();
-                panelNames.Padding = new Padding(10, 5, 15, 5);
-                panelNames.Spacing = new Size(5, 5);
+            
                 panelLeft.BeginScrollable(BorderType.None);
                 panelLeft.Height = 600;
 
 
                 panelLeft.AddRow("Name");
                 panelLeft.AddRow(nameTbx);
-                panelLeft.AddRow(panelNames);
                 panelLeft.AddRow(wallGroup);
                 panelLeft.AddRow(floorGroup);
                 panelLeft.AddRow(roofGroup);
@@ -68,7 +60,7 @@ namespace Honeybee.UI
                 OkButton.Click += (sender, e) => 
                 {
                     var obj = _vm.GetHBObject();
-                    Close(obj);
+                    OkCommand.Execute(obj);
                 };
 
                 AbortButton = new Button { Text = "Cancel" };

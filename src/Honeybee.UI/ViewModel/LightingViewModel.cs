@@ -92,8 +92,7 @@ namespace Honeybee.UI
 
 
             //Schedule
-            var sch = libSource.Energy.Schedules
-                .OfType<IIDdBase>()
+            var sch = libSource.Energy.ScheduleList
                 .FirstOrDefault(_ => _.Identifier == _refHBObj.Schedule);
             this.Schedule = new ButtonViewModel((n) => _refHBObj.Schedule = n?.Identifier);
             if (lights.Select(_ => _?.Schedule).Distinct().Count() > 1)
