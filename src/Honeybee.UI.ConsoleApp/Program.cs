@@ -116,6 +116,7 @@ namespace Honeybee.UI.ConsoleApp
                     var dialog_rc = dialog.ShowModal();
                     if (dialog_rc != null)
                     {
+                        apt2 = dialog_rc.First();
                         foreach (var item in dialog_rc)
                         {
                             Console.WriteLine(item.ToJson(true));
