@@ -13,6 +13,7 @@ namespace Honeybee.UI
         public string NoUserData => "No UserData";
         public string Unconditioned => "Unconditioned";
         public string Unoccupied => "Unoccupied, No Loads";
+        public string Noload => "No Load";
         public string ByGlobalConstructionSet => "By Global Construction Set";
         public string ByProgramType => "By Room Program Type";
         public string ByGlobalModifierSet => "By Global Modifier Set";

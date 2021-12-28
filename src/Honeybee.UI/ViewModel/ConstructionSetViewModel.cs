@@ -189,9 +189,8 @@ namespace Honeybee.UI
             libSource.FillNulls();
 
             //this._libSource = libSource;
-            var cSet = constructionSet ?? new HB.ConstructionSetAbridged(identifier: System.Guid.NewGuid().ToString());
-
-            _refHBObj = constructionSet;
+            var cSet = constructionSet?.DuplicateConstructionSetAbridged() ?? new HB.ConstructionSetAbridged(identifier: System.Guid.NewGuid().ToString());
+            _refHBObj = cSet;
 
             this.Name = _refHBObj.DisplayName ?? _refHBObj.Identifier;
 
@@ -239,15 +238,13 @@ namespace Honeybee.UI
 
         public ICommand HBDataBtnClick => new RelayCommand(() =>
         {
-            var obj = GetHBObject();
-            Honeybee.UI.Dialog_Message.Show(this._control, obj.ToJson(true), "Schema Data");
+            Honeybee.UI.Dialog_Message.Show(this._control, _refHBObj.ToJson(true), "Schema Data");
         });
 
         public ConstructionSetAbridged GetHBObject()
         {
             var obj = this._refHBObj.DuplicateConstructionSetAbridged();
             
-
             return obj;
         }
     }

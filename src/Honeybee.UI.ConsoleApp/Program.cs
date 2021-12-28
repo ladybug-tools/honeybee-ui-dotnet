@@ -209,7 +209,8 @@ namespace Honeybee.UI.ConsoleApp
                 pTypebtn.Click += (s, e) =>
                 {
                     var pType = new HoneybeeSchema.ProgramTypeAbridged(identifier: Guid.NewGuid().ToString());
-                    var dialog = new Honeybee.UI.Dialog_ProgramType(md.Properties.Energy, pType);
+                    var lib = md.Properties;
+                    var dialog = new Honeybee.UI.Dialog_ProgramType(ref lib, pType);
                     dialog.ShowModal(this);
 
                 };
@@ -217,7 +218,7 @@ namespace Honeybee.UI.ConsoleApp
                 var pTypeMngbtn = new Button() { Text = "ProgramTypeManager" };
                 pTypeMngbtn.Click += (s, e) =>
                 {
-                    var lib = md.Properties.Energy;
+                    var lib = md.Properties;
                     var dialog = new Honeybee.UI.Dialog_ProgramTypeManager(ref lib);
                     var dialog_rc =dialog.ShowModal(this);
                   
@@ -281,13 +282,6 @@ namespace Honeybee.UI.ConsoleApp
 
                 };
 
-                var stndBtn = new Button() { Text = "Standards" };
-                stndBtn.Click += (s, e) =>
-                {
-                    var dialog = new Honeybee.UI.Dialog_OpsProgramTypes(md.Properties.Energy);
-                    dialog.ShowModal(this);
-
-                };
 
                 var modifierBtn = new Button() { Text = "Modifier Manager" };
                 modifierBtn.Click += (s, e) =>
@@ -338,12 +332,6 @@ namespace Honeybee.UI.ConsoleApp
 
                 };
 
-                var opsProgramType = new Button() { Text = "OpenStudioProgramType" };
-                opsProgramType.Click += (s, e) =>
-                {
-                    var dialog = new Honeybee.UI.Dialog_OpsProgramTypes(md.Properties.Energy);
-                    dialog.ShowModal(this);
-                };
 
                 var opsHVACs = new Button() { Text = "OpenStudioHVACs" };
                 opsHVACs.Click += (s, e) =>
@@ -404,10 +392,8 @@ namespace Honeybee.UI.ConsoleApp
                 panel.AddSeparateRow(simuParam);
                 panel.AddSeparateRow(modelManager);
                 panel.AddSeparateRow(materialBtn);
-                panel.AddSeparateRow(stndBtn);
                 panel.AddSeparateRow(modifierBtn, modifierSetMngBtn, modifierBtn, null);
                 panel.AddSeparateRow(outputs);
-                panel.AddSeparateRow(opsProgramType);
                 panel.AddSeparateRow(opsHVACs);
                 panel.AddSeparateRow(HVACManager);
                 panel.AddSeparateRow(matchRooms_btn);

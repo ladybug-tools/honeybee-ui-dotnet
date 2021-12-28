@@ -8,13 +8,13 @@ namespace Honeybee.UI
 {
     internal class ProgramTypeManagerViewModel : ManagerBaseViewModel<ProgramTypeViewData>
     {
-        private HB.ModelEnergyProperties _modelEnergyProperties { get; set; }
+        private HB.ModelProperties _modelProperties { get; set; }
     
-        public ProgramTypeManagerViewModel(HB.ModelEnergyProperties libSource, Control control = default):base(control)
+        public ProgramTypeManagerViewModel(HB.ModelProperties libSource, Control control = default):base(control)
         {
-            _modelEnergyProperties = libSource;
+            _modelProperties = libSource;
 
-            this._userData = libSource.ProgramTypeList.OfType<ProgramTypeAbridged>().Select(_ => new ProgramTypeViewData(_)).ToList();
+            this._userData = libSource.Energy.ProgramTypeList.OfType<ProgramTypeAbridged>().Select(_ => new ProgramTypeViewData(_)).ToList();
             this._systemData = SystemEnergyLib.ProgramTypeList.OfType<ProgramTypeAbridged>().Select(_ => new ProgramTypeViewData(_)).ToList();
             this._allData = _userData.Concat(_systemData).Distinct(new ManagerItemComparer<ProgramTypeViewData>()).ToList();
 
@@ -30,7 +30,7 @@ namespace Honeybee.UI
             {
                 // add resources to model EnergyProperties
                 var engLib = newViewData.CheckResources(SystemEnergyLib);
-                this._modelEnergyProperties.MergeWith(engLib);
+                this._modelProperties.Energy.MergeWith(engLib);
             }
             this._userData.Insert(0, newViewData);
             this._allData = _userData.Concat(_systemData).ToList();
@@ -52,8 +52,8 @@ namespace Honeybee.UI
         public void UpdateLibSource()
         {
             var newItems = this._userData.Select(_ => _.ProgramType);
-            this._modelEnergyProperties.ProgramTypes.Clear();
-            this._modelEnergyProperties.AddProgramTypes(newItems);
+            this._modelProperties.Energy.ProgramTypes.Clear();
+            this._modelProperties.Energy.AddProgramTypes(newItems);
         }
 
         public List<HB.Energy.IProgramtype> GetUserItems(bool selectedOnly)
@@ -75,25 +75,26 @@ namespace Honeybee.UI
                 {
                     // user selected an item from system library, now add it to model EnergyProperties
                     var engLib = d.CheckResources(SystemEnergyLib);
-                    this._modelEnergyProperties.MergeWith(engLib);
+                    this._modelProperties.Energy.MergeWith(engLib);
                 }
 
                 itemsToReturn.Add(d.ProgramType);
             }
             else
             {
-                itemsToReturn = this._modelEnergyProperties.ProgramTypeList.ToList();
+                itemsToReturn = this._modelProperties.Energy.ProgramTypeList.ToList();
             }
             return itemsToReturn;
         }
 
         public RelayCommand AddCommand => new RelayCommand(() =>
         {
-            var dialog = new Honeybee.UI.Dialog_OpsProgramTypes(this._modelEnergyProperties);
+            var lib = this._modelProperties;
+            var dialog = new Honeybee.UI.Dialog_ProgramType(ref lib, null);
             var dialog_rc = dialog.ShowModal(_control);
+            //var newItem = new ProgramTypeAbridged($"{}");
 
-            var type = dialog_rc.programType?.DuplicateProgramTypeAbridged();
-            var sches = dialog_rc.schedules?.Select(_=>_.DuplicateScheduleRulesetAbridged());
+            var type = dialog_rc?.DuplicateProgramTypeAbridged();
             if (type != null)
             {
                 AddUserData(type);
@@ -115,7 +116,8 @@ namespace Honeybee.UI
             dup.Identifier = name;
             dup.DisplayName = name;
 
-            var dialog = new Honeybee.UI.Dialog_ProgramType(this._modelEnergyProperties, dup);
+            var lib = this._modelProperties;
+            var dialog = new Honeybee.UI.Dialog_ProgramType(ref lib, dup);
             var dialog_rc = dialog.ShowModal(_control);
           
             if (dialog_rc != null)
@@ -135,16 +137,12 @@ namespace Honeybee.UI
                 return;
             }
 
-            //if (selected.Locked)
-            //{
-            //    MessageBox.Show(_control, "You cannot edit an item of system library! Try to duplicate it first!");
-            //    return;
-            //}
 
             var selectedObj = selected.ProgramType;
             var dup = selectedObj.Duplicate() as ProgramTypeAbridged;
-        
-            var dialog = new Honeybee.UI.Dialog_ProgramType(this._modelEnergyProperties, dup, selected.Locked);
+
+            var lib = this._modelProperties;
+            var dialog = new Honeybee.UI.Dialog_ProgramType(ref lib, dup, selected.Locked);
             var dialog_rc = dialog.ShowModal(_control);
          
             if (dialog_rc == null) return;

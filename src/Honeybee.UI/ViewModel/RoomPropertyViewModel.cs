@@ -321,7 +321,6 @@ namespace Honeybee.UI.ViewModel
 
 
             // Lighting
-   
             var allLpds = rooms.Select(_ => _.Properties.Energy?.Lighting).Distinct().ToList();
             this.Lighting = new LightingViewModel(libSource, allLpds, (s) => _refHBObj.Properties.Energy.Lighting = s as LightingAbridged);
 
@@ -462,7 +461,7 @@ namespace Honeybee.UI.ViewModel
 
         public ICommand RoomProgramTypeCommand => new RelayCommand(() =>
         {
-            var lib = _libSource.Energy;
+            var lib = _libSource;
             var dialog = new Dialog_ProgramTypeManager(ref lib, true);
             var dialog_rc = dialog.ShowModal(this._control);
             if (dialog_rc != null)
