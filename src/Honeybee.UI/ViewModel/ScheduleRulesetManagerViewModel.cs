@@ -22,12 +22,12 @@ namespace Honeybee.UI
             libSource.AddScheduleTypeLimits(ModelEnergyProperties.Default.ScheduleTypeLimits);
             var schTypes = libSource.ScheduleTypeLimits;
             _typeLimits = schTypes.Select(_ => _.DuplicateScheduleTypeLimit()).ToList();
-            ScheduleRulesetViewData.TypeLimits = _typeLimits;
+            
 
 
-            this._userData = libSource.ScheduleList.OfType<ScheduleRulesetAbridged>().Select(_ => new ScheduleRulesetViewData(_)).ToList();
-            this._systemData = HB.Helper.EnergyLibrary.UserSchedules.OfType<ScheduleRulesetAbridged>().Select(_ => new ScheduleRulesetViewData(_))
-                .Concat(ModelEnergyProperties.Default.Schedules.OfType<ScheduleRulesetAbridged>().Select(_ => new ScheduleRulesetViewData(_))).ToList();
+            this._userData = libSource.ScheduleList.OfType<ScheduleRulesetAbridged>().Select(_ => new ScheduleRulesetViewData(_, ref _typeLimits)).ToList();
+            this._systemData = HB.Helper.EnergyLibrary.UserSchedules.OfType<ScheduleRulesetAbridged>().Select(_ => new ScheduleRulesetViewData(_, ref _typeLimits))
+                .Concat(ModelEnergyProperties.Default.Schedules.OfType<ScheduleRulesetAbridged>().Select(_ => new ScheduleRulesetViewData(_, ref _typeLimits))).ToList();
             this._allData = _userData.Concat(_systemData).Distinct(new ManagerItemComparer<ScheduleRulesetViewData>()).ToList();
 
          
@@ -44,20 +44,23 @@ namespace Honeybee.UI
 
             return realObj;
         }
-        private ScheduleRulesetAbridged ToAbridged(ScheduleRuleset obj)
-        {
-            var abridged = new ScheduleRulesetAbridged(obj.Identifier, obj.DaySchedules, obj.DefaultDaySchedule, obj.DisplayName, obj.UserData,
-               obj.ScheduleRules, obj.HolidaySchedule, obj.SummerDesigndaySchedule, obj.WinterDesigndaySchedule, obj.ScheduleTypeLimit?.Identifier);
-            return abridged;
-        }
+        //private ScheduleRulesetAbridged ToAbridged(ScheduleRuleset obj)
+        //{
+        //    var abridged = new ScheduleRulesetAbridged(obj.Identifier, obj.DaySchedules, obj.DefaultDaySchedule, obj.DisplayName, obj.UserData,
+        //       obj.ScheduleRules, obj.HolidaySchedule, obj.SummerDesigndaySchedule, obj.WinterDesigndaySchedule, obj.ScheduleTypeLimit?.Identifier);
+        //    _typeLimits.Add(obj.ScheduleTypeLimit);
+        //    return abridged;
+        //}
 
         public void UpdateLibSource()
         {
-
+            var typeLimits = this._userData.Select(_ => _.TypeLimitObj).Distinct();
             this._modelEnergyProperties.ScheduleTypeLimits.Clear();
             this._modelEnergyProperties.AddScheduleTypeLimits(_typeLimits);
+            this._modelEnergyProperties.AddScheduleTypeLimits(typeLimits);
 
             var newItems = this._userData.Select(_ => _.ScheduleRuleset);
+
             this._modelEnergyProperties.Schedules.Clear();
             this._modelEnergyProperties.AddSchedules(newItems);
         }
@@ -80,7 +83,7 @@ namespace Honeybee.UI
                 else if (!this._userData.Contains(d))
                 {
                     // user selected an item from system library, now add it to model EnergyProperties
-                    var engLib = d.CheckResources(SystemEnergyLib);
+                    var engLib = d.CheckResources();
                     this._modelEnergyProperties.MergeWith(engLib);
                 }
 
@@ -114,6 +117,7 @@ namespace Honeybee.UI
                 dayId,
                 $"New Schedule Ruleset {id.Substring(0, 5)}"
                 );
+            
             //TODO: needs to create type limit library.
             newSch.ScheduleTypeLimit = new ScheduleTypeLimit("Fractional", "", 0, 1);
             var dialog = new Honeybee.UI.Dialog_Schedule(newSch);
@@ -122,14 +126,14 @@ namespace Honeybee.UI
             if (dialog_rc == null) return;
 
             var newItem = CheckObjName(dialog_rc);
-            var newViewdata = new ScheduleRulesetViewData(ToAbridged(newItem));
+            
+            var newViewdata = new ScheduleRulesetViewData(newItem);
             if (!this._userData.Contains(newViewdata))
             {
                 // add resources to model EnergyProperties
-                var engLib = newViewdata.CheckResources(SystemEnergyLib);
+                var engLib = newViewdata.CheckResources();
                 this._modelEnergyProperties.MergeWith(engLib);
             }
-
             this._userData.Insert(0, newViewdata);
             this._allData = _userData.Concat(_systemData).ToList();
             ResetDataCollection();
@@ -157,11 +161,11 @@ namespace Honeybee.UI
             if (dialog_rc == null) return;
 
             var newItem = CheckObjName(dialog_rc);
-            var newViewdata = new ScheduleRulesetViewData(ToAbridged(newItem));
+            var newViewdata = new ScheduleRulesetViewData(newItem);
             if (!this._userData.Contains(newViewdata))
             {
                 // add resources to model EnergyProperties
-                var engLib = newViewdata.CheckResources(SystemEnergyLib);
+                var engLib = newViewdata.CheckResources();
                 this._modelEnergyProperties.MergeWith(engLib);
             }
 
@@ -194,7 +198,7 @@ namespace Honeybee.UI
             var newItem = CheckObjName(dialog_rc, selected.Name);
             var index = _userData.IndexOf(selected);
             _userData.RemoveAt(index);
-            _userData.Insert(index, new ScheduleRulesetViewData(ToAbridged(newItem)));
+            _userData.Insert(index, new ScheduleRulesetViewData(newItem));
             this._allData = _userData.Concat(_systemData).ToList();
             ResetDataCollection();
 
@@ -236,7 +240,9 @@ namespace Honeybee.UI
         public bool Locked { get; }
         public HB.Energy.ISchedule ScheduleRuleset { get; }
 
-        public static List<ScheduleTypeLimit> TypeLimits;
+
+        public ScheduleTypeLimit TypeLimitObj { get; }
+        //public static List<ScheduleTypeLimit> TypeLimits;
         //private static IEnumerable<string> NRELLibraryIds =
         //    HB.Helper.EnergyLibrary.StandardsOpaqueScheduleRulesets.Keys
         //    .Concat(HB.Helper.EnergyLibrary.StandardsWindowScheduleRulesets.Keys);
@@ -247,15 +253,15 @@ namespace Honeybee.UI
         private static IEnumerable<string> UserLibIds = HB.Helper.EnergyLibrary.UserSchedules.Select(_ => _.Identifier);
         private static IEnumerable<string> LockedLibraryIds = LBTLibraryIds.Concat(UserLibIds);
 
-        public ScheduleRulesetViewData(HB.ScheduleRulesetAbridged c)
+        public ScheduleRulesetViewData(HB.ScheduleRulesetAbridged c, ref List<ScheduleTypeLimit> libSource)
         {
             this.Name = c.DisplayName ?? c.Identifier;
           
             this.ScheduleRuleset = c;
 
-            var typeLimit = TypeLimits.FirstOrDefault(_ => _.Identifier == c.ScheduleTypeLimit);
+            var typeLimit = libSource.FirstOrDefault(_ => _.Identifier == c.ScheduleTypeLimit);
             this.TypeLimit =  typeLimit?.DisplayName ?? typeLimit?.Identifier;
-
+            this.TypeLimitObj = typeLimit;
             this.SearchableText = $"{this.Name}_{this.TypeLimit}";
 
             //check if system library
@@ -265,12 +271,30 @@ namespace Honeybee.UI
             else if (UserLibIds.Contains(c.Identifier)) this.Source = "User";
         }
 
-        internal HB.ModelEnergyProperties CheckResources(HB.ModelEnergyProperties libSource)
+        public ScheduleRulesetViewData(HB.ScheduleRuleset c)
+        {
+            this.Name = c.DisplayName ?? c.Identifier;
+
+            this.ScheduleRuleset = c;
+
+            this.TypeLimitObj = c.ScheduleTypeLimit;
+            this.TypeLimit = TypeLimitObj?.DisplayName ?? TypeLimitObj?.Identifier;
+        
+            this.SearchableText = $"{this.Name}_{this.TypeLimit}";
+
+            //check if system library
+            this.Locked = LockedLibraryIds.Contains(c.Identifier);
+
+            if (LBTLibraryIds.Contains(c.Identifier)) this.Source = "LBT";
+            else if (UserLibIds.Contains(c.Identifier)) this.Source = "User";
+        }
+
+        internal HB.ModelEnergyProperties CheckResources()
         {
             
             var eng = new ModelEnergyProperties();
             eng.AddSchedule(this.ScheduleRuleset);
-
+            eng.AddScheduleTypeLimit(this.TypeLimitObj);
             return eng.DuplicateModelEnergyProperties();
 
         }
