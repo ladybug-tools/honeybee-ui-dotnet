@@ -233,7 +233,7 @@ namespace Honeybee.UI
             else if (UserLibIds.Contains(c.Identifier)) this.Source = "User";
         }
 
-        internal HB.ModelEnergyProperties CheckResources(HB.ModelEnergyProperties libSource)
+        internal HB.ModelEnergyProperties CheckResources(HB.ModelEnergyProperties systemLibSource)
         {
             var eng = new ModelEnergyProperties();
             eng.AddConstructionSet(this.ConstructionSet);
@@ -241,17 +241,17 @@ namespace Honeybee.UI
             var cSet = this.ConstructionSet;
             // get constructions
             var cNames = cSet.GetAllConstructions();
-            var cons = cNames.Select(_ => libSource.ConstructionList.FirstOrDefault(c => c.Identifier == _));
+            var cons = cNames.Select(_ => systemLibSource.ConstructionList.FirstOrDefault(c => c.Identifier == _)).Where(_=> _ != null);
             eng.AddConstructions(cons);
 
             // get all materials
             var mats = cons
                 .SelectMany(_ => _.GetAbridgedConstructionMaterials())
-                .Select(_ => libSource.MaterialList.FirstOrDefault(m => m.Identifier == _));
+                .Select(_ => systemLibSource.MaterialList.FirstOrDefault(m => m.Identifier == _)).Where(_=> _ != null);
 
             eng.AddMaterials(mats);
 
-            return eng.DuplicateModelEnergyProperties();
+            return eng;
         }
 
     }
