@@ -227,7 +227,7 @@ namespace Honeybee.UI.ConsoleApp
                 {
                     var lib = md.Properties.Energy;
                     var dialog = new Honeybee.UI.Dialog_ScheduleRulesetManager(ref lib);
-                    dialog.ShowModal(this);
+                    var dialog_rc = dialog.ShowModal(this);
 
                 };
 

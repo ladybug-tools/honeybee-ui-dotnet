@@ -44,13 +44,7 @@ namespace Honeybee.UI
 
             return realObj;
         }
-        //private ScheduleRulesetAbridged ToAbridged(ScheduleRuleset obj)
-        //{
-        //    var abridged = new ScheduleRulesetAbridged(obj.Identifier, obj.DaySchedules, obj.DefaultDaySchedule, obj.DisplayName, obj.UserData,
-        //       obj.ScheduleRules, obj.HolidaySchedule, obj.SummerDesigndaySchedule, obj.WinterDesigndaySchedule, obj.ScheduleTypeLimit?.Identifier);
-        //    _typeLimits.Add(obj.ScheduleTypeLimit);
-        //    return abridged;
-        //}
+        
 
         public void UpdateLibSource()
         {
@@ -275,7 +269,7 @@ namespace Honeybee.UI
         {
             this.Name = c.DisplayName ?? c.Identifier;
 
-            this.ScheduleRuleset = c;
+            this.ScheduleRuleset = ToAbridged(c);
 
             this.TypeLimitObj = c.ScheduleTypeLimit;
             this.TypeLimit = TypeLimitObj?.DisplayName ?? TypeLimitObj?.Identifier;
@@ -287,6 +281,14 @@ namespace Honeybee.UI
 
             if (LBTLibraryIds.Contains(c.Identifier)) this.Source = "LBT";
             else if (UserLibIds.Contains(c.Identifier)) this.Source = "User";
+        }
+
+        private ScheduleRulesetAbridged ToAbridged(ScheduleRuleset obj)
+        {
+            var abridged = new ScheduleRulesetAbridged(obj.Identifier, obj.DaySchedules, obj.DefaultDaySchedule, obj.DisplayName, obj.UserData,
+               obj.ScheduleRules, obj.HolidaySchedule, obj.SummerDesigndaySchedule, obj.WinterDesigndaySchedule, obj.ScheduleTypeLimit?.Identifier);
+            //_typeLimits.Add(obj.ScheduleTypeLimit);
+            return abridged;
         }
 
         internal HB.ModelEnergyProperties CheckResources()
