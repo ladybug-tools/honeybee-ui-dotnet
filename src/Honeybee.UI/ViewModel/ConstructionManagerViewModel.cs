@@ -48,7 +48,7 @@ namespace Honeybee.UI
             if (!this._userData.Contains(newViewData))
             {
                 // add resources to model EnergyProperties
-                var engLib = newViewData.CheckResources(ConstructionViewData.LibSource);
+                var engLib = newViewData.CheckResources(SystemEnergyLib);
                 this._modelEnergyProperties.MergeWith(engLib);
             }
             this._userData.Insert(0, newViewData);
@@ -63,7 +63,7 @@ namespace Honeybee.UI
             if (!this._userData.Contains(newViewData))
             {
                 // add resources to model EnergyProperties
-                var engLib = newViewData.CheckResources(ConstructionViewData.LibSource);
+                var engLib = newViewData.CheckResources(SystemEnergyLib);
                 this._modelEnergyProperties.MergeWith(engLib);
             }
             _userData.Insert(index, newViewData);
@@ -100,7 +100,7 @@ namespace Honeybee.UI
                 else if (!this._userData.Contains(d))
                 {
                     // user selected an item from system library, now add it to model EnergyProperties
-                    var engLib = d.CheckResources(ConstructionViewData.LibSource);
+                    var engLib = d.CheckResources(SystemEnergyLib);
                     this._modelEnergyProperties.MergeWith(engLib);
                 }
                
@@ -368,14 +368,14 @@ namespace Honeybee.UI
             else if (UserLibIds.Contains(c.Identifier)) this.Source = "User";
         }
 
-        internal HB.ModelEnergyProperties CheckResources(HB.ModelEnergyProperties libSource)
+        internal HB.ModelEnergyProperties CheckResources(HB.ModelEnergyProperties systemlibSource)
         {
             var eng = new ModelEnergyProperties();
             eng.AddConstruction(this.Construction);
 
             var layers = this.Construction.GetAbridgedConstructionMaterials();
             var mats = layers
-                 .Select(_ => libSource.MaterialList.FirstOrDefault(m => m.Identifier == _));
+                 .Select(_ => systemlibSource.MaterialList.FirstOrDefault(m => m.Identifier == _)).Where(_ => _ != null);
 
             eng.AddMaterials(mats);
             return eng.DuplicateModelEnergyProperties();

@@ -212,7 +212,7 @@ namespace Honeybee.UI
 
 
             var names = this.ModifierSet.GetAllModifiers();
-            var mods = names.Select(_ => libSource.ModifierList.FirstOrDefault(c => c.Identifier == _));
+            var mods = names.Select(_ => libSource.ModifierList.FirstOrDefault(c => c.Identifier == _)).Where(_ => _ != null);
             eng.AddModifiers(mods);
 
             return eng.DuplicateModelRadianceProperties();
