@@ -43,14 +43,14 @@ namespace Honeybee.UI
             //SolarReflectance
             var solarRef = new MaskedTextBox();
             solarRef.Provider = new NumericMaskedTextProvider() { AllowDecimal = true };
-            solarRef.TextBinding.Bind(() => _hbObj.SolarReflectance.ToString(), (v) => _hbObj.SolarReflectance = double.Parse(v));
+            solarRef.TextBinding.Bind(() => _hbObj.SolarReflectance.ToString(), (v) => _hbObj.SolarReflectance = DoubleFromString(v));
             layout.AddRow(nameof(_hbObj.SolarReflectance));
             layout.AddRow(solarRef);
 
             //VisibleReflectance
             var visibleRef = new MaskedTextBox();
             visibleRef.Provider = new NumericMaskedTextProvider() { AllowDecimal = true };
-            visibleRef.TextBinding.Bind(() => _hbObj.VisibleReflectance.ToString(), (v) => _hbObj.VisibleReflectance = double.Parse(v));
+            visibleRef.TextBinding.Bind(() => _hbObj.VisibleReflectance.ToString(), (v) => _hbObj.VisibleReflectance = DoubleFromString(v));
             layout.AddRow(nameof(_hbObj.VisibleReflectance));
             layout.AddRow(visibleRef);
 
@@ -74,6 +74,12 @@ namespace Honeybee.UI
 
             Content = layout;
 
+        }
+
+        private static double DoubleFromString(string input)
+        {
+            var v = input.StartsWith(".") ? $"{0}{input}" : input;
+            return double.Parse(v);
         }
     }
 }
