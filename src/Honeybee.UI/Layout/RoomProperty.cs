@@ -240,7 +240,7 @@ namespace Honeybee.UI.View
             wPerArea.ReservedText = _vm.Varies;
             wPerArea.SetDefault(_vm.Lighting.Default.WattsPerArea);
             wPerArea.TextBinding.Bind(vm, _ => _.Lighting.WattsPerArea.NumberText);
-            layout.AddRow("Watts/Area:");
+            layout.AddRow("Watts/m2:");
             layout.AddRow(wPerArea);
 
             var sch = new Button();
@@ -274,7 +274,7 @@ namespace Honeybee.UI.View
             baseline.ReservedText = _vm.Varies;
             baseline.SetDefault(_vm.Lighting.Default.BaselineWattsPerArea);
             baseline.TextBinding.Bind(vm, _ => _.Lighting.BaselineWattsPerArea.NumberText);
-            layout.AddRow("Baseline Watts/Area:");
+            layout.AddRow("Baseline Watts/m2:");
             layout.AddRow(baseline);
             layout.AddRow(null);
 
@@ -363,7 +363,7 @@ namespace Honeybee.UI.View
             wPerArea.ReservedText = _vm.Varies;
             wPerArea.SetDefault(_vm.Gas.Default.WattsPerArea);
             wPerArea.TextBinding.Bind(vm, _ => _.Gas.WattsPerArea.NumberText);
-            layout.AddRow("Watts/Area:");
+            layout.AddRow("Watts/m2:");
             layout.AddRow(wPerArea);
 
             var sch = new Button();
@@ -421,7 +421,7 @@ namespace Honeybee.UI.View
             wPerArea.ReservedText = _vm.Varies;
             wPerArea.SetDefault(_vm.People.Default.PeoplePerArea);
             wPerArea.TextBinding.Bind(vm, _ => _.People.PeoplePerArea.NumberText);
-            layout.AddRow("People/Area:");
+            layout.AddRow("People/m2:");
             layout.AddRow(wPerArea);
 
             var sch = new Button();
@@ -483,7 +483,7 @@ namespace Honeybee.UI.View
             wPerArea.ReservedText = _vm.Varies;
             wPerArea.SetDefault(_vm.Infiltration.Default.FlowPerExteriorArea);
             wPerArea.TextBinding.Bind(vm, _ => _.Infiltration.FlowPerExteriorArea.NumberText);
-            layout.AddRow("Flow/Area(exterior):");
+            layout.AddRow("Flow/m2 (exterior area):");
             layout.AddRow(wPerArea);
 
             var sch = new Button();
@@ -542,7 +542,7 @@ namespace Honeybee.UI.View
             wPerArea.ReservedText = _vm.Varies;
             wPerArea.SetDefault(_vm.Ventilation.Default.FlowPerArea);
             wPerArea.TextBinding.Bind(vm, _ => _.Ventilation.FlowPerArea.NumberText);
-            layout.AddRow("Flow/Area:");
+            layout.AddRow("Flow/m2:");
             layout.AddRow(wPerArea);
 
             var sch = new Button();
@@ -651,7 +651,7 @@ namespace Honeybee.UI.View
             wPerArea.ReservedText = _vm.Varies;
             wPerArea.SetDefault(_vm.ServiceHotWater.Default.FlowPerArea);
             wPerArea.TextBinding.Bind(vm, _ => _.ServiceHotWater.FlowPerArea.NumberText);
-            layout.AddRow("Flow/Area:");
+            layout.AddRow("Flow/m2:");
             layout.AddRow(wPerArea);
 
             var sch = new Button();
