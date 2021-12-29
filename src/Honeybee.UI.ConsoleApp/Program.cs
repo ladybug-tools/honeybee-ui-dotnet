@@ -25,7 +25,7 @@ namespace Honeybee.UI.ConsoleApp
                 //ClientSize = new Eto.Drawing.Size(400, 300);
                 Title = "Eto.Forms";
                 Width = 400;
-                var md = new Model("id", new ModelProperties(new ModelEnergyProperties(), new ModelRadianceProperties()) );
+                var md = new Model("id", new ModelProperties( ModelEnergyProperties.Default,  ModelRadianceProperties.Default) );
 
                 var panel = new DynamicLayout();
 

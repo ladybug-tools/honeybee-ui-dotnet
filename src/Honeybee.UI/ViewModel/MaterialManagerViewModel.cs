@@ -25,15 +25,16 @@ namespace Honeybee.UI
 
        
         private HB.ModelEnergyProperties _modelEnergyProperties { get; set; }
-     
-    
+
+        private static ManagerItemComparer<MaterialViewData> _viewDataComparer = new ManagerItemComparer<MaterialViewData>();
+
         public MaterialManagerViewModel(HB.ModelEnergyProperties libSource, Control control = default):base(control)
         {
             _modelEnergyProperties = libSource;
 
             this._userData = libSource.MaterialList.Select(_ => new MaterialViewData(_, ShowIPUnit: false)).ToList();
             this._systemData = SystemEnergyLib.MaterialList.Select(_ => new MaterialViewData(_, ShowIPUnit: false)).ToList();
-            this._allData = _userData.Concat(_systemData).Distinct(new ManagerItemComparer<MaterialViewData>()).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
 
 
             ResetDataCollection();
@@ -44,7 +45,7 @@ namespace Honeybee.UI
         {
             var newItem = CheckObjName(item);
             this._userData.Insert(0, new MaterialViewData(newItem, this.UseIPUnit));
-            this._allData = _userData.Concat(_systemData).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
         }
         private void ReplaceUserData(MaterialViewData oldObj, HB.Energy.IMaterial newObj)
         {
@@ -52,12 +53,12 @@ namespace Honeybee.UI
             var index = _userData.IndexOf(oldObj);
             _userData.RemoveAt(index);
             _userData.Insert(index, new MaterialViewData(newItem, this.UseIPUnit));
-            this._allData = _userData.Concat(_systemData).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
         }
         private void DeleteUserData(MaterialViewData item)
         {
             this._userData.Remove(item);
-            this._allData = _userData.Concat(_systemData).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
         }
 
         public void UpdateLibSource()

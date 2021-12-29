@@ -12,7 +12,7 @@ namespace Honeybee.UI
       
         private HB.ModelEnergyProperties _modelEnergyProperties { get; set; }
         private List<ScheduleTypeLimit> _typeLimits;
-    
+        private static ManagerItemComparer<ScheduleRulesetViewData> _viewDataComparer = new ManagerItemComparer<ScheduleRulesetViewData>();
 
         public ScheduleRulesetManagerViewModel(HB.ModelEnergyProperties libSource, Control control = default):base(control)
         {
@@ -28,7 +28,7 @@ namespace Honeybee.UI
             this._userData = libSource.ScheduleList.OfType<ScheduleRulesetAbridged>().Select(_ => new ScheduleRulesetViewData(_, ref _typeLimits)).ToList();
             this._systemData = HB.Helper.EnergyLibrary.UserSchedules.OfType<ScheduleRulesetAbridged>().Select(_ => new ScheduleRulesetViewData(_, ref _typeLimits))
                 .Concat(ModelEnergyProperties.Default.Schedules.OfType<ScheduleRulesetAbridged>().Select(_ => new ScheduleRulesetViewData(_, ref _typeLimits))).ToList();
-            this._allData = _userData.Concat(_systemData).Distinct(new ManagerItemComparer<ScheduleRulesetViewData>()).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
 
          
             ResetDataCollection();
@@ -129,7 +129,7 @@ namespace Honeybee.UI
                 this._modelEnergyProperties.MergeWith(engLib);
             }
             this._userData.Insert(0, newViewdata);
-            this._allData = _userData.Concat(_systemData).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
             ResetDataCollection();
         });
 
@@ -164,7 +164,7 @@ namespace Honeybee.UI
             }
 
             this._userData.Insert(0, newViewdata);
-            this._allData = _userData.Concat(_systemData).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
             ResetDataCollection();
 
         });
@@ -193,7 +193,7 @@ namespace Honeybee.UI
             var index = _userData.IndexOf(selected);
             _userData.RemoveAt(index);
             _userData.Insert(index, new ScheduleRulesetViewData(newItem));
-            this._allData = _userData.Concat(_systemData).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
             ResetDataCollection();
 
         });
@@ -218,7 +218,7 @@ namespace Honeybee.UI
             if (res == DialogResult.Yes)
             {
                 this._userData.Remove(selected);
-                this._allData = _userData.Concat(_systemData).ToList();
+                this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
                 ResetDataCollection();
             }
         });

@@ -11,14 +11,15 @@ namespace Honeybee.UI
     internal class HVACManagerViewModel : ManagerBaseViewModel<HVACViewData>
     {
         private HB.ModelEnergyProperties _modelEnergyProperties { get; set; }
-    
+        private static ManagerItemComparer<HVACViewData> _viewDataComparer = new ManagerItemComparer<HVACViewData>();
+
         public HVACManagerViewModel(HB.ModelEnergyProperties libSource, Control control = default):base(control)
         {
             _modelEnergyProperties = libSource;
 
             this._userData = libSource.HVACList.Select(_ => new HVACViewData(_)).ToList();
             this._systemData = SystemEnergyLib.HVACList.Select(_ => new HVACViewData(_)).ToList();
-            this._allData = _userData.Concat(_systemData).Distinct(new ManagerItemComparer<HVACViewData>()).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
 
             ResetDataCollection();
         }
@@ -33,7 +34,7 @@ namespace Honeybee.UI
                 this._modelEnergyProperties.AddHVAC(newDataView.HVAC);
             }
             this._userData.Insert(0, newDataView);
-            this._allData = _userData.Concat(_systemData).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
         }
         private void ReplaceUserData(HVACViewData oldObj, HB.Energy.IHvac newObj)
         {
@@ -41,12 +42,12 @@ namespace Honeybee.UI
             var index = _userData.IndexOf(oldObj);
             _userData.RemoveAt(index);
             _userData.Insert(index, new HVACViewData(newItem));
-            this._allData = _userData.Concat(_systemData).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
         }
         private void DeleteUserData(HVACViewData item)
         {
             this._userData.Remove(item);
-            this._allData = _userData.Concat(_systemData).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
         }
 
         public void UpdateLibSource()

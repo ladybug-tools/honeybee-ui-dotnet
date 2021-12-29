@@ -10,14 +10,15 @@ namespace Honeybee.UI
     internal class ConstructionSetManagerViewModel : ManagerBaseViewModel<ConstructionSetViewData>
     {
         private HB.ModelEnergyProperties _modelEnergyProperties { get; set; }
-    
+
+        private static ManagerItemComparer<ConstructionSetViewData> _viewDataComparer = new ManagerItemComparer<ConstructionSetViewData>();
         public ConstructionSetManagerViewModel(HB.ModelEnergyProperties libSource, Control control = default):base(control)
         {
             _modelEnergyProperties = libSource;
 
             this._userData = libSource.ConstructionSetList.OfType<ConstructionSetAbridged>().Select(_ => new ConstructionSetViewData(_)).ToList();
             this._systemData = SystemEnergyLib.ConstructionSetList.OfType<ConstructionSetAbridged>().Select(_ => new ConstructionSetViewData(_)).ToList();
-            this._allData = _userData.Concat(_systemData).Distinct(new ManagerItemComparer<ConstructionSetViewData>()).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
 
          
             ResetDataCollection();
@@ -86,7 +87,7 @@ namespace Honeybee.UI
                 // add program type
                 var newItem = CheckObjName(cSet);
                 this._userData.Insert(0, new ConstructionSetViewData(newItem));
-                this._allData = _userData.Concat(_systemData).ToList();
+                this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
                 ResetDataCollection();
 
             }
@@ -124,7 +125,7 @@ namespace Honeybee.UI
             }
 
             this._userData.Insert(0, newViewData);
-            this._allData = _userData.Concat(_systemData).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
             ResetDataCollection();
 
         });
@@ -153,7 +154,7 @@ namespace Honeybee.UI
             var index = _userData.IndexOf(selected);
             _userData.RemoveAt(index);
             _userData.Insert(index, new ConstructionSetViewData(newItem));
-            this._allData = _userData.Concat(_systemData).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
             ResetDataCollection();
 
         });
@@ -178,7 +179,7 @@ namespace Honeybee.UI
             if (res == DialogResult.Yes)
             {
                 this._userData.Remove(selected);
-                this._allData = _userData.Concat(_systemData).ToList();
+                this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
                 ResetDataCollection();
             }
         });
