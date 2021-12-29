@@ -24,7 +24,8 @@ namespace Honeybee.UI
         }
 
         private HB.ModelEnergyProperties _modelEnergyProperties { get; set; }
-      
+        private static ManagerItemComparer<ConstructionViewData> _viewDataComparer = new ManagerItemComparer<ConstructionViewData>();
+
         public ConstructionManagerViewModel(HB.ModelEnergyProperties libSource, Control control = default):base(control)
         {
             _modelEnergyProperties = libSource;
@@ -36,7 +37,7 @@ namespace Honeybee.UI
 
             this._userData = libSource.ConstructionList.Select(_ => new ConstructionViewData(_, ShowIPUnit: false)).ToList();
             this._systemData = SystemEnergyLib.ConstructionList.Select(_ => new ConstructionViewData(_, ShowIPUnit: false)).ToList();
-            this._allData = _userData.Concat(_systemData).Distinct(new ManagerItemComparer<ConstructionViewData>()).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
 
             ResetDataCollection();
         }
@@ -52,7 +53,7 @@ namespace Honeybee.UI
                 this._modelEnergyProperties.MergeWith(engLib);
             }
             this._userData.Insert(0, newViewData);
-            this._allData = _userData.Concat(_systemData).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
         }
         private void ReplaceUserData(ConstructionViewData oldObj, HB.Energy.IConstruction newObj)
         {
@@ -67,12 +68,12 @@ namespace Honeybee.UI
                 this._modelEnergyProperties.MergeWith(engLib);
             }
             _userData.Insert(index, newViewData);
-            this._allData = _userData.Concat(_systemData).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
         }
         private void DeleteUserData(ConstructionViewData item)
         {
             this._userData.Remove(item);
-            this._allData = _userData.Concat(_systemData).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
         }
 
         public void UpdateLibSource()

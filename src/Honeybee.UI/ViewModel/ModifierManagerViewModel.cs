@@ -12,6 +12,7 @@ namespace Honeybee.UI
     {
       
         private HB.ModelRadianceProperties _modelEnergyProperties { get; set; }
+        private static ManagerItemComparer<ModifierViewData> _viewDataComparer = new ManagerItemComparer<ModifierViewData>();
 
         public ModifierManagerViewModel(HB.ModelRadianceProperties libSource, Control control = default):base(control)
         {
@@ -19,7 +20,7 @@ namespace Honeybee.UI
 
             this._userData = libSource.ModifierList.Select(_ => new ModifierViewData(_)).ToList();
             this._systemData = SystemRadianceLib.ModifierList.Select(_ => new ModifierViewData(_)).ToList();
-            this._allData = _userData.Concat(_systemData).Distinct(new ManagerItemComparer<ModifierViewData>()).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
 
 
             ResetDataCollection();
@@ -70,7 +71,7 @@ namespace Honeybee.UI
             if (newModifier == null) return;
             var newItem = CheckObjName(newModifier);
             this._userData.Insert(0, new ModifierViewData(newItem));
-            this._allData = _userData.Concat(_systemData).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
             ResetDataCollection();
         }
         public ICommand AddPlasticCommand => new RelayCommand<HB.Radiance.IModifier>((obj) => {
@@ -273,7 +274,7 @@ namespace Honeybee.UI
             var index = _userData.IndexOf(selected);
             _userData.RemoveAt(index);
             _userData.Insert(index, new ModifierViewData(newItem));
-            this._allData = _userData.Concat(_systemData).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
             ResetDataCollection();
         });
 
@@ -297,7 +298,7 @@ namespace Honeybee.UI
             if (res == DialogResult.Yes)
             {
                 this._userData.Remove(selected);
-                this._allData = _userData.Concat(_systemData).ToList();
+                this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
                 ResetDataCollection();
             }
         });

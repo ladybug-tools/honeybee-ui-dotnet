@@ -10,14 +10,15 @@ namespace Honeybee.UI
     internal class ModifierSetManagerViewModel : ManagerBaseViewModel<ModifierSetViewData>
     {
         private HB.ModelRadianceProperties _modelRadianceProperties { get; set; }
-     
+        private static ManagerItemComparer<ModifierSetViewData> _viewDataComparer = new ManagerItemComparer<ModifierSetViewData>();
+
         public ModifierSetManagerViewModel(HB.ModelRadianceProperties libSource, Control control = default):base(control)
         {
             _modelRadianceProperties = libSource;
 
             this._userData = libSource.ModifierSetList.OfType<ModifierSetAbridged>().Select(_ => new ModifierSetViewData(_)).ToList();
             this._systemData = SystemRadianceLib.ModifierSetList.OfType<ModifierSetAbridged>().Select(_ => new ModifierSetViewData(_)).ToList();
-            this._allData = _userData.Concat(_systemData).Distinct(new ManagerItemComparer<ModifierSetViewData>()).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
 
             ResetDataCollection();
         }
@@ -71,7 +72,7 @@ namespace Honeybee.UI
             if (dialog_rc == null) return;
             var newItem = CheckObjName(dialog_rc);
             this._userData.Insert(0, new ModifierSetViewData(newItem));
-            this._allData = _userData.Concat(_systemData).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
             ResetDataCollection();
         });
 
@@ -96,7 +97,7 @@ namespace Honeybee.UI
             if (dialog_rc == null) return;
             var newItem = CheckObjName(dialog_rc);
             this._userData.Insert(0, new ModifierSetViewData(newItem));
-            this._allData = _userData.Concat(_systemData).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
             ResetDataCollection();
 
         });
@@ -124,7 +125,7 @@ namespace Honeybee.UI
             var index = _userData.IndexOf(selected);
             _userData.RemoveAt(index);
             _userData.Insert(index, new ModifierSetViewData(newItem));
-            this._allData = _userData.Concat(_systemData).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
             ResetDataCollection();
 
         });
@@ -149,7 +150,7 @@ namespace Honeybee.UI
             if (res == DialogResult.Yes)
             {
                 this._userData.Remove(selected);
-                this._allData = _userData.Concat(_systemData).ToList();
+                this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
                 ResetDataCollection();
             }
         });
