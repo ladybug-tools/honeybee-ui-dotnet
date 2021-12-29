@@ -126,11 +126,7 @@ namespace Honeybee.UI
             if (!this.FlowPerPerson.IsVaries)
                 obj.FlowPerPerson = this._refHBObj.FlowPerPerson;
             if (!this.Schedule.IsVaries)
-            {
-                if (this._refHBObj.Schedule == null)
-                    throw new ArgumentException("Missing s required schedule of the ventilation load!");
                 obj.Schedule = this._refHBObj.Schedule;
-            }
             if (!this.FlowPerArea.IsVaries)
                 obj.FlowPerArea = this._refHBObj.FlowPerArea;
 
