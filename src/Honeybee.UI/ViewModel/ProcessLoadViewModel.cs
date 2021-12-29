@@ -99,7 +99,7 @@ namespace Honeybee.UI
         public ProcessAbridged Default { get; private set; }
         public ProcessLoadViewModel(ModelProperties libSource, List<ProcessAbridged> loads, Action<IIDdBase> setAction) : base(libSource, setAction)
         {
-            this.Default = new ProcessAbridged(Guid.NewGuid().ToString(), 0, "Not Set", FuelTypes.Electricity);
+            this.Default = new ProcessAbridged(Guid.NewGuid().ToString(), 0, None, FuelTypes.Electricity);
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateProcessAbridged();
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateProcessAbridged();
 
@@ -132,9 +132,8 @@ namespace Honeybee.UI
 
 
             //Schedule
-            var sch = libSource.Energy.Schedules
-                .OfType<IIDdBase>()
-                .FirstOrDefault(_ => _.Identifier == _refHBObj.Schedule);
+            var sch = libSource.Energy.ScheduleList.FirstOrDefault(_ => _.Identifier == _refHBObj.Schedule);
+            sch = sch ?? GetDummyScheduleObj(_refHBObj.Schedule);
             this.Schedule = new ButtonViewModel((n) => _refHBObj.Schedule = n?.Identifier);
             if (loads.Select(_ => _?.Schedule).Distinct().Count() > 1)
                 this.Schedule.SetBtnName(this.Varies);
@@ -186,7 +185,7 @@ namespace Honeybee.UI
             if (!this.Schedule.IsVaries)
             {
                 if (this._refHBObj.Schedule == null)
-                    throw new ArgumentException("Missing required process load schedule!");
+                    throw new ArgumentException("Missing a required process load schedule!");
                 obj.Schedule = this._refHBObj.Schedule;
             }
 

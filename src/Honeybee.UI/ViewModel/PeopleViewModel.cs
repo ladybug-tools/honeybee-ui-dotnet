@@ -89,7 +89,7 @@ namespace Honeybee.UI
         public PeopleAbridged Default { get; private set; }
         public PeopleViewModel(ModelProperties libSource, List<PeopleAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-            this.Default = new PeopleAbridged(Guid.NewGuid().ToString(), 0, "Not Set");
+            this.Default = new PeopleAbridged(Guid.NewGuid().ToString(), 0, None);
             this.refObjProperty = loads.FirstOrDefault()?.DuplicatePeopleAbridged();
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicatePeopleAbridged();
 
@@ -109,9 +109,8 @@ namespace Honeybee.UI
 
 
             //Schedule
-            var sch = libSource.Energy.Schedules
-                .OfType<IIDdBase>()
-                .FirstOrDefault(_ => _.Identifier == _refHBObj.OccupancySchedule);
+            var sch = libSource.Energy.ScheduleList.FirstOrDefault(_ => _.Identifier == _refHBObj.OccupancySchedule);
+            sch = sch ?? GetDummyScheduleObj(_refHBObj.OccupancySchedule);
             this.OccupancySchedule = new ButtonViewModel((n) => _refHBObj.OccupancySchedule = n?.Identifier);
             if (loads.Select(_ => _?.OccupancySchedule).Distinct().Count() > 1)
                 this.OccupancySchedule.SetBtnName(this.Varies);
@@ -120,9 +119,8 @@ namespace Honeybee.UI
 
 
             //ActivitySchedule
-            var actSch = libSource.Energy.Schedules
-                .OfType<IIDdBase>()
-                .FirstOrDefault(_ => _.Identifier == _refHBObj.ActivitySchedule);
+            var actSch = libSource.Energy.ScheduleList.FirstOrDefault(_ => _.Identifier == _refHBObj.ActivitySchedule);
+            actSch = actSch ?? GetDummyScheduleObj(_refHBObj.ActivitySchedule);
             this.ActivitySchedule = new ButtonViewModel((n) => _refHBObj.ActivitySchedule = n?.Identifier);
             if (loads.Select(_ => _?.ActivitySchedule).Distinct().Count() > 1)
                 this.ActivitySchedule.SetBtnName(this.Varies);
@@ -172,7 +170,7 @@ namespace Honeybee.UI
             if (!this.OccupancySchedule.IsVaries)
             {
                 if (this._refHBObj.OccupancySchedule == null)
-                    throw new ArgumentException("Missing required occupancy schedule of the people load!");
+                    throw new ArgumentException("Missing a required occupancy schedule of the people load!");
                 obj.OccupancySchedule = this._refHBObj.OccupancySchedule;
             }
             if (!this.ActivitySchedule.IsVaries)

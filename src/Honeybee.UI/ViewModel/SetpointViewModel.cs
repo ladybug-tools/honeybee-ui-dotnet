@@ -54,7 +54,7 @@ namespace Honeybee.UI
         public SetpointAbridged Default { get; private set; }
         public SetpointViewModel(ModelProperties libSource, List<SetpointAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-            this.Default = new SetpointAbridged(Guid.NewGuid().ToString(), "Not Set", "Not Set");
+            this.Default = new SetpointAbridged(Guid.NewGuid().ToString(), None, None);
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateSetpointAbridged();
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateSetpointAbridged();
 
@@ -66,9 +66,8 @@ namespace Honeybee.UI
 
 
             //CoolingSchedule
-            var clSch = libSource.Energy.Schedules
-               .OfType<IIDdBase>()
-               .FirstOrDefault(_ => _.Identifier == _refHBObj.CoolingSchedule);
+            var clSch = libSource.Energy.ScheduleList.FirstOrDefault(_ => _.Identifier == _refHBObj.CoolingSchedule);
+            clSch = clSch ?? GetDummyScheduleObj(_refHBObj.CoolingSchedule);
             this.CoolingSchedule = new ButtonViewModel((n) => _refHBObj.CoolingSchedule = n?.Identifier);
             if (loads.Select(_ => _?.CoolingSchedule).Distinct().Count() > 1)
                 this.CoolingSchedule.SetBtnName(this.Varies);
@@ -77,9 +76,8 @@ namespace Honeybee.UI
 
 
             //HeatingSchedule
-            var htSch = libSource.Energy.Schedules
-                .OfType<IIDdBase>()
-                .FirstOrDefault(_ => _.Identifier == _refHBObj.HeatingSchedule);
+            var htSch = libSource.Energy.ScheduleList.FirstOrDefault(_ => _.Identifier == _refHBObj.HeatingSchedule);
+            htSch = htSch ?? GetDummyScheduleObj(_refHBObj.HeatingSchedule);
             this.HeatingSchedule = new ButtonViewModel((n) => _refHBObj.HeatingSchedule = n?.Identifier);
             if (loads.Select(_ => _?.HeatingSchedule).Distinct().Count() > 1)
                 this.HeatingSchedule.SetBtnName(this.Varies);
@@ -88,9 +86,8 @@ namespace Honeybee.UI
 
 
             //HumidifyingSchedule
-            var huSch = libSource.Energy.Schedules
-                .OfType<IIDdBase>()
-                .FirstOrDefault(_ => _.Identifier == _refHBObj.HumidifyingSchedule);
+            var huSch = libSource.Energy.ScheduleList.FirstOrDefault(_ => _.Identifier == _refHBObj.HumidifyingSchedule);
+            huSch = huSch ?? GetDummyScheduleObj(_refHBObj.HumidifyingSchedule);
             this.HumidifyingSchedule = new ButtonViewModel((n) => _refHBObj.HumidifyingSchedule = n?.Identifier);
             if (loads.Select(_ => _?.HumidifyingSchedule).Distinct().Count() > 1)
                 this.HumidifyingSchedule.SetBtnName(this.Varies);
@@ -99,9 +96,8 @@ namespace Honeybee.UI
 
 
             //DehumidifyingSchedule
-            var dhSch = libSource.Energy.Schedules
-                .OfType<IIDdBase>()
-                .FirstOrDefault(_ => _.Identifier == _refHBObj.DehumidifyingSchedule);
+            var dhSch = libSource.Energy.ScheduleList.FirstOrDefault(_ => _.Identifier == _refHBObj.DehumidifyingSchedule);
+            dhSch = dhSch ?? GetDummyScheduleObj(_refHBObj.DehumidifyingSchedule);
             this.DehumidifyingSchedule = new ButtonViewModel((n) => _refHBObj.DehumidifyingSchedule = n?.Identifier);
             if (loads.Select(_ => _?.DehumidifyingSchedule).Distinct().Count() > 1)
                 this.DehumidifyingSchedule.SetBtnName(this.Varies);
@@ -123,14 +119,14 @@ namespace Honeybee.UI
             if (!this.CoolingSchedule.IsVaries)
             {
                 if (this._refHBObj.CoolingSchedule == null)
-                    throw new ArgumentException("Missing required setpoint cooling schedule!");
+                    throw new ArgumentException("Missing a required setpoint cooling schedule!");
                 obj.CoolingSchedule = this._refHBObj.CoolingSchedule;
             }
        
             if (!this.HeatingSchedule.IsVaries)
             {
                 if (this._refHBObj.HeatingSchedule == null)
-                    throw new ArgumentException("Missing required setpoint heating schedule!");
+                    throw new ArgumentException("Missing a required setpoint heating schedule!");
                 obj.HeatingSchedule = this._refHBObj.HeatingSchedule;
             }
 

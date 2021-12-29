@@ -71,7 +71,7 @@ namespace Honeybee.UI
 
         public LightingViewModel(ModelProperties libSource, List<LightingAbridged> lights, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-            this.Default = new LightingAbridged(Guid.NewGuid().ToString(), 0, "Not Set");
+            this.Default = new LightingAbridged(Guid.NewGuid().ToString(), 0, None);
             this.refObjProperty = lights.FirstOrDefault()?.DuplicateLightingAbridged();
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateLightingAbridged();
 
@@ -94,6 +94,7 @@ namespace Honeybee.UI
             //Schedule
             var sch = libSource.Energy.ScheduleList
                 .FirstOrDefault(_ => _.Identifier == _refHBObj.Schedule);
+            sch = sch ?? GetDummyScheduleObj(_refHBObj.Schedule);
             this.Schedule = new ButtonViewModel((n) => _refHBObj.Schedule = n?.Identifier);
             if (lights.Select(_ => _?.Schedule).Distinct().Count() > 1)
                 this.Schedule.SetBtnName(this.Varies);
@@ -145,7 +146,7 @@ namespace Honeybee.UI
             if (!this.Schedule.IsVaries)
             {
                 if (this._refHBObj.Schedule == null)
-                    throw new ArgumentException("Missing required schedule of the lighting load!");
+                    throw new ArgumentException("Missing a required schedule of the lighting load!");
                 obj.Schedule = this._refHBObj.Schedule;
             }
             if (!this.RadiantFraction.IsVaries)

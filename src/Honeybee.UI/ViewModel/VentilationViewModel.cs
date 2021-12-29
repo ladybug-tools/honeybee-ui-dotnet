@@ -82,9 +82,8 @@ namespace Honeybee.UI
 
 
             //Schedule
-            var sch = libSource.Energy.Schedules
-                .OfType<IIDdBase>()
-                .FirstOrDefault(_ => _.Identifier == _refHBObj.Schedule);
+            var sch = libSource.Energy.ScheduleList.FirstOrDefault(_ => _.Identifier == _refHBObj.Schedule);
+            sch = sch ?? GetDummyScheduleObj(_refHBObj.Schedule);
             this.Schedule = new ButtonViewModel((n) => _refHBObj.Schedule = n?.Identifier);
             if (loads.Select(_ => _?.Schedule).Distinct().Count() > 1)
                 this.Schedule.SetBtnName(this.Varies);
@@ -129,7 +128,7 @@ namespace Honeybee.UI
             if (!this.Schedule.IsVaries)
             {
                 if (this._refHBObj.Schedule == null)
-                    throw new ArgumentException("Missing required schedule of the lighting load!");
+                    throw new ArgumentException("Missing s required schedule of the ventilation load!");
                 obj.Schedule = this._refHBObj.Schedule;
             }
             if (!this.FlowPerArea.IsVaries)
