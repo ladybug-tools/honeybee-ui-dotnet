@@ -64,32 +64,21 @@ namespace Honeybee.UI
 
         public RelayCommand AddCommand => new RelayCommand(() =>
         {
-            var dialog = new Honeybee.UI.Dialog_OpsConstructionSet(this._modelEnergyProperties);
+            var id = Guid.NewGuid().ToString();
+            var name = $"New Construction Set {id.Substring(0, 5)}";
+            var newItem = new ConstructionSetAbridged(name);
+            var lib = this._modelEnergyProperties;
+            var dialog = new Honeybee.UI.Dialog_ConstructionSet(ref lib, newItem);
             var dialog_rc = dialog.ShowModal(_control);
 
-            var cSet = dialog_rc.constructionSet;
-            var contrs = dialog_rc.constructions;
-            var mats = dialog_rc.materials;
-            if (cSet != null)
+            if (dialog_rc != null)
             {
-
-                var existingConstructionIds = this._modelEnergyProperties.Constructions.Select(_ => (_.Obj as HB.IDdEnergyBaseModel).Identifier);
-                var existingMaterialIds = this._modelEnergyProperties.Materials.Select(_ => (_.Obj as HB.IDdEnergyBaseModel).Identifier);
-
-                // add constructions
-                var newConstrs = contrs.Where(_ => !existingConstructionIds.Any(c => c == _.Identifier)).ToList();
-                this._modelEnergyProperties.AddConstructions(newConstrs);
-
-                // add materials
-                var newMats = mats.Where(_ => !existingMaterialIds.Any(m => m == _.Identifier)).ToList();
-                this._modelEnergyProperties.AddMaterials(newMats);
-
                 // add program type
-                var newItem = CheckObjName(cSet);
-                this._userData.Insert(0, new ConstructionSetViewData(newItem));
+                newItem = CheckObjName(dialog_rc);
+                var newViewData = new ConstructionSetViewData(newItem);
+                this._userData.Insert(0, newViewData);
                 this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
                 ResetDataCollection();
-
             }
 
 
