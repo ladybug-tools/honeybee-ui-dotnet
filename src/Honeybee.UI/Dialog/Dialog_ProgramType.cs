@@ -30,14 +30,25 @@ namespace Honeybee.UI
                 var nameTbx = new TextBox();
                 nameTbx.TextBinding.Bind(_vm, c => c.Name);
 
-                var loadGroup = GenLoadsPanel();
+                var loadGroup = GenLoadsPanel(lockedMode);
 
 
                 var locked = new CheckBox() { Text = "Locked", Enabled = false };
                 locked.Checked = lockedMode;
 
                 var OkButton = new Button { Text = "OK", Enabled = !lockedMode };
-                OkButton.Click += (sender, e) => OkCommand.Execute(_vm.GetHBObject());
+                OkButton.Click += (sender, e) => {
+                    try
+                    {
+                        OkCommand.Execute(_vm.GetHBObject());
+                    }
+                    catch (Exception er)
+                    {
+                        MessageBox.Show(er.Message);
+                        //throw;
+                    }
+
+                }; 
 
                 AbortButton = new Button { Text = "Cancel" };
                 AbortButton.Click += (sender, e) => Close();
@@ -71,43 +82,48 @@ namespace Honeybee.UI
         }
 
 
-        private DynamicLayout GenLoadsPanel()
+        private DynamicLayout GenLoadsPanel(bool lockedMode)
         {
+
             var layout = new DynamicLayout() { Height = 500 };
 
-            layout.DefaultSpacing = new Size(4, 4);
+        
             //layout.DefaultPadding = new Padding(4);
             layout.BeginScrollable(BorderType.None);
 
+            var container = new DynamicLayout() { Enabled = !lockedMode };
+            container.DefaultSpacing = new Size(4, 4);
+
             //Get lighting
-            layout.AddRow(GenLightingPanel());
+            container.AddRow(GenLightingPanel());
 
             //Get People
-            layout.AddRow(GenPplPanel());
+            container.AddRow(GenPplPanel());
 
             //Get ElecEquipment
-            layout.AddRow(GenElecEqpPanel());
+            container.AddRow(GenElecEqpPanel());
 
 
             //Get gas Equipment
-            layout.AddRow(GenGasEqpPanel());
+            container.AddRow(GenGasEqpPanel());
 
             //Get Ventilation
-            layout.AddRow(GenVentPanel());
+            container.AddRow(GenVentPanel());
 
             //Get Infiltration
-            layout.AddRow(GenInfPanel());
+            container.AddRow(GenInfPanel());
 
             //Get Setpoint
-            layout.AddRow(GenStpPanel());
+            container.AddRow(GenStpPanel());
 
             //Get ServiceHotWater
-            layout.AddRow(GenSHWPanel());
+            container.AddRow(GenSHWPanel());
 
-
+            layout.AddRow(container);
             layout.AddRow(null);
 
             layout.EndScrollable();
+
             return layout;
         }
 

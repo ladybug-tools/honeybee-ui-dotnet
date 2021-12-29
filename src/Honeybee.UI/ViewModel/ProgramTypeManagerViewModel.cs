@@ -33,7 +33,7 @@ namespace Honeybee.UI
                 this._modelProperties.Energy.MergeWith(engLib);
             }
             this._userData.Insert(0, newViewData);
-            this._allData = _userData.Concat(_systemData).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct().ToList();
         }
         private void ReplaceUserData(ProgramTypeViewData oldObj, ProgramTypeAbridged newObj)
         {
@@ -41,12 +41,12 @@ namespace Honeybee.UI
             var index = _userData.IndexOf(oldObj);
             _userData.RemoveAt(index);
             _userData.Insert(index, new ProgramTypeViewData(newItem));
-            this._allData = _userData.Concat(_systemData).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct().ToList();
         }
         private void DeleteUserData(ProgramTypeViewData item)
         {
             this._userData.Remove(item);
-            this._allData = _userData.Concat(_systemData).ToList();
+            this._allData = _userData.Concat(_systemData).Distinct().ToList();
         }
 
         public void UpdateLibSource()
@@ -89,8 +89,10 @@ namespace Honeybee.UI
 
         public RelayCommand AddCommand => new RelayCommand(() =>
         {
+            var id = System.Guid.NewGuid().ToString().Substring(0, 5);
+            var newItem = new ProgramTypeAbridged($"New program type {id}");
             var lib = this._modelProperties;
-            var dialog = new Honeybee.UI.Dialog_ProgramType(ref lib, null);
+            var dialog = new Honeybee.UI.Dialog_ProgramType(ref lib, newItem);
             var dialog_rc = dialog.ShowModal(_control);
             //var newItem = new ProgramTypeAbridged($"{}");
 
