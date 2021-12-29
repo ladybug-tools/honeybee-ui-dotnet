@@ -113,6 +113,7 @@ namespace Honeybee.UI
 
 
         private Control _control;
+        private ProgramTypeAbridged _hbObj;
 
         public ProgramTypeViewModel(Control control, ref ModelProperties libSource, ProgramTypeAbridged programType)
         {
@@ -121,7 +122,7 @@ namespace Honeybee.UI
 
             this.ModelEnergyProp = libSource;
             _refHBObj = programType?.DuplicateProgramTypeAbridged() ?? new ProgramTypeAbridged(Guid.NewGuid().ToString());
-
+            _hbObj = programType;
 
             this.Name = _refHBObj.DisplayName ?? _refHBObj.Identifier;
 
@@ -158,28 +159,22 @@ namespace Honeybee.UI
 
         public ProgramTypeAbridged GetHBObject()
         {
-            try
-            { 
-                // loads
-                _refHBObj.Lighting = this.Lighting.MatchObj(_refHBObj.Lighting);
-                _refHBObj.ElectricEquipment = this.ElecEquipment.MatchObj(_refHBObj.ElectricEquipment);
-                _refHBObj.GasEquipment = this.Gas.MatchObj(_refHBObj.GasEquipment);
-                _refHBObj.People = this.People.MatchObj(_refHBObj.People);
-                _refHBObj.Infiltration = this.Infiltration.MatchObj(_refHBObj.Infiltration);
-                _refHBObj.Ventilation = this.Ventilation.MatchObj(_refHBObj.Ventilation);
-                _refHBObj.Setpoint = this.Setpoint.MatchObj(_refHBObj.Setpoint);
-                _refHBObj.ServiceHotWater = this.ServiceHotWater.MatchObj(_refHBObj.ServiceHotWater);
+            _hbObj.DisplayName = this.Name;
+            _hbObj.Identifier = this.Name;
 
-                var obj = _refHBObj.DuplicateProgramTypeAbridged();
-                return obj;
+            // loads
+            _hbObj.Lighting = this.Lighting.MatchObj(_hbObj.Lighting);
+            _hbObj.ElectricEquipment = this.ElecEquipment.MatchObj(_hbObj.ElectricEquipment);
+            _hbObj.GasEquipment = this.Gas.MatchObj(_hbObj.GasEquipment);
+            _hbObj.People = this.People.MatchObj(_hbObj.People);
+            _hbObj.Infiltration = this.Infiltration.MatchObj(_hbObj.Infiltration);
+            _hbObj.Ventilation = this.Ventilation.MatchObj(_hbObj.Ventilation);
+            _hbObj.Setpoint = this.Setpoint.MatchObj(_hbObj.Setpoint);
+            _hbObj.ServiceHotWater = this.ServiceHotWater.MatchObj(_hbObj.ServiceHotWater);
 
-            }
-            catch (Exception e)
-            {
-                Honeybee.UI.Dialog_Message.Show(this._control, e.ToString(), "Error");
-                return null;
-                //throw;
-            }
+            var obj = _hbObj.DuplicateProgramTypeAbridged();
+            return obj;
+
            
         }
     }
