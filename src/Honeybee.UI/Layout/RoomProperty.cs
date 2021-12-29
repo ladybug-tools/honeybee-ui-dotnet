@@ -731,7 +731,7 @@ namespace Honeybee.UI.View
             layout.AddRow(null);
 
 
-            var ltnByProgram = new CheckBox() { Text = vm.ByProgramType };
+            var ltnByProgram = new CheckBox() { Text = vm.Noload };
             ltnByProgram.CheckedBinding.Bind(vm, _ => _.InternalMass.IsCheckboxChecked);
 
             var gp = new GroupBox() { Text = "Internal Mass" };
@@ -817,7 +817,7 @@ namespace Honeybee.UI.View
             layout.AddRow(null);
 
 
-            var ltnByProgram = new CheckBox() { Text = vm.ByProgramType };
+            var ltnByProgram = new CheckBox() { Text = vm.Noload };
             ltnByProgram.CheckedBinding.Bind(vm, _ => _.ProcessLoad.IsCheckboxChecked);
 
             var gp = new GroupBox() { Text = "Process Load" };
