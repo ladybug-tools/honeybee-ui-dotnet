@@ -54,6 +54,17 @@ namespace Honeybee.UI
             } 
         }
 
+        /// <summary>
+        /// create a dummy object only for visualization
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        internal HoneybeeSchema.Energy.ISchedule GetDummyScheduleObj(string name)
+        {
+            if (string.IsNullOrEmpty(name) || name == None)
+                return null;
+            return new ScheduleDay(name, new List<double>(), displayName: name);
+        }
 
         protected void Set(Action setAction, string memberName)
         {

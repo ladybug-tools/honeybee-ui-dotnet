@@ -40,7 +40,7 @@ namespace Honeybee.UI
         public InternalMassAbridged Default { get; private set; }
         public InternalMassViewModel(ModelProperties libSource, List<InternalMassAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-            this.Default = new InternalMassAbridged(Guid.NewGuid().ToString(), "Not Set", 0);
+            this.Default = new InternalMassAbridged(Guid.NewGuid().ToString(), None, 0);
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateInternalMassAbridged();
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateInternalMassAbridged();
 
@@ -60,9 +60,7 @@ namespace Honeybee.UI
 
 
             //Construction
-            var sch = libSource.Energy.Constructions
-                .OfType<IIDdBase>()
-                .FirstOrDefault(_ => _.Identifier == _refHBObj.Construction);
+            var sch = libSource.Energy.ConstructionList.FirstOrDefault(_ => _.Identifier == _refHBObj.Construction);
             this.Construction = new ButtonViewModel((n) => _refHBObj.Construction = n?.Identifier);
             if (loads.Select(_ => _?.Construction).Distinct().Count() > 1)
                 this.Construction.SetBtnName(this.Varies);
@@ -85,7 +83,7 @@ namespace Honeybee.UI
             if (!this.Construction.IsVaries)
             {
                 if (this._refHBObj.Construction == null)
-                    throw new ArgumentException("Missing required construction of the internal mass!");
+                    throw new ArgumentException("Missing a required construction of the internal mass!");
                 obj.Construction = this._refHBObj.Construction;
             }
           

@@ -62,7 +62,7 @@ namespace Honeybee.UI
 
         public ElecEquipmentViewModel(ModelProperties libSource, List<ElectricEquipmentAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-            this.Default = new ElectricEquipmentAbridged(Guid.NewGuid().ToString(), 0, "Not Set");
+            this.Default = new ElectricEquipmentAbridged(Guid.NewGuid().ToString(), 0, None);
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateElectricEquipmentAbridged();
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateElectricEquipmentAbridged();
 
@@ -82,9 +82,9 @@ namespace Honeybee.UI
 
 
             //Schedule
-            var sch = libSource.Energy.Schedules
-                .OfType<IIDdBase>()
+            var sch = libSource.Energy.ScheduleList
                 .FirstOrDefault(_ => _.Identifier == _refHBObj.Schedule);
+            sch = sch ?? GetDummyScheduleObj(_refHBObj.Schedule);
             this.Schedule = new ButtonViewModel((n) => _refHBObj.Schedule = n?.Identifier);
             if (loads.Select(_ => _?.Schedule).Distinct().Count() > 1)
                 this.Schedule.SetBtnName(this.Varies);
@@ -129,7 +129,7 @@ namespace Honeybee.UI
             if (!this.Schedule.IsVaries)
             {
                 if (this._refHBObj.Schedule == null)
-                    throw new ArgumentException("Missing required electric equipment schedule!");
+                    throw new ArgumentException("Missing a required electric equipment schedule!");
                 obj.Schedule = this._refHBObj.Schedule;
             }
             if (!this.RadiantFraction.IsVaries)

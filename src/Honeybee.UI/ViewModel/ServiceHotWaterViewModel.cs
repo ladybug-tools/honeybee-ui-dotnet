@@ -62,7 +62,7 @@ namespace Honeybee.UI
         public ServiceHotWaterAbridged Default { get; private set; }
         public ServiceHotWaterViewModel(ModelProperties libSource, List<ServiceHotWaterAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-            this.Default = new ServiceHotWaterAbridged(Guid.NewGuid().ToString(), 0, "Not Set");
+            this.Default = new ServiceHotWaterAbridged(Guid.NewGuid().ToString(), 0, None);
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateServiceHotWaterAbridged();
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateServiceHotWaterAbridged();
 
@@ -82,9 +82,8 @@ namespace Honeybee.UI
 
 
             //Schedule
-            var sch = libSource.Energy.Schedules
-                .OfType<IIDdBase>()
-                .FirstOrDefault(_ => _.Identifier == _refHBObj.Schedule);
+            var sch = libSource.Energy.ScheduleList.FirstOrDefault(_ => _.Identifier == _refHBObj.Schedule);
+            sch = sch ?? GetDummyScheduleObj(_refHBObj.Schedule);
             this.Schedule = new ButtonViewModel((n) => _refHBObj.Schedule = n?.Identifier);
             if (loads.Select(_ => _?.Schedule).Distinct().Count() > 1)
                 this.Schedule.SetBtnName(this.Varies);
@@ -129,7 +128,7 @@ namespace Honeybee.UI
             if (!this.Schedule.IsVaries)
             {
                 if (this._refHBObj.Schedule == null)
-                    throw new ArgumentException("Missing required schedule of the lighting load!");
+                    throw new ArgumentException("Missing a required schedule of the service hot water load!");
                 obj.Schedule = this._refHBObj.Schedule;
             }
             if (!this.TargetTemperature.IsVaries)
