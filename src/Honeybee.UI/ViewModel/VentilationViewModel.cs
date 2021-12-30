@@ -94,7 +94,7 @@ namespace Honeybee.UI
 
             //FlowPerArea
             this.FlowPerArea = new DoubleViewModel((n) => _refHBObj.FlowPerArea = n);
-            this.FlowPerArea.SetUnits(Units.SpeedUnit.MeterPerSecond, Units.UnitType.Speed, "m³/(s·m²)");
+            this.FlowPerArea.SetUnits(Units.VolumeFlowPerAreaUnit.CubicMeterPerSecondPerSquareMeter, Units.UnitType.AirFlowRateArea);
             if (loads.Select(_ => _?.FlowPerArea).Distinct().Count() > 1)
                 this.FlowPerArea.SetNumberText(this.Varies);
             else
