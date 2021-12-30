@@ -15,7 +15,7 @@ namespace Honeybee.UI.ConsoleApp
         {
             var app = new Application();
             app.Run(new MyForm());
-            Console.ReadLine();
+            //Console.ReadLine();
         }
 
         public class MyForm : Form

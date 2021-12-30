@@ -53,10 +53,11 @@ namespace Honeybee.UI
 
             //Area
             this.Area = new DoubleViewModel((n) => _refHBObj.Area = n);
+            this.Area.SetUnits(Units.AreaUnit.SquareMeter, Units.UnitType.Area);
             if (loads.Select(_ => _?.Area).Distinct().Count() > 1)
                 this.Area.SetNumberText(this.Varies);
             else
-                this.Area.SetNumberText(_refHBObj.Area.ToString());
+                this.Area.SetBaseUnitNumber(_refHBObj.Area);
 
 
             //Construction

@@ -75,10 +75,11 @@ namespace Honeybee.UI
 
             //WattsPerArea
             this.FlowPerArea = new DoubleViewModel((n) => _refHBObj.FlowPerArea = n);
+            this.FlowPerArea.SetUnits(Units.SpeedUnit.MeterPerSecond, Units.UnitType.Speed, "m³/(s·m²)");
             if (loads.Select(_ => _?.FlowPerArea).Distinct().Count() > 1)
                 this.FlowPerArea.SetNumberText(this.Varies);
             else
-                this.FlowPerArea.SetNumberText(_refHBObj.FlowPerArea.ToString());
+                this.FlowPerArea.SetBaseUnitNumber(_refHBObj.FlowPerArea);
 
 
             //Schedule
@@ -91,12 +92,13 @@ namespace Honeybee.UI
                 this.Schedule.SetPropetyObj(sch);
 
 
-            //RadiantFraction
+            //TargetTemperature
             this.TargetTemperature = new DoubleViewModel((n) => _refHBObj.TargetTemperature = n);
+            this.TargetTemperature.SetUnits(Units.TemperatureUnit.DegreeCelsius, Units.UnitType.Temperature);
             if (loads.Select(_ => _?.TargetTemperature).Distinct().Count() > 1)
                 this.TargetTemperature.SetNumberText(this.Varies);
             else
-                this.TargetTemperature.SetNumberText(_refHBObj.TargetTemperature.ToString());
+                this.TargetTemperature.SetBaseUnitNumber(_refHBObj.TargetTemperature);
 
 
             //LatentFraction

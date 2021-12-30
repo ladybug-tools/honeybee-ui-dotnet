@@ -102,10 +102,11 @@ namespace Honeybee.UI
 
             //WattsPerArea
             this.PeoplePerArea = new DoubleViewModel((n) => _refHBObj.PeoplePerArea = n);
+            this.PeoplePerArea.SetUnits(Units.ReciprocalAreaUnit.InverseSquareMeter, Units.UnitType.PeopleDensity);
             if (loads.Select(_ => _?.PeoplePerArea).Distinct().Count() > 1)
                 this.PeoplePerArea.SetNumberText(this.Varies);
             else
-                this.PeoplePerArea.SetNumberText(_refHBObj.PeoplePerArea.ToString());
+                this.PeoplePerArea.SetBaseUnitNumber(_refHBObj.PeoplePerArea);
 
 
             //Schedule

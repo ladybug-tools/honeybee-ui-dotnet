@@ -75,10 +75,11 @@ namespace Honeybee.UI
 
             //WattsPerArea
             this.WattsPerArea = new DoubleViewModel((n) => _refHBObj.WattsPerArea = n);
+            this.WattsPerArea.SetUnits(Units.HeatFluxUnit.WattPerSquareMeter, Units.UnitType.PowerDensity);
             if (loads.Select(_ => _?.WattsPerArea).Distinct().Count() > 1)
                 this.WattsPerArea.SetNumberText(this.Varies);
             else
-                this.WattsPerArea.SetNumberText(_refHBObj.WattsPerArea.ToString());
+                this.WattsPerArea.SetBaseUnitNumber(_refHBObj.WattsPerArea);
 
 
             //Schedule

@@ -125,10 +125,11 @@ namespace Honeybee.UI
 
             //Watts
             this.Watts = new DoubleViewModel((n) => _refHBObj.Watts = n);
+            this.Watts.SetUnits(Units.PowerUnit.Watt, Units.UnitType.Power);
             if (loads.Select(_ => _?.Watts).Distinct().Count() > 1)
                 this.Watts.SetNumberText(this.Varies);
             else
-                this.Watts.SetNumberText(_refHBObj.Watts.ToString());
+                this.Watts.SetBaseUnitNumber(_refHBObj.Watts);
 
 
             //Schedule
