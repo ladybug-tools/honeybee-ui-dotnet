@@ -75,10 +75,11 @@ namespace Honeybee.UI
 
             //FlowPerExteriorArea
             this.FlowPerExteriorArea = new DoubleViewModel((n) => _refHBObj.FlowPerExteriorArea = n);
+            this.FlowPerExteriorArea.SetUnits(Units.SpeedUnit.MeterPerSecond, Units.UnitType.Speed, "m³/(s·m²)");
             if (loads.Select(_ => _?.FlowPerExteriorArea).Distinct().Count() > 1)
                 this.FlowPerExteriorArea.SetNumberText(this.Varies);
             else
-                this.FlowPerExteriorArea.SetNumberText(_refHBObj.FlowPerExteriorArea.ToString());
+                this.FlowPerExteriorArea.SetBaseUnitNumber(_refHBObj.FlowPerExteriorArea);
 
 
             //Schedule

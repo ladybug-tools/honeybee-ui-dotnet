@@ -75,10 +75,11 @@ namespace Honeybee.UI
 
             //FlowPerPerson
             this.FlowPerPerson = new DoubleViewModel((n) => _refHBObj.FlowPerPerson = n);
+            this.FlowPerPerson.SetUnits(Units.VolumeFlowUnit.CubicMeterPerSecond, Units.UnitType.AirFlowRate);
             if (loads.Select(_ => _?.FlowPerPerson).Distinct().Count() > 1)
                 this.FlowPerPerson.SetNumberText(this.Varies);
             else
-                this.FlowPerPerson.SetNumberText(_refHBObj.FlowPerPerson.ToString());
+                this.FlowPerPerson.SetBaseUnitNumber(_refHBObj.FlowPerPerson);
 
 
             //Schedule
@@ -93,26 +94,29 @@ namespace Honeybee.UI
 
             //FlowPerArea
             this.FlowPerArea = new DoubleViewModel((n) => _refHBObj.FlowPerArea = n);
+            this.FlowPerArea.SetUnits(Units.SpeedUnit.MeterPerSecond, Units.UnitType.Speed, "m³/(s·m²)");
             if (loads.Select(_ => _?.FlowPerArea).Distinct().Count() > 1)
                 this.FlowPerArea.SetNumberText(this.Varies);
             else
-                this.FlowPerArea.SetNumberText(_refHBObj.FlowPerArea.ToString());
+                this.FlowPerArea.SetBaseUnitNumber(_refHBObj.FlowPerArea);
 
 
             //AirChangesPerHour
             this.AirChangesPerHour = new DoubleViewModel((n) => _refHBObj.AirChangesPerHour = n);
+            this.AirChangesPerHour.SetDisplayUnitAbbreviation("1/hour");
             if (loads.Select(_ => _?.AirChangesPerHour).Distinct().Count() > 1)
                 this.AirChangesPerHour.SetNumberText(this.Varies);
             else
                 this.AirChangesPerHour.SetNumberText(_refHBObj.AirChangesPerHour.ToString());
 
 
-            //LostFraction
+            //FlowPerZone
             this.FlowPerZone = new DoubleViewModel((n) => _refHBObj.FlowPerZone = n);
+            this.FlowPerZone.SetUnits(Units.VolumeFlowUnit.CubicMeterPerSecond, Units.UnitType.AirFlowRate);
             if (loads.Select(_ => _?.FlowPerZone).Distinct().Count() > 1)
                 this.FlowPerZone.SetNumberText(this.Varies);
             else
-                this.FlowPerZone.SetNumberText(_refHBObj.FlowPerZone.ToString());
+                this.FlowPerZone.SetBaseUnitNumber(_refHBObj.FlowPerZone);
         }
 
         public VentilationAbridged MatchObj(VentilationAbridged obj)

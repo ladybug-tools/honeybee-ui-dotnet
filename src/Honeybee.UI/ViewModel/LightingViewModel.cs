@@ -85,10 +85,11 @@ namespace Honeybee.UI
 
             //WattsPerArea
             this.WattsPerArea = new DoubleViewModel((n) => _refHBObj.WattsPerArea = n);
+            this.WattsPerArea.SetUnits(Units.HeatFluxUnit.WattPerSquareMeter, Units.UnitType.PowerDensity);
             if (lights.Select(_ => _?.WattsPerArea).Distinct().Count() > 1)
                 this.WattsPerArea.SetNumberText(this.Varies);
             else
-                this.WattsPerArea.SetNumberText(_refHBObj.WattsPerArea.ToString());
+                this.WattsPerArea.SetBaseUnitNumber(_refHBObj.WattsPerArea);
 
 
             //Schedule
@@ -128,10 +129,11 @@ namespace Honeybee.UI
 
             //BaselineWattsPerArea
             this.BaselineWattsPerArea = new DoubleViewModel((n) => _refHBObj.BaselineWattsPerArea = n);
+            this.BaselineWattsPerArea.SetUnits(Units.HeatFluxUnit.WattPerSquareMeter, Units.UnitType.PowerDensity);
             if (lights.Select(_ => _?.BaselineWattsPerArea).Distinct().Count() > 1)
                 this.BaselineWattsPerArea.SetNumberText(this.Varies);
             else
-                this.BaselineWattsPerArea.SetNumberText(_refHBObj.BaselineWattsPerArea.ToString());
+                this.BaselineWattsPerArea.SetBaseUnitNumber(_refHBObj.BaselineWattsPerArea);
         }
 
         public LightingAbridged MatchObj(LightingAbridged obj)

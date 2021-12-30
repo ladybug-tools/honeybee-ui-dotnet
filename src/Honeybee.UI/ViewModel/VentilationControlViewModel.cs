@@ -84,6 +84,7 @@ namespace Honeybee.UI
 
             //MinIndoorTemperature
             this.MinIndoorTemperature = new DoubleViewModel((n) => _refHBObj.MinIndoorTemperature = n);
+            this.MinIndoorTemperature.SetUnits(Units.TemperatureUnit.DegreeCelsius, Units.UnitType.Temperature);
             if (loads.Select(_ => _?.MinIndoorTemperature).Distinct().Count() > 1)
                 this.MinIndoorTemperature.SetNumberText(this.Varies);
             else
@@ -103,6 +104,7 @@ namespace Honeybee.UI
 
             //MaxIndoorTemperature
             this.MaxIndoorTemperature = new DoubleViewModel((n) => _refHBObj.MaxIndoorTemperature = n);
+            this.MaxIndoorTemperature.SetUnits(Units.TemperatureUnit.DegreeCelsius, Units.UnitType.Temperature);
             if (loads.Select(_ => _?.MaxIndoorTemperature).Distinct().Count() > 1)
                 this.MaxIndoorTemperature.SetNumberText(this.Varies);
             else
@@ -111,6 +113,7 @@ namespace Honeybee.UI
 
             //MinOutdoorTemperature
             this.MinOutdoorTemperature = new DoubleViewModel((n) => _refHBObj.MinOutdoorTemperature = n);
+            this.MinOutdoorTemperature.SetUnits(Units.TemperatureUnit.DegreeCelsius, Units.UnitType.Temperature);
             if (loads.Select(_ => _?.MinOutdoorTemperature).Distinct().Count() > 1)
                 this.MinOutdoorTemperature.SetNumberText(this.Varies);
             else
@@ -119,6 +122,7 @@ namespace Honeybee.UI
 
             //MaxOutdoorTemperature
             this.MaxOutdoorTemperature = new DoubleViewModel((n) => _refHBObj.MaxOutdoorTemperature = n);
+            this.MaxOutdoorTemperature.SetUnits(Units.TemperatureUnit.DegreeCelsius, Units.UnitType.Temperature);
             if (loads.Select(_ => _?.MaxOutdoorTemperature).Distinct().Count() > 1)
                 this.MaxOutdoorTemperature.SetNumberText(this.Varies);
             else
@@ -127,10 +131,11 @@ namespace Honeybee.UI
 
             //DeltaTemperature
             this.DeltaTemperature = new DoubleViewModel((n) => _refHBObj.DeltaTemperature = n);
+            this.DeltaTemperature.SetUnits(Units.TemperatureDeltaUnit.DegreeCelsius, Units.UnitType.TemperatureDelta);
             if (loads.Select(_ => _?.DeltaTemperature).Distinct().Count() > 1)
                 this.DeltaTemperature.SetNumberText(this.Varies);
             else
-                this.DeltaTemperature.SetNumberText(_refHBObj.DeltaTemperature.ToString());
+                this.DeltaTemperature.SetBaseUnitNumber(_refHBObj.DeltaTemperature);
         }
 
         public VentilationControlAbridged MatchObj(VentilationControlAbridged obj)

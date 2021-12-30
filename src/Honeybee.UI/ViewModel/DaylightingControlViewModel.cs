@@ -94,10 +94,11 @@ namespace Honeybee.UI
 
             //IlluminanceSetpoint
             this.IlluminanceSetpoint = new DoubleViewModel((n) => _refHBObj.IlluminanceSetpoint = n);
+            this.IlluminanceSetpoint.SetUnits(Units.IlluminanceUnit.Lux, Units.UnitType.Illuminance);
             if (loads.Select(_ => _?.IlluminanceSetpoint).Distinct().Count() > 1)
                 this.IlluminanceSetpoint.SetNumberText(this.Varies);
             else
-                this.IlluminanceSetpoint.SetNumberText(_refHBObj.IlluminanceSetpoint.ToString());
+                this.IlluminanceSetpoint.SetBaseUnitNumber(_refHBObj.IlluminanceSetpoint);
 
 
             //SensorPosition
@@ -118,10 +119,11 @@ namespace Honeybee.UI
 
             //MinPowerInput
             this.MinPowerInput = new DoubleViewModel((n) => _refHBObj.MinPowerInput = n);
+            this.MinPowerInput.SetUnits(Units.PowerUnit.Watt, Units.UnitType.Power);
             if (loads.Select(_ => _?.MinPowerInput).Distinct().Count() > 1)
                 this.MinPowerInput.SetNumberText(this.Varies);
             else
-                this.MinPowerInput.SetNumberText(_refHBObj.MinPowerInput.ToString());
+                this.MinPowerInput.SetBaseUnitNumber(_refHBObj.MinPowerInput);
 
 
             //MinLightOutput
