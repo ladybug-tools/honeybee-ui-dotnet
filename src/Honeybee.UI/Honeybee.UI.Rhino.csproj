@@ -37,6 +37,7 @@
     <PackageReference Include="RhinoCommon" Version="6.23.20055.13111">
         <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	  </PackageReference>
+    <PackageReference Include="UnitsNet" Version="4.111.0" />
   </ItemGroup>
   
 
