@@ -36,7 +36,7 @@ namespace Honeybee.UI
             { UnitType.AirFlowRate, VolumeFlowUnit.CubicMeterPerSecond },
             { UnitType.PeopleDensity, ReciprocalAreaUnit.InverseSquareMeter },
             { UnitType.AirFlowRateArea, VolumeFlowPerAreaUnit.CubicMeterPerSecondPerSquareMeter },
-            { UnitType.Speeddd, SpeedUnit.MeterPerSecond },
+            { UnitType.Speed, SpeedUnit.MeterPerSecond },
             { UnitType.Illuminance, IlluminanceUnit.Lux },
         };
 
