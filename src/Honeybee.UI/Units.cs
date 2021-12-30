@@ -35,8 +35,8 @@ namespace Honeybee.UI
             { UnitType.PowerDensity, HeatFluxUnit.WattPerSquareMeter },
             { UnitType.AirFlowRate, VolumeFlowUnit.CubicMeterPerSecond },
             { UnitType.PeopleDensity, ReciprocalAreaUnit.InverseSquareMeter },
-            { UnitType.AirFlowRateArea, VolumeFlowPerAreaUnit.CubicMeterPerSecondPerSuareMeter },
-            { UnitType.Speed, SpeedUnit.MeterPerSecond },
+            { UnitType.AirFlowRateArea, VolumeFlowPerAreaUnit.CubicMeterPerSecondPerSquareMeter },
+            { UnitType.Speeddd, SpeedUnit.MeterPerSecond },
             { UnitType.Illuminance, IlluminanceUnit.Lux },
         };
 
@@ -123,7 +123,7 @@ namespace Honeybee.UI
         public enum VolumeFlowPerAreaUnit
         {
             CubicFootPerMinutePerSquareFoot,
-            CubicMeterPerSecondPerSuareMeter,
+            CubicMeterPerSecondPerSquareMeter
         }
 
         public enum SpeedUnit
@@ -140,7 +140,7 @@ namespace Honeybee.UI
         //public static void U()
         //{
         //    //var a2 = UnitsNet.VolumeFlow.FromCubicFeetPerMinute(100) * UnitsNet.ReciprocalArea.FromInverseSquareFeet(20);
-        //    //UnitsNet.Units.IlluminanceUnit.Lux
+        //    UnitsNet.Units.VolumeFlowPerAreaUnit
         //}
 
 

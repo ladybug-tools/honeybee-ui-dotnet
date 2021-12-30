@@ -80,7 +80,7 @@ namespace Honeybee.UI
         /// </summary>
         /// <param name="baseUnit"></param>
         /// <param name="unitType"></param>
-        public void SetUnits(Enum baseUnit, Units.UnitType unitType, string displayUnitAbbreviation = default)
+        public void SetUnits(Enum baseUnit, Units.UnitType unitType)
         {
             Units.CustomUnitSettings.TryGetValue(unitType, out var displayUnit);
             this.DisplayUnit = ToUnitsNetEnum(displayUnit);
@@ -90,7 +90,7 @@ namespace Honeybee.UI
 
             var v = Convert.ToInt32(DisplayUnit);
             var t = DisplayUnit.GetType();
-            this.DisplayUnitAbbreviation = displayUnitAbbreviation ?? UnitAbbreviationsCache.Default.GetDefaultAbbreviation(t, v);
+            this.DisplayUnitAbbreviation = UnitAbbreviationsCache.Default.GetDefaultAbbreviation(t, v);
         }
 
         /// <summary>
