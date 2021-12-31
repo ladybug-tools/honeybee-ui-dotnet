@@ -95,47 +95,13 @@ namespace Honeybee.UI
             this.DisplayUnitAbbreviation = unit;
         }
 
-        private static bool TryParse(string text, out double value)
-        {
-            value = -999;
-            text = text.Trim();
-            if (string.IsNullOrEmpty(text))
-                return false;
+        private static bool TryParse(string text, out double value) => Units.TryParse(text, out value);
 
-            text = text.StartsWith(".") ? $"0{text}" : text;
-            return double.TryParse(text, out value);
-        }
+        private double ToBaseValue(double value) => Units.ConvertValueWithUnits(value, this.DisplayUnit, this.BaseUnit);
 
-        public double ToBaseValue(double value)
-        {
-            if (this.DisplayUnit == default || this.BaseUnit == default)
-                return value;
-            if (this.DisplayUnit == this.BaseUnit)
-                return value;
-            var quantity = Quantity.From(value, DisplayUnit);
-            return quantity.ToUnit(this.BaseUnit).Value;
-        }
+        private double ToDisplayValue(double value) => Units.ConvertValueWithUnits(value, this.BaseUnit, this.DisplayUnit);
 
-        public double ToDisplayValue(double value)
-        {
-            if (this.DisplayUnit == default || this.BaseUnit == default)
-                return value;
-            if (this.DisplayUnit == this.BaseUnit)
-                return value;
-            var quantity = Quantity.From(value, BaseUnit);
-            return quantity.ToUnit(this.DisplayUnit).Value;
-        }
-
-        private static Enum ToUnitsNetEnum(Enum inputEnum)
-        {
-            if (inputEnum == default)
-                return inputEnum;
-
-            var t = inputEnum.GetType().Name.ToString();
-            var displayUnitType = typeof(UnitsNet.Angle).Assembly.GetType($"UnitsNet.Units.{t}");
-            var ee = Enum.Parse(displayUnitType, inputEnum.ToString()) as Enum;
-            return ee;
-        }
+        private static Enum ToUnitsNetEnum(Enum inputEnum) => Units.ToUnitsNetEnum(inputEnum);
     }
 
 }

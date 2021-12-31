@@ -301,6 +301,103 @@ namespace Honeybee.UI
 
         #endregion
 
+        #region Conductivity
+        private Units.ThermalConductivityUnit _Conductivity;
+        public Units.ThermalConductivityUnit Conductivity
+        {
+            get => _Conductivity;
+            set { Set(() => _Conductivity = value, nameof(Conductivity)); ConductivityAbbv = GetAbbr(value); }
+        }
+
+        private bool _ConductivityEnabled = true;
+        public bool ConductivityEnabled
+        {
+            get => _ConductivityEnabled;
+            set => Set(() => _ConductivityEnabled = value, nameof(ConductivityEnabled));
+        }
+
+        private string _ConductivityAbbv;
+        public string ConductivityAbbv
+        {
+            get => _ConductivityAbbv;
+            set => Set(() => _ConductivityAbbv = value, nameof(ConductivityAbbv));
+        }
+
+        #endregion
+
+        #region Resistance
+        private Units.ThermalResistanceUnit _Resistance;
+        public Units.ThermalResistanceUnit Resistance
+        {
+            get => _Resistance;
+            set { Set(() => _Resistance = value, nameof(Resistance)); ResistanceAbbv = GetAbbr(value); }
+        }
+
+        private bool _ResistanceEnabled = true;
+        public bool ResistanceEnabled
+        {
+            get => _ResistanceEnabled;
+            set => Set(() => _ResistanceEnabled = value, nameof(ResistanceEnabled));
+        }
+
+        private string _ResistanceAbbv;
+        public string ResistanceAbbv
+        {
+            get => _ResistanceAbbv;
+            set => Set(() => _ResistanceAbbv = value, nameof(ResistanceAbbv));
+        }
+
+        #endregion
+
+        #region Density
+        private Units.DensityUnit _Density;
+        public Units.DensityUnit Density
+        {
+            get => _Density;
+            set { Set(() => _Density = value, nameof(Density)); DensityAbbv = GetAbbr(value); }
+        }
+
+        private bool _DensityEnabled = true;
+        public bool DensityEnabled
+        {
+            get => _DensityEnabled;
+            set => Set(() => _DensityEnabled = value, nameof(DensityEnabled));
+        }
+
+        private string _DensityAbbv;
+        public string DensityAbbv
+        {
+            get => _DensityAbbv;
+            set => Set(() => _DensityAbbv = value, nameof(DensityAbbv));
+        }
+
+        #endregion
+
+        #region SpecificHeat
+        private Units.SpecificEntropyUnit _SpecificHeat;
+        public Units.SpecificEntropyUnit SpecificHeat
+        {
+            get => _SpecificHeat;
+            set { Set(() => _SpecificHeat = value, nameof(SpecificHeat)); SpecificHeatAbbv = GetAbbr(value); }
+        }
+
+        private bool _SpecificHeatEnabled = true;
+        public bool SpecificHeatEnabled
+        {
+            get => _SpecificHeatEnabled;
+            set => Set(() => _SpecificHeatEnabled = value, nameof(SpecificHeatEnabled));
+        }
+
+        private string _SpecificHeatAbbv;
+        public string SpecificHeatAbbv
+        {
+            get => _SpecificHeatAbbv;
+            set => Set(() => _SpecificHeatAbbv = value, nameof(SpecificHeatAbbv));
+        }
+
+        #endregion
+
+
         private bool _useIP = false;
         public bool UseIP
         {
@@ -339,6 +436,15 @@ namespace Honeybee.UI
                 if (this.IlluminanceEnabled && dic[Units.UnitType.Illuminance] is Units.IlluminanceUnit IlluminanceV)
                     Illuminance = IlluminanceV;
 
+                if (this.ConductivityEnabled && dic[Units.UnitType.Conductivity] is Units.ThermalConductivityUnit ConductivityV)
+                    Conductivity = ConductivityV;
+                if (this.ResistanceEnabled && dic[Units.UnitType.Resistance] is Units.ThermalResistanceUnit ResistanceV)
+                    Resistance = ResistanceV;
+                if (this.DensityEnabled && dic[Units.UnitType.Density] is Units.DensityUnit DensityV)
+                    Density = DensityV;
+                if (this.SpecificHeatEnabled && dic[Units.UnitType.SpecificEntropy] is Units.SpecificEntropyUnit SpecificHeatV)
+                    SpecificHeat = SpecificHeatV;
+            
             }
         }
 
@@ -372,6 +478,16 @@ namespace Honeybee.UI
             Speed = s;
             IlluminanceEnabled = !GetUnitOrDefault<Units.IlluminanceUnit>(hardcodedUnits, Units.UnitType.Illuminance, out var i);
             Illuminance = i;
+
+            ConductivityEnabled = !GetUnitOrDefault<Units.ThermalConductivityUnit>(hardcodedUnits, Units.UnitType.Conductivity, out var ConductivityV);
+            Conductivity = ConductivityV;
+            ResistanceEnabled = !GetUnitOrDefault<Units.ThermalResistanceUnit>(hardcodedUnits, Units.UnitType.Resistance, out var ResistanceV);
+            Resistance = ResistanceV;
+            DensityEnabled = !GetUnitOrDefault<Units.DensityUnit>(hardcodedUnits, Units.UnitType.Density, out var DensityV);
+            Density = DensityV;
+            SpecificHeatEnabled = !GetUnitOrDefault<Units.SpecificEntropyUnit>(hardcodedUnits, Units.UnitType.SpecificEntropy, out var SpecificHeatV);
+            SpecificHeat = SpecificHeatV;
+          
         }
 
         public void ApplySetting()
@@ -389,11 +505,18 @@ namespace Honeybee.UI
             Units.CustomUnitSettings.TryAddValue(Units.UnitType.AirFlowRateArea, this.AirFlowRateArea);
             Units.CustomUnitSettings.TryAddValue(Units.UnitType.Speed, this.Speed);
             Units.CustomUnitSettings.TryAddValue(Units.UnitType.Illuminance, this.Illuminance);
+
+            Units.CustomUnitSettings.TryAddValue(Units.UnitType.Conductivity, this.Conductivity);
+            Units.CustomUnitSettings.TryAddValue(Units.UnitType.Resistance, this.Resistance);
+            Units.CustomUnitSettings.TryAddValue(Units.UnitType.Density, this.Density);
+            Units.CustomUnitSettings.TryAddValue(Units.UnitType.SpecificEntropy, this.SpecificHeat);
+
+
         }
 
         private static string GetAbbr(Enum u)
         {
-            var unitsNetUnit = ToUnitsNetEnum(u);
+            var unitsNetUnit = Units.ToUnitsNetEnum(u);
             var v = Convert.ToInt32(unitsNetUnit);
             var t = unitsNetUnit.GetType();
             var abb = UnitsNet.UnitAbbreviationsCache.Default.GetDefaultAbbreviation(t, v);
@@ -421,17 +544,6 @@ namespace Honeybee.UI
                 return false;
             }
                
-        }
-
-        private static Enum ToUnitsNetEnum(Enum inputEnum)
-        {
-            if (inputEnum == default)
-                return inputEnum;
-
-            var t = inputEnum.GetType().Name.ToString();
-            var displayUnitType = typeof(UnitsNet.Angle).Assembly.GetType($"UnitsNet.Units.{t}");
-            var ee = Enum.Parse(displayUnitType, inputEnum.ToString()) as Enum;
-            return ee;
         }
 
         
