@@ -136,15 +136,17 @@ namespace Honeybee.UI
             layout.Bind((t) => t.Visible, vm, v => v.Lighting.IsPanelEnabled);
 
             layout.DefaultSpacing = new Size(4, 4);
-            layout.DefaultPadding = new Padding(4);
+            //layout.DefaultPadding = new Padding(0);
 
             var wPerArea = new DoubleText();
             wPerArea.Width = 250;
             wPerArea.ReservedText = _vm.Varies;
             wPerArea.SetDefault(_vm.Lighting.Default.WattsPerArea);
             wPerArea.TextBinding.Bind(vm, _ => _.Lighting.WattsPerArea.NumberText);
-            layout.AddRow("Watts/m2:");
-            layout.AddRow(wPerArea);
+            layout.AddRow("Watts/Area:");
+            var unit = new Label();
+            unit.TextBinding.Bind(vm, _ => _.Lighting.WattsPerArea.DisplayUnitAbbreviation);
+            layout.AddSeparateRow(wPerArea, unit);
 
             var sch = new Button();
             sch.TextBinding.Bind(vm, _ => _.Lighting.Schedule.BtnName);
@@ -174,11 +176,14 @@ namespace Honeybee.UI
             layout.AddRow(airFraction);
 
             var baseline = new DoubleText();
+            baseline.Width = 250;
             baseline.ReservedText = _vm.Varies;
             baseline.SetDefault(_vm.Lighting.Default.BaselineWattsPerArea);
             baseline.TextBinding.Bind(vm, _ => _.Lighting.BaselineWattsPerArea.NumberText);
-            layout.AddRow("Baseline Watts/m2:");
-            layout.AddRow(baseline);
+            var unit2 = new Label();
+            unit2.TextBinding.Bind(vm, _ => _.Lighting.BaselineWattsPerArea.DisplayUnitAbbreviation);
+            layout.AddRow("Baseline Watts/Area:");
+            layout.AddSeparateRow(baseline, unit2);
             layout.AddRow(null);
 
 
@@ -200,15 +205,17 @@ namespace Honeybee.UI
             layout.Bind((t) => t.Visible, vm, v => v.ElecEquipment.IsPanelEnabled);
 
             layout.DefaultSpacing = new Size(4, 4);
-            layout.DefaultPadding = new Padding(4);
+            //layout.DefaultPadding = new Padding(4);
 
             var wPerArea = new DoubleText();
             wPerArea.Width = 250;
             wPerArea.ReservedText = _vm.Varies;
             wPerArea.SetDefault(_vm.ElecEquipment.Default.WattsPerArea);
             wPerArea.TextBinding.Bind(vm, _ => _.ElecEquipment.WattsPerArea.NumberText);
-            layout.AddRow("Watts/m2:");
-            layout.AddRow(wPerArea);
+            layout.AddRow("Watts/Area:");
+            var unit = new Label();
+            unit.TextBinding.Bind(vm, _ => _.ElecEquipment.WattsPerArea.DisplayUnitAbbreviation);
+            layout.AddSeparateRow(wPerArea, unit);
 
             var sch = new Button();
             sch.TextBinding.Bind(vm, _ => _.ElecEquipment.Schedule.BtnName);
@@ -259,15 +266,17 @@ namespace Honeybee.UI
 
 
             layout.DefaultSpacing = new Size(4, 4);
-            layout.DefaultPadding = new Padding(4);
+            //layout.DefaultPadding = new Padding(4);
 
             var wPerArea = new DoubleText();
             wPerArea.Width = 250;
             wPerArea.ReservedText = _vm.Varies;
             wPerArea.SetDefault(_vm.Gas.Default.WattsPerArea);
             wPerArea.TextBinding.Bind(vm, _ => _.Gas.WattsPerArea.NumberText);
-            layout.AddRow("Watts/m2:");
-            layout.AddRow(wPerArea);
+            layout.AddRow("Watts/Area:");
+            var unit = new Label();
+            unit.TextBinding.Bind(vm, _ => _.Gas.WattsPerArea.DisplayUnitAbbreviation);
+            layout.AddSeparateRow(wPerArea, unit);
 
             var sch = new Button();
             sch.TextBinding.Bind(vm, _ => _.Gas.Schedule.BtnName);
@@ -317,15 +326,17 @@ namespace Honeybee.UI
             layout.Bind((t) => t.Visible, vm, v => v.People.IsPanelEnabled);
 
             layout.DefaultSpacing = new Size(4, 4);
-            layout.DefaultPadding = new Padding(4);
+            //layout.DefaultPadding = new Padding(4);
 
             var wPerArea = new DoubleText();
             wPerArea.Width = 250;
             wPerArea.ReservedText = _vm.Varies;
             wPerArea.SetDefault(_vm.People.Default.PeoplePerArea);
             wPerArea.TextBinding.Bind(vm, _ => _.People.PeoplePerArea.NumberText);
-            layout.AddRow("People/m2:");
-            layout.AddRow(wPerArea);
+            layout.AddRow("People/Area:");
+            var unit = new Label();
+            unit.TextBinding.Bind(vm, _ => _.People.PeoplePerArea.DisplayUnitAbbreviation);
+            layout.AddSeparateRow(wPerArea, unit);
 
             var sch = new Button();
             sch.TextBinding.Bind(vm, _ => _.People.OccupancySchedule.BtnName);
@@ -379,15 +390,17 @@ namespace Honeybee.UI
             layout.Bind((t) => t.Visible, vm, v => v.Infiltration.IsPanelEnabled);
 
             layout.DefaultSpacing = new Size(4, 4);
-            layout.DefaultPadding = new Padding(4);
+            //layout.DefaultPadding = new Padding(4);
 
             var wPerArea = new DoubleText();
             wPerArea.Width = 250;
             wPerArea.ReservedText = _vm.Varies;
             wPerArea.SetDefault(_vm.Infiltration.Default.FlowPerExteriorArea);
             wPerArea.TextBinding.Bind(vm, _ => _.Infiltration.FlowPerExteriorArea.NumberText);
-            layout.AddRow("Flow/m2 (exterior area):");
-            layout.AddRow(wPerArea);
+            layout.AddRow("Flow/Area (exterior area):");
+            var unit = new Label();
+            unit.TextBinding.Bind(vm, _ => _.Infiltration.FlowPerExteriorArea.DisplayUnitAbbreviation);
+            layout.AddSeparateRow(wPerArea, unit);
 
             var sch = new Button();
             sch.TextBinding.Bind(vm, _ => _.Infiltration.Schedule.BtnName);
@@ -438,15 +451,17 @@ namespace Honeybee.UI
 
 
             layout.DefaultSpacing = new Size(4, 4);
-            layout.DefaultPadding = new Padding(4);
+            //layout.DefaultPadding = new Padding(4);
 
             var wPerArea = new DoubleText();
             wPerArea.Width = 250;
             wPerArea.ReservedText = _vm.Varies;
             wPerArea.SetDefault(_vm.Ventilation.Default.FlowPerArea);
             wPerArea.TextBinding.Bind(vm, _ => _.Ventilation.FlowPerArea.NumberText);
-            layout.AddRow("Flow/m2:");
-            layout.AddRow(wPerArea);
+            layout.AddRow("Flow/Area:");
+            var unit = new Label();
+            unit.TextBinding.Bind(vm, _ => _.Ventilation.FlowPerArea.DisplayUnitAbbreviation);
+            layout.AddSeparateRow(wPerArea, unit);
 
             var sch = new Button();
             sch.TextBinding.Bind(vm, _ => _.Ventilation.Schedule.BtnName);
@@ -454,26 +469,32 @@ namespace Honeybee.UI
             layout.AddRow("Schedule:");
             layout.AddRow(sch);
 
-            var radFraction = new DoubleText();
+            var radFraction = new DoubleText() { Width = 250 };
             radFraction.ReservedText = _vm.Varies;
             radFraction.SetDefault(_vm.Ventilation.Default.FlowPerPerson);
             radFraction.TextBinding.Bind(vm, _ => _.Ventilation.FlowPerPerson.NumberText);
             layout.AddRow("Flow/Person:");
-            layout.AddRow(radFraction);
+            var unit2 = new Label();
+            unit2.TextBinding.Bind(vm, _ => _.Ventilation.FlowPerPerson.DisplayUnitAbbreviation);
+            layout.AddSeparateRow(radFraction, unit2);
 
-            var visFraction = new DoubleText();
+            var visFraction = new DoubleText() { Width = 250 };
             visFraction.ReservedText = _vm.Varies;
             visFraction.SetDefault(_vm.Ventilation.Default.FlowPerZone);
             visFraction.TextBinding.Bind(vm, _ => _.Ventilation.FlowPerZone.NumberText);
             layout.AddRow("Flow/Zone:");
-            layout.AddRow(visFraction);
+            var unit3 = new Label();
+            unit3.TextBinding.Bind(vm, _ => _.Ventilation.FlowPerZone.DisplayUnitAbbreviation);
+            layout.AddSeparateRow(visFraction, unit3);
 
-            var airFraction = new DoubleText();
+            var airFraction = new DoubleText() { Width = 250 };
             airFraction.ReservedText = _vm.Varies;
             airFraction.SetDefault(_vm.Ventilation.Default.AirChangesPerHour);
             airFraction.TextBinding.Bind(vm, _ => _.Ventilation.AirChangesPerHour.NumberText);
             layout.AddRow("AirChanges/Hour:");
-            layout.AddRow(airFraction);
+            var unit4 = new Label();
+            unit4.TextBinding.Bind(vm, _ => _.Ventilation.AirChangesPerHour.DisplayUnitAbbreviation);
+            layout.AddSeparateRow(airFraction, unit4);
 
             layout.AddRow(null);
 
@@ -497,7 +518,7 @@ namespace Honeybee.UI
 
 
             layout.DefaultSpacing = new Size(4, 4);
-            layout.DefaultPadding = new Padding(4);
+            //layout.DefaultPadding = new Padding(4);
 
 
             var sch = new Button();
@@ -547,15 +568,17 @@ namespace Honeybee.UI
 
 
             layout.DefaultSpacing = new Size(4, 4);
-            layout.DefaultPadding = new Padding(4);
+            //layout.DefaultPadding = new Padding(4);
 
             var wPerArea = new DoubleText();
             wPerArea.Width = 250;
             wPerArea.ReservedText = _vm.Varies;
             wPerArea.SetDefault(_vm.ServiceHotWater.Default.FlowPerArea);
             wPerArea.TextBinding.Bind(vm, _ => _.ServiceHotWater.FlowPerArea.NumberText);
-            layout.AddRow("Flow/m2:");
-            layout.AddRow(wPerArea);
+            layout.AddRow("Flow/Area:");
+            var unit = new Label();
+            unit.TextBinding.Bind(vm, _ => _.ServiceHotWater.FlowPerArea.DisplayUnitAbbreviation);
+            layout.AddSeparateRow(wPerArea, unit);
 
             var sch = new Button();
             sch.TextBinding.Bind(vm, _ => _.ServiceHotWater.Schedule.BtnName);
@@ -563,12 +586,14 @@ namespace Honeybee.UI
             layout.AddRow("Schedule:");
             layout.AddRow(sch);
 
-            var airFraction = new DoubleText();
+            var airFraction = new DoubleText() { Width = 250 };
             airFraction.ReservedText = _vm.Varies;
             airFraction.SetDefault(_vm.ServiceHotWater.Default.TargetTemperature);
             airFraction.TextBinding.Bind(vm, _ => _.ServiceHotWater.TargetTemperature.NumberText);
             layout.AddRow("Target Temperature:");
-            layout.AddRow(airFraction);
+            var unit2 = new Label();
+            unit2.TextBinding.Bind(vm, _ => _.ServiceHotWater.TargetTemperature.DisplayUnitAbbreviation);
+            layout.AddSeparateRow(airFraction, unit2);
 
             var radFraction = new DoubleText();
             radFraction.ReservedText = _vm.Varies;
@@ -598,7 +623,7 @@ namespace Honeybee.UI
         }
 
 
-    
+
 
 
     }
