@@ -35,8 +35,6 @@ namespace Honeybee.UI
             allToggle.Bind(_ => _.Checked, vm, m => m.UseIP);
             layout.AddRow(allToggle);
 
-
-            HoneybeeSchema.Room dummy = null;
             // General
             layout.BeginGroup("General");
 
@@ -133,9 +131,38 @@ namespace Honeybee.UI
             IlluminanceAbbr.TextBinding.Bind(vm, m => m.IlluminanceAbbv);
             layout.AddSeparateRow("Illuminance:", IlluminanceAbbr, null, Illuminance);
 
+            var Conductivity = new EnumDropDown<Units.ThermalConductivityUnit>() { Width = 150 };
+            Conductivity.SelectedValueBinding.Bind(vm, m => m.Conductivity);
+            Conductivity.Bind(_ => _.Enabled, vm, m => m.ConductivityEnabled);
+            var ConductivityAbbr = new Label();
+            ConductivityAbbr.TextBinding.Bind(vm, m => m.ConductivityAbbv);
+            layout.AddSeparateRow("Conductivity:", ConductivityAbbr, null, Conductivity);
+
+            var Resistance = new EnumDropDown<Units.ThermalResistanceUnit>() { Width = 150 };
+            Resistance.SelectedValueBinding.Bind(vm, m => m.Resistance);
+            Resistance.Bind(_ => _.Enabled, vm, m => m.ResistanceEnabled);
+            var ResistanceAbbr = new Label();
+            ResistanceAbbr.TextBinding.Bind(vm, m => m.ResistanceAbbv);
+            layout.AddSeparateRow("Resistance:", ResistanceAbbr, null, Resistance);
+
+            var Density = new EnumDropDown<Units.DensityUnit>() { Width = 150 };
+            Density.SelectedValueBinding.Bind(vm, m => m.Density);
+            Density.Bind(_ => _.Enabled, vm, m => m.DensityEnabled);
+            var DensityAbbr = new Label();
+            DensityAbbr.TextBinding.Bind(vm, m => m.DensityAbbv);
+            layout.AddSeparateRow("Density:", DensityAbbr, null, Density);
+
+            var SpecificHeat = new EnumDropDown<Units.SpecificEntropyUnit>() { Width = 150 };
+            SpecificHeat.SelectedValueBinding.Bind(vm, m => m.SpecificHeat);
+            SpecificHeat.Bind(_ => _.Enabled, vm, m => m.SpecificHeatEnabled);
+            var SpecificHeatAbbr = new Label();
+            SpecificHeatAbbr.TextBinding.Bind(vm, m => m.SpecificHeatAbbv);
+            layout.AddSeparateRow("SpecificHeat:", SpecificHeatAbbr, null, SpecificHeat);
+
+            layout.EndGroup();
             //layout.DefaultPadding = new Padding(10);
-            layout.DefaultSpacing = new Size(3, 3);
-            layout.DefaultPadding = new Padding(5);
+            layout.DefaultSpacing = new Size(4, 4);
+            layout.Padding = new Padding(4);
 
             layout.AddRow("Note: units here are only for display purpose and any changes won't affect any under-hood simulation engines' units.");
 
