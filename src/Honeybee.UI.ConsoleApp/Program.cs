@@ -379,6 +379,13 @@ namespace Honeybee.UI.ConsoleApp
                     }
                 };
 
+                var unit_btn = new Button() { Text = "Unit setting" };
+                unit_btn.Click += (s, e) =>
+                {
+                    var dia = new Dialog_UnitSetting();
+                    dia.ShowModal(Config.Owner);
+                };
+
 
                 panel.AddSeparateRow(RoomPropertybtn, RoomPropertybtn2, null);
                 panel.AddSeparateRow(facePropertybtn, facePropertybtn2, null);
@@ -397,6 +404,7 @@ namespace Honeybee.UI.ConsoleApp
                 panel.AddSeparateRow(opsHVACs);
                 panel.AddSeparateRow(HVACManager);
                 panel.AddSeparateRow(matchRooms_btn);
+                panel.AddSeparateRow(unit_btn);
                 panel.AddSeparateRow(null);
                 Content = panel;
             }
