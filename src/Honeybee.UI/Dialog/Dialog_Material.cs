@@ -3,6 +3,7 @@ using Eto.Forms;
 using HB = HoneybeeSchema;
 using System;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Honeybee.UI
 {
@@ -131,15 +132,41 @@ namespace Honeybee.UI
                 {
                     var numberTB = new MaskedTextBox();
                     numberTB.Provider = new NumericMaskedTextProvider() { AllowDecimal = true };
-                    numberTB.TextBinding.Bind(
-                        () => numberValue.ToString(), 
+                    var hasUnits = _propertyUnits.TryGetValue(item.Name, out var units);
+                    if (hasUnits)
+                    {
+                        var baseUnit = units.baseUnit.ToUnitsNetEnum();
+                        var displayUnit = units.displayUnit.ToUnitsNetEnum();
+
+                        numberTB.TextBinding.Bind(
+                        () => {
+                            var displayValue = Units.ConvertValueWithUnits(numberValue, baseUnit, displayUnit);
+                            return displayValue.ToString();
+                        },
                         (v) => {
-                            v = v.StartsWith(".") ? $"{0}{v}" : v;
-                            item.SetValue(hbObj, Convert.ChangeType(v, type));
+                            Units.TryParse(v, out var numValue);
+                            var baseValue = Units.ConvertValueWithUnits(numValue, displayUnit, baseUnit);
+                            item.SetValue(hbObj, baseValue);
                             CalRValue(hbObj, _showIP);
-                            }
+                        }
                         );
-                    panel.AddRow(item.Name, numberTB);
+                        var abb = displayUnit.GetAbbreviation();
+                        var nameWithUnit = $"{item.Name} [{abb}]";
+                        panel.AddRow(nameWithUnit, numberTB);
+                    }
+                    else // unitless property
+                    {
+                        numberTB.TextBinding.Bind(
+                        () => numberValue.ToString(),
+                        (v) => {
+                            Units.TryParse(v, out var numValue);
+                            item.SetValue(hbObj, numValue);
+                            CalRValue(hbObj, _showIP);
+                        }
+                        );
+                        panel.AddRow(item.Name, numberTB);
+                    }
+                  
                 }
                 else if (value is int intValue)
                 {
@@ -198,8 +225,17 @@ namespace Honeybee.UI
             panel.AddRow(null, null);
             return panel;
 
-           
         }
+
+        private static Dictionary<string, (Enum baseUnit, Enum displayUnit)> _propertyUnits => new Dictionary<string, (Enum, Enum)>()
+        {
+            { "Thickness", (Units.LengthUnit.Meter, Units.CustomUnitSettings[Units.UnitType.Length])},
+            { "Conductivity", (Units.ThermalConductivityUnit.WattPerMeterKelvin, Units.CustomUnitSettings[Units.UnitType.Conductivity])},
+            { "RValue", (Units.ThermalResistanceUnit.SquareMeterDegreeCelsiusPerWatt, Units.CustomUnitSettings[Units.UnitType.Resistance])},
+            { "Density", (Units.DensityUnit.KilogramPerCubicMeter, Units.CustomUnitSettings[Units.UnitType.Density])},
+            { "SpecificHeat", (Units.SpecificEntropyUnit.JoulePerKilogramKelvin, Units.CustomUnitSettings[Units.UnitType.SpecificEntropy])},
+
+        };
 
         void CalRValue(HB.Energy.IMaterial tc, bool ShowIPUnit)
         {
