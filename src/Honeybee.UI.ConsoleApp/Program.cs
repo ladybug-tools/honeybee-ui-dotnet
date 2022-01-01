@@ -379,10 +379,13 @@ namespace Honeybee.UI.ConsoleApp
                     }
                 };
 
+                var lockedUnits = new Dictionary<Honeybee.UI.Units.UnitType, System.Enum>() {
+                    {Honeybee.UI.Units.UnitType.Length, Units.LengthUnit.Millimeter }
+                };
                 var unit_btn = new Button() { Text = "Unit setting" };
                 unit_btn.Click += (s, e) =>
                 {
-                    var dia = new Dialog_UnitSetting();
+                    var dia = new Dialog_UnitSetting(lockedUnits);
                     dia.ShowModal(Config.Owner);
                 };
 
