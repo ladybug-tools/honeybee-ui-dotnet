@@ -527,23 +527,20 @@ namespace Honeybee.UI
         {
             v = default;
 
-            if (dic == null || !dic.Any())
-            {
-                // get default value
-                if (Units.CustomUnitSettings.TryGetValue(t, out var custom) && custom is T cvt) 
-                    v = cvt;
-                return false;
-            }
-            else if(dic.TryGetValue(t, out var value) && value is T vt)
+            
+            if(dic != null && dic.TryGetValue(t, out var value) && value is T vt)
             {
                 v = vt;
                 return true;
             }
             else
-            {
+            { 
+                // get default value
+                if (Units.CustomUnitSettings.TryGetValue(t, out var custom) && custom is T cvt)
+                    v = cvt;
                 return false;
             }
-               
+
         }
 
         
