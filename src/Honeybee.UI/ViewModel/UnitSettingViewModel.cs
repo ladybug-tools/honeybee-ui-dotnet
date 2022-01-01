@@ -511,6 +511,7 @@ namespace Honeybee.UI
             Units.CustomUnitSettings.TryAddValue(Units.UnitType.Density, this.Density);
             Units.CustomUnitSettings.TryAddValue(Units.UnitType.SpecificEntropy, this.SpecificHeat);
 
+            Units.SaveUnits();
 
         }
 

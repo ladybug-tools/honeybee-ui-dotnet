@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Honeybee.UI
 {
@@ -27,27 +28,30 @@ namespace Honeybee.UI
 
         }
 
+        public static Dictionary<UnitType, Enum> _customUnitSettings;
 
+        public static Dictionary<UnitType, Enum> CustomUnitSettings
+        {
+            get
+            {
+                if (_customUnitSettings == null)
+                    _customUnitSettings = Units.LoadUnits();
+                return _customUnitSettings;
+            }
+            //private set; 
+        }
+        public static string UnitSettingFile
+        {
+            get
+            {
+                var root = System.IO.Path.GetDirectoryName(typeof(Units).Assembly.Location);
+                var file = System.IO.Path.Combine(root, "UISettings.json");
+                return file;
+            }
+            //private set; 
+        }
 
-        public static Dictionary<UnitType, Enum> CustomUnitSettings = new Dictionary<UnitType, Enum>() {
-            { UnitType.Length, LengthUnit.Meter },
-            { UnitType.Area, AreaUnit.SquareMeter },
-            { UnitType.Volume, VolumeUnit.CubicMeter },
-            { UnitType.Temperature, TemperatureUnit.DegreeCelsius },
-            { UnitType.TemperatureDelta, TemperatureDeltaUnit.DegreeCelsius },
-            { UnitType.Power, PowerUnit.Watt },
-            { UnitType.Energy, EnergyUnit.KilowattHour },
-            { UnitType.PowerDensity, HeatFluxUnit.WattPerSquareMeter },
-            { UnitType.AirFlowRate, VolumeFlowUnit.CubicMeterPerSecond },
-            { UnitType.PeopleDensity, ReciprocalAreaUnit.InverseSquareMeter },
-            { UnitType.AirFlowRateArea, VolumeFlowPerAreaUnit.CubicMeterPerSecondPerSquareMeter },
-            { UnitType.Speed, SpeedUnit.MeterPerSecond },
-            { UnitType.Illuminance, IlluminanceUnit.Lux },
-            { UnitType.Conductivity, ThermalConductivityUnit.WattPerMeterKelvin },
-            { UnitType.Resistance, ThermalResistanceUnit.SquareMeterDegreeCelsiusPerWatt },
-            { UnitType.Density, DensityUnit.KilogramPerCubicMeter },
-            { UnitType.SpecificEntropy, SpecificEntropyUnit.JoulePerKilogramKelvin },
-        };
+      
 
         public static Dictionary<UnitType, Enum> SIUnits = new Dictionary<UnitType, Enum>() {
             { UnitType.Length, LengthUnit.Meter },
@@ -75,7 +79,7 @@ namespace Honeybee.UI
             { UnitType.Volume, VolumeUnit.CubicFoot },
             { UnitType.Temperature, TemperatureUnit.DegreeFahrenheit },
             { UnitType.TemperatureDelta, TemperatureDeltaUnit.DegreeFahrenheit },
-            { UnitType.Power, PowerUnit.Watt },
+            { UnitType.Power, PowerUnit.BritishThermalUnitPerHour },
             { UnitType.Energy, EnergyUnit.KilobritishThermalUnit },
             { UnitType.PowerDensity, HeatFluxUnit.WattPerSquareFoot },
             { UnitType.AirFlowRate, VolumeFlowUnit.CubicFootPerMinute },
@@ -96,6 +100,8 @@ namespace Honeybee.UI
         //    { LengthUnit.Centimeter, HoneybeeSchema.Units.Centimeters },
         //    { LengthUnit.Millimeter, HoneybeeSchema.Units.Millimeters }
         //};
+
+        #region Units
 
         public enum LengthUnit
         {
@@ -214,6 +220,9 @@ namespace Honeybee.UI
             KilojoulePerKilogramKelvin,
         }
 
+        #endregion
+
+
         //public static void U()
         //{
         //    //var a2 = UnitsNet.VolumeFlow.FromCubicFeetPerMinute(100) * UnitsNet.ReciprocalArea.FromInverseSquareFeet(20);
@@ -264,8 +273,47 @@ namespace Honeybee.UI
             return UnitsNet.UnitAbbreviationsCache.Default.GetDefaultAbbreviation(t, v);
         }
 
-      
 
+      
+        internal static void SaveUnits()
+        {
+            if (CustomUnitSettings == null) return;
+            var dic = CustomUnitSettings;
+            var js = Newtonsoft.Json.JsonConvert.SerializeObject(dic);
+
+            System.IO.File.WriteAllText(UnitSettingFile, js);
+
+        }
+
+
+        internal static Dictionary<UnitType, Enum> LoadUnits()
+        {
+            var refDic = SIUnits;
+
+            if (System.IO.File.Exists(UnitSettingFile))
+            {
+                var json = System.IO.File.ReadAllText(UnitSettingFile);
+                var objs = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<UnitType, int>>(json);
+                var units = new Dictionary<UnitType, Enum>();
+
+                foreach (var item in objs)
+                {
+                    var old = refDic[item.Key];
+                    var saved = Enum.ToObject(old.GetType(), item.Value) as Enum;
+                    units.Add(item.Key, saved);
+                }
+
+                return units;
+            }
+            else
+            {
+
+                return refDic.ToDictionary(_ => _.Key, _ => _.Value);
+            }
+           
+
+
+        }
 
 
     }
