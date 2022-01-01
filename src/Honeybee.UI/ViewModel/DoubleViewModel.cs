@@ -95,7 +95,7 @@ namespace Honeybee.UI
             this.DisplayUnitAbbreviation = unit;
         }
 
-        private static bool TryParse(string text, out double value) => Units.TryParse(text, out value);
+        private static bool TryParse(string text, out double value) => Utility.TryParse(text, out value);
 
         private double ToBaseValue(double value) => Units.ConvertValueWithUnits(value, this.DisplayUnit, this.BaseUnit);
 
