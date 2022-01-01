@@ -144,7 +144,7 @@ namespace Honeybee.UI
                             return displayValue.ToString();
                         },
                         (v) => {
-                            Units.TryParse(v, out var numValue);
+                            Utility.TryParse(v, out var numValue);
                             var baseValue = Units.ConvertValueWithUnits(numValue, displayUnit, baseUnit);
                             item.SetValue(hbObj, baseValue);
                             CalRValue(hbObj, _showIP);
@@ -159,7 +159,7 @@ namespace Honeybee.UI
                         numberTB.TextBinding.Bind(
                         () => numberValue.ToString(),
                         (v) => {
-                            Units.TryParse(v, out var numValue);
+                            Utility.TryParse(v, out var numValue);
                             item.SetValue(hbObj, numValue);
                             CalRValue(hbObj, _showIP);
                         }

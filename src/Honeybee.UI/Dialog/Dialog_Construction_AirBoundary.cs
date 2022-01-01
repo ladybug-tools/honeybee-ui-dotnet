@@ -47,7 +47,7 @@ namespace Honeybee.UI
             //AirMixingPerArea
             var airMx = new MaskedTextBox();
             airMx.Provider = new NumericMaskedTextProvider() { AllowDecimal = true };
-            airMx.TextBinding.Bind(() => _hbObj.AirMixingPerArea.ToString(), (v) => _hbObj.AirMixingPerArea = DoubleFromString(v));
+            airMx.TextBinding.Bind(() => _hbObj.AirMixingPerArea.ToString(), (v) => _hbObj.AirMixingPerArea = Utility.ToNumber(v));
             layout.AddRow(nameof(_hbObj.AirMixingPerArea));
             layout.AddRow(airMx);
 
@@ -87,10 +87,5 @@ namespace Honeybee.UI
             }
         }
 
-        private static double DoubleFromString(string input)
-        {
-            var v = input.StartsWith(".") ? $"{0}{input}" : input;
-            return double.Parse(v);
-        }
     }
 }
