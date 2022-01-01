@@ -31,7 +31,7 @@ namespace Honeybee.UI
 
 
             // all controls
-            var allToggle = new CheckBox() { Text = "Use I-P units for common types" };
+            var allToggle = new CheckBox() { Text = "IP Units" };
             allToggle.Bind(_ => _.Checked, vm, m => m.UseIP);
             layout.AddRow(allToggle);
 
@@ -164,7 +164,7 @@ namespace Honeybee.UI
             layout.DefaultSpacing = new Size(4, 4);
             layout.Padding = new Padding(4);
 
-            layout.AddRow("Note: units here are only for display purpose and any changes won't affect any under-hood simulation engines' units.");
+            //layout.AddRow("Note: units here are only for display purpose and any changes won't affect any under-hood simulation engines' units.");
 
             layout.AddSeparateRow(null, DefaultButton, AbortButton, null);
             layout.AddRow(null);
