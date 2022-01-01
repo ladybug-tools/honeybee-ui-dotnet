@@ -110,15 +110,17 @@ namespace Honeybee.UI
         {
             SquareFoot,
             SquareInch,
-            SquareKilometer,
             SquareMeter,
+            SquareMillimeter,
+            SquareCentimeter,
         }
         public enum VolumeUnit
         {
-            CubicCentimeter,
             CubicFoot,
             CubicInch,
             CubicMeter,
+            CubicMillimeter,
+            CubicCentimeter,
         }
     
         public enum TemperatureDeltaUnit
@@ -262,19 +264,10 @@ namespace Honeybee.UI
             return UnitsNet.UnitAbbreviationsCache.Default.GetDefaultAbbreviation(t, v);
         }
 
-        public static bool TryParse(string text, out double value)
-        {
-            value = -999;
-            text = text.Trim();
-            if (string.IsNullOrEmpty(text))
-                return false;
+      
 
-            text = text.StartsWith(".") ? $"0{text}" : text;
-            return double.TryParse(text, out value);
-        }
+
 
     }
-
-
 
 }
