@@ -219,21 +219,12 @@ namespace Honeybee.UI
 
                 // SimulationOutput
                 param.Output = param.Output ?? new HB.SimulationOutput();
-                var html_CB = new CheckBox();
-                html_CB.CheckedBinding.Bind(param.Output, v => v.IncludeHtml);
-                html_CB.Text = "Include Html Report";
-                var sql_CB = new CheckBox();
-                sql_CB.CheckedBinding.Bind(param.Output, v => v.IncludeSqlite);
-                sql_CB.Text = "Include SQL Data File";
-
 
                 var simOutput_GB = new GroupBox();
                 simOutput_GB.Font = new Font(simOutput_GB.Font.Family, simOutput_GB.Font.Size, FontStyle.Bold);
                 simOutput_GB.Text = "Simulation Output";
                 var simuOutputLayout = new DynamicLayout();
                 simuOutputLayout.Spacing = new Size(5, 5);
-                simuOutputLayout.AddRow(html_CB);
-                simuOutputLayout.AddRow(sql_CB);
                 //simuOutputLayout.AddRow("EnergyPlus Output Names:");
                 var outputNamesBtn = new Button { Text = "EnergyPlus Output/Summary Report" };
                 outputNamesBtn.Click += (s, e) =>
