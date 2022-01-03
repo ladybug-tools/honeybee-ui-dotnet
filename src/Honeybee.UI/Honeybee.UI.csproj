@@ -25,9 +25,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="HoneybeeSchema" Version="1.47.0.1" />
+    <PackageReference Include="HoneybeeSchema" Version="1.47.2" />
     <PackageReference Include="Eto.Forms" Version="2.5.11" />
-    <PackageReference Include="UnitsNet" Version="4.111.0" />
+    <PackageReference Include="UnitsNet" Version="4.112.0" />
   </ItemGroup>
 
 </Project>
