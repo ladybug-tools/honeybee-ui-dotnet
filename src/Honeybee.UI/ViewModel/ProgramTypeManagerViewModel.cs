@@ -238,9 +238,10 @@ namespace Honeybee.UI
             var names = (this.ProgramType as ProgramTypeAbridged).GetAllSchedules();
             var sches = names
                  .Select(_ => libSource.ScheduleList.FirstOrDefault(m => m.Identifier == _)).Where(_ => _ != null);
+            var schTypes = libSource.ScheduleTypeLimits.Where(_ => _ != null);
 
             eng.AddSchedules(sches);
-            eng.AddScheduleTypeLimits(libSource.ScheduleTypeLimits);
+            eng.AddScheduleTypeLimits(schTypes);
             return eng.DuplicateModelEnergyProperties();
 
         }

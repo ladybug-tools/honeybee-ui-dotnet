@@ -48,12 +48,12 @@ namespace Honeybee.UI
 
         public void UpdateLibSource()
         {
-            var typeLimits = this._userData.Select(_ => _.TypeLimitObj).Distinct();
+            var typeLimits = this._userData.Select(_ => _.TypeLimitObj).Distinct().Where(_ => _ != null);
             this._modelEnergyProperties.ScheduleTypeLimits.Clear();
             this._modelEnergyProperties.AddScheduleTypeLimits(_typeLimits);
             this._modelEnergyProperties.AddScheduleTypeLimits(typeLimits);
 
-            var newItems = this._userData.Select(_ => _.ScheduleRuleset);
+            var newItems = this._userData.Select(_ => _.ScheduleRuleset).Where(_ => _ != null);
 
             this._modelEnergyProperties.Schedules.Clear();
             this._modelEnergyProperties.AddSchedules(newItems);
