@@ -12,13 +12,14 @@
     <PackageProjectUrl>https://github.com/ladybug-tools/honeybee-ui-dotnet</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ladybug-tools/honeybee-ui-dotnet</RepositoryUrl>
     <Version>0.0.0.64-dev</Version>
+    <Platforms>x64</Platforms>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutputPath>bin\Debug_Rhino</OutputPath>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutputPath>bin\Release_Rhino</OutputPath>
   </PropertyGroup>
 
@@ -33,7 +34,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="HoneybeeSchema" Version="1.47.2.1"/>
+    <PackageReference Include="HoneybeeSchema" Version="1.47.2.1" />
     <PackageReference Include="RhinoCommon" Version="6.23.20055.13111" IncludeAssets="compile; build;" />
     <PackageReference Include="UnitsNet" Version="4.113.0" />
   </ItemGroup>
