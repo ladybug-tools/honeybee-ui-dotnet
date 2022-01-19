@@ -28,7 +28,11 @@ namespace Honeybee.UI
             #region Panel for Schedule RuleSet rules
             var rulesPanel = new DynamicLayout();
             rulesPanel.Width = 200;
-            //rulesPanel.Height = 500;
+
+            var summerbtn = new Button() { Text = "Summer Design Day", Command = this.SummerCommand};
+            var winterbtn = new Button() { Text = "Winter Design Day", Command = this.WinterCommand};
+            var holidaybtn = new Button() { Text = "Holiday", Command = this.HolidayCommand };
+           
 
             UpdateScheduleRulesPanel(rulesPanel);
 
@@ -37,7 +41,11 @@ namespace Honeybee.UI
             var new_btn = new Button() { Text = "Add" };
             new_btn.Command = AddRuleCommand;
             new_btn.CommandParameter = rulesPanel;
- 
+            // remove current rule
+            var remove_btn = new Button() { Text = "Remove" };
+            remove_btn.Command = RemoveRuleCommand;
+            remove_btn.CommandParameter = rulesPanel;
+
 
             var hbData_btn = new Button() { Text = "Schema Data" };
             hbData_btn.Command = HBDataCommand;
@@ -49,9 +57,15 @@ namespace Honeybee.UI
             rightPanel.DefaultSpacing = new Size(5, 5);
             rightPanel.AddRow("Schedule Name:");
             rightPanel.AddRow(schName_Tb);
+            rightPanel.AddRow("Special Day Profiles:");
+            rightPanel.AddRow(summerbtn);
+            rightPanel.AddRow(winterbtn);
+            rightPanel.AddRow(holidaybtn);
+            rightPanel.AddRow("Day Profiles:");
             rightPanel.AddRow(rulesPanel);
             rightPanel.AddRow(null);
             rightPanel.AddRow(new_btn);
+            rightPanel.AddRow(remove_btn);
             rightPanel.AddRow(hbData_btn);
             rightPanel.AddRow(null);
 
@@ -491,8 +505,11 @@ namespace Honeybee.UI
             layoutLeftTop.DefaultPadding = new Padding(25, 0, 10, 0);
             layoutLeftTop.DefaultSpacing = new Size(3, 3);
 
+            var dayType = new Label();
+            dayType.Bind(_ => _.Text, _vm, _ => _.SchDayType);
+            
             //layoutLeft.DataContext = _vmSelectedRule;
-            layoutLeftTop.AddSeparateRow( new Label { Text = "Schedule Day:", Width = 90 }, dayName_Tb, color_Tb, null);
+            layoutLeftTop.AddSeparateRow( new Label { Text = "Day Name:", Width = 90 }, dayName_Tb, color_Tb, dayType, null);
 
 
             _layoutSchRule = new DynamicLayout();
@@ -577,16 +594,7 @@ namespace Honeybee.UI
             var rules = _vm.ScheduleRules;
 
             layout.Rows.Clear();
-            var summerbtn = new Button() { Text = "Summer Design Day", Enabled = false };
-            var winterbtn = new Button() { Text = "Winter Design Day", Enabled = false };
-            var holidaybtn = new Button() { Text = "Holiday", Enabled = false };
-            layout.AddRow("Special Day Profiles:");
-            layout.AddRow(summerbtn);
-            layout.AddRow(winterbtn);
-            layout.AddRow(holidaybtn);
-            layout.AddRow("Day Profiles:");
-
-
+           
             var count = 1;
             foreach (var item in rules)
             {
@@ -597,12 +605,14 @@ namespace Honeybee.UI
                 var color = GetRuleColor(item);
                 var ruleDay = _vm.DaySchedules.First(_ => _.Identifier == item.ScheduleDay);
 
-                var ruleBtn = GenScheduleRuleBtn($"Priority {count}", color,
+                var schDayBtnName = $"Priority {count}";
+                var ruleBtn = GenScheduleRuleBtn(schDayBtnName, color,
                     () =>
                     {
                         _vm.SchDay_hbObj = ruleDay;
                         _vm.SchRule_hbObj = item;
                         _vm.Currentolor = color;
+                        _vm.SchDayType = schDayBtnName;
                         UpdateScheduleRulePanel(false);
                         UpdateApplyDayWeekBtns();
 
@@ -618,6 +628,9 @@ namespace Honeybee.UI
                 () =>
                 {
                     _vm.SchDay_hbObj = _vm.DefaultDaySchedule;
+                    _vm.SchRule_hbObj = null;
+                    _vm.Currentolor = _vm.DefaultRuleColor; 
+                    _vm.SchDayType = "Default Day";
                     UpdateScheduleRulePanel(true);
                 }
             );
@@ -644,17 +657,18 @@ namespace Honeybee.UI
             ruleDayBtn.Click += (s, e) =>
             {
                 setAction();
-                _scheduleDaydrawable.Update(new Rectangle(new Size(600, 400)));
+                UpdateScheduleDayPanel();
             };
-             
             
-
             return ruleDayBtn;
 
 
         }
 
-
+        private void UpdateScheduleDayPanel()
+        {
+            _scheduleDaydrawable.Update(new Rectangle(new Size(600, 400)));
+        }
         private Control[] ApplyDateRangeControls()
         {
             var sDate = new DateTimePicker();
@@ -759,6 +773,7 @@ namespace Honeybee.UI
             {
                 _layoutSchRule.Enabled = true;
             }
+            UpdateScheduleDayPanel();
         }
         //private void DrawCalendarGrids(Graphics graphic)
         //{
@@ -1476,6 +1491,59 @@ namespace Honeybee.UI
         public ICommand HBDataCommand => new RelayCommand(() => {
             Dialog_Message.Show(this, _vm.SchRuleset_hbObj.ToJson(true));
         });
+        public ICommand SummerCommand => new RelayCommand<DynamicLayout>((layout) =>
+        {
+            var day = _vm.SummerDay_hbObj;
+            if (day == null)
+            {
+                day = _vm.DefaultDaySchedule.DuplicateScheduleDay();
+                day.Identifier = Guid.NewGuid().ToString();
+                day.DisplayName = $"Summer Day {day.Identifier.Substring(0, 5)}";
+                _vm.SummerDay_hbObj = day;
+                _vm.DaySchedules.Add(day);
+            }
+            _vm.SchDay_hbObj = day;
+            _vm.SchRule_hbObj = new HB.ScheduleRuleAbridged("Summer Day");
+            _vm.Currentolor = Eto.Drawing.Color.FromArgb(0, 0, 0, 0);
+            _vm.SchDayType = "Summer Design Day";
+            UpdateScheduleRulePanel(true);
+        });
+
+        public ICommand WinterCommand => new RelayCommand<DynamicLayout>((layout) =>
+        {
+            var day = _vm.WinterDay_hbObj;
+            if (day == null)
+            {
+                day = _vm.DefaultDaySchedule.DuplicateScheduleDay();
+                day.Identifier = Guid.NewGuid().ToString();
+                day.DisplayName = $"Winter Day {day.Identifier.Substring(0, 5)}";
+                _vm.WinterDay_hbObj = day;
+                _vm.DaySchedules.Add(day);
+            }
+            _vm.SchDay_hbObj = day;
+            _vm.SchRule_hbObj = new HB.ScheduleRuleAbridged("Winter Day");
+            _vm.Currentolor = Eto.Drawing.Color.FromArgb(0, 0, 0, 0);
+            _vm.SchDayType = "Winter Design Day";
+            UpdateScheduleRulePanel(true);
+        });
+
+        public ICommand HolidayCommand => new RelayCommand<DynamicLayout>((layout) =>
+        {
+            var day = _vm.HolidayDay_hbObj;
+            if (day == null)
+            {
+                day = _vm.DefaultDaySchedule.DuplicateScheduleDay();
+                day.Identifier = Guid.NewGuid().ToString();
+                day.DisplayName = $"Holiday Day {day.Identifier.Substring(0, 5)}";
+                _vm.HolidayDay_hbObj = day;
+                _vm.DaySchedules.Add(day);
+            }
+            _vm.SchDay_hbObj = day;
+            _vm.SchRule_hbObj = new HB.ScheduleRuleAbridged("Holiday");
+            _vm.Currentolor = Eto.Drawing.Color.FromArgb(0, 0, 0, 0);
+            _vm.SchDayType = "Holiday";
+            UpdateScheduleRulePanel(true);
+        });
 
         public ICommand AddRuleCommand => new RelayCommand<DynamicLayout>((layout) =>
         {
@@ -1489,6 +1557,48 @@ namespace Honeybee.UI
             _vm.ScheduleRules.Add(newRule);
             _vm.DaySchedules.Add(defaultDay);
 
+            UpdateScheduleRulesPanel(layout);
+
+        });
+
+        public ICommand RemoveRuleCommand => new RelayCommand<DynamicLayout>((layout) =>
+        {
+            var currentDay = _vm.SchDay_hbObj;
+            var currentRule = _vm.SchRule_hbObj;
+            if (currentDay == null || currentRule == null)
+                return;
+            if (currentRule.ScheduleDay == "DefaultDayThatDoesnotHaveScheduleDay")
+                return;
+
+            var dayId = currentDay.Identifier;
+      
+            //_vm.SchRuleset_hbObj
+
+            _vm.ScheduleRules.RemoveAll(_=>_ == currentRule);
+
+            //check if the schedule day is also used in other places
+            var sches = _vm.ScheduleRules.Select(_ => _.ScheduleDay).ToList();
+            sches.Add(_vm.SchRuleset_hbObj.DefaultDaySchedule);
+            sches.Add(_vm.SchRuleset_hbObj.SummerDesigndaySchedule);
+            sches.Add(_vm.SchRuleset_hbObj.WinterDesigndaySchedule);
+            sches.Add(_vm.SchRuleset_hbObj.HolidaySchedule);
+            // remove it if there is only one place that is using it
+            var gps = sches.GroupBy(_ => _).FirstOrDefault(_=>_.Key == dayId);
+            if (gps == null || gps.Count() <= 1)
+                _vm.DaySchedules.RemoveAll(_ => _.Identifier == dayId);
+
+
+            // remove special day
+            if (currentRule.ScheduleDay == "Summer Day") _vm.SummerDay_hbObj = null;
+            else if (currentRule.ScheduleDay == "Winter Day") _vm.WinterDay_hbObj = null;
+            else if (currentRule.ScheduleDay == "Holiday") _vm.HolidayDay_hbObj = null;
+
+            //reset to the default one
+            _vm.SchDay_hbObj = _vm.DefaultDaySchedule;
+            _vm.SchRule_hbObj = null;
+            _vm.Currentolor = _vm.DefaultRuleColor;
+            UpdateScheduleDayPanel();
+            RefreshCalendar();
             UpdateScheduleRulesPanel(layout);
 
         });
