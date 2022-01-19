@@ -128,10 +128,7 @@ namespace Honeybee.UI
             set => Set(() => SchRuleset_hbObj.ScheduleRules = value, nameof(ScheduleRules));
 
         }
-        public ScheduleDay DefaultDaySchedule
-        {
-            get => DaySchedules.First(_ => _.Identifier == _schRuleset_hbObj.DefaultDaySchedule);
-        }
+        public readonly ScheduleDay DefaultDaySchedule;
 
         private Eto.Drawing.Color _currentColor;
 
@@ -230,6 +227,8 @@ namespace Honeybee.UI
             }
             set => Set(() => _schRule_hbObj = value, nameof(SchRule_hbObj));
         }
+
+
         public bool ApplySunday
         {
             get => SchRule_hbObj.ApplySunday;
@@ -292,9 +291,18 @@ namespace Honeybee.UI
         public ScheduleDay SchDay_hbObj
         {
             get => _SchDay_hbObj;
-            set => Set(() => _SchDay_hbObj = value, nameof(SchDay_hbObj));
+            set
+            {
+                Set(() => _SchDay_hbObj = value, nameof(SchDay_hbObj));
+                SchDayName = value.DisplayName ?? value.Identifier;
+            }
         }
-
+        private string _schDayType;
+        public string SchDayType
+        {
+            get => _schDayType;
+            set => Set(() => _schDayType = value, nameof(SchDayType));
+        }
         public string SchDayName
         {
             get
@@ -319,6 +327,40 @@ namespace Honeybee.UI
         }
         #endregion
 
+        #region SummerDesignDay
+        private ScheduleDay _SummerDay_hbObj;
+        public ScheduleDay SummerDay_hbObj
+        {
+            get => _SummerDay_hbObj;
+            set
+            {
+                Set(() => _SummerDay_hbObj = value, nameof(SummerDay_hbObj));
+                _schRuleset_hbObj.SummerDesigndaySchedule = value == null ? null : value.Identifier;
+            }
+        }
+
+        private ScheduleDay _WinterDay_hbObj;
+        public ScheduleDay WinterDay_hbObj
+        {
+            get => _WinterDay_hbObj;
+            set
+            {
+                Set(() => _WinterDay_hbObj = value, nameof(WinterDay_hbObj));
+                _schRuleset_hbObj.WinterDesigndaySchedule = value == null ? null : value.Identifier;
+            }
+        }
+
+        private ScheduleDay _HolidayDay_hbObj;
+        public ScheduleDay HolidayDay_hbObj
+        {
+            get => _HolidayDay_hbObj;
+            set
+            {
+                Set(() => _HolidayDay_hbObj = value, nameof(HolidayDay_hbObj));
+                _schRuleset_hbObj.HolidaySchedule = value == null ? null : value.Identifier;
+            }
+        }
+        #endregion
 
         public Eto.Drawing.Color DefaultRuleColor { get; set; } = Eto.Drawing.Color.FromArgb(184, 229, 255);
         public List<Eto.Drawing.Color> RuleColors { get; set; } 
@@ -342,9 +384,16 @@ namespace Honeybee.UI
         public ScheduleRulesetViewModel(ScheduleRuleset scheduleRuleset)
         {
             this.SchRuleset_hbObj = scheduleRuleset;
+            this.DefaultDaySchedule = DaySchedules.First(_ => _.Identifier == _schRuleset_hbObj.DefaultDaySchedule);
             this.SchDay_hbObj = this.DefaultDaySchedule;
+            this.SchDayType = "Default Day";
             this.Intervals = 60;
             this.Currentolor = this.DefaultRuleColor;
+
+            this.SummerDay_hbObj = DaySchedules.First(_ => _.Identifier == _schRuleset_hbObj.SummerDesigndaySchedule);
+            this.WinterDay_hbObj = DaySchedules.First(_ => _.Identifier == _schRuleset_hbObj.WinterDesigndaySchedule);
+            this.HolidayDay_hbObj = DaySchedules.First(_ => _.Identifier == _schRuleset_hbObj.HolidaySchedule);
+
         }
 
     }
