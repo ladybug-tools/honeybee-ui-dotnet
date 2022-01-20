@@ -2,22 +2,6 @@
     "plugins": [
         "@semantic-release/commit-analyzer",
         "@semantic-release/release-notes-generator",
-        [
-            "@semantic-release/github",
-            {
-                "assets": [
-                    {
-                        "path": "HoneybeeUI.zip",
-                        "name": "HoneybeeUI.zip",
-                        "label": "HoneybeeUI.zip"
-                    },
-                    {
-                        "path": "HoneybeeUI_Rhino.zip",
-                        "name": "HoneybeeUI_Rhino.zip",
-                        "label": "HoneybeeUI_Rhino.zip"
-                    }
-                ]
-            }
-        ]
+        "@semantic-release/github"
     ]
 }
