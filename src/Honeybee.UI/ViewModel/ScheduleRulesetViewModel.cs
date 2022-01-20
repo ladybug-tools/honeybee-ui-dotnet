@@ -384,15 +384,19 @@ namespace Honeybee.UI
         public ScheduleRulesetViewModel(ScheduleRuleset scheduleRuleset)
         {
             this.SchRuleset_hbObj = scheduleRuleset;
-            this.DefaultDaySchedule = DaySchedules.First(_ => _.Identifier == _schRuleset_hbObj.DefaultDaySchedule);
-            this.SchDay_hbObj = this.DefaultDaySchedule;
+            var defaultDay = DaySchedules.FirstOrDefault(_ => _.Identifier == _schRuleset_hbObj.DefaultDaySchedule);
+            if (defaultDay == null)
+                throw new ArgumentException($"Schedule {scheduleRuleset.DisplayName}[{scheduleRuleset.Identifier}] has an invalid default day schedule");
+                
+            this.DefaultDaySchedule = defaultDay;
+            this.SchDay_hbObj = defaultDay;
             this.SchDayType = "Default Day";
             this.Intervals = 60;
             this.Currentolor = this.DefaultRuleColor;
 
-            this.SummerDay_hbObj = DaySchedules.First(_ => _.Identifier == _schRuleset_hbObj.SummerDesigndaySchedule);
-            this.WinterDay_hbObj = DaySchedules.First(_ => _.Identifier == _schRuleset_hbObj.WinterDesigndaySchedule);
-            this.HolidayDay_hbObj = DaySchedules.First(_ => _.Identifier == _schRuleset_hbObj.HolidaySchedule);
+            this.SummerDay_hbObj = DaySchedules.FirstOrDefault(_ => _.Identifier == _schRuleset_hbObj.SummerDesigndaySchedule);
+            this.WinterDay_hbObj = DaySchedules.FirstOrDefault(_ => _.Identifier == _schRuleset_hbObj.WinterDesigndaySchedule);
+            this.HolidayDay_hbObj = DaySchedules.FirstOrDefault(_ => _.Identifier == _schRuleset_hbObj.HolidaySchedule);
 
         }
 
