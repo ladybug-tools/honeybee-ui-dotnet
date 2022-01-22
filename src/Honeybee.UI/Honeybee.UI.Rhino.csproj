@@ -1,44 +1,44 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>NET452</TargetFramework>
-    <Authors>Ladybug Tools</Authors>
-    <Company>LadybugTools LLC</Company>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Description>UI library build with Eto Forms for editing Honeybee Schema (DotNet) on both Windows and Mac system.</Description>
-    <PackageLicenseExpression>AGPL-3.0-only</PackageLicenseExpression>
-    <Copyright>Copyright © 2022 Ladybug Tools LLC</Copyright>
-    <PackageProjectUrl>https://github.com/ladybug-tools/honeybee-ui-dotnet</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/ladybug-tools/honeybee-ui-dotnet</RepositoryUrl>
-    <Version>0.0.0.64-dev</Version>
-    <Platforms>x64</Platforms>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net48</TargetFramework>
+		<Authors>Ladybug Tools</Authors>
+		<Company>LadybugTools LLC</Company>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Description>UI library build with Eto Forms for editing Honeybee Schema (DotNet) on both Windows and Mac system.</Description>
+		<PackageLicenseExpression>AGPL-3.0-only</PackageLicenseExpression>
+		<Copyright>Copyright © 2022 Ladybug Tools LLC</Copyright>
+		<PackageProjectUrl>https://github.com/ladybug-tools/honeybee-ui-dotnet</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/ladybug-tools/honeybee-ui-dotnet</RepositoryUrl>
+		<Version>0.0.0.64-dev</Version>
+		<Platforms>x64</Platforms>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-    <OutputPath>bin\Debug_Rhino</OutputPath>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
+		<OutputPath>bin\Debug_Rhino</OutputPath>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <OutputPath>bin\Release_Rhino</OutputPath>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<OutputPath>bin\Release_Rhino</OutputPath>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="EmbeddedResources\honeybee.ico" />
-    <None Remove="EmbeddedResources\ladybug.ico" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Remove="EmbeddedResources\honeybee.ico" />
+		<None Remove="EmbeddedResources\ladybug.ico" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="EmbeddedResources\honeybee.ico" />
-    <EmbeddedResource Include="EmbeddedResources\ladybug.ico" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <PackageReference Include="HoneybeeSchema" Version="1.47.2.1" />
-    <PackageReference Include="RhinoCommon" Version="6.23.20055.13111" IncludeAssets="compile; build;" />
-    <PackageReference Include="UnitsNet" Version="4.113.0" />
-  </ItemGroup>
-  
+	<ItemGroup>
+		<EmbeddedResource Include="EmbeddedResources\honeybee.ico" />
+		<EmbeddedResource Include="EmbeddedResources\ladybug.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="HoneybeeSchema" Version="1.47.2.1" />
+		<PackageReference Include="RhinoCommon" Version="6.23.20055.13111" IncludeAssets="compile; build;" />
+		<PackageReference Include="UnitsNet" Version="4.113.0" />
+	</ItemGroup>
+
 
 </Project>
 
