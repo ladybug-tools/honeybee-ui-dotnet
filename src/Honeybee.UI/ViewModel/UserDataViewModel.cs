@@ -29,6 +29,7 @@ namespace Honeybee.UI
             {
                 uds = jObj.Children()
                    .OfType<Newtonsoft.Json.Linq.JProperty>()
+                   .Where(_=> !_.Name.StartsWith("__")) // hide reserved items, such as "__layer__"
                    .Select(_ => new UserDataItem(_.Name, _.Value.ToString()))
                    .ToList();
             }
