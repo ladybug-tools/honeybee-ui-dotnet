@@ -17,7 +17,7 @@ namespace Honeybee.UI
         public DoubleViewModel Area
         {
             get => _area;
-            private set => this.Set(() => _area = value, nameof(Area));
+            set => this.Set(() => _area = value, nameof(Area));
         }
 
 
@@ -27,7 +27,7 @@ namespace Honeybee.UI
         public ButtonViewModel Construction
         {
             get => _construction;
-            private set => this.Set(() => _construction = value, nameof(Construction));
+            set => this.Set(() => _construction = value, nameof(Construction));
         }
         public Func<double> InternalMassAreaPicker { get; set; }
  

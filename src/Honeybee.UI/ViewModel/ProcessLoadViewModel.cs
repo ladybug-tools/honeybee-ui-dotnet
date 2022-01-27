@@ -15,7 +15,7 @@ namespace Honeybee.UI
         public FuelTypes FuelType
         {
             get => _refHBObj.FuelType;
-            private set
+            set
             {
                 FuelTypeText = value.ToString();
                 this.Set(() => _refHBObj.FuelType = value, nameof(FuelType));
@@ -27,7 +27,7 @@ namespace Honeybee.UI
         public string FuelTypeText
         {
             get => _fuelTypeText;
-            private set
+            set
             {
                 _isFuelTypeVaries = value == this.Varies;
                 this.Set(() => _fuelTypeText = value, nameof(FuelTypeText));
@@ -40,7 +40,7 @@ namespace Honeybee.UI
         public string EndUseCategory
         {
             get => _refHBObj.EndUseCategory;
-            private set
+            set
             {
                 _isEndUseCategoryVaries = value == this.Varies;
                 this.Set(() => _refHBObj.EndUseCategory = value, nameof(EndUseCategory));
@@ -53,7 +53,7 @@ namespace Honeybee.UI
         public DoubleViewModel Watts
         {
             get => _watts;
-            private set
+            set
             {
                 this.Set(() => _watts = value, nameof(Watts));
             }
@@ -66,7 +66,7 @@ namespace Honeybee.UI
         public ButtonViewModel Schedule
         {
             get => _schedule;
-            private set { this.Set(() => _schedule = value, nameof(Schedule)); }
+            set { this.Set(() => _schedule = value, nameof(Schedule)); }
         }
 
         // RadiantFraction
@@ -75,7 +75,7 @@ namespace Honeybee.UI
         public DoubleViewModel RadiantFraction
         {
             get => _radiantFraction;
-            private set { this.Set(() => _radiantFraction = value, nameof(RadiantFraction)); }
+            set { this.Set(() => _radiantFraction = value, nameof(RadiantFraction)); }
         }
 
         // latentFraction
@@ -84,7 +84,7 @@ namespace Honeybee.UI
         public DoubleViewModel LatentFraction
         {
             get => _latentFraction;
-            private set { this.Set(() => _latentFraction = value, nameof(LatentFraction)); }
+            set { this.Set(() => _latentFraction = value, nameof(LatentFraction)); }
         }
 
         // LostFraction
@@ -93,7 +93,7 @@ namespace Honeybee.UI
         public DoubleViewModel LostFraction
         {
             get => _lostFraction;
-            private set { this.Set(() => _lostFraction = value, nameof(LostFraction)); }
+            set { this.Set(() => _lostFraction = value, nameof(LostFraction)); }
         }
 
         public ProcessAbridged Default { get; private set; }

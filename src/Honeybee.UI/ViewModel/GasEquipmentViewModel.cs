@@ -17,9 +17,7 @@ namespace Honeybee.UI
         public DoubleViewModel WattsPerArea
         {
             get => _wattsPerArea;
-            private set {
-                this.Set(() => _wattsPerArea = value, nameof(WattsPerArea)); 
-            }
+            set { this.Set(() => _wattsPerArea = value, nameof(WattsPerArea)); }
         }
         
 
@@ -29,7 +27,7 @@ namespace Honeybee.UI
         public ButtonViewModel Schedule
         {
             get => _schedule;
-            private set { this.Set(() => _schedule = value, nameof(Schedule)); }
+            set { this.Set(() => _schedule = value, nameof(Schedule)); }
         }
 
         // RadiantFraction
@@ -38,7 +36,7 @@ namespace Honeybee.UI
         public DoubleViewModel RadiantFraction
         {
             get => _radiantFraction;
-            private set { this.Set(() => _radiantFraction = value, nameof(RadiantFraction)); }
+            set { this.Set(() => _radiantFraction = value, nameof(RadiantFraction)); }
         }
 
         // latentFraction
@@ -47,7 +45,7 @@ namespace Honeybee.UI
         public DoubleViewModel LatentFraction
         {
             get => _latentFraction;
-            private set { this.Set(() => _latentFraction = value, nameof(LatentFraction)); }
+            set { this.Set(() => _latentFraction = value, nameof(LatentFraction)); }
         }
 
         // LostFraction
@@ -56,7 +54,7 @@ namespace Honeybee.UI
         public DoubleViewModel LostFraction
         {
             get => _lostFraction;
-            private set { this.Set(() => _lostFraction = value, nameof(LostFraction)); }
+            set { this.Set(() => _lostFraction = value, nameof(LostFraction)); }
         }
 
         public GasEquipmentAbridged Default { get; private set; }

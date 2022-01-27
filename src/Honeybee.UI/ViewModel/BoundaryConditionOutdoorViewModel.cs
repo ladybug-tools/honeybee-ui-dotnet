@@ -16,7 +16,7 @@ namespace Honeybee.UI
         public CheckboxViewModel SunExposure
         {
             get => _sunExposure;
-            private set => this.Set(() => _sunExposure = value, nameof(SunExposure)); 
+            set => this.Set(() => _sunExposure = value, nameof(SunExposure)); 
         }
 
         // WindExposure
@@ -24,7 +24,7 @@ namespace Honeybee.UI
         public CheckboxViewModel WindExposure
         {
             get => _windExposure;
-            private set => this.Set(() => _windExposure = value, nameof(WindExposure)); 
+            set => this.Set(() => _windExposure = value, nameof(WindExposure)); 
         }
 
         // ViewFactor
@@ -33,7 +33,7 @@ namespace Honeybee.UI
         public DoubleViewModel ViewFactor
         {
             get => _viewFactor;
-            private set => this.Set(() => _viewFactor = value, nameof(ViewFactor)); 
+            set => this.Set(() => _viewFactor = value, nameof(ViewFactor)); 
         }
         
         private bool _isViewFactorAutocalculate;
@@ -41,7 +41,7 @@ namespace Honeybee.UI
         public bool IsViewFactorAutocalculate
         {
             get => _isViewFactorAutocalculate;
-            private set
+            set
             {
 
                 if (value)
@@ -59,7 +59,7 @@ namespace Honeybee.UI
         public bool IsViewFactorInputEnabled
         {
             get => _isViewFactorInputEnabled;
-            private set { this.Set(() => _isViewFactorInputEnabled = value, nameof(IsViewFactorInputEnabled)); }
+            set { this.Set(() => _isViewFactorInputEnabled = value, nameof(IsViewFactorInputEnabled)); }
         }
 
 

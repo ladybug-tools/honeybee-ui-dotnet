@@ -48,7 +48,7 @@ namespace Honeybee.UI
         public bool IsPanelEnabled
         {
             get => _isPanelEnabled;
-            private set { this.Set(() => _isPanelEnabled = value, nameof(IsPanelEnabled)); }
+            set { this.Set(() => _isPanelEnabled = value, nameof(IsPanelEnabled)); }
         }
 
         private bool _isCheckboxChecked;
@@ -57,7 +57,7 @@ namespace Honeybee.UI
         {
             get => _isCheckboxChecked;
 
-            protected set
+            set
             {
                 this.Set(() => _isCheckboxChecked = value, nameof(IsCheckboxChecked));
                 IsPanelEnabled = !value;

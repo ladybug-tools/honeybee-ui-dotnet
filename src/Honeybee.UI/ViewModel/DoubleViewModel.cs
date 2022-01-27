@@ -16,7 +16,7 @@ namespace Honeybee.UI
         public string NumberText // with display unit
         {
             get => _numberText;
-            private set
+            set
             {
                 IsVaries = value == this.Varies;
                 if (IsVaries)

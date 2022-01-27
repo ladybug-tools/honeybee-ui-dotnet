@@ -17,9 +17,7 @@ namespace Honeybee.UI
         public ButtonViewModel CoolingSchedule
         {
             get => _coolingSchedule;
-            private set {
-                this.Set(() => _coolingSchedule = value, nameof(CoolingSchedule)); 
-            }
+            set { this.Set(() => _coolingSchedule = value, nameof(CoolingSchedule)); }
         }
 
 
@@ -29,7 +27,7 @@ namespace Honeybee.UI
         public ButtonViewModel HeatingSchedule
         {
             get => _heatingSchedule;
-            private set { this.Set(() => _heatingSchedule = value, nameof(HeatingSchedule)); }
+            set { this.Set(() => _heatingSchedule = value, nameof(HeatingSchedule)); }
         }
 
         // HumidifyingSchedule
@@ -38,7 +36,7 @@ namespace Honeybee.UI
         public ButtonViewModel HumidifyingSchedule
         {
             get => _humidifyingSchedule;
-            private set { this.Set(() => _humidifyingSchedule = value, nameof(HumidifyingSchedule)); }
+            set { this.Set(() => _humidifyingSchedule = value, nameof(HumidifyingSchedule)); }
         }
 
         // dehumidifyingSchedule
@@ -47,7 +45,7 @@ namespace Honeybee.UI
         public ButtonViewModel DehumidifyingSchedule
         {
             get => _dehumidifyingSchedule;
-            private set { this.Set(() => _dehumidifyingSchedule = value, nameof(DehumidifyingSchedule)); }
+            set { this.Set(() => _dehumidifyingSchedule = value, nameof(DehumidifyingSchedule)); }
         }
 
 

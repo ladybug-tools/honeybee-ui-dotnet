@@ -17,10 +17,7 @@ namespace Honeybee.UI
         public DoubleViewModel FlowCoefficient
         {
             get => _flowCoefficient;
-            private set
-            {
-                this.Set(() => _flowCoefficient = value, nameof(FlowCoefficient));
-            }
+            set { this.Set(() => _flowCoefficient = value, nameof(FlowCoefficient));}
         }
 
         // flowExponent
@@ -29,7 +26,7 @@ namespace Honeybee.UI
         public DoubleViewModel FlowExponent
         {
             get => _flowExponent;
-            private set { this.Set(() => _flowExponent = value, nameof(FlowExponent)); }
+            set { this.Set(() => _flowExponent = value, nameof(FlowExponent)); }
         }
 
 

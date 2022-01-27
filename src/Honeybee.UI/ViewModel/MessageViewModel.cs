@@ -10,7 +10,7 @@ namespace Honeybee.UI
         public string MessageText
         {
             get { return _messageText; }
-            private set
+            set
             {
                 if (_messageText != value)
                 {

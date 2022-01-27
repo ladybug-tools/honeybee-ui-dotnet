@@ -23,7 +23,7 @@ namespace Honeybee.UI.ViewModel
         public int TabIndex
         {
             get => 0;
-            private set { this.Set(null, nameof(TabIndex)); }
+            set { this.Set(null, nameof(TabIndex)); }
         }
 
         #region RoomProperty
@@ -31,7 +31,7 @@ namespace Honeybee.UI.ViewModel
         public string Identifier
         {
             get => _refHBObj.Identifier;
-            private set { this.Set(() => _refHBObj.Identifier = value, nameof(_refHBObj.Identifier)); }
+            set { this.Set(() => _refHBObj.Identifier = value, nameof(_refHBObj.Identifier)); }
         }
 
 
@@ -39,7 +39,7 @@ namespace Honeybee.UI.ViewModel
         public string DisplayName
         {
             get => _refHBObj.DisplayName;
-            private set {
+            set {
                 _isDisplayNameVaries = value == this.Varies;
                 this.Set(() => _refHBObj.DisplayName = value, nameof(DisplayName)); 
             }
@@ -49,7 +49,7 @@ namespace Honeybee.UI.ViewModel
         public string Story
         {
             get => _refHBObj.Story;
-            private set {
+            set {
                 _isStoryVaries = value == this.Varies; 
                 this.Set(() => _refHBObj.Story = value, nameof(Story)); 
             }
@@ -61,7 +61,7 @@ namespace Honeybee.UI.ViewModel
         public string MultiplierText
         {
             get => _multiplierText;
-            private set
+            set
             {
                 _isMultiplierVaries = value == this.Varies;
                 if (_isMultiplierVaries) {

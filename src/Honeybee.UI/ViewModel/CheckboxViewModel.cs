@@ -14,7 +14,7 @@ namespace Honeybee.UI
         public bool? IsChecked
         {
             get => _isChecked;
-            private set {
+            set {
 
                 if (value.HasValue)
                     SetHBProperty?.Invoke(value.Value);
