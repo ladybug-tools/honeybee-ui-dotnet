@@ -17,7 +17,7 @@ namespace Honeybee.UI
         public DoubleViewModel FlowPerPerson
         {
             get => _flowPerPerson;
-            private set {
+            set {
                 this.Set(() => _flowPerPerson = value, nameof(FlowPerPerson)); 
             }
         }
@@ -29,7 +29,7 @@ namespace Honeybee.UI
         public ButtonViewModel Schedule
         {
             get => _schedule;
-            private set { this.Set(() => _schedule = value, nameof(Schedule)); }
+            set { this.Set(() => _schedule = value, nameof(Schedule)); }
         }
 
         // FlowPerArea
@@ -38,7 +38,7 @@ namespace Honeybee.UI
         public DoubleViewModel FlowPerArea
         {
             get => _flowPerArea;
-            private set { this.Set(() => _flowPerArea = value, nameof(FlowPerArea)); }
+            set { this.Set(() => _flowPerArea = value, nameof(FlowPerArea)); }
         }
 
         // AirChangesPerHour
@@ -47,7 +47,7 @@ namespace Honeybee.UI
         public DoubleViewModel AirChangesPerHour
         {
             get => _airChangesPerHour;
-            private set { this.Set(() => _airChangesPerHour = value, nameof(AirChangesPerHour)); }
+            set { this.Set(() => _airChangesPerHour = value, nameof(AirChangesPerHour)); }
         }
 
         // LostFraction
@@ -56,7 +56,7 @@ namespace Honeybee.UI
         public DoubleViewModel FlowPerZone
         {
             get => _flowPerZone;
-            private set { this.Set(() => _flowPerZone = value, nameof(FlowPerZone)); }
+            set { this.Set(() => _flowPerZone = value, nameof(FlowPerZone)); }
         }
 
         public VentilationAbridged Default { get; private set; }

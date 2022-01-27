@@ -17,13 +17,13 @@ namespace Honeybee.UI.ViewModel
         public int TabIndex
         {
             get => 0;
-            private set { this.Set(null, nameof(TabIndex)); }
+            set { this.Set(null, nameof(TabIndex)); }
         }
 
         public string Identifier
         {
             get => _refHBObj.Identifier;
-            private set { this.Set(() => _refHBObj.Identifier = value, nameof(_refHBObj.Identifier)); }
+            set { this.Set(() => _refHBObj.Identifier = value, nameof(_refHBObj.Identifier)); }
         }
 
 
@@ -31,7 +31,7 @@ namespace Honeybee.UI.ViewModel
         public string DisplayName
         {
             get => _refHBObj.DisplayName;
-            private set
+            set
             {
                 _isDisplayNameVaries = value == this.Varies;
                 this.Set(() => _refHBObj.DisplayName = value, nameof(DisplayName));
@@ -44,7 +44,7 @@ namespace Honeybee.UI.ViewModel
         public CheckboxViewModel IsGlass
         {
             get => _isGlass;
-            private set => this.Set(() => _isGlass = value, nameof(IsGlass));
+            set => this.Set(() => _isGlass = value, nameof(IsGlass));
         }
 
         #region Radiance
@@ -53,21 +53,21 @@ namespace Honeybee.UI.ViewModel
         public CheckboxButtonViewModel Modifier
         {
             get => _modifier;
-            private set => this.Set(() => _modifier = value, nameof(Modifier));
+            set => this.Set(() => _modifier = value, nameof(Modifier));
         }
 
         private CheckboxButtonViewModel _modifierBlk;
         public CheckboxButtonViewModel ModifierBlk
         {
             get => _modifierBlk;
-            private set => this.Set(() => _modifierBlk = value, nameof(ModifierBlk)); 
+            set => this.Set(() => _modifierBlk = value, nameof(ModifierBlk)); 
         }
 
         private bool _isDynamicGroupIdentifierVaries;
         public string DynamicGroupIdentifier
         {
             get => _refHBObj.Properties.Radiance.DynamicGroupIdentifier;
-            private set
+            set
             {
                 _isDynamicGroupIdentifierVaries = value == this.Varies;
                 this.Set(() => _refHBObj.Properties.Radiance.DynamicGroupIdentifier = value, nameof(DynamicGroupIdentifier));
@@ -84,7 +84,7 @@ namespace Honeybee.UI.ViewModel
         public CheckboxButtonViewModel Construction
         {
             get => _construction;
-            private set => this.Set(() => _construction = value, nameof(Construction)); 
+            set => this.Set(() => _construction = value, nameof(Construction)); 
         }
 
         public static Dictionary<string, AnyOf<Outdoors, Surface>> Bcs =>
@@ -101,7 +101,7 @@ namespace Honeybee.UI.ViewModel
         public string BoundaryConditionText
         {
             get => _boundaryConditionText;
-            private set
+            set
             {
                 _isBoundaryConditionVaries = value == this.Varies;
                 if (!_isBoundaryConditionVaries)
@@ -129,34 +129,34 @@ namespace Honeybee.UI.ViewModel
         public bool IsOutdoorBoundary
         {
             get => _isOutdoorBoundary;
-            private set => this.Set(() => _isOutdoorBoundary = value, nameof(IsOutdoorBoundary));
+            set => this.Set(() => _isOutdoorBoundary = value, nameof(IsOutdoorBoundary));
         }
 
         private BoundaryConditionOutdoorViewModel _bcOutdoor;
         public BoundaryConditionOutdoorViewModel BCOutdoor
         {
             get => _bcOutdoor;
-            private set => this.Set(() => _bcOutdoor = value, nameof(BCOutdoor));
+            set => this.Set(() => _bcOutdoor = value, nameof(BCOutdoor));
         }
         private bool _isSurfaceBoundary = false;
         public bool IsSurfaceBoundary
         {
             get => _isSurfaceBoundary;
-            private set => this.Set(() => _isSurfaceBoundary = value, nameof(IsSurfaceBoundary));
+            set => this.Set(() => _isSurfaceBoundary = value, nameof(IsSurfaceBoundary));
         }
 
         private BoundaryConditionSurfaceViewModel _bcSurface;
         public BoundaryConditionSurfaceViewModel BCSurface
         {
             get => _bcSurface;
-            private set => this.Set(() => _bcSurface = value, nameof(BCSurface));
+            set => this.Set(() => _bcSurface = value, nameof(BCSurface));
         }
 
         private VentilationOpeningViewModel _ventilationOpening;
         public VentilationOpeningViewModel VentilationOpening
         {
             get => _ventilationOpening;
-            private set => this.Set(() => _ventilationOpening = value, nameof(VentilationOpening));
+            set => this.Set(() => _ventilationOpening = value, nameof(VentilationOpening));
         }
 
         #endregion

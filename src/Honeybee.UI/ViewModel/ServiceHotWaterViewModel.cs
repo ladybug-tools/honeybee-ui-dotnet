@@ -17,7 +17,7 @@ namespace Honeybee.UI
         public DoubleViewModel FlowPerArea
         {
             get => _isFlowPerArea;
-            private set {
+            set {
                 this.Set(() => _isFlowPerArea = value, nameof(FlowPerArea)); 
             }
         }
@@ -29,7 +29,7 @@ namespace Honeybee.UI
         public ButtonViewModel Schedule
         {
             get => _schedule;
-            private set { this.Set(() => _schedule = value, nameof(Schedule)); }
+            set { this.Set(() => _schedule = value, nameof(Schedule)); }
         }
 
         // TargetTemperature
@@ -38,7 +38,7 @@ namespace Honeybee.UI
         public DoubleViewModel TargetTemperature
         {
             get => _isTargetTemperature;
-            private set { this.Set(() => _isTargetTemperature = value, nameof(TargetTemperature)); }
+            set { this.Set(() => _isTargetTemperature = value, nameof(TargetTemperature)); }
         }
 
         // latentFraction
@@ -47,7 +47,7 @@ namespace Honeybee.UI
         public DoubleViewModel LatentFraction
         {
             get => _isLatentFraction;
-            private set { this.Set(() => _isLatentFraction = value, nameof(LatentFraction)); }
+            set { this.Set(() => _isLatentFraction = value, nameof(LatentFraction)); }
         }
 
         // SensibleFraction
@@ -56,7 +56,7 @@ namespace Honeybee.UI
         public DoubleViewModel SensibleFraction
         {
             get => _isSensibleFraction;
-            private set { this.Set(() => _isSensibleFraction = value, nameof(SensibleFraction)); }
+            set { this.Set(() => _isSensibleFraction = value, nameof(SensibleFraction)); }
         }
 
         public ServiceHotWaterAbridged Default { get; private set; }

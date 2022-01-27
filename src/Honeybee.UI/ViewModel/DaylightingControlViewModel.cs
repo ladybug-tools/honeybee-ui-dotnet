@@ -17,7 +17,7 @@ namespace Honeybee.UI
         public DoubleViewModel IlluminanceSetpoint
         {
             get => _illuminanceSetpoint;
-            private set {
+            set {
                 this.Set(() => _illuminanceSetpoint = value, nameof(IlluminanceSetpoint)); 
             }
         }
@@ -29,7 +29,7 @@ namespace Honeybee.UI
         public ButtonViewModel<List<double>> SensorPosition
         {
             get => _sensorPosition;
-            private set { this.Set(() => _sensorPosition = value, nameof(SensorPosition)); }
+            set { this.Set(() => _sensorPosition = value, nameof(SensorPosition)); }
         }
 
         // controlFraction
@@ -38,7 +38,7 @@ namespace Honeybee.UI
         public DoubleViewModel ControlFraction
         {
             get => _controlFraction;
-            private set { this.Set(() => _controlFraction = value, nameof(ControlFraction)); }
+            set { this.Set(() => _controlFraction = value, nameof(ControlFraction)); }
         }
 
         // minPowerInput
@@ -47,7 +47,7 @@ namespace Honeybee.UI
         public DoubleViewModel MinPowerInput
         {
             get => _minPowerInput;
-            private set { this.Set(() => _minPowerInput = value, nameof(MinPowerInput)); }
+            set { this.Set(() => _minPowerInput = value, nameof(MinPowerInput)); }
         }
 
         // minLightOutput
@@ -56,7 +56,7 @@ namespace Honeybee.UI
         public DoubleViewModel MinLightOutput
         {
             get => _minLightOutput;
-            private set { this.Set(() => _minLightOutput = value, nameof(MinLightOutput)); }
+            set { this.Set(() => _minLightOutput = value, nameof(MinLightOutput)); }
         }
 
         // OffAtMinimum
@@ -65,7 +65,7 @@ namespace Honeybee.UI
         public CheckboxViewModel OffAtMinimum
         {
             get => _offAtMinimum;
-            private set => this.Set(() => _offAtMinimum = value, nameof(OffAtMinimum)); 
+            set => this.Set(() => _offAtMinimum = value, nameof(OffAtMinimum)); 
         }
 
         public Func<List<double>> SensorPositionPicker { get; set; }

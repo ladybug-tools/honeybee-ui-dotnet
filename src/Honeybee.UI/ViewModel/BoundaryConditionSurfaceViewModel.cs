@@ -15,7 +15,7 @@ namespace Honeybee.UI
         public List<string> AdjacentSurfaceText
         {
             get => _adjacentSurfaceText;
-            private set
+            set
             {
                 _isAdjacentSurfaceVaries = value.FirstOrDefault() == this.Varies;
                 this.Set(() => _adjacentSurfaceText = value, nameof(AdjacentSurfaceText));

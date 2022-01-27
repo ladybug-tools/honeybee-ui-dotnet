@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Honeybee.UI
 {
-   
+
     public class VentilationOpeningViewModel : CheckboxPanelViewModel<VentilationOpening>
     {
         private VentilationOpening _refHBObj => this.refObjProperty;
@@ -18,7 +18,7 @@ namespace Honeybee.UI
         public DoubleViewModel FractionAreaOperable
         {
             get => _fractionAreaOperable;
-            private set => this.Set(() => _fractionAreaOperable = value, nameof(FractionAreaOperable));
+            set => this.Set(() => _fractionAreaOperable = value, nameof(FractionAreaOperable));
         }
 
         // FractionHeightOperable
@@ -26,7 +26,7 @@ namespace Honeybee.UI
         public DoubleViewModel FractionHeightOperable
         {
             get => _fractionHeightOperable;
-            private set => this.Set(() => _fractionHeightOperable = value, nameof(FractionHeightOperable)); 
+            set => this.Set(() => _fractionHeightOperable = value, nameof(FractionHeightOperable)); 
         }
 
         // DischargeCoefficient
@@ -34,7 +34,7 @@ namespace Honeybee.UI
         public DoubleViewModel DischargeCoefficient
         {
             get => _dischargeCoefficient;
-            private set => this.Set(() => _dischargeCoefficient = value, nameof(DischargeCoefficient));
+            set => this.Set(() => _dischargeCoefficient = value, nameof(DischargeCoefficient));
         }
 
         // WindCrossVent
@@ -42,7 +42,7 @@ namespace Honeybee.UI
         public CheckboxViewModel WindCrossVent
         {
             get => _windCrossVent;
-            private set => this.Set(() => _windCrossVent = value, nameof(WindCrossVent));
+            set => this.Set(() => _windCrossVent = value, nameof(WindCrossVent));
         }
 
         // FlowCoefficientClosed
@@ -50,7 +50,7 @@ namespace Honeybee.UI
         public DoubleViewModel FlowCoefficientClosed
         {
             get => _flowCoefficientClosed;
-            private set => this.Set(() => _flowCoefficientClosed = value, nameof(FlowCoefficientClosed));
+            set => this.Set(() => _flowCoefficientClosed = value, nameof(FlowCoefficientClosed));
         }
 
         // flowExponentClosed
@@ -58,7 +58,7 @@ namespace Honeybee.UI
         public DoubleViewModel FlowExponentClosed
         {
             get => _flowExponentClosed;
-            private set => this.Set(() => _flowExponentClosed = value, nameof(FlowExponentClosed));
+            set => this.Set(() => _flowExponentClosed = value, nameof(FlowExponentClosed));
         }
 
         // twoWayThreshold
@@ -66,7 +66,7 @@ namespace Honeybee.UI
         public DoubleViewModel TwoWayThreshold
         {
             get => _twoWayThreshold;
-            private set => this.Set(() => _twoWayThreshold = value, nameof(TwoWayThreshold));
+            set => this.Set(() => _twoWayThreshold = value, nameof(TwoWayThreshold));
         }
 
         public VentilationOpening Default { get; private set; }

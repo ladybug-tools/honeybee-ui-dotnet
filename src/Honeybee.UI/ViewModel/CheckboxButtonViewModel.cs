@@ -27,7 +27,7 @@ namespace Honeybee.UI
         public string BtnName
         {
             get => _isVaries ? this.Varies : _btnName;
-            protected set
+            set
             {
                 IsCheckboxChecked = refObjProperty == null;
                 IsBtnEnabled = !IsCheckboxChecked;
@@ -49,7 +49,7 @@ namespace Honeybee.UI
         public bool IsBtnEnabled
         {
             get => _isBtnEnabled;
-            protected set { this.Set(() => _isBtnEnabled = value, nameof(IsBtnEnabled)); }
+            set { this.Set(() => _isBtnEnabled = value, nameof(IsBtnEnabled)); }
         }
 
         private bool _isCheckboxChecked;
@@ -58,7 +58,7 @@ namespace Honeybee.UI
         {
             get => _isCheckboxChecked;
 
-            protected set
+            set
             {
                 this.Set(() => _isCheckboxChecked = value, nameof(IsCheckboxChecked));
                 IsBtnEnabled = !value;

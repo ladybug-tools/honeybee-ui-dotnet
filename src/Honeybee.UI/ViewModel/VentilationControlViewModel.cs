@@ -17,7 +17,7 @@ namespace Honeybee.UI
         public DoubleViewModel MinIndoorTemperature
         {
             get => _minIndoorTemperature;
-            private set {
+            set {
                 this.Set(() => _minIndoorTemperature = value, nameof(MinIndoorTemperature)); 
             }
         }
@@ -29,7 +29,7 @@ namespace Honeybee.UI
         public ButtonViewModel Schedule
         {
             get => _schedule;
-            private set { this.Set(() => _schedule = value, nameof(Schedule)); }
+            set { this.Set(() => _schedule = value, nameof(Schedule)); }
         }
 
         // MaxIndoorTemperature
@@ -38,7 +38,7 @@ namespace Honeybee.UI
         public DoubleViewModel MaxIndoorTemperature
         {
             get => _maxIndoorTemperature;
-            private set { this.Set(() => _maxIndoorTemperature = value, nameof(MaxIndoorTemperature)); }
+            set { this.Set(() => _maxIndoorTemperature = value, nameof(MaxIndoorTemperature)); }
         }
 
         // minOutdoorTemperature
@@ -47,7 +47,7 @@ namespace Honeybee.UI
         public DoubleViewModel MinOutdoorTemperature
         {
             get => _minOutdoorTemperature;
-            private set { this.Set(() => _minOutdoorTemperature = value, nameof(MinOutdoorTemperature)); }
+            set { this.Set(() => _minOutdoorTemperature = value, nameof(MinOutdoorTemperature)); }
         }
 
         // maxOutdoorTemperature
@@ -56,7 +56,7 @@ namespace Honeybee.UI
         public DoubleViewModel MaxOutdoorTemperature
         {
             get => _maxOutdoorTemperature;
-            private set { this.Set(() => _maxOutdoorTemperature = value, nameof(MaxOutdoorTemperature)); }
+            set { this.Set(() => _maxOutdoorTemperature = value, nameof(MaxOutdoorTemperature)); }
         }
 
         // DeltaTemperature
@@ -65,7 +65,7 @@ namespace Honeybee.UI
         public DoubleViewModel DeltaTemperature
         {
             get => _deltaTemperature;
-            private set { this.Set(() => _deltaTemperature = value, nameof(DeltaTemperature)); }
+            set { this.Set(() => _deltaTemperature = value, nameof(DeltaTemperature)); }
         }
 
         public VentilationControlAbridged Default { get; private set; }

@@ -16,9 +16,7 @@ namespace Honeybee.UI
         public DoubleViewModel WattsPerArea
         {
             get => _wattsPerArea;
-            private set {
-                this.Set(() => _wattsPerArea = value, nameof(WattsPerArea)); 
-            }
+            set { this.Set(() => _wattsPerArea = value, nameof(WattsPerArea)); }
         }
         
 
@@ -28,7 +26,7 @@ namespace Honeybee.UI
         public ButtonViewModel Schedule
         {
             get => _schedule;
-            private set { this.Set(() => _schedule = value, nameof(Schedule)); }
+            set { this.Set(() => _schedule = value, nameof(Schedule)); }
         }
 
         // RadiantFractionText
@@ -37,7 +35,7 @@ namespace Honeybee.UI
         public DoubleViewModel RadiantFraction
         {
             get => _radiantFraction;
-            private set { this.Set(() => _radiantFraction = value, nameof(RadiantFraction)); }
+            set { this.Set(() => _radiantFraction = value, nameof(RadiantFraction)); }
         }
 
         // VisibleFraction
@@ -46,7 +44,7 @@ namespace Honeybee.UI
         public DoubleViewModel VisibleFraction
         {
             get => _visibleFraction;
-            private set { this.Set(() => _visibleFraction = value, nameof(VisibleFraction)); }
+            set { this.Set(() => _visibleFraction = value, nameof(VisibleFraction)); }
         }
 
         // BaselineWattsPerArea
@@ -55,7 +53,7 @@ namespace Honeybee.UI
         public DoubleViewModel BaselineWattsPerArea
         {
             get => _baselineWattsPerArea;
-            private set { this.Set(() => _baselineWattsPerArea = value, nameof(BaselineWattsPerArea)); }
+            set { this.Set(() => _baselineWattsPerArea = value, nameof(BaselineWattsPerArea)); }
         }
 
         // BaselineWattsPerArea
@@ -64,7 +62,7 @@ namespace Honeybee.UI
         public DoubleViewModel ReturnAirFraction
         {
             get => _returnAirFraction;
-            private set { this.Set(() => _returnAirFraction = value, nameof(ReturnAirFraction)); }
+            set { this.Set(() => _returnAirFraction = value, nameof(ReturnAirFraction)); }
         }
 
         public LightingAbridged Default { get; private set; }

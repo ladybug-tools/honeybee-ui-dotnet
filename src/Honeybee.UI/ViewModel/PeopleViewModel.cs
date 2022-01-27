@@ -17,7 +17,7 @@ namespace Honeybee.UI
         public DoubleViewModel PeoplePerArea
         {
             get => _peoplePerArea;
-            private set {
+            set {
                 this.Set(() => _peoplePerArea = value, nameof(PeoplePerArea)); 
             }
         }
@@ -29,7 +29,7 @@ namespace Honeybee.UI
         public ButtonViewModel OccupancySchedule
         {
             get => _occupancySchedule;
-            private set { this.Set(() => _occupancySchedule = value, nameof(OccupancySchedule)); }
+            set { this.Set(() => _occupancySchedule = value, nameof(OccupancySchedule)); }
         }
 
         // activitySchedule
@@ -38,7 +38,7 @@ namespace Honeybee.UI
         public ButtonViewModel ActivitySchedule
         {
             get => _activitySchedule;
-            private set { this.Set(() => _activitySchedule = value, nameof(ActivitySchedule)); }
+            set { this.Set(() => _activitySchedule = value, nameof(ActivitySchedule)); }
         }
 
         // RadiantFraction
@@ -47,7 +47,7 @@ namespace Honeybee.UI
         public DoubleViewModel RadiantFraction
         {
             get => _radiantFraction;
-            private set { this.Set(() => _radiantFraction = value, nameof(RadiantFraction)); }
+            set { this.Set(() => _radiantFraction = value, nameof(RadiantFraction)); }
         }
 
         // latentFraction
@@ -56,7 +56,7 @@ namespace Honeybee.UI
         public DoubleViewModel LatentFraction
         {
             get => _latentFraction;
-            private set { this.Set(() => _latentFraction = value, nameof(LatentFraction)); }
+            set { this.Set(() => _latentFraction = value, nameof(LatentFraction)); }
         }
 
         private bool _isLatentFractionAutocalculate;
@@ -64,7 +64,7 @@ namespace Honeybee.UI
         public bool IsLatentFractionAutocalculate
         {
             get => _isLatentFractionAutocalculate;
-            private set {
+            set {
 
                 if (value)
                     this._refHBObj.LatentFraction = new Autocalculate();
@@ -81,7 +81,7 @@ namespace Honeybee.UI
         public bool IsLatenFractionInputEnabled
         {
             get => _isLatenFractionInputEnabled && this.IsPanelEnabled;
-            private set { this.Set(() => _isLatenFractionInputEnabled = value, nameof(IsLatenFractionInputEnabled)); }
+            set { this.Set(() => _isLatenFractionInputEnabled = value, nameof(IsLatenFractionInputEnabled)); }
         }
 
 

@@ -48,7 +48,7 @@ namespace Honeybee.UI
         public string BtnName
         {
             get => IsVaries ? this.Varies : _btnName;
-            private set
+            set
             {
                 IsVaries = value == this.Varies;
                 if (string.IsNullOrEmpty(value))

@@ -17,7 +17,7 @@ namespace Honeybee.UI
         public DoubleViewModel FlowPerExteriorArea
         {
             get => _flowPerExteriorArea;
-            private set {
+            set {
                 this.Set(() => _flowPerExteriorArea = value, nameof(FlowPerExteriorArea)); 
             }
         }
@@ -29,7 +29,7 @@ namespace Honeybee.UI
         public ButtonViewModel Schedule
         {
             get => _schedule;
-            private set { this.Set(() => _schedule = value, nameof(Schedule)); }
+            set { this.Set(() => _schedule = value, nameof(Schedule)); }
         }
 
         // ConstantCoefficient
@@ -38,7 +38,7 @@ namespace Honeybee.UI
         public DoubleViewModel ConstantCoefficient
         {
             get => _constantCoefficient;
-            private set { this.Set(() => _constantCoefficient = value, nameof(ConstantCoefficient)); }
+            set { this.Set(() => _constantCoefficient = value, nameof(ConstantCoefficient)); }
         }
 
         // TemperatureCoefficient
@@ -47,7 +47,7 @@ namespace Honeybee.UI
         public DoubleViewModel TemperatureCoefficient
         {
             get => _temperatureCoefficient;
-            private set { this.Set(() => _temperatureCoefficient = value, nameof(TemperatureCoefficient)); }
+            set { this.Set(() => _temperatureCoefficient = value, nameof(TemperatureCoefficient)); }
         }
 
         // velocityCoefficient
@@ -56,7 +56,7 @@ namespace Honeybee.UI
         public DoubleViewModel VelocityCoefficient
         {
             get => _velocityCoefficient;
-            private set { this.Set(() => _velocityCoefficient = value, nameof(VelocityCoefficient)); }
+            set { this.Set(() => _velocityCoefficient = value, nameof(VelocityCoefficient)); }
         }
 
         public InfiltrationAbridged Default { get; private set; }
