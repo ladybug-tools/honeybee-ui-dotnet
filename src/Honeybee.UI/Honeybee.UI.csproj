@@ -30,8 +30,4 @@
     <PackageReference Include="UnitsNet" Version="4.113.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ViewModel\Controls\" />
-  </ItemGroup>
-
 </Project>
