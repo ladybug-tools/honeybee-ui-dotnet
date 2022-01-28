@@ -5,7 +5,7 @@
         public static bool TryParse(string text, out double value)
         {
             value = -999;
-            text = text.Trim();
+            text = text?.Trim();
             if (string.IsNullOrEmpty(text))
                 return false;
 
