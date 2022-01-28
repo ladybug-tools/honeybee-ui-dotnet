@@ -117,7 +117,7 @@ namespace Honeybee.UI.View
             c.Bind(_ => _.Enabled, _vm, v => v.Modifier.IsBtnEnabled);
             c.TextBinding.Bind(_vm, _ => _.Modifier.BtnName);
             c.Command = this._vm.ModifierCommand;
-            var cByRoom = new CheckBox() { Text = _vm.ByGlobalSetting };
+            var cByRoom = new CheckBox() { Text = ReservedText.ByGlobalSetting };
             cByRoom.CheckedBinding.Bind(_vm, _ => _.Modifier.IsCheckboxChecked);
 
             layout.AddRow("Modifier:", cByRoom);
@@ -127,7 +127,7 @@ namespace Honeybee.UI.View
             mb.Bind(_ => _.Enabled, _vm, v => v.ModifierBlk.IsBtnEnabled);
             mb.TextBinding.Bind(_vm, _ => _.ModifierBlk.BtnName);
             mb.Command = this._vm.ModifierBlkCommand;
-            var mbByRoom = new CheckBox() { Text = _vm.ByGlobalSetting };
+            var mbByRoom = new CheckBox() { Text = ReservedText.ByGlobalSetting };
             mbByRoom.CheckedBinding.Bind(_vm, _ => _.ModifierBlk.IsCheckboxChecked);
             layout.AddRow("Modifier Blk:", mbByRoom);
             layout.AddRow(null, mb);
@@ -154,7 +154,7 @@ namespace Honeybee.UI.View
             c.Bind(_ => _.Enabled, _vm, v => v.Construction.IsBtnEnabled);
             c.TextBinding.Bind(_vm, _ => _.Construction.BtnName);
             c.Command = this._vm.ConstructionCommand;
-            var cByRoom = new CheckBox() { Text = _vm.ByGlobalSetting };
+            var cByRoom = new CheckBox() { Text = ReservedText.ByGlobalSetting };
             cByRoom.CheckedBinding.Bind(_vm, _ => _.Construction.IsCheckboxChecked);
 
             layout.AddRow("Construction:", cByRoom);
@@ -211,7 +211,7 @@ namespace Honeybee.UI.View
 
 
             var vFactor = new DoubleText();
-            vFactor.ReservedText = _vm.Varies;
+            vFactor.ReservedText = ReservedText.Varies;
             vFactor.SetDefault(0);
             vFactor.TextBinding.Bind(_vm, _ => _.BCOutdoor.ViewFactor.NumberText);
             vFactor.Bind(_ => _.Enabled, _vm, _ => _.BCOutdoor.IsViewFactorInputEnabled);
@@ -256,21 +256,21 @@ namespace Honeybee.UI.View
 
             var wPerArea = new DoubleText();
             wPerArea.Width = 250;
-            wPerArea.ReservedText = _vm.Varies;
+            wPerArea.ReservedText = ReservedText.Varies;
             wPerArea.SetDefault(_vm.VentilationOpening.Default.FractionAreaOperable);
             wPerArea.TextBinding.Bind(vm, _ => _.VentilationOpening.FractionAreaOperable.NumberText);
             layout.AddRow("Fraction Area Operable:");
             layout.AddRow(wPerArea);
 
             var radFraction = new DoubleText();
-            radFraction.ReservedText = _vm.Varies;
+            radFraction.ReservedText = ReservedText.Varies;
             radFraction.SetDefault(_vm.VentilationOpening.Default.FractionHeightOperable);
             radFraction.TextBinding.Bind(vm, _ => _.VentilationOpening.FractionHeightOperable.NumberText);
             layout.AddRow("Fraction Height Operable:");
             layout.AddRow(radFraction);
 
             var visFraction = new DoubleText();
-            visFraction.ReservedText = _vm.Varies;
+            visFraction.ReservedText = ReservedText.Varies;
             visFraction.SetDefault(_vm.VentilationOpening.Default.DischargeCoefficient);
             visFraction.TextBinding.Bind(vm, _ => _.VentilationOpening.DischargeCoefficient.NumberText);
             layout.AddRow("Discharge Coefficient:");
@@ -281,21 +281,21 @@ namespace Honeybee.UI.View
             layout.AddRow(autosize);
 
             var airFraction = new DoubleText();
-            airFraction.ReservedText = _vm.Varies;
+            airFraction.ReservedText = ReservedText.Varies;
             airFraction.SetDefault(_vm.VentilationOpening.Default.FlowCoefficientClosed);
             airFraction.TextBinding.Bind(vm, _ => _.VentilationOpening.FlowCoefficientClosed.NumberText);
             layout.AddRow("Flow Coefficient Closed:");
             layout.AddRow(airFraction);
 
             var delta = new DoubleText();
-            delta.ReservedText = _vm.Varies;
+            delta.ReservedText = ReservedText.Varies;
             delta.SetDefault(_vm.VentilationOpening.Default.FlowExponentClosed);
             delta.TextBinding.Bind(vm, _ => _.VentilationOpening.FlowExponentClosed.NumberText);
             layout.AddRow("Flow Exponent Closed:");
             layout.AddRow(delta);
 
             var twoWay = new DoubleText();
-            twoWay.ReservedText = _vm.Varies;
+            twoWay.ReservedText = ReservedText.Varies;
             twoWay.SetDefault(_vm.VentilationOpening.Default.TwoWayThreshold);
             twoWay.TextBinding.Bind(vm, _ => _.VentilationOpening.TwoWayThreshold.NumberText);
             layout.AddRow("Two Way Threshold:");
@@ -304,7 +304,7 @@ namespace Honeybee.UI.View
             layout.AddRow(null);
 
 
-            var ltnByProgram = new CheckBox() { Text = vm.NoControl };
+            var ltnByProgram = new CheckBox() { Text = ReservedText.NoControl };
             ltnByProgram.CheckedBinding.Bind(vm, _ => _.VentilationOpening.IsCheckboxChecked);
 
             var gp = new GroupBox() { Text = "Ventilation Opening", Height = 470 };
@@ -358,7 +358,7 @@ namespace Honeybee.UI.View
             edit.Bind(_ => _.Command, vm, _ => _.UserData.EditDataCommand);
             remove.Bind(_ => _.Command, vm, _ => _.UserData.RemoveDataCommand);
 
-            var ltnByProgram = new CheckBox() { Text = vm.NoUserData };
+            var ltnByProgram = new CheckBox() { Text = ReservedText.NoUserData };
             ltnByProgram.CheckedBinding.Bind(vm, _ => _.UserData.IsCheckboxChecked);
 
             var gp = new GroupBox() { Text = "User Data", Height = 470 };

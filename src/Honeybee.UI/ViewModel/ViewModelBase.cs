@@ -8,20 +8,7 @@ namespace Honeybee.UI
 {
     public abstract class ViewModelBase : INotifyPropertyChanged
     {
-        public static string None => "<None>";
-        public string Varies => "<varies>";
-        public string NoUserData => "No UserData";
-        public string Unconditioned => "Unconditioned";
-        public string Unoccupied => "Unoccupied, No Loads";
-        public string Noload => "No Load";
-        public string ByGlobalConstructionSet => "By Global Construction Set";
-        public string ByProgramType => "By Room Program Type";
-        public string ByGlobalModifierSet => "By Global Modifier Set";
-        public string NoControl => "No Control";
-        public string ByGlobalSetting => "By Global Setting";
-        public string ByParentSetting => "By Parent Setting";
-        public string NoSchedule => "No Control Schedule";
-
+       
         private static HoneybeeSchema.ModelEnergyProperties _systemEnergyLib;
         internal static HoneybeeSchema.ModelEnergyProperties SystemEnergyLib
         {
@@ -61,7 +48,7 @@ namespace Honeybee.UI
         /// <returns></returns>
         internal HoneybeeSchema.Energy.ISchedule GetDummyScheduleObj(string name)
         {
-            if (string.IsNullOrEmpty(name) || name == None)
+            if (string.IsNullOrEmpty(name) || name == ReservedText.None)
                 return null;
             return new ScheduleDay(name, new List<double>(), displayName: name);
         }

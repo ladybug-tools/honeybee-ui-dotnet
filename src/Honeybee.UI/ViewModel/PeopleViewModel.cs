@@ -89,7 +89,7 @@ namespace Honeybee.UI
         public PeopleAbridged Default { get; private set; }
         public PeopleViewModel(ModelProperties libSource, List<PeopleAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-            this.Default = new PeopleAbridged(Guid.NewGuid().ToString(), 0, None);
+            this.Default = new PeopleAbridged(Guid.NewGuid().ToString(), 0, ReservedText.None);
             this.refObjProperty = loads.FirstOrDefault()?.DuplicatePeopleAbridged();
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicatePeopleAbridged();
 
@@ -104,7 +104,7 @@ namespace Honeybee.UI
             this.PeoplePerArea = new DoubleViewModel((n) => _refHBObj.PeoplePerArea = n);
             this.PeoplePerArea.SetUnits(Units.ReciprocalAreaUnit.InverseSquareMeter, Units.UnitType.PeopleDensity);
             if (loads.Select(_ => _?.PeoplePerArea).Distinct().Count() > 1)
-                this.PeoplePerArea.SetNumberText(this.Varies);
+                this.PeoplePerArea.SetNumberText(ReservedText.Varies);
             else
                 this.PeoplePerArea.SetBaseUnitNumber(_refHBObj.PeoplePerArea);
 
@@ -114,7 +114,7 @@ namespace Honeybee.UI
             sch = sch ?? GetDummyScheduleObj(_refHBObj.OccupancySchedule);
             this.OccupancySchedule = new ButtonViewModel((n) => _refHBObj.OccupancySchedule = n?.Identifier);
             if (loads.Select(_ => _?.OccupancySchedule).Distinct().Count() > 1)
-                this.OccupancySchedule.SetBtnName(this.Varies);
+                this.OccupancySchedule.SetBtnName(ReservedText.Varies);
             else
                 this.OccupancySchedule.SetPropetyObj(sch);
 
@@ -124,7 +124,7 @@ namespace Honeybee.UI
             actSch = actSch ?? GetDummyScheduleObj(_refHBObj.ActivitySchedule);
             this.ActivitySchedule = new ButtonViewModel((n) => _refHBObj.ActivitySchedule = n?.Identifier);
             if (loads.Select(_ => _?.ActivitySchedule).Distinct().Count() > 1)
-                this.ActivitySchedule.SetBtnName(this.Varies);
+                this.ActivitySchedule.SetBtnName(ReservedText.Varies);
             else
                 this.ActivitySchedule.SetPropetyObj(actSch);
 
@@ -133,7 +133,7 @@ namespace Honeybee.UI
             //RadiantFraction
             this.RadiantFraction = new DoubleViewModel((n) => _refHBObj.RadiantFraction = n);
             if (loads.Select(_ => _?.RadiantFraction).Distinct().Count() > 1)
-                this.RadiantFraction.SetNumberText(this.Varies);
+                this.RadiantFraction.SetNumberText(ReservedText.Varies);
             else
                 this.RadiantFraction.SetNumberText(_refHBObj.RadiantFraction.ToString());
 
@@ -144,7 +144,7 @@ namespace Honeybee.UI
             if (latFractions.Count() > 1)
             {
                 this.IsLatentFractionAutocalculate = false;
-                this.LatentFraction.SetNumberText(this.Varies);
+                this.LatentFraction.SetNumberText(ReservedText.Varies);
             }
             else
             {

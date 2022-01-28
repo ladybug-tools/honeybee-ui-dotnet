@@ -23,21 +23,21 @@ namespace Honeybee.UI
         public Action<HoneybeeSchema.IIDdBase> SetHBProperty { get; protected set; }
 
 
-        private string _btnName = None;
+        private string _btnName = ReservedText.None;
         public string BtnName
         {
-            get => _isVaries ? this.Varies : _btnName;
+            get => _isVaries ? ReservedText.Varies : _btnName;
             set
             {
                 IsCheckboxChecked = refObjProperty == null;
                 IsBtnEnabled = !IsCheckboxChecked;
 
-                _isVaries = value == this.Varies;
+                _isVaries = value == ReservedText.Varies;
                 if (_isVaries)
                     IsCheckboxChecked = false;
 
                 if (string.IsNullOrEmpty(value))
-                    value = None;
+                    value = ReservedText.None;
 
                 if (IsBtnEnabled || string.IsNullOrEmpty(_btnName))
                     this.Set(() => _btnName = value, nameof(BtnName));

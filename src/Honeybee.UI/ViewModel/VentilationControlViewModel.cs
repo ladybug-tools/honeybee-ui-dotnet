@@ -86,7 +86,7 @@ namespace Honeybee.UI
             this.MinIndoorTemperature = new DoubleViewModel((n) => _refHBObj.MinIndoorTemperature = n);
             this.MinIndoorTemperature.SetUnits(Units.TemperatureUnit.DegreeCelsius, Units.UnitType.Temperature);
             if (loads.Select(_ => _?.MinIndoorTemperature).Distinct().Count() > 1)
-                this.MinIndoorTemperature.SetNumberText(this.Varies);
+                this.MinIndoorTemperature.SetNumberText(ReservedText.Varies);
             else
                 this.MinIndoorTemperature.SetBaseUnitNumber(_refHBObj.MinIndoorTemperature);
 
@@ -97,7 +97,7 @@ namespace Honeybee.UI
                 .FirstOrDefault(_ => _.Identifier == _refHBObj.Schedule);
             this.Schedule = new ButtonViewModel((n) => _refHBObj.Schedule = n?.Identifier);
             if (loads.Select(_ => _?.Schedule).Distinct().Count() > 1)
-                this.Schedule.SetBtnName(this.Varies);
+                this.Schedule.SetBtnName(ReservedText.Varies);
             else
                 this.Schedule.SetPropetyObj(sch);
 
@@ -106,7 +106,7 @@ namespace Honeybee.UI
             this.MaxIndoorTemperature = new DoubleViewModel((n) => _refHBObj.MaxIndoorTemperature = n);
             this.MaxIndoorTemperature.SetUnits(Units.TemperatureUnit.DegreeCelsius, Units.UnitType.Temperature);
             if (loads.Select(_ => _?.MaxIndoorTemperature).Distinct().Count() > 1)
-                this.MaxIndoorTemperature.SetNumberText(this.Varies);
+                this.MaxIndoorTemperature.SetNumberText(ReservedText.Varies);
             else
                 this.MaxIndoorTemperature.SetBaseUnitNumber(_refHBObj.MaxIndoorTemperature);
 
@@ -115,7 +115,7 @@ namespace Honeybee.UI
             this.MinOutdoorTemperature = new DoubleViewModel((n) => _refHBObj.MinOutdoorTemperature = n);
             this.MinOutdoorTemperature.SetUnits(Units.TemperatureUnit.DegreeCelsius, Units.UnitType.Temperature);
             if (loads.Select(_ => _?.MinOutdoorTemperature).Distinct().Count() > 1)
-                this.MinOutdoorTemperature.SetNumberText(this.Varies);
+                this.MinOutdoorTemperature.SetNumberText(ReservedText.Varies);
             else
                 this.MinOutdoorTemperature.SetBaseUnitNumber(_refHBObj.MinOutdoorTemperature);
 
@@ -124,7 +124,7 @@ namespace Honeybee.UI
             this.MaxOutdoorTemperature = new DoubleViewModel((n) => _refHBObj.MaxOutdoorTemperature = n);
             this.MaxOutdoorTemperature.SetUnits(Units.TemperatureUnit.DegreeCelsius, Units.UnitType.Temperature);
             if (loads.Select(_ => _?.MaxOutdoorTemperature).Distinct().Count() > 1)
-                this.MaxOutdoorTemperature.SetNumberText(this.Varies);
+                this.MaxOutdoorTemperature.SetNumberText(ReservedText.Varies);
             else
                 this.MaxOutdoorTemperature.SetBaseUnitNumber(_refHBObj.MaxOutdoorTemperature);
 
@@ -133,7 +133,7 @@ namespace Honeybee.UI
             this.DeltaTemperature = new DoubleViewModel((n) => _refHBObj.DeltaTemperature = n);
             this.DeltaTemperature.SetUnits(Units.TemperatureDeltaUnit.DegreeCelsius, Units.UnitType.TemperatureDelta);
             if (loads.Select(_ => _?.DeltaTemperature).Distinct().Count() > 1)
-                this.DeltaTemperature.SetNumberText(this.Varies);
+                this.DeltaTemperature.SetNumberText(ReservedText.Varies);
             else
                 this.DeltaTemperature.SetBaseUnitNumber(_refHBObj.DeltaTemperature);
         }

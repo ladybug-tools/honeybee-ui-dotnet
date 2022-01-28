@@ -52,7 +52,7 @@ namespace Honeybee.UI
         public SetpointAbridged Default { get; private set; }
         public SetpointViewModel(ModelProperties libSource, List<SetpointAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-            this.Default = new SetpointAbridged(Guid.NewGuid().ToString(), None, None);
+            this.Default = new SetpointAbridged(Guid.NewGuid().ToString(), ReservedText.None, ReservedText.None);
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateSetpointAbridged();
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateSetpointAbridged();
 
@@ -68,7 +68,7 @@ namespace Honeybee.UI
             clSch = clSch ?? GetDummyScheduleObj(_refHBObj.CoolingSchedule);
             this.CoolingSchedule = new ButtonViewModel((n) => _refHBObj.CoolingSchedule = n?.Identifier);
             if (loads.Select(_ => _?.CoolingSchedule).Distinct().Count() > 1)
-                this.CoolingSchedule.SetBtnName(this.Varies);
+                this.CoolingSchedule.SetBtnName(ReservedText.Varies);
             else
                 this.CoolingSchedule.SetPropetyObj(clSch);
 
@@ -78,7 +78,7 @@ namespace Honeybee.UI
             htSch = htSch ?? GetDummyScheduleObj(_refHBObj.HeatingSchedule);
             this.HeatingSchedule = new ButtonViewModel((n) => _refHBObj.HeatingSchedule = n?.Identifier);
             if (loads.Select(_ => _?.HeatingSchedule).Distinct().Count() > 1)
-                this.HeatingSchedule.SetBtnName(this.Varies);
+                this.HeatingSchedule.SetBtnName(ReservedText.Varies);
             else
                 this.HeatingSchedule.SetPropetyObj(htSch);
 
@@ -88,7 +88,7 @@ namespace Honeybee.UI
             huSch = huSch ?? GetDummyScheduleObj(_refHBObj.HumidifyingSchedule);
             this.HumidifyingSchedule = new ButtonViewModel((n) => _refHBObj.HumidifyingSchedule = n?.Identifier);
             if (loads.Select(_ => _?.HumidifyingSchedule).Distinct().Count() > 1)
-                this.HumidifyingSchedule.SetBtnName(this.Varies);
+                this.HumidifyingSchedule.SetBtnName(ReservedText.Varies);
             else
                 this.HumidifyingSchedule.SetPropetyObj(huSch);
 
@@ -98,7 +98,7 @@ namespace Honeybee.UI
             dhSch = dhSch ?? GetDummyScheduleObj(_refHBObj.DehumidifyingSchedule);
             this.DehumidifyingSchedule = new ButtonViewModel((n) => _refHBObj.DehumidifyingSchedule = n?.Identifier);
             if (loads.Select(_ => _?.DehumidifyingSchedule).Distinct().Count() > 1)
-                this.DehumidifyingSchedule.SetBtnName(this.Varies);
+                this.DehumidifyingSchedule.SetBtnName(ReservedText.Varies);
             else
                 this.DehumidifyingSchedule.SetPropetyObj(dhSch);
 

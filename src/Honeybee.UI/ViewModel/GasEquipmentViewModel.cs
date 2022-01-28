@@ -60,7 +60,7 @@ namespace Honeybee.UI
         public GasEquipmentAbridged Default { get; private set; }
         public GasEquipmentViewModel(ModelProperties libSource, List<GasEquipmentAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-            this.Default = new GasEquipmentAbridged(Guid.NewGuid().ToString(), 0, None);
+            this.Default = new GasEquipmentAbridged(Guid.NewGuid().ToString(), 0, ReservedText.None);
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateGasEquipmentAbridged();
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateGasEquipmentAbridged();
 
@@ -75,7 +75,7 @@ namespace Honeybee.UI
             this.WattsPerArea = new DoubleViewModel((n) => _refHBObj.WattsPerArea = n);
             this.WattsPerArea.SetUnits(Units.HeatFluxUnit.WattPerSquareMeter, Units.UnitType.PowerDensity);
             if (loads.Select(_ => _?.WattsPerArea).Distinct().Count() > 1)
-                this.WattsPerArea.SetNumberText(this.Varies);
+                this.WattsPerArea.SetNumberText(ReservedText.Varies);
             else
                 this.WattsPerArea.SetBaseUnitNumber(_refHBObj.WattsPerArea);
 
@@ -85,7 +85,7 @@ namespace Honeybee.UI
             sch = sch ?? GetDummyScheduleObj(_refHBObj.Schedule);
             this.Schedule = new ButtonViewModel((n) => _refHBObj.Schedule = n?.Identifier);
             if (loads.Select(_ => _?.Schedule).Distinct().Count() > 1)
-                this.Schedule.SetBtnName(this.Varies);
+                this.Schedule.SetBtnName(ReservedText.Varies);
             else
                 this.Schedule.SetPropetyObj(sch);
 
@@ -93,7 +93,7 @@ namespace Honeybee.UI
             //RadiantFraction
             this.RadiantFraction = new DoubleViewModel((n) => _refHBObj.RadiantFraction = n);
             if (loads.Select(_ => _?.RadiantFraction).Distinct().Count() > 1)
-                this.RadiantFraction.SetNumberText(this.Varies);
+                this.RadiantFraction.SetNumberText(ReservedText.Varies);
             else
                 this.RadiantFraction.SetNumberText(_refHBObj.RadiantFraction.ToString());
 
@@ -101,7 +101,7 @@ namespace Honeybee.UI
             //LatentFraction
             this.LatentFraction = new DoubleViewModel((n) => _refHBObj.LatentFraction = n);
             if (loads.Select(_ => _?.LatentFraction).Distinct().Count() > 1)
-                this.LatentFraction.SetNumberText(this.Varies);
+                this.LatentFraction.SetNumberText(ReservedText.Varies);
             else
                 this.LatentFraction.SetNumberText(_refHBObj.LatentFraction.ToString());
 
@@ -109,7 +109,7 @@ namespace Honeybee.UI
             //LostFraction
             this.LostFraction = new DoubleViewModel((n) => _refHBObj.LostFraction = n);
             if (loads.Select(_ => _?.LostFraction).Distinct().Count() > 1)
-                this.LostFraction.SetNumberText(this.Varies);
+                this.LostFraction.SetNumberText(ReservedText.Varies);
             else
                 this.LostFraction.SetNumberText(_refHBObj.LostFraction.ToString());
         }

@@ -40,7 +40,7 @@ namespace Honeybee.UI.ViewModel
         {
             get => _refHBObj.DisplayName;
             set {
-                _isDisplayNameVaries = value == this.Varies;
+                _isDisplayNameVaries = value == ReservedText.Varies;
                 this.Set(() => _refHBObj.DisplayName = value, nameof(DisplayName)); 
             }
         }
@@ -50,7 +50,7 @@ namespace Honeybee.UI.ViewModel
         {
             get => _refHBObj.Story;
             set {
-                _isStoryVaries = value == this.Varies; 
+                _isStoryVaries = value == ReservedText.Varies; 
                 this.Set(() => _refHBObj.Story = value, nameof(Story)); 
             }
         }
@@ -63,7 +63,7 @@ namespace Honeybee.UI.ViewModel
             get => _multiplierText;
             set
             {
-                _isMultiplierVaries = value == this.Varies;
+                _isMultiplierVaries = value == ReservedText.Varies;
                 if (_isMultiplierVaries) {
                     this.Set(() => _multiplierText = value, nameof(MultiplierText));
                 }
@@ -248,22 +248,22 @@ namespace Honeybee.UI.ViewModel
             _refHBObj.Properties.Radiance = _refHBObj.Properties.Radiance ?? defaultRadiance;
 
             if (rooms.Select(_ => _.Identifier).Distinct().Count() > 1)
-                this.Identifier = this.Varies;
+                this.Identifier = ReservedText.Varies;
             else
                 this.Identifier = this._refHBObj.Identifier;
 
             if (rooms.Select(_ => _.DisplayName).Distinct().Count() > 1)
-                this.DisplayName = this.Varies;
+                this.DisplayName = ReservedText.Varies;
             else
                 this.DisplayName = this._refHBObj.DisplayName;
 
             if (rooms.Select(_ => _.Story).Distinct().Count() > 1)
-                this.Story = this.Varies;
+                this.Story = ReservedText.Varies;
             else
                 this.Story = this._refHBObj.Story;
 
             if (rooms.Select(_ => _.Multiplier).Distinct().Count() > 1)
-                this.MultiplierText = this.Varies;
+                this.MultiplierText = ReservedText.Varies;
             else
                 this.MultiplierText = this._refHBObj.Multiplier.ToString();
 
@@ -277,7 +277,7 @@ namespace Honeybee.UI.ViewModel
 
             //construction
             if (rooms.Select(_ => _.Properties.Energy?.ConstructionSet).Distinct().Count() > 1)
-                this.ConstructionSet.SetBtnName(this.Varies);
+                this.ConstructionSet.SetBtnName(ReservedText.Varies);
             else
                 this.ConstructionSet.SetPropetyObj(cSet);
 
@@ -290,7 +290,7 @@ namespace Honeybee.UI.ViewModel
 
             //program type
             if (rooms.Select(_ => _.Properties.Energy?.ProgramType).Distinct().Count() > 1)
-                this.PropgramType.SetBtnName(this.Varies);
+                this.PropgramType.SetBtnName(ReservedText.Varies);
             else
                 this.PropgramType.SetPropetyObj(pType);
 
@@ -302,7 +302,7 @@ namespace Honeybee.UI.ViewModel
 
             // hvac
             if (rooms.Select(_ => _.Properties.Energy?.Hvac).Distinct().Count() > 1)
-                this.HVAC.SetBtnName(this.Varies);
+                this.HVAC.SetBtnName(ReservedText.Varies);
             else
                 this.HVAC.SetPropetyObj(hvac);
 
@@ -315,7 +315,7 @@ namespace Honeybee.UI.ViewModel
 
             // ModifierSet
             if (rooms.Select(_ => _.Properties.Radiance?.ModifierSet).Distinct().Count() > 1)
-                this.ModifierSet.SetBtnName(this.Varies);
+                this.ModifierSet.SetBtnName(ReservedText.Varies);
             else
                 this.ModifierSet.SetPropetyObj(mSet);
 

@@ -77,7 +77,7 @@ namespace Honeybee.UI
             this.FlowPerPerson = new DoubleViewModel((n) => _refHBObj.FlowPerPerson = n);
             this.FlowPerPerson.SetUnits(Units.VolumeFlowUnit.CubicMeterPerSecond, Units.UnitType.AirFlowRate);
             if (loads.Select(_ => _?.FlowPerPerson).Distinct().Count() > 1)
-                this.FlowPerPerson.SetNumberText(this.Varies);
+                this.FlowPerPerson.SetNumberText(ReservedText.Varies);
             else
                 this.FlowPerPerson.SetBaseUnitNumber(_refHBObj.FlowPerPerson);
 
@@ -87,7 +87,7 @@ namespace Honeybee.UI
             sch = sch ?? GetDummyScheduleObj(_refHBObj.Schedule);
             this.Schedule = new ButtonViewModel((n) => _refHBObj.Schedule = n?.Identifier);
             if (loads.Select(_ => _?.Schedule).Distinct().Count() > 1)
-                this.Schedule.SetBtnName(this.Varies);
+                this.Schedule.SetBtnName(ReservedText.Varies);
             else
                 this.Schedule.SetPropetyObj(sch);
 
@@ -96,7 +96,7 @@ namespace Honeybee.UI
             this.FlowPerArea = new DoubleViewModel((n) => _refHBObj.FlowPerArea = n);
             this.FlowPerArea.SetUnits(Units.VolumeFlowPerAreaUnit.CubicMeterPerSecondPerSquareMeter, Units.UnitType.AirFlowRateArea);
             if (loads.Select(_ => _?.FlowPerArea).Distinct().Count() > 1)
-                this.FlowPerArea.SetNumberText(this.Varies);
+                this.FlowPerArea.SetNumberText(ReservedText.Varies);
             else
                 this.FlowPerArea.SetBaseUnitNumber(_refHBObj.FlowPerArea);
 
@@ -105,7 +105,7 @@ namespace Honeybee.UI
             this.AirChangesPerHour = new DoubleViewModel((n) => _refHBObj.AirChangesPerHour = n);
             this.AirChangesPerHour.SetDisplayUnitAbbreviation("1/hour");
             if (loads.Select(_ => _?.AirChangesPerHour).Distinct().Count() > 1)
-                this.AirChangesPerHour.SetNumberText(this.Varies);
+                this.AirChangesPerHour.SetNumberText(ReservedText.Varies);
             else
                 this.AirChangesPerHour.SetNumberText(_refHBObj.AirChangesPerHour.ToString());
 
@@ -114,7 +114,7 @@ namespace Honeybee.UI
             this.FlowPerZone = new DoubleViewModel((n) => _refHBObj.FlowPerZone = n);
             this.FlowPerZone.SetUnits(Units.VolumeFlowUnit.CubicMeterPerSecond, Units.UnitType.AirFlowRate);
             if (loads.Select(_ => _?.FlowPerZone).Distinct().Count() > 1)
-                this.FlowPerZone.SetNumberText(this.Varies);
+                this.FlowPerZone.SetNumberText(ReservedText.Varies);
             else
                 this.FlowPerZone.SetBaseUnitNumber(_refHBObj.FlowPerZone);
         }

@@ -94,7 +94,7 @@ namespace Honeybee.UI
             if (vfs.Count() > 1)
             {
                 this.IsViewFactorAutocalculate = false;
-                this.ViewFactor.SetNumberText(this.Varies);
+                this.ViewFactor.SetNumberText(ReservedText.Varies);
             }
             else
             {

@@ -17,7 +17,7 @@ namespace Honeybee.UI
             get => _adjacentSurfaceText;
             set
             {
-                _isAdjacentSurfaceVaries = value.FirstOrDefault() == this.Varies;
+                _isAdjacentSurfaceVaries = value.FirstOrDefault() == ReservedText.Varies;
                 this.Set(() => _adjacentSurfaceText = value, nameof(AdjacentSurfaceText));
 
             }
@@ -33,7 +33,7 @@ namespace Honeybee.UI
 
 
             if (objs.Select(_ => string.Join(";", _?.BoundaryConditionObjects)).Distinct().Count() > 1)
-                this.AdjacentSurfaceText = new List<string>() { this.Varies };
+                this.AdjacentSurfaceText = new List<string>() { ReservedText.Varies };
             else
                 this.AdjacentSurfaceText = this._refHBObj.BoundaryConditionObjects ?? new List<string>() { "Not Set" };
 
