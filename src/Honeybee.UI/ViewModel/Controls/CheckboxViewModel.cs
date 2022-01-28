@@ -4,7 +4,6 @@ namespace Honeybee.UI
 {
     public class CheckboxViewModel : ViewModelBase
     {
-        public string Varies => "<varies>";
         public bool IsVaries => !IsChecked.HasValue;
         public Action<bool> SetHBProperty { get; private set; }
 
