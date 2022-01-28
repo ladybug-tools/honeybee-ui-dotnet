@@ -47,14 +47,14 @@ namespace Honeybee.UI
             //FlowCoefficient
             this.FlowCoefficient = new DoubleViewModel((n) => _refHBObj.FlowCoefficient = n);
             if (loads.Select(_ => _?.FlowCoefficient).Distinct().Count() > 1)
-                this.FlowCoefficient.SetNumberText(this.Varies);
+                this.FlowCoefficient.SetNumberText(ReservedText.Varies);
             else
                 this.FlowCoefficient.SetNumberText(_refHBObj.FlowCoefficient.ToString());
 
             //FlowExponent
             this.FlowExponent = new DoubleViewModel((n) => _refHBObj.FlowExponent = n);
             if (loads.Select(_ => _?.FlowExponent).Distinct().Count() > 1)
-                this.FlowExponent.SetNumberText(this.Varies);
+                this.FlowExponent.SetNumberText(ReservedText.Varies);
             else
                 this.FlowExponent.SetNumberText(_refHBObj.FlowExponent.ToString());
 

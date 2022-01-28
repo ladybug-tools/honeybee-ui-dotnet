@@ -140,7 +140,7 @@ namespace Honeybee.UI
 
             var wPerArea = new DoubleText();
             wPerArea.Width = 250;
-            wPerArea.ReservedText = _vm.Varies;
+            wPerArea.ReservedText = ReservedText.Varies;
             wPerArea.SetDefault(_vm.Lighting.Default.WattsPerArea);
             wPerArea.TextBinding.Bind(vm, _ => _.Lighting.WattsPerArea.NumberText);
             layout.AddRow("Watts/Area:");
@@ -155,21 +155,21 @@ namespace Honeybee.UI
             layout.AddRow(sch);
 
             var radFraction = new DoubleText();
-            radFraction.ReservedText = _vm.Varies;
+            radFraction.ReservedText = ReservedText.Varies;
             radFraction.SetDefault(_vm.Lighting.Default.RadiantFraction);
             radFraction.TextBinding.Bind(vm, _ => _.Lighting.RadiantFraction.NumberText);
             layout.AddRow("Radiant Fraction:");
             layout.AddRow(radFraction);
 
             var visFraction = new DoubleText();
-            visFraction.ReservedText = _vm.Varies;
+            visFraction.ReservedText = ReservedText.Varies;
             visFraction.SetDefault(_vm.Lighting.Default.VisibleFraction);
             visFraction.TextBinding.Bind(vm, _ => _.Lighting.VisibleFraction.NumberText);
             layout.AddRow("Visible Fraction:");
             layout.AddRow(visFraction);
 
             var airFraction = new DoubleText();
-            airFraction.ReservedText = _vm.Varies;
+            airFraction.ReservedText = ReservedText.Varies;
             airFraction.SetDefault(_vm.Lighting.Default.ReturnAirFraction);
             airFraction.TextBinding.Bind(vm, _ => _.Lighting.ReturnAirFraction.NumberText);
             layout.AddRow("Return Air Fraction:");
@@ -177,7 +177,7 @@ namespace Honeybee.UI
 
             var baseline = new DoubleText();
             baseline.Width = 250;
-            baseline.ReservedText = _vm.Varies;
+            baseline.ReservedText = ReservedText.Varies;
             baseline.SetDefault(_vm.Lighting.Default.BaselineWattsPerArea);
             baseline.TextBinding.Bind(vm, _ => _.Lighting.BaselineWattsPerArea.NumberText);
             var unit2 = new Label();
@@ -187,7 +187,7 @@ namespace Honeybee.UI
             layout.AddRow(null);
 
 
-            var ltnByProgram = new CheckBox() { Text = vm.Noload };
+            var ltnByProgram = new CheckBox() { Text = ReservedText.Noload };
             ltnByProgram.CheckedBinding.Bind(vm, _ => _.Lighting.IsCheckboxChecked);
 
             var gp = new GroupBox() { Text = "Lighting" };
@@ -209,7 +209,7 @@ namespace Honeybee.UI
 
             var wPerArea = new DoubleText();
             wPerArea.Width = 250;
-            wPerArea.ReservedText = _vm.Varies;
+            wPerArea.ReservedText = ReservedText.Varies;
             wPerArea.SetDefault(_vm.ElecEquipment.Default.WattsPerArea);
             wPerArea.TextBinding.Bind(vm, _ => _.ElecEquipment.WattsPerArea.NumberText);
             layout.AddRow("Watts/Area:");
@@ -224,21 +224,21 @@ namespace Honeybee.UI
             layout.AddRow(sch);
 
             var radFraction = new DoubleText();
-            radFraction.ReservedText = _vm.Varies;
+            radFraction.ReservedText = ReservedText.Varies;
             radFraction.SetDefault(_vm.ElecEquipment.Default.RadiantFraction);
             radFraction.TextBinding.Bind(vm, _ => _.ElecEquipment.RadiantFraction.NumberText);
             layout.AddRow("Radiant Fraction:");
             layout.AddRow(radFraction);
 
             var visFraction = new DoubleText();
-            visFraction.ReservedText = _vm.Varies;
+            visFraction.ReservedText = ReservedText.Varies;
             visFraction.SetDefault(_vm.ElecEquipment.Default.LatentFraction);
             visFraction.TextBinding.Bind(vm, _ => _.ElecEquipment.LatentFraction.NumberText);
             layout.AddRow("Latent Fraction:");
             layout.AddRow(visFraction);
 
             var airFraction = new DoubleText();
-            airFraction.ReservedText = _vm.Varies;
+            airFraction.ReservedText = ReservedText.Varies;
             airFraction.SetDefault(_vm.ElecEquipment.Default.LostFraction);
             airFraction.TextBinding.Bind(vm, _ => _.ElecEquipment.LostFraction.NumberText);
             layout.AddRow("Lost Fraction:");
@@ -247,7 +247,7 @@ namespace Honeybee.UI
             layout.AddRow(null);
 
 
-            var ltnByProgram = new CheckBox() { Text = vm.Noload };
+            var ltnByProgram = new CheckBox() { Text = ReservedText.Noload };
             ltnByProgram.CheckedBinding.Bind(vm, _ => _.ElecEquipment.IsCheckboxChecked);
 
             var gp = new GroupBox() { Text = "Electric Equipment" };
@@ -270,7 +270,7 @@ namespace Honeybee.UI
 
             var wPerArea = new DoubleText();
             wPerArea.Width = 250;
-            wPerArea.ReservedText = _vm.Varies;
+            wPerArea.ReservedText = ReservedText.Varies;
             wPerArea.SetDefault(_vm.Gas.Default.WattsPerArea);
             wPerArea.TextBinding.Bind(vm, _ => _.Gas.WattsPerArea.NumberText);
             layout.AddRow("Watts/Area:");
@@ -285,21 +285,21 @@ namespace Honeybee.UI
             layout.AddRow(sch);
 
             var radFraction = new DoubleText();
-            radFraction.ReservedText = _vm.Varies;
+            radFraction.ReservedText = ReservedText.Varies;
             radFraction.SetDefault(_vm.Gas.Default.RadiantFraction);
             radFraction.TextBinding.Bind(vm, _ => _.Gas.RadiantFraction.NumberText);
             layout.AddRow("Radiant Fraction:");
             layout.AddRow(radFraction);
 
             var visFraction = new DoubleText();
-            visFraction.ReservedText = _vm.Varies;
+            visFraction.ReservedText = ReservedText.Varies;
             visFraction.SetDefault(_vm.Gas.Default.LatentFraction);
             visFraction.TextBinding.Bind(vm, _ => _.Gas.LatentFraction.NumberText);
             layout.AddRow("Latent Fraction:");
             layout.AddRow(visFraction);
 
             var airFraction = new DoubleText();
-            airFraction.ReservedText = _vm.Varies;
+            airFraction.ReservedText = ReservedText.Varies;
             airFraction.SetDefault(_vm.Gas.Default.LostFraction);
             airFraction.TextBinding.Bind(vm, _ => _.Gas.LostFraction.NumberText);
             layout.AddRow("Lost Fraction:");
@@ -308,7 +308,7 @@ namespace Honeybee.UI
             layout.AddRow(null);
 
 
-            var ltnByProgram = new CheckBox() { Text = vm.Noload };
+            var ltnByProgram = new CheckBox() { Text = ReservedText.Noload };
             ltnByProgram.CheckedBinding.Bind(vm, _ => _.Gas.IsCheckboxChecked);
 
             var gp = new GroupBox() { Text = "Gas Equipment" };
@@ -330,7 +330,7 @@ namespace Honeybee.UI
 
             var wPerArea = new DoubleText();
             wPerArea.Width = 250;
-            wPerArea.ReservedText = _vm.Varies;
+            wPerArea.ReservedText = ReservedText.Varies;
             wPerArea.SetDefault(_vm.People.Default.PeoplePerArea);
             wPerArea.TextBinding.Bind(vm, _ => _.People.PeoplePerArea.NumberText);
             layout.AddRow("People/Area:");
@@ -351,14 +351,14 @@ namespace Honeybee.UI
             layout.AddRow(sch2);
 
             var radFraction = new DoubleText();
-            radFraction.ReservedText = _vm.Varies;
+            radFraction.ReservedText = ReservedText.Varies;
             radFraction.SetDefault(_vm.People.Default.RadiantFraction);
             radFraction.TextBinding.Bind(vm, _ => _.People.RadiantFraction.NumberText);
             layout.AddRow("Radiant Fraction:");
             layout.AddRow(radFraction);
 
             var visFraction = new DoubleText();
-            visFraction.ReservedText = _vm.Varies;
+            visFraction.ReservedText = ReservedText.Varies;
             visFraction.SetDefault(_vm.People.Default.LatentFraction);
             visFraction.TextBinding.Bind(vm, _ => _.People.LatentFraction.NumberText);
             visFraction.Bind(_ => _.Enabled, vm, _ => _.People.IsLatenFractionInputEnabled);
@@ -372,7 +372,7 @@ namespace Honeybee.UI
 
 
 
-            var ltnByProgram = new CheckBox() { Text = vm.Noload };
+            var ltnByProgram = new CheckBox() { Text = ReservedText.Noload };
             ltnByProgram.CheckedBinding.Bind(vm, _ => _.People.IsCheckboxChecked);
 
             var gp = new GroupBox() { Text = "People" };
@@ -394,7 +394,7 @@ namespace Honeybee.UI
 
             var wPerArea = new DoubleText();
             wPerArea.Width = 250;
-            wPerArea.ReservedText = _vm.Varies;
+            wPerArea.ReservedText = ReservedText.Varies;
             wPerArea.SetDefault(_vm.Infiltration.Default.FlowPerExteriorArea);
             wPerArea.TextBinding.Bind(vm, _ => _.Infiltration.FlowPerExteriorArea.NumberText);
             layout.AddRow("Flow/Area (exterior area):");
@@ -409,21 +409,21 @@ namespace Honeybee.UI
             layout.AddRow(sch);
 
             var radFraction = new DoubleText();
-            radFraction.ReservedText = _vm.Varies;
+            radFraction.ReservedText = ReservedText.Varies;
             radFraction.SetDefault(_vm.Infiltration.Default.ConstantCoefficient);
             radFraction.TextBinding.Bind(vm, _ => _.Infiltration.ConstantCoefficient.NumberText);
             layout.AddRow("Constant Coefficient:");
             layout.AddRow(radFraction);
 
             var visFraction = new DoubleText();
-            visFraction.ReservedText = _vm.Varies;
+            visFraction.ReservedText = ReservedText.Varies;
             visFraction.SetDefault(_vm.Infiltration.Default.TemperatureCoefficient);
             visFraction.TextBinding.Bind(vm, _ => _.Infiltration.TemperatureCoefficient.NumberText);
             layout.AddRow("Temperature Coefficient:");
             layout.AddRow(visFraction);
 
             var airFraction = new DoubleText();
-            airFraction.ReservedText = _vm.Varies;
+            airFraction.ReservedText = ReservedText.Varies;
             airFraction.SetDefault(_vm.Infiltration.Default.VelocityCoefficient);
             airFraction.TextBinding.Bind(vm, _ => _.Infiltration.VelocityCoefficient.NumberText);
             layout.AddRow("Velocity Coefficient:");
@@ -432,7 +432,7 @@ namespace Honeybee.UI
             layout.AddRow(null);
 
 
-            var ltnByProgram = new CheckBox() { Text = vm.Noload };
+            var ltnByProgram = new CheckBox() { Text = ReservedText.Noload };
             ltnByProgram.CheckedBinding.Bind(vm, _ => _.Infiltration.IsCheckboxChecked);
 
             var gp = new GroupBox() { Text = "Infiltration" };
@@ -455,7 +455,7 @@ namespace Honeybee.UI
 
             var wPerArea = new DoubleText();
             wPerArea.Width = 250;
-            wPerArea.ReservedText = _vm.Varies;
+            wPerArea.ReservedText = ReservedText.Varies;
             wPerArea.SetDefault(_vm.Ventilation.Default.FlowPerArea);
             wPerArea.TextBinding.Bind(vm, _ => _.Ventilation.FlowPerArea.NumberText);
             layout.AddRow("Flow/Area:");
@@ -470,7 +470,7 @@ namespace Honeybee.UI
             layout.AddRow(sch);
 
             var radFraction = new DoubleText() { Width = 250 };
-            radFraction.ReservedText = _vm.Varies;
+            radFraction.ReservedText = ReservedText.Varies;
             radFraction.SetDefault(_vm.Ventilation.Default.FlowPerPerson);
             radFraction.TextBinding.Bind(vm, _ => _.Ventilation.FlowPerPerson.NumberText);
             layout.AddRow("Flow/Person:");
@@ -479,7 +479,7 @@ namespace Honeybee.UI
             layout.AddSeparateRow(radFraction, unit2);
 
             var visFraction = new DoubleText() { Width = 250 };
-            visFraction.ReservedText = _vm.Varies;
+            visFraction.ReservedText = ReservedText.Varies;
             visFraction.SetDefault(_vm.Ventilation.Default.FlowPerZone);
             visFraction.TextBinding.Bind(vm, _ => _.Ventilation.FlowPerZone.NumberText);
             layout.AddRow("Flow/Zone:");
@@ -488,7 +488,7 @@ namespace Honeybee.UI
             layout.AddSeparateRow(visFraction, unit3);
 
             var airFraction = new DoubleText() { Width = 250 };
-            airFraction.ReservedText = _vm.Varies;
+            airFraction.ReservedText = ReservedText.Varies;
             airFraction.SetDefault(_vm.Ventilation.Default.AirChangesPerHour);
             airFraction.TextBinding.Bind(vm, _ => _.Ventilation.AirChangesPerHour.NumberText);
             layout.AddRow("AirChanges/Hour:");
@@ -499,7 +499,7 @@ namespace Honeybee.UI
             layout.AddRow(null);
 
 
-            var ltnByProgram = new CheckBox() { Text = vm.Noload };
+            var ltnByProgram = new CheckBox() { Text = ReservedText.Noload };
             ltnByProgram.CheckedBinding.Bind(vm, _ => _.Ventilation.IsCheckboxChecked);
 
             var gp = new GroupBox() { Text = "Ventilation" };
@@ -549,7 +549,7 @@ namespace Honeybee.UI
             layout.AddRow(null);
 
 
-            var ltnByProgram = new CheckBox() { Text = vm.Noload };
+            var ltnByProgram = new CheckBox() { Text = ReservedText.Noload };
             ltnByProgram.CheckedBinding.Bind(vm, _ => _.Setpoint.IsCheckboxChecked);
 
             var gp = new GroupBox() { Text = "Setpoint" };
@@ -572,7 +572,7 @@ namespace Honeybee.UI
 
             var wPerArea = new DoubleText();
             wPerArea.Width = 250;
-            wPerArea.ReservedText = _vm.Varies;
+            wPerArea.ReservedText = ReservedText.Varies;
             wPerArea.SetDefault(_vm.ServiceHotWater.Default.FlowPerArea);
             wPerArea.TextBinding.Bind(vm, _ => _.ServiceHotWater.FlowPerArea.NumberText);
             layout.AddRow("Flow/Area:");
@@ -587,7 +587,7 @@ namespace Honeybee.UI
             layout.AddRow(sch);
 
             var airFraction = new DoubleText() { Width = 250 };
-            airFraction.ReservedText = _vm.Varies;
+            airFraction.ReservedText = ReservedText.Varies;
             airFraction.SetDefault(_vm.ServiceHotWater.Default.TargetTemperature);
             airFraction.TextBinding.Bind(vm, _ => _.ServiceHotWater.TargetTemperature.NumberText);
             layout.AddRow("Target Temperature:");
@@ -596,14 +596,14 @@ namespace Honeybee.UI
             layout.AddSeparateRow(airFraction, unit2);
 
             var radFraction = new DoubleText();
-            radFraction.ReservedText = _vm.Varies;
+            radFraction.ReservedText = ReservedText.Varies;
             radFraction.SetDefault(_vm.ServiceHotWater.Default.SensibleFraction);
             radFraction.TextBinding.Bind(vm, _ => _.ServiceHotWater.SensibleFraction.NumberText);
             layout.AddRow("Sensible Fraction:");
             layout.AddRow(radFraction);
 
             var visFraction = new DoubleText();
-            visFraction.ReservedText = _vm.Varies;
+            visFraction.ReservedText = ReservedText.Varies;
             visFraction.SetDefault(_vm.ServiceHotWater.Default.LatentFraction);
             visFraction.TextBinding.Bind(vm, _ => _.ServiceHotWater.LatentFraction.NumberText);
             layout.AddRow("Latent Fraction:");
@@ -613,7 +613,7 @@ namespace Honeybee.UI
             layout.AddRow(null);
 
 
-            var ltnByProgram = new CheckBox() { Text = vm.Noload };
+            var ltnByProgram = new CheckBox() { Text = ReservedText.Noload };
             ltnByProgram.CheckedBinding.Bind(vm, _ => _.ServiceHotWater.IsCheckboxChecked);
 
             var gp = new GroupBox() { Text = "Service Hot Water" };

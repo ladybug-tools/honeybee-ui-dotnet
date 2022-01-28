@@ -104,7 +104,7 @@ namespace Honeybee.UI
             {
                 //multiple objects
                 // set refObj to varies
-                this.refObjProperty = new List<UserDataItem>() { new UserDataItem(this.Varies, this.Varies) };
+                this.refObjProperty = new List<UserDataItem>() { new UserDataItem(ReservedText.Varies, ReservedText.Varies) };
             }
 
             this.GridViewDataCollection = new DataStoreCollection<UserDataItem>(this.refObjProperty);
@@ -116,7 +116,7 @@ namespace Honeybee.UI
             if (this.IsCheckboxChecked)
                 return null;
 
-            if (this.refObjProperty.Any(_=> _?.Key == this.Varies))
+            if (this.refObjProperty.Any(_=> _?.Key == ReservedText.Varies))
                 return obj;
 
             var dic = UserItemsToDic(this.refObjProperty);

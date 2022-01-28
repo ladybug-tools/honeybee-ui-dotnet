@@ -121,7 +121,7 @@ namespace Honeybee.UI.View
             c.Bind(_ => _.Enabled, _vm, v => v.Modifier.IsBtnEnabled);
             c.TextBinding.Bind(_vm, _ => _.Modifier.BtnName);
             c.Command = this._vm.ModifierCommand;
-            var cByRoom = new CheckBox() { Text = _vm.ByParentSetting };
+            var cByRoom = new CheckBox() { Text = ReservedText.ByParentSetting };
             cByRoom.CheckedBinding.Bind(_vm, _ => _.Modifier.IsCheckboxChecked);
 
             layout.AddRow("Modifier:", cByRoom);
@@ -131,7 +131,7 @@ namespace Honeybee.UI.View
             mb.Bind(_ => _.Enabled, _vm, v => v.ModifierBlk.IsBtnEnabled);
             mb.TextBinding.Bind(_vm, _ => _.ModifierBlk.BtnName);
             mb.Command = this._vm.ModifierBlkCommand;
-            var mbByRoom = new CheckBox() { Text = _vm.ByParentSetting };
+            var mbByRoom = new CheckBox() { Text = ReservedText.ByParentSetting };
             mbByRoom.CheckedBinding.Bind(_vm, _ => _.ModifierBlk.IsCheckboxChecked);
             layout.AddRow("Modifier Blk:", mbByRoom);
             layout.AddRow(null, mb);
@@ -154,7 +154,7 @@ namespace Honeybee.UI.View
             c.Bind(_ => _.Enabled, _vm, v => v.Construction.IsBtnEnabled);
             c.TextBinding.Bind(_vm, _ => _.Construction.BtnName);
             c.Command = this._vm.ConstructionCommand;
-            var cByRoom = new CheckBox() { Text = _vm.ByParentSetting };
+            var cByRoom = new CheckBox() { Text = ReservedText.ByParentSetting };
             cByRoom.CheckedBinding.Bind(_vm, _ => _.Construction.IsCheckboxChecked);
 
             layout.AddRow("Construction:", cByRoom);
@@ -190,7 +190,7 @@ namespace Honeybee.UI.View
             layout.AddRow(null, surfaceBc);
 
             //AFN
-            var afnByProgram = new CheckBox() { Text = _vm.ByParentSetting };
+            var afnByProgram = new CheckBox() { Text = ReservedText.ByParentSetting };
             afnByProgram.CheckedBinding.Bind(_vm, _ => _.AFNCrack.IsCheckboxChecked);
             layout.AddRow("AFNCrack:", afnByProgram);
             var afn = GenAFNPanel();
@@ -221,7 +221,7 @@ namespace Honeybee.UI.View
 
 
             var vFactor = new DoubleText();
-            vFactor.ReservedText = _vm.Varies;
+            vFactor.ReservedText = ReservedText.Varies;
             vFactor.SetDefault(0);
             vFactor.TextBinding.Bind(_vm, _ => _.BCOutdoor.ViewFactor.NumberText);
             vFactor.Bind(_ => _.Enabled, _vm, _ => _.BCOutdoor.IsViewFactorInputEnabled);
@@ -263,14 +263,14 @@ namespace Honeybee.UI.View
 
             var wPerArea = new DoubleText();
             wPerArea.Width = 250;
-            wPerArea.ReservedText = _vm.Varies;
+            wPerArea.ReservedText = ReservedText.Varies;
             wPerArea.SetDefault(_vm.AFNCrack.Default.FlowCoefficient);
             wPerArea.TextBinding.Bind(vm, _ => _.AFNCrack.FlowCoefficient.NumberText);
             layout.AddRow("Flow Coefficient:", wPerArea);
 
        
             var radFraction = new DoubleText();
-            radFraction.ReservedText = _vm.Varies;
+            radFraction.ReservedText = ReservedText.Varies;
             radFraction.SetDefault(_vm.AFNCrack.Default.FlowExponent);
             radFraction.TextBinding.Bind(vm, _ => _.AFNCrack.FlowExponent.NumberText);
             layout.AddRow("Flow Exponent:", radFraction);
@@ -324,7 +324,7 @@ namespace Honeybee.UI.View
             edit.Bind(_ => _.Command, vm, _ => _.UserData.EditDataCommand);
             remove.Bind(_ => _.Command, vm, _ => _.UserData.RemoveDataCommand);
 
-            var ltnByProgram = new CheckBox() { Text = vm.NoUserData };
+            var ltnByProgram = new CheckBox() { Text = ReservedText.NoUserData };
             ltnByProgram.CheckedBinding.Bind(vm, _ => _.UserData.IsCheckboxChecked);
 
             var gp = new GroupBox() { Text = "User Data" };

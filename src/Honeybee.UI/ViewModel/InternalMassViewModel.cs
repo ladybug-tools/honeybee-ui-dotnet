@@ -40,7 +40,7 @@ namespace Honeybee.UI
         public InternalMassAbridged Default { get; private set; }
         public InternalMassViewModel(ModelProperties libSource, List<InternalMassAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-            this.Default = new InternalMassAbridged(Guid.NewGuid().ToString(), None, 0);
+            this.Default = new InternalMassAbridged(Guid.NewGuid().ToString(), ReservedText.None, 0);
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateInternalMassAbridged();
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateInternalMassAbridged();
 
@@ -55,7 +55,7 @@ namespace Honeybee.UI
             this.Area = new DoubleViewModel((n) => _refHBObj.Area = n);
             this.Area.SetUnits(Units.AreaUnit.SquareMeter, Units.UnitType.Area);
             if (loads.Select(_ => _?.Area).Distinct().Count() > 1)
-                this.Area.SetNumberText(this.Varies);
+                this.Area.SetNumberText(ReservedText.Varies);
             else
                 this.Area.SetBaseUnitNumber(_refHBObj.Area);
 
@@ -64,7 +64,7 @@ namespace Honeybee.UI
             var sch = libSource.Energy.ConstructionList.FirstOrDefault(_ => _.Identifier == _refHBObj.Construction);
             this.Construction = new ButtonViewModel((n) => _refHBObj.Construction = n?.Identifier);
             if (loads.Select(_ => _?.Construction).Distinct().Count() > 1)
-                this.Construction.SetBtnName(this.Varies);
+                this.Construction.SetBtnName(ReservedText.Varies);
             else
                 this.Construction.SetPropetyObj(sch);
 

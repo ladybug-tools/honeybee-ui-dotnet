@@ -29,7 +29,7 @@ namespace Honeybee.UI
             get => _fuelTypeText;
             set
             {
-                _isFuelTypeVaries = value == this.Varies;
+                _isFuelTypeVaries = value == ReservedText.Varies;
                 this.Set(() => _fuelTypeText = value, nameof(FuelTypeText));
             }
         }
@@ -42,7 +42,7 @@ namespace Honeybee.UI
             get => _refHBObj.EndUseCategory;
             set
             {
-                _isEndUseCategoryVaries = value == this.Varies;
+                _isEndUseCategoryVaries = value == ReservedText.Varies;
                 this.Set(() => _refHBObj.EndUseCategory = value, nameof(EndUseCategory));
             }
         }
@@ -99,7 +99,7 @@ namespace Honeybee.UI
         public ProcessAbridged Default { get; private set; }
         public ProcessLoadViewModel(ModelProperties libSource, List<ProcessAbridged> loads, Action<IIDdBase> setAction) : base(libSource, setAction)
         {
-            this.Default = new ProcessAbridged(Guid.NewGuid().ToString(), 0, None, FuelTypes.Electricity);
+            this.Default = new ProcessAbridged(Guid.NewGuid().ToString(), 0, ReservedText.None, FuelTypes.Electricity);
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateProcessAbridged();
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateProcessAbridged();
 
@@ -111,14 +111,14 @@ namespace Honeybee.UI
 
             // EndUseCategory
             if (loads.Select(_ => _?.EndUseCategory).Distinct().Count() > 1)
-                this.EndUseCategory = this.Varies;
+                this.EndUseCategory = ReservedText.Varies;
             else
                 this.EndUseCategory = this._refHBObj.EndUseCategory;
 
 
             // FuelType
             if (loads.Select(_ => _?.FuelType).Distinct().Count() > 1)
-                this.FuelTypeText = this.Varies;
+                this.FuelTypeText = ReservedText.Varies;
             else
                 this.FuelType = this._refHBObj.FuelType;
 
@@ -127,7 +127,7 @@ namespace Honeybee.UI
             this.Watts = new DoubleViewModel((n) => _refHBObj.Watts = n);
             this.Watts.SetUnits(Units.PowerUnit.Watt, Units.UnitType.Power);
             if (loads.Select(_ => _?.Watts).Distinct().Count() > 1)
-                this.Watts.SetNumberText(this.Varies);
+                this.Watts.SetNumberText(ReservedText.Varies);
             else
                 this.Watts.SetBaseUnitNumber(_refHBObj.Watts);
 
@@ -137,7 +137,7 @@ namespace Honeybee.UI
             sch = sch ?? GetDummyScheduleObj(_refHBObj.Schedule);
             this.Schedule = new ButtonViewModel((n) => _refHBObj.Schedule = n?.Identifier);
             if (loads.Select(_ => _?.Schedule).Distinct().Count() > 1)
-                this.Schedule.SetBtnName(this.Varies);
+                this.Schedule.SetBtnName(ReservedText.Varies);
             else
                 this.Schedule.SetPropetyObj(sch);
 
@@ -145,7 +145,7 @@ namespace Honeybee.UI
             //RadiantFraction
             this.RadiantFraction = new DoubleViewModel((n) => _refHBObj.RadiantFraction = n);
             if (loads.Select(_ => _?.RadiantFraction).Distinct().Count() > 1)
-                this.RadiantFraction.SetNumberText(this.Varies);
+                this.RadiantFraction.SetNumberText(ReservedText.Varies);
             else
                 this.RadiantFraction.SetNumberText(_refHBObj.RadiantFraction.ToString());
 
@@ -153,7 +153,7 @@ namespace Honeybee.UI
             //LatentFraction
             this.LatentFraction = new DoubleViewModel((n) => _refHBObj.LatentFraction = n);
             if (loads.Select(_ => _?.LatentFraction).Distinct().Count() > 1)
-                this.LatentFraction.SetNumberText(this.Varies);
+                this.LatentFraction.SetNumberText(ReservedText.Varies);
             else
                 this.LatentFraction.SetNumberText(_refHBObj.LatentFraction.ToString());
 
@@ -161,7 +161,7 @@ namespace Honeybee.UI
             //LostFraction
             this.LostFraction = new DoubleViewModel((n) => _refHBObj.LostFraction = n);
             if (loads.Select(_ => _?.LostFraction).Distinct().Count() > 1)
-                this.LostFraction.SetNumberText(this.Varies);
+                this.LostFraction.SetNumberText(ReservedText.Varies);
             else
                 this.LostFraction.SetNumberText(_refHBObj.LostFraction.ToString());
         }

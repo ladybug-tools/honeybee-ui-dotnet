@@ -62,7 +62,7 @@ namespace Honeybee.UI
         public ServiceHotWaterAbridged Default { get; private set; }
         public ServiceHotWaterViewModel(ModelProperties libSource, List<ServiceHotWaterAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-            this.Default = new ServiceHotWaterAbridged(Guid.NewGuid().ToString(), 0, None);
+            this.Default = new ServiceHotWaterAbridged(Guid.NewGuid().ToString(), 0, ReservedText.None);
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateServiceHotWaterAbridged();
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateServiceHotWaterAbridged();
 
@@ -77,7 +77,7 @@ namespace Honeybee.UI
             this.FlowPerArea = new DoubleViewModel((n) => _refHBObj.FlowPerArea = n);
             this.FlowPerArea.SetUnits(Units.VolumeFlowPerAreaUnit.CubicMeterPerSecondPerSquareMeter, Units.UnitType.AirFlowRateArea);
             if (loads.Select(_ => _?.FlowPerArea).Distinct().Count() > 1)
-                this.FlowPerArea.SetNumberText(this.Varies);
+                this.FlowPerArea.SetNumberText(ReservedText.Varies);
             else
                 this.FlowPerArea.SetBaseUnitNumber(_refHBObj.FlowPerArea);
 
@@ -87,7 +87,7 @@ namespace Honeybee.UI
             sch = sch ?? GetDummyScheduleObj(_refHBObj.Schedule);
             this.Schedule = new ButtonViewModel((n) => _refHBObj.Schedule = n?.Identifier);
             if (loads.Select(_ => _?.Schedule).Distinct().Count() > 1)
-                this.Schedule.SetBtnName(this.Varies);
+                this.Schedule.SetBtnName(ReservedText.Varies);
             else
                 this.Schedule.SetPropetyObj(sch);
 
@@ -96,7 +96,7 @@ namespace Honeybee.UI
             this.TargetTemperature = new DoubleViewModel((n) => _refHBObj.TargetTemperature = n);
             this.TargetTemperature.SetUnits(Units.TemperatureUnit.DegreeCelsius, Units.UnitType.Temperature);
             if (loads.Select(_ => _?.TargetTemperature).Distinct().Count() > 1)
-                this.TargetTemperature.SetNumberText(this.Varies);
+                this.TargetTemperature.SetNumberText(ReservedText.Varies);
             else
                 this.TargetTemperature.SetBaseUnitNumber(_refHBObj.TargetTemperature);
 
@@ -104,7 +104,7 @@ namespace Honeybee.UI
             //LatentFraction
             this.LatentFraction = new DoubleViewModel((n) => _refHBObj.LatentFraction = n);
             if (loads.Select(_ => _?.LatentFraction).Distinct().Count() > 1)
-                this.LatentFraction.SetNumberText(this.Varies);
+                this.LatentFraction.SetNumberText(ReservedText.Varies);
             else
                 this.LatentFraction.SetNumberText(_refHBObj.LatentFraction.ToString());
 
@@ -112,7 +112,7 @@ namespace Honeybee.UI
             //LostFraction
             this.SensibleFraction = new DoubleViewModel((n) => _refHBObj.SensibleFraction = n);
             if (loads.Select(_ => _?.SensibleFraction).Distinct().Count() > 1)
-                this.SensibleFraction.SetNumberText(this.Varies);
+                this.SensibleFraction.SetNumberText(ReservedText.Varies);
             else
                 this.SensibleFraction.SetNumberText(_refHBObj.SensibleFraction.ToString());
         }

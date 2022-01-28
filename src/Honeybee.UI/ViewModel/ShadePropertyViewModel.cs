@@ -31,7 +31,7 @@ namespace Honeybee.UI.ViewModel
             get => _refHBObj.DisplayName;
             set
             {
-                _isDisplayNameVaries = value == this.Varies;
+                _isDisplayNameVaries = value == ReservedText.Varies;
                 this.Set(() => _refHBObj.DisplayName = value, nameof(DisplayName));
             }
         }
@@ -66,7 +66,7 @@ namespace Honeybee.UI.ViewModel
             get => _refHBObj.Properties.Radiance.DynamicGroupIdentifier;
             set
             {
-                _isDynamicGroupIdentifierVaries = value == this.Varies;
+                _isDynamicGroupIdentifierVaries = value == ReservedText.Varies;
                 this.Set(() => _refHBObj.Properties.Radiance.DynamicGroupIdentifier = value, nameof(DynamicGroupIdentifier));
             }
         }
@@ -130,13 +130,13 @@ namespace Honeybee.UI.ViewModel
 
             // Identifier
             if (objs.Select(_ => _.Identifier).Distinct().Count() > 1)
-                this.Identifier = this.Varies;
+                this.Identifier = ReservedText.Varies;
             else
                 this.Identifier = this._refHBObj.Identifier;
 
             // DisplayName
             if (objs.Select(_ => _.DisplayName).Distinct().Count() > 1)
-                this.DisplayName = this.Varies;
+                this.DisplayName = ReservedText.Varies;
             else
                 this.DisplayName = this._refHBObj.DisplayName;
 
@@ -155,7 +155,7 @@ namespace Honeybee.UI.ViewModel
             this.Modifier = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Radiance.Modifier = s?.Identifier);
 
             if (objs.Select(_ => _.Properties.Radiance?.Modifier).Distinct().Count() > 1)
-                this.Modifier.SetBtnName(this.Varies);
+                this.Modifier.SetBtnName(ReservedText.Varies);
             else
                 this.Modifier.SetPropetyObj(mdf);
 
@@ -166,13 +166,13 @@ namespace Honeybee.UI.ViewModel
             this.ModifierBlk = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Radiance.ModifierBlk = s?.Identifier);
 
             if (objs.Select(_ => _.Properties.Radiance?.ModifierBlk).Distinct().Count() > 1)
-                this.ModifierBlk.SetBtnName(this.Varies);
+                this.ModifierBlk.SetBtnName(ReservedText.Varies);
             else
                 this.ModifierBlk.SetPropetyObj(mdfblk);
 
             // DynamicGroupIdentifier
             if (objs.Select(_ => _.Properties.Radiance?.DynamicGroupIdentifier).Distinct().Count() > 1)
-                this.DynamicGroupIdentifier = this.Varies;
+                this.DynamicGroupIdentifier = ReservedText.Varies;
             else
                 this.DynamicGroupIdentifier = this._refHBObj.Properties.Radiance.DynamicGroupIdentifier;
 
@@ -184,7 +184,7 @@ namespace Honeybee.UI.ViewModel
             this.Construction = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.Construction = s?.Identifier);
 
             if (objs.Select(_ => _.Properties.Energy?.Construction).Distinct().Count() > 1)
-                this.Construction.SetBtnName(this.Varies);
+                this.Construction.SetBtnName(ReservedText.Varies);
             else
                 this.Construction.SetPropetyObj(cts);
 
@@ -195,7 +195,7 @@ namespace Honeybee.UI.ViewModel
                 .FirstOrDefault(_ => _.Identifier == _refHBObj.Properties.Energy.TransmittanceSchedule);
             this.TransmittanceSchedule = new CheckboxButtonViewModel((n) => _refHBObj.Properties.Energy.TransmittanceSchedule = n?.Identifier);
             if (objs.Select(_ => _.Properties.Energy?.TransmittanceSchedule).Distinct().Count() > 1)
-                this.TransmittanceSchedule.SetBtnName(this.Varies);
+                this.TransmittanceSchedule.SetBtnName(ReservedText.Varies);
             else
                 this.TransmittanceSchedule.SetPropetyObj(sch);
 

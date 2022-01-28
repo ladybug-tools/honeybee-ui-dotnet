@@ -18,7 +18,7 @@ namespace Honeybee.UI
             get => _numberText;
             set
             {
-                IsVaries = value == this.Varies;
+                IsVaries = value == ReservedText.Varies;
                 if (IsVaries)
                 {
                     this.Set(() => _numberText = value, nameof(NumberText));

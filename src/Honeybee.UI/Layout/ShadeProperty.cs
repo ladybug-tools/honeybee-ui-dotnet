@@ -104,7 +104,7 @@ namespace Honeybee.UI.View
             c.Bind(_ => _.Enabled, _vm, v => v.Modifier.IsBtnEnabled);
             c.TextBinding.Bind(_vm, _ => _.Modifier.BtnName);
             c.Command = this._vm.ModifierCommand;
-            var cByRoom = new CheckBox() { Text = _vm.ByGlobalSetting };
+            var cByRoom = new CheckBox() { Text = ReservedText.ByGlobalSetting };
             cByRoom.CheckedBinding.Bind(_vm, _ => _.Modifier.IsCheckboxChecked);
 
             layout.AddRow("Modifier:", cByRoom);
@@ -114,7 +114,7 @@ namespace Honeybee.UI.View
             mb.Bind(_ => _.Enabled, _vm, v => v.ModifierBlk.IsBtnEnabled);
             mb.TextBinding.Bind(_vm, _ => _.ModifierBlk.BtnName);
             mb.Command = this._vm.ModifierBlkCommand;
-            var mbByRoom = new CheckBox() { Text = _vm.ByGlobalSetting };
+            var mbByRoom = new CheckBox() { Text = ReservedText.ByGlobalSetting };
             mbByRoom.CheckedBinding.Bind(_vm, _ => _.ModifierBlk.IsCheckboxChecked);
             layout.AddRow("Modifier Blk:", mbByRoom);
             layout.AddRow(null, mb);
@@ -141,7 +141,7 @@ namespace Honeybee.UI.View
             c.Bind(_ => _.Enabled, _vm, v => v.Construction.IsBtnEnabled);
             c.TextBinding.Bind(_vm, _ => _.Construction.BtnName);
             c.Command = this._vm.ConstructionCommand;
-            var cByRoom = new CheckBox() { Text = _vm.ByGlobalSetting };
+            var cByRoom = new CheckBox() { Text = ReservedText.ByGlobalSetting };
             cByRoom.CheckedBinding.Bind(_vm, _ => _.Construction.IsCheckboxChecked);
 
             layout.AddRow("Construction:", cByRoom);
@@ -152,7 +152,7 @@ namespace Honeybee.UI.View
             sch.Bind(_ => _.Enabled, _vm, v => v.TransmittanceSchedule.IsBtnEnabled);
             sch.TextBinding.Bind(_vm, _ => _.TransmittanceSchedule.BtnName);
             sch.Command = this._vm.ScheduleCommand;
-            var noSch = new CheckBox() { Text = _vm.NoSchedule };
+            var noSch = new CheckBox() { Text = ReservedText.NoSchedule };
             noSch.CheckedBinding.Bind(_vm, _ => _.TransmittanceSchedule.IsCheckboxChecked);
 
             layout.AddRow("Transmittance Schedule:", noSch);
@@ -207,7 +207,7 @@ namespace Honeybee.UI.View
             edit.Bind(_ => _.Command, vm, _ => _.UserData.EditDataCommand);
             remove.Bind(_ => _.Command, vm, _ => _.UserData.RemoveDataCommand);
 
-            var ltnByProgram = new CheckBox() { Text = vm.NoUserData };
+            var ltnByProgram = new CheckBox() { Text = ReservedText.NoUserData };
             ltnByProgram.CheckedBinding.Bind(vm, _ => _.UserData.IsCheckboxChecked);
 
             var gp = new GroupBox() { Text = "User Data", Height = 400 };

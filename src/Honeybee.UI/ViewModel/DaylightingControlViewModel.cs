@@ -96,7 +96,7 @@ namespace Honeybee.UI
             this.IlluminanceSetpoint = new DoubleViewModel((n) => _refHBObj.IlluminanceSetpoint = n);
             this.IlluminanceSetpoint.SetUnits(Units.IlluminanceUnit.Lux, Units.UnitType.Illuminance);
             if (loads.Select(_ => _?.IlluminanceSetpoint).Distinct().Count() > 1)
-                this.IlluminanceSetpoint.SetNumberText(this.Varies);
+                this.IlluminanceSetpoint.SetNumberText(ReservedText.Varies);
             else
                 this.IlluminanceSetpoint.SetBaseUnitNumber(_refHBObj.IlluminanceSetpoint);
 
@@ -104,7 +104,7 @@ namespace Honeybee.UI
             //SensorPosition
             this.SensorPosition = new ButtonViewModel<List<double>>((n) => _refHBObj.SensorPosition = n);
             if (loads.Select(_ => _?.SensorPosition).Distinct().Count() > 1)
-                this.SensorPosition.SetBtnName(this.Varies);
+                this.SensorPosition.SetBtnName(ReservedText.Varies);
             else
                 this.SensorPosition.SetPropetyObj(_refHBObj.SensorPosition);
 
@@ -112,7 +112,7 @@ namespace Honeybee.UI
             //ControlFraction
             this.ControlFraction = new DoubleViewModel((n) => _refHBObj.ControlFraction = n);
             if (loads.Select(_ => _?.ControlFraction).Distinct().Count() > 1)
-                this.ControlFraction.SetNumberText(this.Varies);
+                this.ControlFraction.SetNumberText(ReservedText.Varies);
             else
                 this.ControlFraction.SetNumberText(_refHBObj.ControlFraction.ToString());
 
@@ -121,7 +121,7 @@ namespace Honeybee.UI
             this.MinPowerInput = new DoubleViewModel((n) => _refHBObj.MinPowerInput = n);
             this.MinPowerInput.SetUnits(Units.PowerUnit.Watt, Units.UnitType.Power);
             if (loads.Select(_ => _?.MinPowerInput).Distinct().Count() > 1)
-                this.MinPowerInput.SetNumberText(this.Varies);
+                this.MinPowerInput.SetNumberText(ReservedText.Varies);
             else
                 this.MinPowerInput.SetBaseUnitNumber(_refHBObj.MinPowerInput);
 
@@ -129,7 +129,7 @@ namespace Honeybee.UI
             //MinLightOutput
             this.MinLightOutput = new DoubleViewModel((n) => _refHBObj.MinLightOutput = n);
             if (loads.Select(_ => _?.MinLightOutput).Distinct().Count() > 1)
-                this.MinLightOutput.SetNumberText(this.Varies);
+                this.MinLightOutput.SetNumberText(ReservedText.Varies);
             else
                 this.MinLightOutput.SetNumberText(_refHBObj.MinLightOutput.ToString());
 

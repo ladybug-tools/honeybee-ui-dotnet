@@ -115,7 +115,7 @@ namespace Honeybee.UI
             ext.Command = vm.WallExtSet.SelectConstrucitonCommand;
             ext.TextBinding.Bind(vm, _ => _.WallExtSet.BtnName);
             ext.Bind(_ => _.Enabled, vm, _ => _.WallExtSet.IsBtnEnabled);
-            var extByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            var extByGlobal = new CheckBox() { Text = ReservedText.ByGlobalConstructionSet };
             extByGlobal.CheckedBinding.Bind(vm, _ => _.WallExtSet.IsCheckboxChecked);
             layout.AddSeparateRow("Exterior", null, extByGlobal);
             layout.AddRow(ext);
@@ -124,7 +124,7 @@ namespace Honeybee.UI
             gnd.Command = vm.WallGndSet.SelectConstrucitonCommand;
             gnd.TextBinding.Bind(vm, _ => _.WallGndSet.BtnName);
             gnd.Bind(_ => _.Enabled, vm, _ => _.WallGndSet.IsBtnEnabled);
-            var gndByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            var gndByGlobal = new CheckBox() { Text = ReservedText.ByGlobalConstructionSet };
             gndByGlobal.CheckedBinding.Bind(vm.WallGndSet, _ => _.IsCheckboxChecked);
             layout.AddSeparateRow("Ground", null, gndByGlobal);
             layout.AddRow(gnd);
@@ -133,7 +133,7 @@ namespace Honeybee.UI
             itr.Command = vm.WallIntSet.SelectConstrucitonCommand;
             itr.TextBinding.Bind(vm, _ => _.WallIntSet.BtnName);
             itr.Bind(_ => _.Enabled, vm, _ => _.WallIntSet.IsBtnEnabled);
-            var itrByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            var itrByGlobal = new CheckBox() { Text = ReservedText.ByGlobalConstructionSet };
             itrByGlobal.CheckedBinding.Bind(vm, _ => _.WallIntSet.IsCheckboxChecked);
             layout.AddSeparateRow("Interior", null, itrByGlobal);
             layout.AddRow(itr);
@@ -159,7 +159,7 @@ namespace Honeybee.UI
             ext.Command = vm.FloorExtSet.SelectConstrucitonCommand;
             ext.TextBinding.Bind(vm, _ => _.FloorExtSet.BtnName);
             ext.Bind(_ => _.Enabled, vm, _ => _.FloorExtSet.IsBtnEnabled);
-            var extByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            var extByGlobal = new CheckBox() { Text = ReservedText.ByGlobalConstructionSet };
             extByGlobal.CheckedBinding.Bind(vm, _ => _.FloorExtSet.IsCheckboxChecked);
             layout.AddSeparateRow("Exterior", null, extByGlobal);
             layout.AddRow(ext);
@@ -168,7 +168,7 @@ namespace Honeybee.UI
             gnd.Command = vm.FloorGndSet.SelectConstrucitonCommand;
             gnd.TextBinding.Bind(vm, _ => _.FloorGndSet.BtnName);
             gnd.Bind(_ => _.Enabled, vm, _ => _.FloorGndSet.IsBtnEnabled);
-            var gndByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            var gndByGlobal = new CheckBox() { Text = ReservedText.ByGlobalConstructionSet };
             gndByGlobal.CheckedBinding.Bind(vm.FloorGndSet, _ => _.IsCheckboxChecked);
             layout.AddSeparateRow("Ground", null, gndByGlobal);
             layout.AddRow(gnd);
@@ -177,7 +177,7 @@ namespace Honeybee.UI
             itr.Command = vm.FloorIntSet.SelectConstrucitonCommand;
             itr.TextBinding.Bind(vm, _ => _.FloorIntSet.BtnName);
             itr.Bind(_ => _.Enabled, vm, _ => _.FloorIntSet.IsBtnEnabled);
-            var itrByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            var itrByGlobal = new CheckBox() { Text = ReservedText.ByGlobalConstructionSet };
             itrByGlobal.CheckedBinding.Bind(vm, _ => _.FloorIntSet.IsCheckboxChecked);
             layout.AddSeparateRow("Interior", null, itrByGlobal);
             layout.AddRow(itr);
@@ -203,7 +203,7 @@ namespace Honeybee.UI
             ext.Command = vm.RoofExtSet.SelectConstrucitonCommand;
             ext.TextBinding.Bind(vm, _ => _.RoofExtSet.BtnName);
             ext.Bind(_ => _.Enabled, vm, _ => _.RoofExtSet.IsBtnEnabled);
-            var extByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            var extByGlobal = new CheckBox() { Text = ReservedText.ByGlobalConstructionSet };
             extByGlobal.CheckedBinding.Bind(vm, _ => _.RoofExtSet.IsCheckboxChecked);
             layout.AddSeparateRow("Exterior", null, extByGlobal);
             layout.AddRow(ext);
@@ -212,7 +212,7 @@ namespace Honeybee.UI
             gnd.Command = vm.RoofGndSet.SelectConstrucitonCommand;
             gnd.TextBinding.Bind(vm, _ => _.RoofGndSet.BtnName);
             gnd.Bind(_ => _.Enabled, vm, _ => _.RoofGndSet.IsBtnEnabled);
-            var gndByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            var gndByGlobal = new CheckBox() { Text = ReservedText.ByGlobalConstructionSet };
             gndByGlobal.CheckedBinding.Bind(vm.RoofGndSet, _ => _.IsCheckboxChecked);
             layout.AddSeparateRow("Ground", null, gndByGlobal);
             layout.AddRow(gnd);
@@ -221,7 +221,7 @@ namespace Honeybee.UI
             itr.Command = vm.RoofIntSet.SelectConstrucitonCommand;
             itr.TextBinding.Bind(vm, _ => _.RoofIntSet.BtnName);
             itr.Bind(_ => _.Enabled, vm, _ => _.RoofIntSet.IsBtnEnabled);
-            var itrByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            var itrByGlobal = new CheckBox() { Text = ReservedText.ByGlobalConstructionSet };
             itrByGlobal.CheckedBinding.Bind(vm, _ => _.RoofIntSet.IsCheckboxChecked);
             layout.AddSeparateRow("Interior", null, itrByGlobal);
             layout.AddRow(itr);
@@ -247,7 +247,7 @@ namespace Honeybee.UI
             ext.Command = vm.ApertureExtSet.SelectConstrucitonCommand;
             ext.TextBinding.Bind(vm, _ => _.ApertureExtSet.BtnName);
             ext.Bind(_ => _.Enabled, vm, _ => _.ApertureExtSet.IsBtnEnabled);
-            var extByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            var extByGlobal = new CheckBox() { Text = ReservedText.ByGlobalConstructionSet };
             extByGlobal.CheckedBinding.Bind(vm, _ => _.ApertureExtSet.IsCheckboxChecked);
             layout.AddSeparateRow("Exterior", null, extByGlobal);
             layout.AddRow(ext);
@@ -256,7 +256,7 @@ namespace Honeybee.UI
             itr.Command = vm.ApertureIntSet.SelectConstrucitonCommand;
             itr.TextBinding.Bind(vm, _ => _.ApertureIntSet.BtnName);
             itr.Bind(_ => _.Enabled, vm, _ => _.ApertureIntSet.IsBtnEnabled);
-            var itrByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            var itrByGlobal = new CheckBox() { Text = ReservedText.ByGlobalConstructionSet };
             itrByGlobal.CheckedBinding.Bind(vm, _ => _.ApertureIntSet.IsCheckboxChecked);
             layout.AddSeparateRow("Interior", null, itrByGlobal);
             layout.AddRow(itr);
@@ -265,7 +265,7 @@ namespace Honeybee.UI
             gnd.Command = vm.ApertureOptSet.SelectConstrucitonCommand;
             gnd.TextBinding.Bind(vm, _ => _.ApertureOptSet.BtnName);
             gnd.Bind(_ => _.Enabled, vm, _ => _.ApertureOptSet.IsBtnEnabled);
-            var gndByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            var gndByGlobal = new CheckBox() { Text = ReservedText.ByGlobalConstructionSet };
             gndByGlobal.CheckedBinding.Bind(vm.ApertureOptSet, _ => _.IsCheckboxChecked);
             layout.AddSeparateRow("Operable", null, gndByGlobal);
             layout.AddRow(gnd);
@@ -274,7 +274,7 @@ namespace Honeybee.UI
             sky.Command = vm.ApertureSkySet.SelectConstrucitonCommand;
             sky.TextBinding.Bind(vm, _ => _.ApertureSkySet.BtnName);
             sky.Bind(_ => _.Enabled, vm, _ => _.ApertureSkySet.IsBtnEnabled);
-            var skyByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            var skyByGlobal = new CheckBox() { Text = ReservedText.ByGlobalConstructionSet };
             skyByGlobal.CheckedBinding.Bind(vm.ApertureSkySet, _ => _.IsCheckboxChecked);
             layout.AddSeparateRow("Skylight", null, skyByGlobal);
             layout.AddRow(sky);
@@ -301,7 +301,7 @@ namespace Honeybee.UI
             ext.Command = vm.DoorExtSet.SelectConstrucitonCommand;
             ext.TextBinding.Bind(vm, _ => _.DoorExtSet.BtnName);
             ext.Bind(_ => _.Enabled, vm, _ => _.DoorExtSet.IsBtnEnabled);
-            var extByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            var extByGlobal = new CheckBox() { Text = ReservedText.ByGlobalConstructionSet };
             extByGlobal.CheckedBinding.Bind(vm, _ => _.DoorExtSet.IsCheckboxChecked);
             layout.AddSeparateRow("Exterior", null, extByGlobal);
             layout.AddRow(ext);
@@ -310,7 +310,7 @@ namespace Honeybee.UI
             itr.Command = vm.DoorIntSet.SelectConstrucitonCommand;
             itr.TextBinding.Bind(vm, _ => _.DoorIntSet.BtnName);
             itr.Bind(_ => _.Enabled, vm, _ => _.DoorIntSet.IsBtnEnabled);
-            var itrByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            var itrByGlobal = new CheckBox() { Text = ReservedText.ByGlobalConstructionSet };
             itrByGlobal.CheckedBinding.Bind(vm, _ => _.DoorIntSet.IsCheckboxChecked);
             layout.AddSeparateRow("Interior", null, itrByGlobal);
             layout.AddRow(itr);
@@ -319,7 +319,7 @@ namespace Honeybee.UI
             gnd.Command = vm.DoorExtGlassSet.SelectConstrucitonCommand;
             gnd.TextBinding.Bind(vm, _ => _.DoorExtGlassSet.BtnName);
             gnd.Bind(_ => _.Enabled, vm, _ => _.DoorExtGlassSet.IsBtnEnabled);
-            var gndByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            var gndByGlobal = new CheckBox() { Text = ReservedText.ByGlobalConstructionSet };
             gndByGlobal.CheckedBinding.Bind(vm.DoorExtGlassSet, _ => _.IsCheckboxChecked);
             layout.AddSeparateRow("Exterior Glass", null, gndByGlobal);
             layout.AddRow(gnd);
@@ -328,7 +328,7 @@ namespace Honeybee.UI
             IntGlass.Command = vm.DoorIntGlassSet.SelectConstrucitonCommand;
             IntGlass.TextBinding.Bind(vm, _ => _.DoorIntGlassSet.BtnName);
             IntGlass.Bind(_ => _.Enabled, vm, _ => _.DoorIntGlassSet.IsBtnEnabled);
-            var IntGlassByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            var IntGlassByGlobal = new CheckBox() { Text = ReservedText.ByGlobalConstructionSet };
             IntGlassByGlobal.CheckedBinding.Bind(vm.DoorIntGlassSet, _ => _.IsCheckboxChecked);
             layout.AddSeparateRow("Interior Glass", null, IntGlassByGlobal);
             layout.AddRow(IntGlass);
@@ -337,7 +337,7 @@ namespace Honeybee.UI
             overhead.Command = vm.DoorOverheadSet.SelectConstrucitonCommand;
             overhead.TextBinding.Bind(vm, _ => _.DoorOverheadSet.BtnName);
             overhead.Bind(_ => _.Enabled, vm, _ => _.DoorOverheadSet.IsBtnEnabled);
-            var overheadByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            var overheadByGlobal = new CheckBox() { Text = ReservedText.ByGlobalConstructionSet };
             overheadByGlobal.CheckedBinding.Bind(vm.DoorOverheadSet, _ => _.IsCheckboxChecked);
             layout.AddSeparateRow("Overhead", null, overheadByGlobal);
             layout.AddRow(overhead);
@@ -363,7 +363,7 @@ namespace Honeybee.UI
             ext.Command = vm.ShadeSet.SelectConstrucitonCommand;
             ext.TextBinding.Bind(vm, _ => _.ShadeSet.BtnName);
             ext.Bind(_ => _.Enabled, vm, _ => _.ShadeSet.IsBtnEnabled);
-            var extByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            var extByGlobal = new CheckBox() { Text = ReservedText.ByGlobalConstructionSet };
             extByGlobal.CheckedBinding.Bind(vm, _ => _.ShadeSet.IsCheckboxChecked);
             layout.AddSeparateRow("Shade", null, extByGlobal);
             layout.AddRow(ext);
@@ -389,7 +389,7 @@ namespace Honeybee.UI
             ext.Command = vm.AirBoundarySet.SelectConstrucitonCommand;
             ext.TextBinding.Bind(vm, _ => _.AirBoundarySet.BtnName);
             ext.Bind(_ => _.Enabled, vm, _ => _.AirBoundarySet.IsBtnEnabled);
-            var extByGlobal = new CheckBox() { Text = vm.ByGlobalConstructionSet };
+            var extByGlobal = new CheckBox() { Text = ReservedText.ByGlobalConstructionSet };
             extByGlobal.CheckedBinding.Bind(vm, _ => _.AirBoundarySet.IsCheckboxChecked);
             layout.AddSeparateRow("Air Boundary", null, extByGlobal);
             layout.AddRow(ext);

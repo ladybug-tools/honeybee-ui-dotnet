@@ -14,8 +14,6 @@ namespace Honeybee.UI
 
     public class ButtonViewModel<T> : ViewModelBase
     {
-        public string Varies => "<varies>";
-        private static string None => "<None>";
         public bool IsVaries;
         private T _refObjProperty;
         private T refObjProperty
@@ -35,7 +33,7 @@ namespace Honeybee.UI
                 if (value is HoneybeeSchema.IIDdBase idd)
                     BtnName = idd?.DisplayName ?? idd?.Identifier;
                 else if (value is List<double> point)
-                    BtnName = (point == null || !point.Any()) ? None : $"{string.Join(",", point)}";
+                    BtnName = (point == null || !point.Any()) ? ReservedText.None : $"{string.Join(",", point)}";
                 else
                     BtnName = value.GetType().Name;
 
@@ -47,12 +45,12 @@ namespace Honeybee.UI
         private string _btnName;
         public string BtnName
         {
-            get => IsVaries ? this.Varies : _btnName;
+            get => IsVaries ? ReservedText.Varies : _btnName;
             set
             {
-                IsVaries = value == this.Varies;
+                IsVaries = value == ReservedText.Varies;
                 if (string.IsNullOrEmpty(value))
-                    value = None;
+                    value = ReservedText.None;
                 this.Set(() => _btnName = value, nameof(BtnName));
             }
         }

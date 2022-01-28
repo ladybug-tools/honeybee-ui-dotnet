@@ -86,21 +86,21 @@ namespace Honeybee.UI
             //FractionAreaOperable
             this.FractionAreaOperable = new DoubleViewModel((n) => _refHBObj.FractionAreaOperable = n);
             if (loads.Select(_ => _?.FractionAreaOperable).Distinct().Count() > 1)
-                this.FractionAreaOperable.SetNumberText(this.Varies);
+                this.FractionAreaOperable.SetNumberText(ReservedText.Varies);
             else
                 this.FractionAreaOperable.SetNumberText(_refHBObj.FractionAreaOperable.ToString());
 
             //FractionHeightOperable
             this.FractionHeightOperable = new DoubleViewModel((n) => _refHBObj.FractionHeightOperable = n);
             if (loads.Select(_ => _?.FractionHeightOperable).Distinct().Count() > 1)
-                this.FractionHeightOperable.SetNumberText(this.Varies);
+                this.FractionHeightOperable.SetNumberText(ReservedText.Varies);
             else
                 this.FractionHeightOperable.SetNumberText(_refHBObj.FractionHeightOperable.ToString());
 
             //DischargeCoefficient
             this.DischargeCoefficient = new DoubleViewModel((n) => _refHBObj.DischargeCoefficient = n);
             if (loads.Select(_ => _?.DischargeCoefficient).Distinct().Count() > 1)
-                this.DischargeCoefficient.SetNumberText(this.Varies);
+                this.DischargeCoefficient.SetNumberText(ReservedText.Varies);
             else
                 this.DischargeCoefficient.SetNumberText(_refHBObj.DischargeCoefficient.ToString());
 
@@ -115,21 +115,21 @@ namespace Honeybee.UI
             //flowCoefficientClosed
             this.FlowCoefficientClosed = new DoubleViewModel((n) => _refHBObj.FlowCoefficientClosed = n);
             if (loads.Select(_ => _?.FlowCoefficientClosed).Distinct().Count() > 1)
-                this.FlowCoefficientClosed.SetNumberText(this.Varies);
+                this.FlowCoefficientClosed.SetNumberText(ReservedText.Varies);
             else
                 this.FlowCoefficientClosed.SetNumberText(_refHBObj.FlowCoefficientClosed.ToString());
 
             //FlowExponentClosed
             this.FlowExponentClosed = new DoubleViewModel((n) => _refHBObj.FlowExponentClosed = n);
             if (loads.Select(_ => _?.FlowExponentClosed).Distinct().Count() > 1)
-                this.FlowExponentClosed.SetNumberText(this.Varies);
+                this.FlowExponentClosed.SetNumberText(ReservedText.Varies);
             else
                 this.FlowExponentClosed.SetNumberText(_refHBObj.FlowExponentClosed.ToString());
 
             //twoWayThreshold
             this.TwoWayThreshold = new DoubleViewModel((n) => _refHBObj.TwoWayThreshold = n);
             if (loads.Select(_ => _?.TwoWayThreshold).Distinct().Count() > 1)
-                this.TwoWayThreshold.SetNumberText(this.Varies);
+                this.TwoWayThreshold.SetNumberText(ReservedText.Varies);
             else
                 this.TwoWayThreshold.SetNumberText(_refHBObj.TwoWayThreshold.ToString());
 

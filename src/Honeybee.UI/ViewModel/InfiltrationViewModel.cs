@@ -62,7 +62,7 @@ namespace Honeybee.UI
         public InfiltrationAbridged Default { get; private set; }
         public InfiltrationViewModel(ModelProperties libSource, List<InfiltrationAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-            this.Default = new InfiltrationAbridged(Guid.NewGuid().ToString(), 0, None);
+            this.Default = new InfiltrationAbridged(Guid.NewGuid().ToString(), 0, ReservedText.None);
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateInfiltrationAbridged();
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateInfiltrationAbridged();
 
@@ -77,7 +77,7 @@ namespace Honeybee.UI
             this.FlowPerExteriorArea = new DoubleViewModel((n) => _refHBObj.FlowPerExteriorArea = n);
             this.FlowPerExteriorArea.SetUnits(Units.VolumeFlowPerAreaUnit.CubicMeterPerSecondPerSquareMeter, Units.UnitType.AirFlowRateArea);
             if (loads.Select(_ => _?.FlowPerExteriorArea).Distinct().Count() > 1)
-                this.FlowPerExteriorArea.SetNumberText(this.Varies);
+                this.FlowPerExteriorArea.SetNumberText(ReservedText.Varies);
             else
                 this.FlowPerExteriorArea.SetBaseUnitNumber(_refHBObj.FlowPerExteriorArea);
 
@@ -87,7 +87,7 @@ namespace Honeybee.UI
             sch = sch ?? GetDummyScheduleObj(_refHBObj.Schedule);
             this.Schedule = new ButtonViewModel((n) => _refHBObj.Schedule = n?.Identifier);
             if (loads.Select(_ => _?.Schedule).Distinct().Count() > 1)
-                this.Schedule.SetBtnName(this.Varies);
+                this.Schedule.SetBtnName(ReservedText.Varies);
             else
                 this.Schedule.SetPropetyObj(sch);
 
@@ -95,7 +95,7 @@ namespace Honeybee.UI
             //ConstantCoefficient
             this.ConstantCoefficient = new DoubleViewModel((n) => _refHBObj.ConstantCoefficient = n);
             if (loads.Select(_ => _?.ConstantCoefficient).Distinct().Count() > 1)
-                this.ConstantCoefficient.SetNumberText(this.Varies);
+                this.ConstantCoefficient.SetNumberText(ReservedText.Varies);
             else
                 this.ConstantCoefficient.SetNumberText(_refHBObj.ConstantCoefficient.ToString());
 
@@ -103,7 +103,7 @@ namespace Honeybee.UI
             //TemperatureCoefficient
             this.TemperatureCoefficient = new DoubleViewModel((n) => _refHBObj.TemperatureCoefficient = n);
             if (loads.Select(_ => _?.TemperatureCoefficient).Distinct().Count() > 1)
-                this.TemperatureCoefficient.SetNumberText(this.Varies);
+                this.TemperatureCoefficient.SetNumberText(ReservedText.Varies);
             else
                 this.TemperatureCoefficient.SetNumberText(_refHBObj.TemperatureCoefficient.ToString());
 
@@ -111,7 +111,7 @@ namespace Honeybee.UI
             //VelocityCoefficient
             this.VelocityCoefficient = new DoubleViewModel((n) => _refHBObj.VelocityCoefficient = n);
             if (loads.Select(_ => _?.VelocityCoefficient).Distinct().Count() > 1)
-                this.VelocityCoefficient.SetNumberText(this.Varies);
+                this.VelocityCoefficient.SetNumberText(ReservedText.Varies);
             else
                 this.VelocityCoefficient.SetNumberText(_refHBObj.VelocityCoefficient.ToString());
         }
