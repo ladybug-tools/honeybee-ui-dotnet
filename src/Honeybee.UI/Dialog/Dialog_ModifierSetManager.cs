@@ -13,6 +13,7 @@ namespace Honeybee.UI
         private Dialog_ModifierSetManager()
         {
             Padding = new Padding(5);
+            Resizable = true;
             Title = $"ModifierSet Manager - {DialogHelper.PluginName}";
             WindowStyle = WindowStyle.Default;
             MinimumSize = new Size(800, 300);
@@ -25,10 +26,18 @@ namespace Honeybee.UI
 
             this._returnSelectedOnly = returnSelectedOnly;
             this._vm = new ModifierSetManagerViewModel(libSource, this);
-            Content = Init();
+            Content = Init(out var gd);
+            this._vm.GridControl = gd;
         }
 
-        private DynamicLayout Init()
+        protected override void OnSizeChanged(System.EventArgs e)
+        {
+            base.OnSizeChanged(e);
+            _vm?.DialogSizeChanged();
+
+        }
+
+        private DynamicLayout Init(out GridView gd)
         {
             var layout = new DynamicLayout();
             layout.DefaultPadding = new Padding(5);
@@ -54,7 +63,7 @@ namespace Honeybee.UI
             filter.TextBinding.Bind(_vm, _ => _.FilterKey);
             layout.AddRow(filter);
 
-            var gd = GenGridView();
+            gd = GenGridView();
             layout.AddRow(gd);
 
             // counts
@@ -69,7 +78,7 @@ namespace Honeybee.UI
             AbortButton = new Button { Text = "Cancel" };
             AbortButton.Click += (sender, e) => Close();
             layout.AddSeparateRow(null, OKButton, AbortButton, null);
-
+            layout.AddRow(null);
 
             gd.CellDoubleClick += (s, e) => _vm.EditCommand.Execute(null);
             return layout;

@@ -41,6 +41,7 @@ namespace Honeybee.UI
         protected List<T> _allData { get; set; }
         public T SelectedData { get; set; }
         protected Control _control;
+        internal Control GridControl { get; set; }
 
         protected void ApplyFilter(bool forceRefresh = true)
         {
@@ -101,9 +102,22 @@ namespace Honeybee.UI
             return obj;
         }
 
-        protected ManagerBaseViewModel(Control control = default)
+        protected ManagerBaseViewModel(Control control = default, Control gridControl = default)
         {
             _control = control;
+            GridControl = gridControl;
+        }
+
+     
+        public void DialogSizeChanged()
+        {
+            if (GridControl == null || GridControl.Height <= 0)
+                return;
+
+            var h = this._control.Height - 200;
+            h = System.Math.Max(h, 250);
+            GridControl.Height = h;
+
         }
 
     }
