@@ -14,6 +14,7 @@ namespace Honeybee.UI
         private Dialog_HVACManager()
         {
             Padding = new Padding(5);
+            Resizable = true;
             Title = $"HVAC Manager - {DialogHelper.PluginName}";
             WindowStyle = WindowStyle.Default;
             Width = 650;
@@ -28,11 +29,17 @@ namespace Honeybee.UI
             var hvacsInModel = libSource.HVACList;
             this._returnSelectedOnly = returnSelectedOnly;
             this._vm = new HVACManagerViewModel(libSource, this);
+            Content = Init(out var gd);
+            this._vm.GridControl = gd;
+        }
+        protected override void OnSizeChanged(System.EventArgs e)
+        {
+            base.OnSizeChanged(e);
+            _vm?.DialogSizeChanged();
 
-            Content = Init();
         }
 
-        private DynamicLayout Init()
+        private DynamicLayout Init(out GridView gd)
         {
 
             var layout = new DynamicLayout();
@@ -58,7 +65,7 @@ namespace Honeybee.UI
             filter.TextBinding.Bind(_vm, _ => _.FilterKey);
             layout.AddRow(filter);
 
-            var gd = GenGridView();
+            gd = GenGridView();
             layout.AddRow(gd);
 
             gd.CellDoubleClick += (s, e) => _vm.EditCommand.Execute(null);
@@ -76,6 +83,8 @@ namespace Honeybee.UI
             AbortButton = new Button { Text = "Cancel" };
             AbortButton.Click += (sender, e) => Close();
             layout.AddSeparateRow(null, DefaultButton, AbortButton, null);
+            layout.AddRow(null);
+
             return layout;
         }
 

@@ -26,10 +26,17 @@ namespace Honeybee.UI
 
             this._returnSelectedOnly = returnSelectedOnly;
             this._vm = new MaterialManagerViewModel(libSource, this);
-            Content = Init();
+            Content = Init(out var gd);
+            this._vm.GridControl = gd;
         }
 
-        public DynamicLayout Init()
+        protected override void OnSizeChanged(System.EventArgs e)
+        {
+            base.OnSizeChanged(e);
+            _vm?.DialogSizeChanged();
+
+        }
+        private DynamicLayout Init(out GridView gd)
         {
             var layout = new DynamicLayout();
             layout.DefaultPadding = new Padding(5);
@@ -54,7 +61,7 @@ namespace Honeybee.UI
             filter.TextBinding.Bind(_vm, _ => _.FilterKey);
             layout.AddRow(filter);
 
-            var gd = GenGridView();
+            gd = GenGridView();
             layout.AddRow(gd);
 
             // counts
