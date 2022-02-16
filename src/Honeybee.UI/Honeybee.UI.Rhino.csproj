@@ -36,7 +36,7 @@
 	<ItemGroup>
 		<PackageReference Include="HoneybeeSchema" Version="1.47.2.1" />
 		<PackageReference Include="RhinoCommon" Version="6.23.20055.13111" IncludeAssets="compile; build;" />
-		<PackageReference Include="UnitsNet" Version="4.119.0" />
+		<PackageReference Include="UnitsNet" Version="4.121.0" />
 	</ItemGroup>
 
 
