@@ -1572,9 +1572,6 @@ namespace Honeybee.UI
 
             var dayId = currentDay.Identifier;
       
-            //_vm.SchRuleset_hbObj
-
-            _vm.ScheduleRules.RemoveAll(_=>_ == currentRule);
 
             //check if the schedule day is also used in other places
             var sches = _vm.ScheduleRules.Select(_ => _.ScheduleDay).ToList();
@@ -1587,6 +1584,8 @@ namespace Honeybee.UI
             if (gps == null || gps.Count() <= 1)
                 _vm.DaySchedules.RemoveAll(_ => _.Identifier == dayId);
 
+            // remove schedule rule
+            _vm.ScheduleRules.RemoveAll(_ => _ == currentRule);
 
             // remove special day
             if (currentRule.ScheduleDay == "Summer Day") _vm.SummerDay_hbObj = null;
