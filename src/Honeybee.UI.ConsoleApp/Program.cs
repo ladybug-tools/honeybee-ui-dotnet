@@ -215,6 +215,36 @@ namespace Honeybee.UI.ConsoleApp
                     }
                 };
 
+                var sensorGrid = new SensorGrid("id", new List<Sensor>());
+                var sensorGrid2 = new SensorGrid("id2", new List<Sensor>(), groupIdentifier: "sdfd");
+
+                var sensorGridPropertybtn = new Button() { Text = "1 sensor grid Property" };
+                sensorGridPropertybtn.Click += (s, e) =>
+                {
+                    var dialog = new Honeybee.UI.Dialog_SensorGridProperty(new List<SensorGrid>() { sensorGrid2 });
+                    var dialog_rc = dialog.ShowModal();
+                    if (dialog_rc != null)
+                    {
+                        foreach (var item in dialog_rc)
+                        {
+                            Console.WriteLine(item.ToJson(true));
+                        }
+                    }
+                };
+                var sensorGridPropertybtn2 = new Button() { Text = "2 sensor grid Property" };
+                sensorGridPropertybtn2.Click += (s, e) =>
+                {
+                    var dialog = new Honeybee.UI.Dialog_SensorGridProperty(new List<SensorGrid>() { sensorGrid, sensorGrid2 });
+                    var dialog_rc = dialog.ShowModal();
+                    if (dialog_rc != null)
+                    {
+                        foreach (var item in dialog_rc)
+                        {
+                            Console.WriteLine(item.ToJson(true));
+                        }
+                    }
+                };
+
                 var Messagebtn = new Button() { Text = "message text" };
                 Messagebtn.Click += (s, e) =>
                 {
@@ -426,6 +456,7 @@ namespace Honeybee.UI.ConsoleApp
                 panel.AddSeparateRow(doorPropertybtn, null);
                 panel.AddSeparateRow(shdPropertybtn, shdPropertybtn2, null);
                 panel.AddSeparateRow(viewPropertybtn, viewPropertybtn2, null);
+                panel.AddSeparateRow(sensorGridPropertybtn, sensorGridPropertybtn2, null);
                 panel.AddSeparateRow(Messagebtn);
                 panel.AddSeparateRow(conbtn, cSetbtn, cSetManager, cSetSel_btn, null);
                 panel.AddSeparateRow(pTypebtn, pTypeMngbtn, null);
