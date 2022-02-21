@@ -185,6 +185,36 @@ namespace Honeybee.UI.ConsoleApp
                     }
                 };
 
+                var view = new HoneybeeSchema.View("id", new List<double>() {1,1,1 }, new List<double>() { 2,2,2}, new List<double>() {0,0,1 }, viewType: ViewType.c);
+                var view2 = new HoneybeeSchema.View("id2", new List<double>() { 1, 1, 1 }, new List<double>() { 2, 2, 2 }, new List<double>() { 0, 0, 1 }, hSize: 120, vSize:120);
+
+                var viewPropertybtn = new Button() { Text = "1 view Property" };
+                viewPropertybtn.Click += (s, e) =>
+                {
+                    var dialog = new Honeybee.UI.Dialog_ViewProperty(new List<HoneybeeSchema.View>() { view });
+                    var dialog_rc = dialog.ShowModal();
+                    if (dialog_rc != null)
+                    {
+                        foreach (var item in dialog_rc)
+                        {
+                            Console.WriteLine(item.ToJson(true));
+                        }
+                    }
+                };
+                var viewPropertybtn2 = new Button() { Text = "2 view Property" };
+                viewPropertybtn2.Click += (s, e) =>
+                {
+                    var dialog = new Honeybee.UI.Dialog_ViewProperty(new List<HoneybeeSchema.View>() { view, view2 });
+                    var dialog_rc = dialog.ShowModal();
+                    if (dialog_rc != null)
+                    {
+                        foreach (var item in dialog_rc)
+                        {
+                            Console.WriteLine(item.ToJson(true));
+                        }
+                    }
+                };
+
                 var Messagebtn = new Button() { Text = "message text" };
                 Messagebtn.Click += (s, e) =>
                 {
@@ -395,6 +425,7 @@ namespace Honeybee.UI.ConsoleApp
                 panel.AddSeparateRow(aptPropertybtn, aptPropertybtn2, null);
                 panel.AddSeparateRow(doorPropertybtn, null);
                 panel.AddSeparateRow(shdPropertybtn, shdPropertybtn2, null);
+                panel.AddSeparateRow(viewPropertybtn, viewPropertybtn2, null);
                 panel.AddSeparateRow(Messagebtn);
                 panel.AddSeparateRow(conbtn, cSetbtn, cSetManager, cSetSel_btn, null);
                 panel.AddSeparateRow(pTypebtn, pTypeMngbtn, null);
