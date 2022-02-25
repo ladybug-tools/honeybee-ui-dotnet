@@ -84,6 +84,56 @@ namespace Honeybee.UI.View
             nameTB.TextBinding.Bind(_vm, _ => _.DisplayName);
             layout.AddRow("Name:", nameTB);
 
+            var px = new DoubleText() {Width = 70 };
+            px.ReservedText = ReservedText.Varies;
+            px.SetDefault(_vm.Default.Position[0]);
+            px.TextBinding.Bind(_vm, _ => _.Px.NumberText);
+            var py = new DoubleText() { Width = 70 };
+            py.ReservedText = ReservedText.Varies;
+            py.SetDefault(_vm.Default.Position[1]);
+            py.TextBinding.Bind(_vm, _ => _.Py.NumberText);
+            var pz = new DoubleText() { Width = 70 };
+            pz.ReservedText = ReservedText.Varies;
+            pz.SetDefault(_vm.Default.Position[2]);
+            pz.TextBinding.Bind(_vm, _ => _.Pz.NumberText);
+            var position = new DynamicLayout() { DefaultSpacing = new Size(4, 4) };
+            position.AddRow("X", px, "Y", py, "Z", pz);
+            layout.AddRow("Position:", position);
+
+            // direction
+            var vx = new DoubleText() { Width = 70 };
+            vx.ReservedText = ReservedText.Varies;
+            vx.SetDefault(_vm.Default.Direction[0]);
+            vx.TextBinding.Bind(_vm, _ => _.Vx.NumberText);
+            var vy = new DoubleText() { Width = 70 };
+            vy.ReservedText = ReservedText.Varies;
+            vy.SetDefault(_vm.Default.Direction[1]);
+            vy.TextBinding.Bind(_vm, _ => _.Vy.NumberText);
+            var vz = new DoubleText() { Width = 70 };
+            vz.ReservedText = ReservedText.Varies;
+            vz.SetDefault(_vm.Default.Direction[2]);
+            vz.TextBinding.Bind(_vm, _ => _.Vz.NumberText);
+            var direction = new DynamicLayout() { DefaultSpacing = new Size(4, 4) };
+            direction.AddRow("X", vx, "Y", vy, "Z", vz);
+            layout.AddRow("Direction:", direction);
+
+            // up vector
+            var Ux = new DoubleText() { Width = 70 };
+            Ux.ReservedText = ReservedText.Varies;
+            Ux.SetDefault(_vm.Default.UpVector[0]);
+            Ux.TextBinding.Bind(_vm, _ => _.Ux.NumberText);
+            var Uy = new DoubleText() { Width = 70 };
+            Uy.ReservedText = ReservedText.Varies;
+            Uy.SetDefault(_vm.Default.UpVector[1]);
+            Uy.TextBinding.Bind(_vm, _ => _.Uy.NumberText);
+            var Uz = new DoubleText() { Width = 70 };
+            Uz.ReservedText = ReservedText.Varies;
+            Uz.SetDefault(_vm.Default.UpVector[2]);
+            Uz.TextBinding.Bind(_vm, _ => _.Uz.NumberText);
+            var upvec = new DynamicLayout() { DefaultSpacing = new Size(4, 4) };
+            upvec.AddRow("X", Ux, "Y", Uy, "Z", Uz);
+            layout.AddRow("Up Vector:", upvec);
+
             // view type
             var viewTypeText = new TextBox();
             viewTypeText.Bind(_ => _.Text, _vm, _ => _.ViewTypeText);
