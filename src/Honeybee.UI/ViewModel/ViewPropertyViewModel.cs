@@ -37,6 +37,62 @@ namespace Honeybee.UI.ViewModel
             }
         }
 
+        private DoubleViewModel _px;
+        public DoubleViewModel Px
+        {
+            get => _px;
+            set => this.Set(() => _px = value, nameof(Px));
+        }
+        private DoubleViewModel _py;
+        public DoubleViewModel Py
+        {
+            get => _py;
+            set => this.Set(() => _py = value, nameof(Py));
+        }
+        private DoubleViewModel _pz;
+        public DoubleViewModel Pz
+        {
+            get => _pz;
+            set => this.Set(() => _pz = value, nameof(Pz));
+        }
+
+        private DoubleViewModel _Vx;
+        public DoubleViewModel Vx
+        {
+            get => _Vx;
+            set => this.Set(() => _Vx = value, nameof(Vx));
+        }
+        private DoubleViewModel _Vy;
+        public DoubleViewModel Vy
+        {
+            get => _Vy;
+            set => this.Set(() => _Vy = value, nameof(Vy));
+        }
+        private DoubleViewModel _Vz;
+        public DoubleViewModel Vz
+        {
+            get => _Vz;
+            set => this.Set(() => _Vz = value, nameof(Vz));
+        }
+
+        private DoubleViewModel _Ux;
+        public DoubleViewModel Ux
+        {
+            get => _Ux;
+            set => this.Set(() => _Ux = value, nameof(Ux));
+        }
+        private DoubleViewModel _Uy;
+        public DoubleViewModel Uy
+        {
+            get => _Uy;
+            set => this.Set(() => _Uy = value, nameof(Uy));
+        }
+        private DoubleViewModel _Uz;
+        public DoubleViewModel Uz
+        {
+            get => _Uz;
+            set => this.Set(() => _Uz = value, nameof(Uz));
+        }
 
         public ViewType ViewType
         {
@@ -149,7 +205,7 @@ namespace Honeybee.UI.ViewModel
         public HoneybeeSchema.View Default { get; private set; }
         internal ViewPropertyViewModel(View.ViewProperty panel)
         {
-            this.Default = new HoneybeeSchema.View("id", new List<double>(), new List<double>(), new List<double>());
+            this.Default = new HoneybeeSchema.View("id", new List<double>() { 0,0,0}, new List<double>() {0,0,0 }, new List<double>() { 0, 0, 0 });
             _refHBObj = this.Default.DuplicateView();
    
             this._control = panel;
@@ -179,6 +235,70 @@ namespace Honeybee.UI.ViewModel
                 this.ViewTypeText = ReservedText.Varies;
             else
                 this.ViewType = this._refHBObj.ViewType;
+
+            // Position x
+            this.Px = new DoubleViewModel(_ => _refHBObj.Position[0] = _);
+            if (objs.Select(_ => _?.Position[0]).Distinct().Count() > 1)
+                this.Px.SetNumberText(ReservedText.Varies);
+            else
+                this.Px.SetNumberText(this._refHBObj.Position[0].ToString());
+
+            // Position y
+            this.Py = new DoubleViewModel(_ => _refHBObj.Position[1] = _);
+            if (objs.Select(_ => _?.Position[1]).Distinct().Count() > 1)
+                this.Py.SetNumberText(ReservedText.Varies);
+            else
+                this.Py.SetNumberText(this._refHBObj.Position[1].ToString());
+
+            // Position z
+            this.Pz = new DoubleViewModel(_ => _refHBObj.Position[2] = _);
+            if (objs.Select(_ => _?.Position[2]).Distinct().Count() > 1)
+                this.Pz.SetNumberText(ReservedText.Varies);
+            else
+                this.Pz.SetNumberText(this._refHBObj.Position[2].ToString());
+
+            // Vector x
+            this.Vx = new DoubleViewModel(_ => _refHBObj.Direction[0] = _);
+            if (objs.Select(_ => _?.Direction[0]).Distinct().Count() > 1)
+                this.Vx.SetNumberText(ReservedText.Varies);
+            else
+                this.Vx.SetNumberText(this._refHBObj.Direction[0].ToString());
+
+            // Vector y
+            this.Vy = new DoubleViewModel(_ => _refHBObj.Direction[1] = _);
+            if (objs.Select(_ => _?.Direction[1]).Distinct().Count() > 1)
+                this.Vy.SetNumberText(ReservedText.Varies);
+            else
+                this.Vy.SetNumberText(this._refHBObj.Direction[1].ToString());
+
+            // Vector z
+            this.Vz = new DoubleViewModel(_ => _refHBObj.Direction[2] = _);
+            if (objs.Select(_ => _?.Direction[2]).Distinct().Count() > 1)
+                this.Vz.SetNumberText(ReservedText.Varies);
+            else
+                this.Vz.SetNumberText(this._refHBObj.Direction[2].ToString());
+
+            // Up x
+            this.Ux = new DoubleViewModel(_ => _refHBObj.UpVector[0] = _);
+            if (objs.Select(_ => _?.UpVector[0]).Distinct().Count() > 1)
+                this.Ux.SetNumberText(ReservedText.Varies);
+            else
+                this.Ux.SetNumberText(this._refHBObj.UpVector[0].ToString());
+
+            // Up y
+            this.Uy = new DoubleViewModel(_ => _refHBObj.UpVector[1] = _);
+            if (objs.Select(_ => _?.UpVector[1]).Distinct().Count() > 1)
+                this.Uy.SetNumberText(ReservedText.Varies);
+            else
+                this.Uy.SetNumberText(this._refHBObj.UpVector[1].ToString());
+
+            // Up z
+            this.Uz = new DoubleViewModel(_ => _refHBObj.UpVector[2] = _);
+            if (objs.Select(_ => _?.UpVector[2]).Distinct().Count() > 1)
+                this.Uz.SetNumberText(ReservedText.Varies);
+            else
+                this.Uz.SetNumberText(this._refHBObj.UpVector[2].ToString());
+
 
             // HSize
             this.HSize = new DoubleViewModel(_ => _refHBObj.HSize = _);
@@ -248,6 +368,33 @@ namespace Honeybee.UI.ViewModel
 
                 if (!this._isDisplayNameVaries)
                     item.DisplayName = refObj.DisplayName;
+
+                if (!this.Px.IsVaries)
+                    item.Position[0] = refObj.Position[0];
+
+                if (!this.Py.IsVaries)
+                    item.Position[1] = refObj.Position[1];
+
+                if (!this.Pz.IsVaries)
+                    item.Position[2] = refObj.Position[2];
+
+                if (!this.Vx.IsVaries)
+                    item.Direction[0] = refObj.Direction[0];
+
+                if (!this.Vy.IsVaries)
+                    item.Direction[1] = refObj.Direction[1];
+
+                if (!this.Vz.IsVaries)
+                    item.Direction[2] = refObj.Direction[2];
+
+                if (!this.Ux.IsVaries)
+                    item.UpVector[0] = refObj.UpVector[0];
+
+                if (!this.Uy.IsVaries)
+                    item.UpVector[1] = refObj.UpVector[1];
+
+                if (!this.Uz.IsVaries)
+                    item.UpVector[2] = refObj.UpVector[2];
 
                 if (!this.HSize.IsVaries)
                     item.HSize = refObj.HSize;
