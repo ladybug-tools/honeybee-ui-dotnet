@@ -450,6 +450,13 @@ namespace Honeybee.UI.ConsoleApp
                 };
 
 
+                var legend_btn = new Button() { Text = "Legend" };
+                legend_btn.Click += (s, e) =>
+                {
+                    var dia = new Dialog_Legend(null);
+                    dia.ShowModal(Config.Owner);
+                };
+
                 panel.AddSeparateRow(RoomPropertybtn, RoomPropertybtn2, null);
                 panel.AddSeparateRow(facePropertybtn, facePropertybtn2, null);
                 panel.AddSeparateRow(aptPropertybtn, aptPropertybtn2, null);
@@ -469,7 +476,7 @@ namespace Honeybee.UI.ConsoleApp
                 panel.AddSeparateRow(opsHVACs);
                 panel.AddSeparateRow(HVACManager);
                 panel.AddSeparateRow(matchRooms_btn);
-                panel.AddSeparateRow(unit_btn);
+                panel.AddSeparateRow(unit_btn, legend_btn);
                 panel.AddSeparateRow(null);
                 Content = panel;
             }
