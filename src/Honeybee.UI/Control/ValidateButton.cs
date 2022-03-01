@@ -11,7 +11,7 @@ namespace Honeybee.UI
         {
             this._defaultText = value?.ToString();
         }
-        public ValidateButton()
+        public ValidateButton(): base()
         {
             this._defaultBackground = this.BackgroundColor;
             this._defaultTextColor = this.TextColor;

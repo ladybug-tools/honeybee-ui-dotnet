@@ -114,7 +114,7 @@ namespace Honeybee.UI.View
             layout.DefaultSpacing = new Size(4, 4);
             layout.DefaultPadding = new Padding(4);
 
-            var c = new ValidateButton();
+            var c = new Button();
             c.Width = 250;
             c.Bind(_ => _.Enabled, _vm, v => v.Modifier.IsBtnEnabled);
             c.TextBinding.Bind(_vm, _ => _.Modifier.BtnName);
