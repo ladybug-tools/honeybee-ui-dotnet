@@ -24,9 +24,9 @@ namespace Honeybee.UI
         
 
         // Schedule
-        private ButtonViewModel _schedule;
+        private OptionalButtonViewModel _schedule;
 
-        public ButtonViewModel Schedule
+        public OptionalButtonViewModel Schedule
         {
             get => _schedule;
             set { this.Set(() => _schedule = value, nameof(Schedule)); }
@@ -85,7 +85,7 @@ namespace Honeybee.UI
             //Schedule
             var sch = libSource.Energy.ScheduleList.FirstOrDefault(_ => _.Identifier == _refHBObj.Schedule);
             sch = sch ?? GetDummyScheduleObj(_refHBObj.Schedule);
-            this.Schedule = new ButtonViewModel((n) => _refHBObj.Schedule = n?.Identifier);
+            this.Schedule = new OptionalButtonViewModel((n) => _refHBObj.Schedule = n?.Identifier);
             if (loads.Select(_ => _?.Schedule).Distinct().Count() > 1)
                 this.Schedule.SetBtnName(ReservedText.Varies);
             else
@@ -152,6 +152,10 @@ namespace Honeybee.UI
             }
         });
 
+        public RelayCommand RemoveScheduleCommand => new RelayCommand(() =>
+        {
+            this.Schedule.SetPropetyObj(null);
+        });
     }
 
 
