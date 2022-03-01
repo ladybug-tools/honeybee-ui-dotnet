@@ -127,7 +127,7 @@ namespace Honeybee.UI
             if (!this.Schedule.IsVaries)
             {
                 if (this._refHBObj.Schedule == null)
-                    throw new ArgumentException("Missing a required schedule of the lighting load!");
+                    throw new ArgumentException("Missing a required schedule of the gas equipment!");
                 obj.Schedule = this._refHBObj.Schedule;
             }
             if (!this.RadiantFraction.IsVaries)
