@@ -33,9 +33,9 @@ namespace Honeybee.UI
         }
 
         // activitySchedule
-        private ButtonViewModel _activitySchedule;
+        private OptionalButtonViewModel _activitySchedule;
 
-        public ButtonViewModel ActivitySchedule
+        public OptionalButtonViewModel ActivitySchedule
         {
             get => _activitySchedule;
             set { this.Set(() => _activitySchedule = value, nameof(ActivitySchedule)); }
@@ -122,7 +122,7 @@ namespace Honeybee.UI
             //ActivitySchedule
             var actSch = libSource.Energy.ScheduleList.FirstOrDefault(_ => _.Identifier == _refHBObj.ActivitySchedule);
             actSch = actSch ?? GetDummyScheduleObj(_refHBObj.ActivitySchedule);
-            this.ActivitySchedule = new ButtonViewModel((n) => _refHBObj.ActivitySchedule = n?.Identifier);
+            this.ActivitySchedule = new OptionalButtonViewModel((n) => _refHBObj.ActivitySchedule = n?.Identifier);
             if (loads.Select(_ => _?.ActivitySchedule).Distinct().Count() > 1)
                 this.ActivitySchedule.SetBtnName(ReservedText.Varies);
             else
@@ -206,7 +206,11 @@ namespace Honeybee.UI
                 this.ActivitySchedule.SetPropetyObj(dialog_rc[0]);
             }
         });
-      
+        public RelayCommand RemoveActivityScheduleCommand => new RelayCommand(() =>
+        {
+            this.ActivitySchedule.SetPropetyObj(null);
+        });
+
     }
 
 

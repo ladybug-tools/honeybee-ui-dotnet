@@ -31,18 +31,18 @@ namespace Honeybee.UI
         }
 
         // HumidifyingSchedule
-        private ButtonViewModel _humidifyingSchedule;
+        private OptionalButtonViewModel _humidifyingSchedule;
 
-        public ButtonViewModel HumidifyingSchedule
+        public OptionalButtonViewModel HumidifyingSchedule
         {
             get => _humidifyingSchedule;
             set { this.Set(() => _humidifyingSchedule = value, nameof(HumidifyingSchedule)); }
         }
 
         // dehumidifyingSchedule
-        private ButtonViewModel _dehumidifyingSchedule;
+        private OptionalButtonViewModel _dehumidifyingSchedule;
 
-        public ButtonViewModel DehumidifyingSchedule
+        public OptionalButtonViewModel DehumidifyingSchedule
         {
             get => _dehumidifyingSchedule;
             set { this.Set(() => _dehumidifyingSchedule = value, nameof(DehumidifyingSchedule)); }
@@ -86,7 +86,7 @@ namespace Honeybee.UI
             //HumidifyingSchedule
             var huSch = libSource.Energy.ScheduleList.FirstOrDefault(_ => _.Identifier == _refHBObj.HumidifyingSchedule);
             huSch = huSch ?? GetDummyScheduleObj(_refHBObj.HumidifyingSchedule);
-            this.HumidifyingSchedule = new ButtonViewModel((n) => _refHBObj.HumidifyingSchedule = n?.Identifier);
+            this.HumidifyingSchedule = new OptionalButtonViewModel((n) => _refHBObj.HumidifyingSchedule = n?.Identifier);
             if (loads.Select(_ => _?.HumidifyingSchedule).Distinct().Count() > 1)
                 this.HumidifyingSchedule.SetBtnName(ReservedText.Varies);
             else
@@ -96,7 +96,7 @@ namespace Honeybee.UI
             //DehumidifyingSchedule
             var dhSch = libSource.Energy.ScheduleList.FirstOrDefault(_ => _.Identifier == _refHBObj.DehumidifyingSchedule);
             dhSch = dhSch ?? GetDummyScheduleObj(_refHBObj.DehumidifyingSchedule);
-            this.DehumidifyingSchedule = new ButtonViewModel((n) => _refHBObj.DehumidifyingSchedule = n?.Identifier);
+            this.DehumidifyingSchedule = new OptionalButtonViewModel((n) => _refHBObj.DehumidifyingSchedule = n?.Identifier);
             if (loads.Select(_ => _?.DehumidifyingSchedule).Distinct().Count() > 1)
                 this.DehumidifyingSchedule.SetBtnName(ReservedText.Varies);
             else
@@ -149,6 +149,7 @@ namespace Honeybee.UI
             }
         });
 
+
         public RelayCommand HeatingScheduleCommand => new RelayCommand(() =>
         {
             var lib = _libSource.Energy;
@@ -170,6 +171,10 @@ namespace Honeybee.UI
                 this.HumidifyingSchedule.SetPropetyObj(dialog_rc[0]);
             }
         });
+        public RelayCommand RemoveHumidifyingScheduleCommand => new RelayCommand(() =>
+        {
+            this.HumidifyingSchedule.SetPropetyObj(null);
+        });
 
         public RelayCommand DehumidifyingScheduleCommand => new RelayCommand(() =>
         {
@@ -181,8 +186,11 @@ namespace Honeybee.UI
                 this.DehumidifyingSchedule.SetPropetyObj(dialog_rc[0]);
             }
         });
+        public RelayCommand RemoveDehumidifyingScheduleCommand => new RelayCommand(() =>
+        {
+            this.DehumidifyingSchedule.SetPropetyObj(null);
+        });
 
-       
     }
 
 

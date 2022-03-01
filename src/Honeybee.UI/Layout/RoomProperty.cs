@@ -8,7 +8,6 @@ using System;
 
 namespace Honeybee.UI.View
 {
-
     public class RoomProperty : Panel
     {
         private RoomPropertyViewModel _vm { get; set; }
@@ -441,9 +440,11 @@ namespace Honeybee.UI.View
             layout.AddRow("Occupancy Schedule:");
             layout.AddRow(sch);
 
-            var sch2 = new Button();
+            var sch2 = new OptionalButton();
             sch2.TextBinding.Bind(vm, _ => _.People.ActivitySchedule.BtnName);
             sch2.Bind(_ => _.Command, vm, _ => _.People.ActivityScheduleCommand);
+            sch2.Bind(_ => _.RemoveCommand, vm, _ => _.People.RemoveActivityScheduleCommand);
+            sch2.Bind(_ => _.IsRemoveVisable, vm, _ => _.People.ActivitySchedule.IsRemoveVisable);
             layout.AddRow("Activity Schedule:");
             layout.AddRow(sch2);
 
@@ -560,9 +561,11 @@ namespace Honeybee.UI.View
             unit.TextBinding.Bind(vm, _ => _.Ventilation.FlowPerArea.DisplayUnitAbbreviation);
             layout.AddSeparateRow(wPerArea, unit);
 
-            var sch = new Button();
+            var sch = new OptionalButton();
             sch.TextBinding.Bind(vm, _ => _.Ventilation.Schedule.BtnName);
             sch.Bind(_ => _.Command, vm, _ => _.Ventilation.ScheduleCommand);
+            sch.Bind(_ => _.RemoveCommand, vm, _ => _.Ventilation.RemoveScheduleCommand);
+            sch.Bind(_ => _.IsRemoveVisable, vm, _ => _.Ventilation.Schedule.IsRemoveVisable);
             layout.AddRow("Schedule:");
             layout.AddRow(sch);
 
@@ -631,15 +634,19 @@ namespace Honeybee.UI.View
             layout.AddRow("Heating Schedule:");
             layout.AddRow(sch2);
 
-            var sch3 = new Button();
+            var sch3 = new OptionalButton();
             sch3.TextBinding.Bind(vm, _ => _.Setpoint.HumidifyingSchedule.BtnName);
             sch3.Bind(_ => _.Command, vm, _ => _.Setpoint.HumidifyingScheduleCommand);
+            sch3.Bind(_ => _.RemoveCommand, vm, _ => _.Setpoint.RemoveHumidifyingScheduleCommand);
+            sch3.Bind(_ => _.IsRemoveVisable, vm, _ => _.Setpoint.HumidifyingSchedule.IsRemoveVisable);
             layout.AddRow("Humidifying Schedule:");
             layout.AddRow(sch3);
 
-            var sch4 = new Button();
+            var sch4 = new OptionalButton();
             sch4.TextBinding.Bind(vm, _ => _.Setpoint.DehumidifyingSchedule.BtnName);
             sch4.Bind(_ => _.Command, vm, _ => _.Setpoint.DehumidifyingScheduleCommand);
+            sch4.Bind(_ => _.RemoveCommand, vm, _ => _.Setpoint.RemoveDehumidifyingScheduleCommand);
+            sch4.Bind(_ => _.IsRemoveVisable, vm, _ => _.Setpoint.DehumidifyingSchedule.IsRemoveVisable);
             layout.AddRow("Dehumidifying Schedule:");
             layout.AddRow(sch4);
 

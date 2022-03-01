@@ -1,10 +1,28 @@
 ﻿using Eto.Forms;
+using HoneybeeSchema;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Honeybee.UI
 {
+    public class OptionalButtonViewModel : ButtonViewModel
+    {
+        private bool _isRemoveVisable;
+        public bool IsRemoveVisable
+        {
+            get => _isRemoveVisable;
+            set => this.Set(() => _isRemoveVisable = value, nameof(IsRemoveVisable));
+        }
+        public OptionalButtonViewModel(Action<HoneybeeSchema.IIDdBase> setAction) : base(setAction)
+        {
+        }
+        public override void SetPropetyObj(IIDdBase obj)
+        {
+            IsRemoveVisable = obj != null;
+            base.SetPropetyObj(obj);
+        }
+    }
     public class ButtonViewModel: ButtonViewModel<HoneybeeSchema.IIDdBase>
     {
         public ButtonViewModel(Action<HoneybeeSchema.IIDdBase> setAction): base(setAction)
@@ -66,7 +84,7 @@ namespace Honeybee.UI
             this.BtnName = name;
         }
 
-        public void SetPropetyObj(T obj)
+        public virtual void SetPropetyObj(T obj)
         {
             this.refObjProperty = obj;
         }
