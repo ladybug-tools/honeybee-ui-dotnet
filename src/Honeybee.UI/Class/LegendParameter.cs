@@ -174,7 +174,7 @@ namespace Honeybee.UI
         private List<double> _colorDomains;
         private List<double> ColorDomains()
         {
-            if (_colorDomains != null)
+            if (_colorDomains != null && _colorDomains.Count == this.Colors.Count)
                 return _colorDomains;
 
             if (this.Colors.Count < 2)
