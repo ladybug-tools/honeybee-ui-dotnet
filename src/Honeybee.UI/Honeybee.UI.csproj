@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;</TargetFrameworks>
     <Authors>Ladybug Tools</Authors>
-    <Company>LadybugTools LLC</Company>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>UI library build with Eto Forms for editing Honeybee Schema (DotNet) on both Windows and Mac system.</Description>
