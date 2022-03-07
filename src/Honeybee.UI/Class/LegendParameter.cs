@@ -72,6 +72,8 @@ namespace Honeybee.UI
 
         [DataMember(Name = "continuous")]
         public bool Continuous { get; set; }
+        [DataMember(Name = "horizontal")]
+        public bool Horizontal { get; set; }
 
         [DataMember(Name = "title")]
         public string Title { get; set; }
@@ -117,7 +119,7 @@ namespace Honeybee.UI
             Min = 0;
             Max = 100;
             NumSegment = 3;
-            DecimalPlaces = 2;
+            DecimalPlaces = 1;
 
             Colors = _defaultColorSet.ToList();
         }
