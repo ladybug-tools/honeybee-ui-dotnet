@@ -79,6 +79,29 @@ namespace Honeybee.UI
             get => !_legendParameter.StringValues;
             set => Set(() => _legendParameter.StringValues = !value, nameof(IsNumberValues));
         }
+        public bool IsHorizontal
+        {
+            get => _legendParameter.Horizontal;
+            set { 
+                Set(() => _legendParameter.Horizontal = value, nameof(IsHorizontal));
+                if (value)
+                {
+                    if (W > H)
+                        return;
+                    var _w = W;
+                    W = H;
+                    H = _w;
+                }
+                else
+                {
+                    if (W < H)
+                        return;
+                    var _w = W;
+                    W = H;
+                    H = _w;
+                }
+            }
+        }
 
         private DataStoreCollection<ColorDataItem> _gridViewDataCollection = new DataStoreCollection<ColorDataItem>();
         public DataStoreCollection<ColorDataItem> GridViewDataCollection

@@ -23,6 +23,7 @@ namespace Honeybee.UI
             var fontH = new Eto.Forms.NumericStepper() { MinValue = 1 };
             var fontColor = new Button();
             var decimalPlaces = new Eto.Forms.NumericStepper() { DecimalPlaces = 0, MinValue = 0 };
+            
 
             title.TextBinding.Bind(_vm, _=>_.Title);
             x.ValueBinding.Bind(_vm, _=>_.X);
@@ -38,16 +39,18 @@ namespace Honeybee.UI
             var maxNum = new Eto.Forms.NumericStepper() { MaximumDecimalPlaces = 5 };
             var numSeg = new Eto.Forms.NumericStepper() { DecimalPlaces = 0, MinValue = 1 };
             var continuous = new CheckBox();
+            var horizontal = new CheckBox();
 
             minNum.ValueBinding.Bind(_vm, _ => _.Min);
             maxNum.ValueBinding.Bind(_vm, _ => _.Max);
             numSeg.ValueBinding.Bind(_vm, _=>_.NumSeg);
             continuous.CheckedBinding.Bind(_vm, _=>_.Continuous);
+            horizontal.CheckedBinding.Bind(_vm, _ => _.IsHorizontal);
             minNum.Bind(_ => _.Enabled, _vm, _ => _.IsNumberValues);
             maxNum.Bind(_ => _.Enabled, _vm, _ => _.IsNumberValues); 
             numSeg.Bind(_ => _.Enabled, _vm, _ => _.IsNumberValues);
             continuous.Bind(_ => _.Enabled, _vm, _ => _.IsNumberValues);
-
+          
 
             var colorPanel = GenColorControl();
             var tb = new TabControl();
@@ -98,6 +101,7 @@ namespace Honeybee.UI
             layout.AddSeparateRow("Minimum:", minNum);
             layout.AddSeparateRow("Number of segment:", numSeg);
             layout.AddSeparateRow("Continuous colors:", continuous);
+            layout.AddSeparateRow("Horizontal:", horizontal);
 
             layout.AddSeparateRow(tb);
       
