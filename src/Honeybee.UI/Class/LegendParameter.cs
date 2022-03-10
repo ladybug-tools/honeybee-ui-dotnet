@@ -77,6 +77,8 @@ namespace Honeybee.UI
 
         [DataMember(Name = "title")]
         public string Title { get; set; }
+        [DataMember(Name = "unit")]
+        public string Unit { get; set; }
 
         [DataMember(Name = "type")]
         public string Type { get; } = nameof(LegendParameter);
@@ -119,7 +121,7 @@ namespace Honeybee.UI
             Min = 0;
             Max = 100;
             NumSegment = 3;
-            DecimalPlaces = 1;
+            DecimalPlaces = 2;
 
             Colors = _defaultColorSet.ToList();
         }
