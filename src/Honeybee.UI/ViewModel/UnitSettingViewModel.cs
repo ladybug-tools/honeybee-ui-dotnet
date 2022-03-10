@@ -349,6 +349,31 @@ namespace Honeybee.UI
 
         #endregion
 
+        #region UValue
+        private Units.HeatTransferCoefficientUnit _UValue;
+        public Units.HeatTransferCoefficientUnit UValue
+        {
+            get => _UValue;
+            set { Set(() => _UValue = value, nameof(UValue)); UValueAbbv = GetAbbr(value); }
+        }
+
+        private bool _UValueEnabled = true;
+        public bool UValueEnabled
+        {
+            get => _UValueEnabled;
+            set => Set(() => _UValueEnabled = value, nameof(UValueEnabled));
+        }
+
+        private string _UValueAbbv;
+        public string UValueAbbv
+        {
+            get => _UValueAbbv;
+            set => Set(() => _UValueAbbv = value, nameof(UValueAbbv));
+        }
+
+        #endregion
+
+
         #region Density
         private Units.DensityUnit _Density;
         public Units.DensityUnit Density
@@ -440,6 +465,8 @@ namespace Honeybee.UI
                     Conductivity = ConductivityV;
                 if (this.ResistanceEnabled && dic[Units.UnitType.Resistance] is Units.ThermalResistanceUnit ResistanceV)
                     Resistance = ResistanceV;
+                if (this.UValueEnabled && dic[Units.UnitType.UValue] is Units.HeatTransferCoefficientUnit uvalueV)
+                    UValue = uvalueV;
                 if (this.DensityEnabled && dic[Units.UnitType.Density] is Units.DensityUnit DensityV)
                     Density = DensityV;
                 if (this.SpecificHeatEnabled && dic[Units.UnitType.SpecificEntropy] is Units.SpecificEntropyUnit SpecificHeatV)
@@ -483,6 +510,9 @@ namespace Honeybee.UI
             Conductivity = ConductivityV;
             ResistanceEnabled = !GetUnitOrDefault<Units.ThermalResistanceUnit>(hardcodedUnits, Units.UnitType.Resistance, out var ResistanceV);
             Resistance = ResistanceV;
+            UValueEnabled = !GetUnitOrDefault<Units.HeatTransferCoefficientUnit>(hardcodedUnits, Units.UnitType.UValue, out var UvalueV);
+            UValue = UvalueV;
+
             DensityEnabled = !GetUnitOrDefault<Units.DensityUnit>(hardcodedUnits, Units.UnitType.Density, out var DensityV);
             Density = DensityV;
             SpecificHeatEnabled = !GetUnitOrDefault<Units.SpecificEntropyUnit>(hardcodedUnits, Units.UnitType.SpecificEntropy, out var SpecificHeatV);
@@ -508,6 +538,7 @@ namespace Honeybee.UI
 
             Units.CustomUnitSettings.TryAddValue(Units.UnitType.Conductivity, this.Conductivity);
             Units.CustomUnitSettings.TryAddValue(Units.UnitType.Resistance, this.Resistance);
+            Units.CustomUnitSettings.TryAddValue(Units.UnitType.UValue, this.UValue);
             Units.CustomUnitSettings.TryAddValue(Units.UnitType.Density, this.Density);
             Units.CustomUnitSettings.TryAddValue(Units.UnitType.SpecificEntropy, this.SpecificHeat);
 

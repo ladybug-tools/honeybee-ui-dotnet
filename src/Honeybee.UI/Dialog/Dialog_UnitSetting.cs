@@ -145,6 +145,13 @@ namespace Honeybee.UI
             ResistanceAbbr.TextBinding.Bind(vm, m => m.ResistanceAbbv);
             layout.AddSeparateRow("Resistance:", ResistanceAbbr, null, Resistance);
 
+            var UValue = new EnumDropDown<Units.HeatTransferCoefficientUnit>() { Width = 150 };
+            UValue.SelectedValueBinding.Bind(vm, m => m.UValue);
+            UValue.Bind(_ => _.Enabled, vm, m => m.UValueEnabled);
+            var UValueAbbr = new Label();
+            UValueAbbr.TextBinding.Bind(vm, m => m.UValueAbbv);
+            layout.AddSeparateRow("UValue:", UValueAbbr, null, UValue);
+
             var Density = new EnumDropDown<Units.DensityUnit>() { Width = 150 };
             Density.SelectedValueBinding.Bind(vm, m => m.Density);
             Density.Bind(_ => _.Enabled, vm, m => m.DensityEnabled);
