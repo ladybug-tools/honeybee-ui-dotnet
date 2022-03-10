@@ -23,8 +23,10 @@ namespace Honeybee.UI
             Illuminance,
             Conductivity,
             Resistance,
+            UValue,
             Density,
             SpecificEntropy,
+            Dimensionless
 
         }
 
@@ -68,7 +70,8 @@ namespace Honeybee.UI
             { UnitType.Speed, SpeedUnit.MeterPerSecond },
             { UnitType.Illuminance, IlluminanceUnit.Lux },
             { UnitType.Conductivity, ThermalConductivityUnit.WattPerMeterKelvin },
-            { UnitType.Resistance, ThermalResistanceUnit.SquareMeterDegreeCelsiusPerWatt },
+            { UnitType.Resistance, ThermalResistanceUnit.SquareMeterKelvinPerWatt },
+            { UnitType.UValue, HeatTransferCoefficientUnit.WattPerSquareMeterKelvin },
             { UnitType.Density, DensityUnit.KilogramPerCubicMeter },
             { UnitType.SpecificEntropy, SpecificEntropyUnit.JoulePerKilogramKelvin },
         };
@@ -89,6 +92,7 @@ namespace Honeybee.UI
             { UnitType.Illuminance, IlluminanceUnit.Lux },   
             { UnitType.Conductivity, ThermalConductivityUnit.BtuPerHourFootFahrenheit },
             { UnitType.Resistance, ThermalResistanceUnit.HourSquareFeetDegreeFahrenheitPerBtu },
+            { UnitType.UValue, HeatTransferCoefficientUnit.BtuPerSquareFootDegreeFahrenheit },
             { UnitType.Density, DensityUnit.PoundPerCubicFoot },
             { UnitType.SpecificEntropy, SpecificEntropyUnit.BtuPerPoundFahrenheit },
         };
@@ -202,10 +206,17 @@ namespace Honeybee.UI
             WattPerMeterKelvin
         }
 
+        public enum HeatTransferCoefficientUnit
+        {
+            WattPerSquareMeterKelvin,
+            BtuPerSquareFootDegreeFahrenheit
+        }
+
         public enum ThermalResistanceUnit
         {
             HourSquareFeetDegreeFahrenheitPerBtu,
             SquareMeterDegreeCelsiusPerWatt,
+            SquareMeterKelvinPerWatt,
         }
 
         public enum DensityUnit
@@ -226,7 +237,7 @@ namespace Honeybee.UI
         //public static void U()
         //{
         //    //var a2 = UnitsNet.VolumeFlow.FromCubicFeetPerMinute(100) * UnitsNet.ReciprocalArea.FromInverseSquareFeet(20);
-        //    UnitsNet.Units.SpecificEntropyUnit.JoulePerKilogramDegreeCelsius
+        //    UnitsNet.Units.HeatTransferCoefficientUnit.WattPerSquareMeterKelvin.ThermalResistanceUnit.SquareMeterKelvinPerWatt.BtuPerSquareFootDegreeFahrenheit
         //}
 
         public static void TryAddValue(this Dictionary<UnitType, Enum> CustomUnitSettings, UnitType unitType, Enum value)
