@@ -108,6 +108,10 @@ namespace Honeybee.UI.View
             multiplier_NS.TextBinding.Bind(vm, _ => _.MultiplierText);
             layout.AddRow("Multiplier:", multiplier_NS);
 
+            var excludeFloor = new CheckBox();
+            excludeFloor.CheckedBinding.Bind(_vm, _ => _.IsExcludeFloor.IsChecked);
+            layout.AddRow("Exclude Floor:", excludeFloor);
+
             layout.AddSpace();
 
             //Get modifierSet
@@ -958,7 +962,6 @@ namespace Honeybee.UI.View
             layout.AddRow("Sensor Position:");
             layout.AddRow(sch);
 
-     
 
             var wPerArea = new DoubleText();
             wPerArea.Width = 250;
@@ -1057,7 +1060,7 @@ namespace Honeybee.UI.View
             ltnByProgram.CheckedBinding.Bind(vm, _ => _.UserData.IsCheckboxChecked);
 
             var gp = new GroupBox() { Text = "User Data" };
-            gp.Content = new StackLayout(ltnByProgram, layout) { Spacing = 4, Padding = new Padding(4), Height = 350 };
+            gp.Content = new StackLayout(ltnByProgram, layout) { Spacing = 4, Padding = new Padding(4), Height = 330 };
 
             return gp;
         }
