@@ -76,6 +76,13 @@ namespace Honeybee.UI.ViewModel
             }
         }
 
+        private CheckboxViewModel _isExcludeFloor;
+        public CheckboxViewModel IsExcludeFloor
+        {
+            get => _isExcludeFloor;
+            set => this.Set(() => _isExcludeFloor = value, nameof(IsExcludeFloor));
+        }
+
         #endregion
 
 
@@ -267,7 +274,14 @@ namespace Honeybee.UI.ViewModel
             else
                 this.MultiplierText = this._refHBObj.Multiplier.ToString();
 
-            
+            // ExcludeFloorArea
+            this.IsExcludeFloor = new CheckboxViewModel(_ => _refHBObj.ExcludeFloorArea = _);
+            if (rooms.Select(_ => _?.ExcludeFloorArea).Distinct().Count() > 1)
+                this.IsExcludeFloor.SetCheckboxVaries();
+            else
+                this.IsExcludeFloor.SetCheckboxChecked(this._refHBObj.ExcludeFloorArea);
+
+
 
             var cSet = _libSource.Energy.ConstructionSets?
                 .OfType<HoneybeeSchema.Energy.IBuildingConstructionset>()?
@@ -401,6 +415,8 @@ namespace Honeybee.UI.ViewModel
                 if (!this._isMultiplierVaries)
                     item.Multiplier = refObj.Multiplier;
 
+                if (!this.IsExcludeFloor.IsVaries)
+                    item.ExcludeFloorArea = refObj.ExcludeFloorArea;
 
                 item.Properties.Energy = item.Properties.Energy ?? new RoomEnergyPropertiesAbridged();
 
