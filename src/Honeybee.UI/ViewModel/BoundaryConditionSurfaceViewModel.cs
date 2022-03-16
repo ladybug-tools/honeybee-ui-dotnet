@@ -49,6 +49,10 @@ namespace Honeybee.UI
             {
                 var adjList = this.AdjacentSurfaceText
                     .Select(_=>_.Trim()).ToList();
+                if (adjList.Count > 3 || adjList.Count < 2)
+                {
+                    throw new ArgumentException("A valid surface boundary condition must be a list that consists of 2 or 3 identifiers");
+                }
                 obj.BoundaryConditionObjects = adjList;
             }
                
