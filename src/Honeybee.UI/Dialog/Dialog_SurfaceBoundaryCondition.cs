@@ -15,10 +15,11 @@ namespace Honeybee.UI
             {
                
                 Padding = new Padding(5);
-                Resizable = true;
+                //Resizable = true;
                 Title = $"Edit Surface Boundary Condition - {DialogHelper.PluginName}";
                 WindowStyle = WindowStyle.Default;
-                MinimumSize = new Size(450, 300);
+                //MinimumSize = new Size(450, 300);
+                Width = 600;
 
                 DefaultButton = new Button { Text = "OK" };
                
@@ -34,8 +35,35 @@ namespace Honeybee.UI
                 textArea.Height = 300;
                 textArea.Text = string.Join(Environment.NewLine, BCs);
 
-                
-                DefaultButton.Click += (sender, e) => Close(textArea.Text.Split(new[] { Environment.NewLine }, StringSplitOptions.None).ToList());
+                var note = "A list of up to 3 object identifiers that are adjacent to this one. "+
+                    "The first object is always the one that is immediately adjacent and is of " +
+                    "the same object type (Face, Aperture, Door). When this boundary condition " +
+                    "is applied to a Face, the second object in the tuple will be the parent " +
+                    "Room of the adjacent object. When the boundary condition is applied to a " +
+                    "sub-face (Door or Aperture), the second object will be the parent Face " +
+                    "of the adjacent sub-face and the third object will be the parent Room " +
+                    "of the adjacent sub-face.";
+                var label = new Label();
+                label.Text = note;
+                label.Wrap = WrapMode.Word;
+
+
+                DefaultButton.Click += (sender, e) => 
+                {
+                    var text = textArea.Text;
+                    var items = text
+                    .Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(_=>_.Trim())
+                    .Where(_=> !string.IsNullOrEmpty(_))
+                    .ToList();
+
+                    if (items.Count>3 || items.Count<2)
+                    {
+                        MessageBox.Show(this, "A valid surface boundary condition must be a list that consists of 2 or 3 identifiers");
+                        return;
+                    }
+                    Close(items);
+                };
 
                 //Create layout
                 Content = new TableLayout()
@@ -43,11 +71,12 @@ namespace Honeybee.UI
                     Padding = new Padding(10),
                     Spacing = new Size(5, 5),
                     Rows =
-                {
-                    textArea,
-                    new TableRow(buttons),
-                    null
-                }
+                    { 
+                        label,
+                        textArea,
+                        new TableRow(buttons),
+                        null
+                    }
                 };
             }
             catch (Exception e)
