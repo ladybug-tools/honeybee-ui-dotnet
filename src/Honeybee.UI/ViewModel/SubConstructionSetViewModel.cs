@@ -6,6 +6,7 @@ using System.Windows.Input;
 
 namespace Honeybee.UI
 {
+
     public class SubConstructionSetViewModel : CheckboxButtonViewModel
     {
         private ModelEnergyProperties _libSource { get; set; }
