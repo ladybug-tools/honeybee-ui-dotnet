@@ -8,6 +8,7 @@
         public readonly static string Unconditioned = "Unconditioned";
         public readonly static string Unoccupied = "Unoccupied, No Loads";
         public readonly static string Noload = "No Load";
+        public readonly static string NoChange = "No Change";
         public readonly static string ByGlobalConstructionSet = "By Global Construction Set";
         public readonly static string ByProgramType = "By Room Program Type";
         public readonly static string ByGlobalModifierSet = "By Global Modifier Set";

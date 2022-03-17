@@ -378,7 +378,8 @@ namespace Honeybee.UI.ConsoleApp
                 modifierSetBtn.Click += (s, e) =>
                 {
                     var dup = new ModifierSetAbridged("NewModifierSet");
-                    var dialog = new Honeybee.UI.Dialog_ModifierSet(md.Properties.Radiance, dup);
+                    var lib = md.Properties.Radiance;
+                    var dialog = new Honeybee.UI.Dialog_ModifierSet(ref lib, dup);
 
                     var dialog_rc = dialog.ShowModal(this);
                 };
@@ -423,6 +424,35 @@ namespace Honeybee.UI.ConsoleApp
                     }
                 };
 
+                var cIntSetSel_btn = new Button() { Text = "ConstructionSet Interior" };
+                var cInt = new InteriorSet();
+                cIntSetSel_btn.Click += (s, e) =>
+                {
+                    var lib = md.Properties.Energy;
+                    var cSetSel = new Dialog_ConstructionSet_Interior(ref lib, cInt);
+                    var cSetSel_rc = cSetSel.ShowModal(Config.Owner);
+                    if (cSetSel_rc != null)
+                    {
+                        cInt = cSetSel_rc;
+                        Console.WriteLine(cSetSel_rc);
+                    }
+                };
+
+                var mIntSetSel_btn = new Button() { Text = "ModifierSet Interior" };
+                var mInt = new InteriorSet();
+                mIntSetSel_btn.Click += (s, e) =>
+                {
+                    var lib = md.Properties.Radiance;
+                    var cSetSel = new Dialog_ModifierSet_Interior(ref lib, mInt);
+                    var cSetSel_rc = cSetSel.ShowModal(Config.Owner);
+                    if (cSetSel_rc != null)
+                    {
+                        mInt = cSetSel_rc;
+                        Console.WriteLine(cSetSel_rc);
+                    }
+                };
+
+
                 var matchRooms_btn = new Button() { Text = "MatchRooms" };
                 matchRooms_btn.Click += (s, e) =>
                 {
@@ -465,13 +495,13 @@ namespace Honeybee.UI.ConsoleApp
                 panel.AddSeparateRow(viewPropertybtn, viewPropertybtn2, null);
                 panel.AddSeparateRow(sensorGridPropertybtn, sensorGridPropertybtn2, null);
                 panel.AddSeparateRow(Messagebtn);
-                panel.AddSeparateRow(conbtn, cSetbtn, cSetManager, cSetSel_btn, null);
+                panel.AddSeparateRow(conbtn, cSetbtn, cIntSetSel_btn, cSetManager, cSetSel_btn, null);
                 panel.AddSeparateRow(pTypebtn, pTypeMngbtn, null);
                 panel.AddSeparateRow(schbtn);
                 panel.AddSeparateRow(simuParam);
                 panel.AddSeparateRow(modelManager);
                 panel.AddSeparateRow(materialBtn);
-                panel.AddSeparateRow(modifierBtn, modifierSetMngBtn, modifierBtn, null);
+                panel.AddSeparateRow(modifierBtn, modifierSetMngBtn, modifierBtn, mIntSetSel_btn, null);
                 panel.AddSeparateRow(outputs);
                 panel.AddSeparateRow(opsHVACs);
                 panel.AddSeparateRow(HVACManager);

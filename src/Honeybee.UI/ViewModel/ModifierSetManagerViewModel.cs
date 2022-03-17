@@ -66,7 +66,8 @@ namespace Honeybee.UI
         {
             var name = $"New_ModifierSet_{Guid.NewGuid().ToString().Substring(0, 5)}";
             var newSet = new ModifierSetAbridged(name, displayName: name);
-            var dialog = new Honeybee.UI.Dialog_ModifierSet(this._modelRadianceProperties, newSet);
+            var lib = this._modelRadianceProperties;
+            var dialog = new Honeybee.UI.Dialog_ModifierSet(ref lib, newSet);
             var dialog_rc = dialog.ShowModal(_control);
 
             if (dialog_rc == null) return;
@@ -91,7 +92,8 @@ namespace Honeybee.UI
             var name = $"{dup.DisplayName ?? dup.Identifier}_dup";
             dup.Identifier = name;
             dup.DisplayName = name;
-            var dialog = new Honeybee.UI.Dialog_ModifierSet(this._modelRadianceProperties, dup);
+            var lib = this._modelRadianceProperties;
+            var dialog = new Honeybee.UI.Dialog_ModifierSet(ref lib, dup);
             var dialog_rc = dialog.ShowModal(_control);
 
             if (dialog_rc == null) return;
@@ -117,7 +119,8 @@ namespace Honeybee.UI
             //}
 
             var dup = selected.ModifierSet.Duplicate() as ModifierSetAbridged;
-            var dialog = new Honeybee.UI.Dialog_ModifierSet(this._modelRadianceProperties, dup, selected.Locked);
+            var lib = this._modelRadianceProperties;
+            var dialog = new Honeybee.UI.Dialog_ModifierSet(ref lib, dup, selected.Locked);
             var dialog_rc = dialog.ShowModal(_control);
 
             if (dialog_rc == null) return;
