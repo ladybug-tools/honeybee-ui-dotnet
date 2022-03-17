@@ -28,7 +28,7 @@ namespace Honeybee.UI
         {
             var lib = _libSource;
             var dialog = new Dialog_ModifierManager(ref lib, true);
-            var dialog_rc = dialog.ShowModal();
+            var dialog_rc = dialog.ShowModal(Config.Owner);
             if (dialog_rc != null)
             {
                 var rs = dialog_rc[0];
