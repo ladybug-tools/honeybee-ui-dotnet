@@ -290,6 +290,7 @@ namespace Honeybee.UI.ViewModel
         public List<Face> GetFaces()
         {
             var refObj = this._refHBObj;
+            refObj.IsValid(true);
             foreach (var item in this._hbObjs)
             {
 

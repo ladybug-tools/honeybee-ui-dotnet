@@ -287,6 +287,7 @@ namespace Honeybee.UI.ViewModel
         public List<Aperture> GetApertures()
         {
             var refObj = this._refHBObj;
+            refObj.IsValid(true);
             foreach (var item in this._hbObjs)
             {
 
