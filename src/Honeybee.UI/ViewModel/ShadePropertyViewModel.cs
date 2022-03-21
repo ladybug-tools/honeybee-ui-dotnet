@@ -210,6 +210,7 @@ namespace Honeybee.UI.ViewModel
         public List<Shade> GetShades()
         {
             var refObj = this._refHBObj;
+            refObj.IsValid(true);
             foreach (var item in this._hbObjs)
             {
 
