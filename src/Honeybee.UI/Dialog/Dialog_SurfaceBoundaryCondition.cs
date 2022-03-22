@@ -42,7 +42,7 @@ namespace Honeybee.UI
                     "Room of the adjacent object. When the boundary condition is applied to a " +
                     "sub-face (Door or Aperture), the second object will be the parent Face " +
                     "of the adjacent sub-face and the third object will be the parent Room " +
-                    "of the adjacent sub-face.";
+                    "of the adjacent sub-face.\n\nIn most cases you should not be editing these values manually and should use the PO_SolveAdjacency command instead!";
                 var label = new Label();
                 label.Text = note;
                 label.Wrap = WrapMode.Word;
