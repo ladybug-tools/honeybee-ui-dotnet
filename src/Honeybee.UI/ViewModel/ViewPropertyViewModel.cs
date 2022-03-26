@@ -363,7 +363,6 @@ namespace Honeybee.UI.ViewModel
         public List<HoneybeeSchema.View> GetViews()
         {
             var refObj = this._refHBObj;
-            refObj.IsValid(true);
             foreach (var item in this._hbObjs)
             {
 
@@ -421,6 +420,9 @@ namespace Honeybee.UI.ViewModel
                 if (!this._isRoomIDVaries)
                     item.RoomIdentifier = refObj.RoomIdentifier;
 
+
+                // validate
+                item.IsValid(true);
             }
 
             return this._hbObjs;

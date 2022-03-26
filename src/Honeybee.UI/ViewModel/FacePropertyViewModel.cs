@@ -290,7 +290,7 @@ namespace Honeybee.UI.ViewModel
         public List<Face> GetFaces()
         {
             var refObj = this._refHBObj;
-            refObj.IsValid(true);
+           
             foreach (var item in this._hbObjs)
             {
 
@@ -336,6 +336,9 @@ namespace Honeybee.UI.ViewModel
 
                 // User data
                 item.UserData = this.UserData.MatchObj(item.UserData);
+
+                // validate
+                item.IsValid(true);
             }
 
             return this._hbObjs;
