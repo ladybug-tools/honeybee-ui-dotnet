@@ -90,96 +90,14 @@ namespace Honeybee.UI
             return itemsToReturn;
         }
 
-        private static NoLimit _noLimit = new NoLimit();
-        private static readonly Dictionary<string, ScheduleTypeLimit> _typeLimitLib = new Dictionary<string, ScheduleTypeLimit>()
-            {
-                { "Dimensionless 1 [NoLimit ~ NoLimit]",
-                    new ScheduleTypeLimit("Dimensionless 1","Dimensionless 1", _noLimit, _noLimit, ScheduleNumericType.Continuous, ScheduleUnitType.Dimensionless)},
-                { "Dimensionless 2 [-1 ~ 1]",
-                    new ScheduleTypeLimit("Dimensionless 2","Dimensionless 2", -1, 1, ScheduleNumericType.Continuous, ScheduleUnitType.Dimensionless)},
-                { "Dimensionless 3 [0 ~ NoLimit]",
-                    new ScheduleTypeLimit("Dimensionless 3","Dimensionless 3", 0, _noLimit, ScheduleNumericType.Continuous, ScheduleUnitType.Dimensionless)},
-                { "Dimensionless 4 [0.1 ~ 1000]",
-                    new ScheduleTypeLimit("Dimensionless 4","Dimensionless 4", 0.1, 1000, ScheduleNumericType.Continuous, ScheduleUnitType.Dimensionless)},
-                { "Dimensionless 5 [0 ~ 1]",
-                    new ScheduleTypeLimit("Dimensionless 5","Dimensionless 5", 0, 1, ScheduleNumericType.Continuous, ScheduleUnitType.Dimensionless)},
-                { "Fractional [0 ~ 1]",
-                    new ScheduleTypeLimit("Fractional","Fractional", 0, 1, ScheduleNumericType.Continuous, ScheduleUnitType.Dimensionless)},
-                { "Activity Level [W/person]",
-                    new ScheduleTypeLimit("Activity Level","Activity Level", 0, _noLimit, ScheduleNumericType.Continuous, ScheduleUnitType.ActivityLevel)},
-                { "Angle [degree]",
-                    new ScheduleTypeLimit("Angle","Angle", 0, 180, ScheduleNumericType.Continuous, ScheduleUnitType.Angle)},
-                { "Control Level [0 , NoLimit]:Discrete",
-                    new ScheduleTypeLimit("Control Level","Control Level", 0, _noLimit, ScheduleNumericType.Discrete, ScheduleUnitType.Control)},
-                { "Capacity [W]",
-                    new ScheduleTypeLimit("Capacity","Capacity", 0, _noLimit, ScheduleNumericType.Continuous, ScheduleUnitType.Capacity)},
-                { "Clothing [clo]",
-                    new ScheduleTypeLimit("Clothing","Clothing", 0, _noLimit, ScheduleNumericType.Continuous, ScheduleUnitType.Dimensionless)},
-                { "Delta Temperature",
-                    new ScheduleTypeLimit("Delta Temperature","Delta Temperature", _noLimit, _noLimit, ScheduleNumericType.Continuous, ScheduleUnitType.DeltaTemperature)},
-                { "Humidity [0 ~ 100]",
-                    new ScheduleTypeLimit("Humidity","Humidity", 0, 100, ScheduleNumericType.Continuous, ScheduleUnitType.Percent)},
-                { "On-Off [0 , 1]:Discrete",
-                    new ScheduleTypeLimit("On-Off","On-Off", 0, 1, ScheduleNumericType.Discrete, ScheduleUnitType.Dimensionless)},
-                { "Power [NoLimit ~ NoLimit]",
-                    new ScheduleTypeLimit("Power","Power", _noLimit, _noLimit, ScheduleNumericType.Continuous, ScheduleUnitType.Power)},
-                { "Temperature [-273.15 ~ NoLimit]",
-                    new ScheduleTypeLimit("Temperature","Temperature", -273.15, _noLimit, ScheduleNumericType.Continuous, ScheduleUnitType.Temperature)},
-                { "Temperature [0 ~ 100]",
-                    new ScheduleTypeLimit("Temperature 2","Temperature 2", 0, 100, ScheduleNumericType.Continuous, ScheduleUnitType.Temperature)},
-                { "Percent [%]",
-                    new ScheduleTypeLimit("Percent","Percent", 0, 100, ScheduleNumericType.Continuous, ScheduleUnitType.Percent)},
-                { "Velocity",
-                    new ScheduleTypeLimit("Velocity","Velocity", 0, _noLimit, ScheduleNumericType.Continuous, ScheduleUnitType.Velocity)},
-            };
-
+      
         public RelayCommand AddCommand => new RelayCommand(() =>
         {
-            //HoneybeeSchema.ScheduleTypeLimit
-            var noLimit = new NoLimit();
-           
-            var contextMenu = new ContextMenu();
-            foreach (var item in _typeLimitLib)
-            {
-                contextMenu.Items.Add(
-                  new Eto.Forms.ButtonMenuItem()
-                  {
-                      Text = item.Key,
-                      Command = AddScheduleCommand,
-                      CommandParameter = item.Value,
-                  });
-            }
-            contextMenu.Show();
-        });
+            var sch = DialogHelper.CreateSchedule(_control);
+            if (sch == null) return;
 
-        public RelayCommand<ScheduleTypeLimit> AddScheduleCommand => new RelayCommand<ScheduleTypeLimit>((tp) =>
-        {
-            var dayId = Guid.NewGuid().ToString();
-            var dayName = $"New Schedule Day {dayId.Substring(0, 5)}";
-            var newDay = new ScheduleDay(
-                dayId,
-                new List<double> { 0.3 },
-                dayName,
-                new List<List<int>>() { new List<int> { 0, 0 } }
-                );
+            var newItem = CheckObjName(sch);
 
-            var id = Guid.NewGuid().ToString();
-            var newSch = new ScheduleRuleset(
-                id,
-                new List<ScheduleDay> { newDay },
-                dayId,
-                $"New Schedule Ruleset {id.Substring(0, 5)}"
-                );
-
-            newSch.ScheduleTypeLimit = tp;
-
-            var dialog = new Honeybee.UI.Dialog_Schedule(newSch);
-            var dialog_rc = dialog.ShowModal(_control);
-
-            if (dialog_rc == null) return;
-
-            var newItem = CheckObjName(dialog_rc);
-            
             var newViewdata = new ScheduleRulesetViewData(newItem);
             if (!this._userData.Contains(newViewdata))
             {
@@ -190,8 +108,8 @@ namespace Honeybee.UI
             this._userData.Insert(0, newViewdata);
             this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
             ResetDataCollection();
-        });
 
+        });
 
 
         public RelayCommand DuplicateCommand => new RelayCommand(() =>
