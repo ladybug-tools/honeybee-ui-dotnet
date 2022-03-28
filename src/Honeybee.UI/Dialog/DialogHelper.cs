@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Eto.Drawing;
 using Eto.Forms;
+using HoneybeeSchema;
 
 namespace Honeybee.UI
 {
@@ -121,5 +122,77 @@ namespace Honeybee.UI
 
         }
 
+
+        public static HoneybeeSchema.ScheduleRuleset CreateSchedule(Control parent = default)
+        {
+            var dialog = new Dialog_ScheduleTypeLimit();
+            var dialog_rc = dialog.ShowModal(parent);
+            if (dialog_rc == null)
+            {
+                return null;
+            }
+            var typeLimit = dialog_rc;
+
+            var dayId = Guid.NewGuid().ToString();
+            var dayName = $"New Schedule Day {dayId.Substring(0, 5)}";
+            var newDay = new ScheduleDay(
+                dayId,
+                new List<double> { 0.3 },
+                dayName,
+                new List<List<int>>() { new List<int> { 0, 0 } }
+                );
+
+            var id = Guid.NewGuid().ToString();
+            var newSch = new ScheduleRuleset(
+                id,
+                new List<ScheduleDay> { newDay },
+                dayId,
+                $"New Schedule Ruleset {id.Substring(0, 5)}"
+                );
+
+            newSch.ScheduleTypeLimit = typeLimit;
+
+            var dialog_sch = new Honeybee.UI.Dialog_Schedule(newSch);
+            var dialog_sch_rc = dialog_sch.ShowModal(parent);
+
+            return dialog_sch_rc;
+        }
+
+        public static HoneybeeSchema.Radiance.IModifier EditModifier(HoneybeeSchema.Radiance.IModifier modifier, bool locked = false, Control parent = default)
+        {
+            var dup = modifier.Duplicate();
+            HoneybeeSchema.Radiance.IModifier dialog_rc = null;
+            switch (dup)
+            {
+                case Plastic obj:
+                    dialog_rc = new Dialog_Modifier<Plastic>(obj, locked).ShowModal(parent);
+                    break;
+                case Glass obj:
+                    dialog_rc = new Dialog_Modifier<Glass>(obj, locked).ShowModal(parent);
+                    break;
+                case Trans obj:
+                    dialog_rc = new Dialog_Modifier<Trans>(obj, locked).ShowModal(parent);
+                    break;
+                case Metal obj:
+                    dialog_rc = new Dialog_Modifier<Metal>(obj, locked).ShowModal(parent);
+                    break;
+                case Mirror obj:
+                    dialog_rc = new Dialog_Modifier<Mirror>(obj, locked).ShowModal(parent);
+                    break;
+                case Glow obj:
+                    dialog_rc = new Dialog_Modifier<Glow>(obj, locked).ShowModal(parent);
+                    break;
+                case Light obj:
+                    dialog_rc = new Dialog_Modifier<Light>(obj, locked).ShowModal(parent);
+                    break;
+                case BSDF obj:
+                    dialog_rc = new Dialog_Modifier<BSDF>(obj, locked).ShowModal(parent);
+                    break;
+                default:
+                    break;
+            }
+
+            return dialog_rc;
+        }
     }
 }
