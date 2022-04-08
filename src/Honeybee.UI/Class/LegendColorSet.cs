@@ -12,8 +12,8 @@ namespace Honeybee.UI
     {
         private static string GetUserPresetFilePath()
         {
-            var folderPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            folderPath = System.IO.Path.Combine(folderPath, ".pollination");
+            var folderPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            folderPath = System.IO.Path.Combine(folderPath, "ladybug_tools", "dotnet");
             if (!System.IO.Directory.Exists(folderPath)) 
                 System.IO.Directory.CreateDirectory(folderPath);
 
