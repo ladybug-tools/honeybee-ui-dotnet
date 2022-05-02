@@ -112,6 +112,7 @@ namespace Honeybee.UI.View
             layout.AddRow("ID: ", id);
 
             var nameTB = new StringText() { };
+            nameTB.Width = 250;
             nameTB.TextBinding.Bind(vm, (_) => _.DisplayName);
             layout.AddRow("Name:", nameTB);
 
