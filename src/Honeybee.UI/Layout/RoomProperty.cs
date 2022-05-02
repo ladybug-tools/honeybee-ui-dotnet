@@ -58,9 +58,9 @@ namespace Honeybee.UI.View
             layout.DefaultSpacing = new Size(4, 4);
             layout.DefaultPadding = new Padding(4);
 
-            var tb = new TabControl();
+            var tb = new TabControl() { Height = 450 };
             tb.Bind(_ => _.SelectedIndex, vm, _ => _.TabIndex);
-            var basis = GenBasisPanel();
+            var basis = GenGeneralTab();
             tb.Pages.Add(new TabPage(basis) { Text = "General" });
 
             var loads = GenLoadsPanel();
@@ -82,9 +82,26 @@ namespace Honeybee.UI.View
             this.Content = layout;
         }
 
-        private DynamicLayout GenBasisPanel()
+        private DynamicLayout GenGeneralTab()
         {
-            var layout = new DynamicLayout() { Height = 350 };
+            var layout = new DynamicLayout();
+            layout.Width = 400;
+
+            layout.DefaultSpacing = new Size(4, 4);
+            layout.DefaultPadding = new Padding(4);
+
+            layout.BeginScrollable();
+            layout.AddRow(GenGeneralPanel());
+            layout.AddRow(GenRadiancePanel());
+            layout.AddRow(GenEnergyPanel());
+            layout.Add(null);
+            layout.EndScrollable();
+            return layout;
+        }
+
+        private DynamicLayout GenGeneralPanel()
+        {
+            var layout = new DynamicLayout();
             var vm = this._vm;
 
             layout.DefaultSpacing = new Size(4, 4);
@@ -112,10 +129,23 @@ namespace Honeybee.UI.View
             excludeFloor.CheckedBinding.Bind(_vm, _ => _.IsExcludeFloor.IsChecked);
             layout.AddRow("Exclude Floor:", excludeFloor);
 
-            layout.AddSpace();
+
+            layout.AddRow(null);
+            return layout;
+        }
+
+        private GroupBox GenRadiancePanel()
+        {
+            var gp = new GroupBox() { Text = "Radiance" };
+            var vm = this._vm;
+
+            var layout = new DynamicLayout();
+            layout.DefaultSpacing = new Size(4, 4);
+            layout.DefaultPadding = new Padding(4);
 
             //Get modifierSet
             var modifierSetDP = new Button();
+            modifierSetDP.Width = 250;
             modifierSetDP.Bind((t) => t.Enabled, vm, v => v.ModifierSet.IsBtnEnabled);
             modifierSetDP.TextBinding.Bind(vm, _ => _.ModifierSet.BtnName);
             modifierSetDP.Command = vm.ModifierSetCommand;
@@ -125,10 +155,24 @@ namespace Honeybee.UI.View
             layout.AddRow("Modifier Set:", modifierSetByProgram);
             layout.AddRow(null, modifierSetDP);
 
-            layout.AddSpace();
+            gp.Content = layout;
+            return gp;
+        }
+
+        private GroupBox GenEnergyPanel()
+        {
+            var gp = new GroupBox() { Text = "Energy" };
+            var vm = this._vm;
+
+            var layout = new DynamicLayout();
+            layout.DefaultSpacing = new Size(4, 4);
+            layout.DefaultPadding = new Padding(4);
+
+
 
             //Get constructions
             var constructionSetDP = new Button();
+            constructionSetDP.Width = 250;
             constructionSetDP.Bind(_ => _.Enabled, vm, _ => _.ConstructionSet.IsBtnEnabled);
             constructionSetDP.TextBinding.Bind(vm, _ => _.ConstructionSet.BtnName);
             constructionSetDP.Command = vm.RoomConstructionSetCommand;
@@ -162,13 +206,14 @@ namespace Honeybee.UI.View
             layout.AddRow("HVAC:", hvacByProgram);
             layout.AddRow(null, hvacDP);
 
-            layout.AddRow(null);
-            return layout;
+            gp.Content = layout;
+            return gp;
         }
+
 
         private DynamicLayout GenLoadsPanel()
         {
-            var layout = new DynamicLayout() { Height = 350 };
+            var layout = new DynamicLayout();
 
             layout.DefaultSpacing = new Size(4, 4);
             layout.DefaultPadding = new Padding(4);
@@ -213,7 +258,7 @@ namespace Honeybee.UI.View
 
         private DynamicLayout GenControlPanel()
         {
-            var layout = new DynamicLayout() { Height = 350 };
+            var layout = new DynamicLayout();
 
             layout.DefaultSpacing = new Size(4, 4);
             layout.DefaultPadding = new Padding(4);

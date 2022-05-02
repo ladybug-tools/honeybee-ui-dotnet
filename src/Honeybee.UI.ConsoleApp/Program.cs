@@ -34,8 +34,8 @@ namespace Honeybee.UI.ConsoleApp
                 var dlightCtrl = new DaylightingControl(new List<double>() { 0.5, 0.1, 0.5 }, offAtMinimum: true);
                 var ppl = new PeopleAbridged("ppl", 0.1, "Always On", "Always On", latentFraction: new Autocalculate());
                 var RoomPropertybtn = new Button() { Text = "2 Rooms Property" };
-                var rm1 = new Room("id1", new List<Face>(), new RoomPropertiesAbridged(new RoomEnergyPropertiesAbridged("aaa", lighting: ltn)), "name1", multiplier: 1, story: "11");
-                var rm2 = new Room($"Room_{Guid.NewGuid()}", new List<Face>(), new RoomPropertiesAbridged(new RoomEnergyPropertiesAbridged("bbb", lighting: ltn2, people:ppl, daylightingControl: dlightCtrl)), "name2", multiplier: 2, story: "22");
+                var rm1 = new Room($"Room1_{Guid.NewGuid()}_01021odjs", new List<Face>(), new RoomPropertiesAbridged(new RoomEnergyPropertiesAbridged("aaa", lighting: ltn)), "name1", multiplier: 1, story: "11");
+                var rm2 = new Room($"Room2_{Guid.NewGuid()}_01021odjs", new List<Face>(), new RoomPropertiesAbridged(new RoomEnergyPropertiesAbridged("bbb", lighting: ltn2, people:ppl, daylightingControl: dlightCtrl)), "name2", multiplier: 2, story: "22");
                 rm2.UserData = new { RhinoLayer = "layer 01", Color = "Red" };
                 rm2 = rm2.DuplicateRoom();
 
@@ -75,8 +75,8 @@ namespace Honeybee.UI.ConsoleApp
                 };
 
                 var facePropertybtn = new Button() { Text = "2 Faces Property" };
-                var face = new Face("faceId", new Face3D(new List<List<double>>()), FaceType.Floor, new Ground(), new FacePropertiesAbridged(new FaceEnergyPropertiesAbridged("aa"), new FaceRadiancePropertiesAbridged("bb", "cc")));
-                var face2 = new Face($"Face_{Guid.NewGuid()}", new Face3D(new List<List<double>>()), FaceType.Wall, new Outdoors(), new FacePropertiesAbridged(new FaceEnergyPropertiesAbridged("Generic Exterior Wall")), "Face name");
+                var face = new Face($"faceId_{Guid.NewGuid()}_01021odjs", new Face3D(new List<List<double>>()), FaceType.Floor, new Ground(), new FacePropertiesAbridged(new FaceEnergyPropertiesAbridged("aa"), new FaceRadiancePropertiesAbridged("bb", "cc")));
+                var face2 = new Face($"Face_{Guid.NewGuid()}_01021odjs", new Face3D(new List<List<double>>()), FaceType.Wall, new Outdoors(), new FacePropertiesAbridged(new FaceEnergyPropertiesAbridged("Generic Exterior Wall")), "Face name");
                 facePropertybtn.Click += (s, e) =>
                 {
                     var dialog = new Honeybee.UI.Dialog_FaceProperty(md.Properties, new List<Face>() { face, face2 });
@@ -108,8 +108,8 @@ namespace Honeybee.UI.ConsoleApp
 
 
                 var aptPropertybtn = new Button() { Text = "1 Apt Property" };
-                var apt = new Aperture("aptId", new Face3D(new List<List<double>>()), new Outdoors(), new AperturePropertiesAbridged(new ApertureEnergyPropertiesAbridged("aa"), new ApertureRadiancePropertiesAbridged("bb", "cc")));
-                var apt2 = new Aperture($"Aperture_{Guid.NewGuid()}", new Face3D(new List<List<double>>()), new Outdoors(), new AperturePropertiesAbridged(new ApertureEnergyPropertiesAbridged("Generic Exterior Wall")), "apt name", isOperable: true);
+                var apt = new Aperture($"aptId_{Guid.NewGuid()}_01021odjs", new Face3D(new List<List<double>>()), new Outdoors(), new AperturePropertiesAbridged(new ApertureEnergyPropertiesAbridged("aa"), new ApertureRadiancePropertiesAbridged("bb", "cc")));
+                var apt2 = new Aperture($"Aperture_{Guid.NewGuid()}_01021odjs", new Face3D(new List<List<double>>()), new Outdoors(), new AperturePropertiesAbridged(new ApertureEnergyPropertiesAbridged("Generic Exterior Wall")), "apt name", isOperable: true);
                 aptPropertybtn.Click += (s, e) =>
                 {
                     var dialog = new Honeybee.UI.Dialog_ApertureProperty(md.Properties, new List<Aperture>() { apt2 });
@@ -140,7 +140,7 @@ namespace Honeybee.UI.ConsoleApp
                 };
 
                 var doorPropertybtn = new Button() { Text = "1 Door Property" };
-                var door = new Door("aptId", new Face3D(new List<List<double>>()), new Outdoors(), new DoorPropertiesAbridged());
+                var door = new Door($"aptId_{Guid.NewGuid()}_01021odjs", new Face3D(new List<List<double>>()), new Outdoors(), new DoorPropertiesAbridged());
                 doorPropertybtn.Click += (s, e) =>
                 {
                     var dialog = new Honeybee.UI.Dialog_DoorProperty(md.Properties, new List<Door>() { door });
@@ -156,8 +156,8 @@ namespace Honeybee.UI.ConsoleApp
                 };
 
                 var shdPropertybtn = new Button() { Text = "1 Shade Property" };
-                var shd = new Shade("shdId", new Face3D(new List<List<double>>()),  new ShadePropertiesAbridged(new ShadeEnergyPropertiesAbridged("aa"), new ShadeRadiancePropertiesAbridged("bb", "cc")));
-                var shd2 = new Shade($"Shade_{Guid.NewGuid()}", new Face3D(new List<List<double>>()), new ShadePropertiesAbridged(new ShadeEnergyPropertiesAbridged("Generic Exterior Wall")), "shd name", isDetached: true);
+                var shd = new Shade($"shdId_{Guid.NewGuid()}_01021odjs", new Face3D(new List<List<double>>()),  new ShadePropertiesAbridged(new ShadeEnergyPropertiesAbridged("aa"), new ShadeRadiancePropertiesAbridged("bb", "cc")));
+                var shd2 = new Shade($"Shade_{Guid.NewGuid()}_01021odjs", new Face3D(new List<List<double>>()), new ShadePropertiesAbridged(new ShadeEnergyPropertiesAbridged("Generic Exterior Wall")), "shd name", isDetached: true);
                 shdPropertybtn.Click += (s, e) =>
                 {
                     var dialog = new Honeybee.UI.Dialog_ShadeProperty(md.Properties, new List<Shade>() { shd2 });
