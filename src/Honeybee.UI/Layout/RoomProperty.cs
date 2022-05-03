@@ -85,12 +85,11 @@ namespace Honeybee.UI.View
         private DynamicLayout GenGeneralTab()
         {
             var layout = new DynamicLayout();
-            layout.Width = 400;
 
             layout.DefaultSpacing = new Size(4, 4);
             layout.DefaultPadding = new Padding(4);
 
-            layout.BeginScrollable();
+            layout.BeginScrollable(BorderType.None);
             layout.AddRow(GenGeneralPanel());
             layout.AddRow(GenRadiancePanel());
             layout.AddRow(GenEnergyPanel());
@@ -107,12 +106,11 @@ namespace Honeybee.UI.View
             layout.DefaultSpacing = new Size(4, 4);
             layout.DefaultPadding = new Padding(4);
 
-            var id = new Label();
+            var id = new Label() { Width = 255 };
             id.TextBinding.Bind(vm, (_) => _.Identifier);
             layout.AddRow("ID: ", id);
 
             var nameTB = new StringText() { };
-            nameTB.Width = 250;
             nameTB.TextBinding.Bind(vm, (_) => _.DisplayName);
             layout.AddRow("Name:", nameTB);
 

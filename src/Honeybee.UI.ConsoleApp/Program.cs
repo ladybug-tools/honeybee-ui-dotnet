@@ -44,7 +44,7 @@ namespace Honeybee.UI.ConsoleApp
                 {
                     var dialog = new Honeybee.UI.Dialog_RoomProperty(md.Properties ,rms);
                     //dialog.SetSensorPositionPicker(() => { return new List<double>(); });
-                    var dialog_rc = dialog.ShowModal();
+                    var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
                     {
                         foreach (var item in dialog_rc)
@@ -65,7 +65,7 @@ namespace Honeybee.UI.ConsoleApp
                     var dialog = new Honeybee.UI.Dialog_RoomProperty(md.Properties, new List<Room>() { rm2 });
                     //dialog.SetSensorPositionPicker(() => { return new List<double>(); });
                     dialog.SetInternalMassPicker(() => 22);
-                    var dialog_rc = dialog.ShowModal();
+                    var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
                     {
                         rm2 = dialog_rc.FirstOrDefault();
@@ -80,7 +80,7 @@ namespace Honeybee.UI.ConsoleApp
                 facePropertybtn.Click += (s, e) =>
                 {
                     var dialog = new Honeybee.UI.Dialog_FaceProperty(md.Properties, new List<Face>() { face, face2 });
-                    var dialog_rc = dialog.ShowModal();
+                    var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
                     {
                         foreach (var item in dialog_rc)
@@ -95,7 +95,7 @@ namespace Honeybee.UI.ConsoleApp
                 facePropertybtn2.Click += (s, e) =>
                 {
                     var dialog = new Honeybee.UI.Dialog_FaceProperty(md.Properties, new List<Face>() { face2 });
-                    var dialog_rc = dialog.ShowModal();
+                    var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
                     {
                         foreach (var item in dialog_rc)
@@ -113,7 +113,7 @@ namespace Honeybee.UI.ConsoleApp
                 aptPropertybtn.Click += (s, e) =>
                 {
                     var dialog = new Honeybee.UI.Dialog_ApertureProperty(md.Properties, new List<Aperture>() { apt2 });
-                    var dialog_rc = dialog.ShowModal();
+                    var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
                     {
                         apt2 = dialog_rc.First();
@@ -128,7 +128,7 @@ namespace Honeybee.UI.ConsoleApp
                 aptPropertybtn2.Click += (s, e) =>
                 {
                     var dialog = new Honeybee.UI.Dialog_ApertureProperty(md.Properties, new List<Aperture>() { apt, apt2 });
-                    var dialog_rc = dialog.ShowModal();
+                    var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
                     {
                         foreach (var item in dialog_rc)
@@ -144,7 +144,7 @@ namespace Honeybee.UI.ConsoleApp
                 doorPropertybtn.Click += (s, e) =>
                 {
                     var dialog = new Honeybee.UI.Dialog_DoorProperty(md.Properties, new List<Door>() { door });
-                    var dialog_rc = dialog.ShowModal();
+                    var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
                     {
                         foreach (var item in dialog_rc)
@@ -161,7 +161,7 @@ namespace Honeybee.UI.ConsoleApp
                 shdPropertybtn.Click += (s, e) =>
                 {
                     var dialog = new Honeybee.UI.Dialog_ShadeProperty(md.Properties, new List<Shade>() { shd2 });
-                    var dialog_rc = dialog.ShowModal();
+                    var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
                     {
                         shd2 = dialog_rc.FirstOrDefault();
@@ -175,7 +175,7 @@ namespace Honeybee.UI.ConsoleApp
                 shdPropertybtn2.Click += (s, e) =>
                 {
                     var dialog = new Honeybee.UI.Dialog_ShadeProperty(md.Properties, new List<Shade>() { shd, shd2 });
-                    var dialog_rc = dialog.ShowModal();
+                    var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
                     {
                         foreach (var item in dialog_rc)
@@ -192,7 +192,7 @@ namespace Honeybee.UI.ConsoleApp
                 viewPropertybtn.Click += (s, e) =>
                 {
                     var dialog = new Honeybee.UI.Dialog_ViewProperty(new List<HoneybeeSchema.View>() { view });
-                    var dialog_rc = dialog.ShowModal();
+                    var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
                     {
                         foreach (var item in dialog_rc)
@@ -205,7 +205,7 @@ namespace Honeybee.UI.ConsoleApp
                 viewPropertybtn2.Click += (s, e) =>
                 {
                     var dialog = new Honeybee.UI.Dialog_ViewProperty(new List<HoneybeeSchema.View>() { view, view2 });
-                    var dialog_rc = dialog.ShowModal();
+                    var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
                     {
                         foreach (var item in dialog_rc)
@@ -222,7 +222,7 @@ namespace Honeybee.UI.ConsoleApp
                 sensorGridPropertybtn.Click += (s, e) =>
                 {
                     var dialog = new Honeybee.UI.Dialog_SensorGridProperty(new List<SensorGrid>() { sensorGrid2 });
-                    var dialog_rc = dialog.ShowModal();
+                    var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
                     {
                         foreach (var item in dialog_rc)
@@ -235,7 +235,7 @@ namespace Honeybee.UI.ConsoleApp
                 sensorGridPropertybtn2.Click += (s, e) =>
                 {
                     var dialog = new Honeybee.UI.Dialog_SensorGridProperty(new List<SensorGrid>() { sensorGrid, sensorGrid2 });
-                    var dialog_rc = dialog.ShowModal();
+                    var dialog_rc = dialog.ShowModal(this);
                     if (dialog_rc != null)
                     {
                         foreach (var item in dialog_rc)
