@@ -47,7 +47,7 @@ namespace Honeybee.UI
             get
             {
                 var root = System.IO.Path.GetDirectoryName(typeof(Units).Assembly.Location);
-                var file = System.IO.Path.Combine(root, "UISettings.json");
+                var file = System.IO.Path.Combine(HoneybeeSchema.Helper.Pathes.UserAppDataDotnet, "UISettings.json");
                 return file;
             }
             //private set; 
