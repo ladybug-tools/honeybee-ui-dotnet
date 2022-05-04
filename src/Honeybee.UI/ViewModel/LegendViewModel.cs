@@ -148,7 +148,7 @@ namespace Honeybee.UI
         }
         public bool Validate()
         {
-            var valid = Max > Min;
+            var valid = Max >= Min;
             if (!valid)
                 Eto.Forms.MessageBox.Show(_control, "Max value has to be smaller than Min value");
             return valid;
