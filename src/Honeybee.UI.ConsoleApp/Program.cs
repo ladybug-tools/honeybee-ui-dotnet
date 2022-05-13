@@ -487,6 +487,17 @@ namespace Honeybee.UI.ConsoleApp
                     dia.ShowModal(Config.Owner);
                 };
 
+                var errors_btn = new Button() { Text = "Errors" };
+                //var validationReport = new ValidationReport()
+                //var path = @"D:\Dev\Pollination\rhino-plugin\error.json";
+                //var json = System.IO.File.ReadAllText(path);
+                var report = new ValidationReport("1.1.0", "1.2.0", false, "Error");
+                errors_btn.Click += (s, e) =>
+                {
+                    var dia = new Dialog_Error(report);
+                    dia.ShowModal(Config.Owner);
+                };
+
                 panel.AddSeparateRow(RoomPropertybtn, RoomPropertybtn2, null);
                 panel.AddSeparateRow(facePropertybtn, facePropertybtn2, null);
                 panel.AddSeparateRow(aptPropertybtn, aptPropertybtn2, null);
@@ -507,6 +518,7 @@ namespace Honeybee.UI.ConsoleApp
                 panel.AddSeparateRow(HVACManager);
                 panel.AddSeparateRow(matchRooms_btn);
                 panel.AddSeparateRow(unit_btn, legend_btn);
+                panel.AddSeparateRow(errors_btn);
                 panel.AddSeparateRow(null);
                 Content = panel;
             }
