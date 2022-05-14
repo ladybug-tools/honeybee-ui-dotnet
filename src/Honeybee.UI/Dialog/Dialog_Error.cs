@@ -3,22 +3,23 @@ using System;
 
 namespace Honeybee.UI
 {
-    public class Dialog_Error : Eto.Forms.Dialog
+    public class Dialog_Error : Eto.Forms.Form
     {
         private ErrorViewModel _vm;
 
-        public Dialog_Error(HoneybeeSchema.ValidationReport report, Action<HoneybeeSchema.ValidationError> showAction = default)
+        public Dialog_Error(HoneybeeSchema.ValidationReport report, Action<HoneybeeSchema.ValidationError, bool> showAction = default)
         {
             this.Title = $"Error - {DialogHelper.PluginName}";
             this.Width = 600;
             this.Icon = DialogHelper.HoneybeeIcon;
 
-            _vm = new ErrorViewModel(report, this);
+            _vm = new ErrorViewModel(report, this, showAction);
 
             var message = new TextArea() { Height = 80 };
             var nextBtn = new Button() { Text = ">>"};
             var preBtn = new Button() { Text = "<<" };
             var showBtn = new Button() { Text = "Show" };
+            var showParentBtn = new Button() { Text = "Show Parent" };
             var moreInfoBtn = new Button() { Text = "More Info" };
 
             var totalErrorCount = new Label();
@@ -29,21 +30,22 @@ namespace Honeybee.UI
             currentErrorIndex.TextBinding.Bind(_vm, _=>_.CurrentErrorIndex);
             nextBtn.Bind(_ => _.Enabled, _vm, _ => _.NextBtnEnabled);
             preBtn.Bind(_ => _.Enabled, _vm, _ => _.PreBtnEnabled);
+
+            showBtn.Bind(_ => _.Enabled, _vm, _ => _.ShowBtnEnabled);
+            showParentBtn.Bind(_ => _.Enabled, _vm, _ => _.ShowParentBtnEnabled);
+
             nextBtn.Command = _vm.NextBtnCommand;
             preBtn.Command = _vm.PreBtnCommand;
             moreInfoBtn.Command = _vm.MoreInfoCommand;
             showBtn.Command = _vm.ShowCommand;
+            showParentBtn.Command = _vm.ShowParentCommand;
 
-            preBtn.Enabled = false;
-            showBtn.Enabled = showAction != null;
-
-          
             var group = new GroupBox() { Text = $"Found {_vm.TotalErrorCount} Error(s)" };
             var groupLayout = new DynamicLayout();
             groupLayout.DefaultSpacing = new Eto.Drawing.Size(5, 5);
             groupLayout.DefaultPadding = new Eto.Drawing.Padding(5);
             groupLayout.AddSeparateRow(message);
-            groupLayout.AddSeparateRow(preBtn, currentErrorIndex, nextBtn, null, showBtn, moreInfoBtn);
+            groupLayout.AddSeparateRow(preBtn, currentErrorIndex, nextBtn, null, showBtn, showParentBtn, moreInfoBtn);
             group.Content = groupLayout;
 
             var OkBtn = new Eto.Forms.Button() { Text = "OK" };
@@ -55,19 +57,32 @@ namespace Honeybee.UI
                 //}
                
             };
-            this.AbortButton = new Eto.Forms.Button() { Text = "Close" };
-            this.AbortButton.Click += (s, e) => { this.Close(); };
-
+            var abortButton = new Eto.Forms.Button() { Text = "Close" };
+            abortButton.Click += (s, e) => { this.Close(); };
 
             var layout = new Eto.Forms.DynamicLayout();
             layout.DefaultSpacing = new Eto.Drawing.Size(5, 2);
             layout.DefaultPadding = new Eto.Drawing.Padding(4);
             layout.AddSeparateRow(group);
       
-            layout.AddSeparateRow(null, this.AbortButton);
+            layout.AddSeparateRow(null, abortButton);
             layout.AddRow(null);
             this.Content = layout;
 
+            _vm.Refresh();
+
+        }
+
+        public void ShowModal(Eto.Forms.Window owner)
+        {
+
+            this.Owner = owner;
+
+            var c = owner.Bounds.Center;
+            c.X = c.X - this.Width / 2;
+            c.Y = c.Y - 200;
+            this.Location = c;
+            this.Show();
         }
 
 
