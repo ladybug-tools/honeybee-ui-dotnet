@@ -16,6 +16,7 @@ namespace Honeybee.UI
                 Padding = new Padding(5);
                 Resizable = true;
                 Title = title ?? DialogHelper.PluginName;
+                this.Icon = DialogHelper.HoneybeeIcon;
                 WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(450, 400);
                 Width = 500;
