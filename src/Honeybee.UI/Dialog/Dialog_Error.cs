@@ -10,12 +10,13 @@ namespace Honeybee.UI
         public Dialog_Error(HoneybeeSchema.ValidationReport report, Action<HoneybeeSchema.ValidationError, bool> showAction = default)
         {
             this.Title = $"Error - {DialogHelper.PluginName}";
-            this.Width = 600;
+            this.Width = 800;
             this.Icon = DialogHelper.HoneybeeIcon;
 
             _vm = new ErrorViewModel(report, this, showAction);
 
-            var message = new TextArea() { Height = 80 };
+         
+            var grid = GenGridView();
             var nextBtn = new Button() { Text = ">>"};
             var preBtn = new Button() { Text = "<<" };
             var showBtn = new Button() { Text = "Show" };
@@ -25,11 +26,14 @@ namespace Honeybee.UI
             var totalErrorCount = new Label();
             var currentErrorIndex = new Label();
 
+            var message = new TextArea() { Height = 84 };
+
             message.TextBinding.Bind(_vm, _=>_.CurrentErrorMessage);
             totalErrorCount.TextBinding.Bind(_vm, _=>_.TotalErrorCount);
             currentErrorIndex.TextBinding.Bind(_vm, _=>_.CurrentErrorIndex);
             nextBtn.Bind(_ => _.Enabled, _vm, _ => _.NextBtnEnabled);
             preBtn.Bind(_ => _.Enabled, _vm, _ => _.PreBtnEnabled);
+            moreInfoBtn.Bind(_ => _.Enabled, _vm, _ => _.MoreBtnEnabled);
 
             showBtn.Bind(_ => _.Enabled, _vm, _ => _.ShowBtnEnabled);
             showParentBtn.Bind(_ => _.Enabled, _vm, _ => _.ShowParentBtnEnabled);
@@ -41,11 +45,13 @@ namespace Honeybee.UI
             showParentBtn.Command = _vm.ShowParentCommand;
 
             var group = new GroupBox() { Text = $"Found {_vm.TotalErrorCount} Error(s)" };
+            group.Size = new Eto.Drawing.Size(-1, -1);
             var groupLayout = new DynamicLayout();
             groupLayout.DefaultSpacing = new Eto.Drawing.Size(5, 5);
             groupLayout.DefaultPadding = new Eto.Drawing.Padding(5);
-            groupLayout.AddSeparateRow(message);
+            groupLayout.AddSeparateRow(grid);
             groupLayout.AddSeparateRow(preBtn, currentErrorIndex, nextBtn, null, showBtn, showParentBtn, moreInfoBtn);
+            groupLayout.AddSeparateRow(message);
             group.Content = groupLayout;
 
             var OkBtn = new Eto.Forms.Button() { Text = "OK" };
@@ -57,19 +63,17 @@ namespace Honeybee.UI
                 //}
                
             };
-            var abortButton = new Eto.Forms.Button() { Text = "Close" };
+            var abortButton = new Eto.Forms.Button() { Text = "Close", Height = 24 };
             abortButton.Click += (s, e) => { this.Close(); };
 
             var layout = new Eto.Forms.DynamicLayout();
             layout.DefaultSpacing = new Eto.Drawing.Size(5, 2);
             layout.DefaultPadding = new Eto.Drawing.Padding(4);
-            layout.AddSeparateRow(group);
-      
+            layout.AddSeparateRow(controls: new[] { group }, xscale: true, yscale: true);
             layout.AddSeparateRow(null, abortButton);
-            layout.AddRow(null);
             this.Content = layout;
 
-            _vm.Refresh();
+            _vm.UILoaded();
 
         }
 
@@ -85,6 +89,27 @@ namespace Honeybee.UI
             this.Show();
         }
 
+        private TreeGridView GenGridView()
+        {
+            var gd = new TreeGridView();
+            gd.Bind(_ => _.DataStore, _vm, _ => _.GridViewDataCollection);
+            gd.SelectedItemsChanged += (s, e) => { 
+                _vm.SelectedError = gd.SelectedItem as ErrorData;
+            };
+
+            gd.ShowHeader = false;
+            gd.Height = 250;
+            
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<ErrorData, string>(r => r.DisplayMessage) },
+                HeaderText = "Error Message"
+                
+            });
+
+
+            return gd;
+        }
 
 
     }
