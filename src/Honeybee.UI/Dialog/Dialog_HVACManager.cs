@@ -32,13 +32,7 @@ namespace Honeybee.UI
             Content = Init(out var gd);
             this._vm.GridControl = gd;
         }
-        protected override void OnSizeChanged(System.EventArgs e)
-        {
-            base.OnSizeChanged(e);
-            _vm?.DialogSizeChanged();
-
-        }
-
+      
         private DynamicLayout Init(out GridView gd)
         {
 
@@ -63,10 +57,10 @@ namespace Honeybee.UI
             // search bar
             var filter = new TextBox() { PlaceholderText = "Filter" };
             filter.TextBinding.Bind(_vm, _ => _.FilterKey);
-            layout.AddRow(filter);
+            layout.AddSeparateRow(filter);
 
             gd = GenGridView();
-            layout.AddRow(gd);
+            layout.AddSeparateRow(controls: new[] { gd }, xscale: true, yscale: true);
 
             gd.CellDoubleClick += (s, e) => _vm.EditCommand.Execute(null);
 
@@ -83,7 +77,6 @@ namespace Honeybee.UI
             AbortButton = new Button { Text = "Cancel" };
             AbortButton.Click += (sender, e) => Close();
             layout.AddSeparateRow(null, DefaultButton, AbortButton, null);
-            layout.AddRow(null);
 
             return layout;
         }

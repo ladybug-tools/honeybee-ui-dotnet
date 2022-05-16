@@ -109,17 +109,6 @@ namespace Honeybee.UI
         }
 
      
-        public void DialogSizeChanged()
-        {
-            if (GridControl == null || GridControl.Height <= 0)
-                return;
-            if (!_control.Loaded)
-                return;
-            var h = this._control.Height - 200;
-            h = Math.Min(500, System.Math.Max(h, 250));
-            GridControl.Height = h;
-
-        }
 
     }
 
