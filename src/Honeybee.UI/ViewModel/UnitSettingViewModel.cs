@@ -423,58 +423,6 @@ namespace Honeybee.UI
         #endregion
 
 
-        private bool _useIP = false;
-        public bool UseIP
-        {
-            get => _useIP;
-            set
-            {
-                _useIP = value;
-                var dic = _useIP ? Units.IPUnits : Units.SIUnits;
-
-                if (this.LengthEnabled && dic[Units.UnitType.Length] is Units.LengthUnit l)
-                    Length = l;
-                if (this.AreaEnabled && dic[Units.UnitType.Area] is Units.AreaUnit a)
-                    Area = a;
-                if (this.VolumeEnabled && dic[Units.UnitType.Volume] is Units.VolumeUnit v)
-                    Volume = v;
-                if (this.TemperatureEnabled && dic[Units.UnitType.Temperature] is Units.TemperatureUnit t)
-                    Temperature = t;
-                if (this.TemperatureDeltaEnabled && dic[Units.UnitType.TemperatureDelta] is Units.TemperatureDeltaUnit td)
-                    TemperatureDelta = td;
-
-                if (this.PowerEnabled && dic[Units.UnitType.Power] is Units.PowerUnit PowerV)
-                    Power = PowerV;
-                if (this.EnergyEnabled && dic[Units.UnitType.Energy] is Units.EnergyUnit EnergyV)
-                    Energy = EnergyV;
-                if (this.PowerDensityEnabled && dic[Units.UnitType.PowerDensity] is Units.HeatFluxUnit PowerDensityV)
-                    PowerDensity = PowerDensityV;
-                if (this.AirFlowRateEnabled && dic[Units.UnitType.AirFlowRate] is Units.VolumeFlowUnit AirFlowRateV)
-                    AirFlowRate = AirFlowRateV;
-                if (this.PeopleDensityEnabled && dic[Units.UnitType.PeopleDensity] is Units.ReciprocalAreaUnit PeopleDensityV)
-                    PeopleDensity = PeopleDensityV;
-
-                if (this.AirFlowRateAreaEnabled && dic[Units.UnitType.AirFlowRateArea] is Units.VolumeFlowPerAreaUnit AirFlowRateAreaV)
-                    AirFlowRateArea = AirFlowRateAreaV;
-                if (this.SpeedEnabled && dic[Units.UnitType.Speed] is Units.SpeedUnit SpeedV)
-                    Speed = SpeedV;
-                if (this.IlluminanceEnabled && dic[Units.UnitType.Illuminance] is Units.IlluminanceUnit IlluminanceV)
-                    Illuminance = IlluminanceV;
-
-                if (this.ConductivityEnabled && dic[Units.UnitType.Conductivity] is Units.ThermalConductivityUnit ConductivityV)
-                    Conductivity = ConductivityV;
-                if (this.ResistanceEnabled && dic[Units.UnitType.Resistance] is Units.ThermalResistanceUnit ResistanceV)
-                    Resistance = ResistanceV;
-                if (this.UValueEnabled && dic[Units.UnitType.UValue] is Units.HeatTransferCoefficientUnit uvalueV)
-                    UValue = uvalueV;
-                if (this.DensityEnabled && dic[Units.UnitType.Density] is Units.DensityUnit DensityV)
-                    Density = DensityV;
-                if (this.SpecificHeatEnabled && dic[Units.UnitType.SpecificEntropy] is Units.SpecificEntropyUnit SpecificHeatV)
-                    SpecificHeat = SpecificHeatV;
-            
-            }
-        }
-
         public UnitSettingViewModel(Dictionary<Units.UnitType, Enum> hardcodedUnits)
         {
             LengthEnabled = !GetUnitOrDefault<Units.LengthUnit>(hardcodedUnits, Units.UnitType.Length, out var l);
@@ -575,6 +523,76 @@ namespace Honeybee.UI
 
         }
 
-        
+
+        public Eto.Forms.RelayCommand PresetCommand => new Eto.Forms.RelayCommand(() =>
+        {
+            var contextMenu = new Eto.Forms.ContextMenu();
+            contextMenu.Items.Add(
+                 new Eto.Forms.ButtonMenuItem()
+                 {
+                     Text = "Default IP Unit Preset",
+                     Command = ChangeDefaultSettings,
+                     CommandParameter = true
+                 });
+            contextMenu.Items.Add(
+                 new Eto.Forms.ButtonMenuItem()
+                 {
+                     Text = "Default SI Unit Preset",
+                     Command = ChangeDefaultSettings,
+                     CommandParameter = false
+                 });
+
+            contextMenu.Show();
+        });
+
+
+        public Eto.Forms.RelayCommand<bool> ChangeDefaultSettings => new Eto.Forms.RelayCommand<bool>((bool useIP) =>
+        {
+            var dic = useIP ? Units.IPUnits : Units.SIUnits;
+
+            if (this.LengthEnabled && dic[Units.UnitType.Length] is Units.LengthUnit l)
+                Length = l;
+            if (this.AreaEnabled && dic[Units.UnitType.Area] is Units.AreaUnit a)
+                Area = a;
+            if (this.VolumeEnabled && dic[Units.UnitType.Volume] is Units.VolumeUnit v)
+                Volume = v;
+            if (this.TemperatureEnabled && dic[Units.UnitType.Temperature] is Units.TemperatureUnit t)
+                Temperature = t;
+            if (this.TemperatureDeltaEnabled && dic[Units.UnitType.TemperatureDelta] is Units.TemperatureDeltaUnit td)
+                TemperatureDelta = td;
+
+            if (this.PowerEnabled && dic[Units.UnitType.Power] is Units.PowerUnit PowerV)
+                Power = PowerV;
+            if (this.EnergyEnabled && dic[Units.UnitType.Energy] is Units.EnergyUnit EnergyV)
+                Energy = EnergyV;
+            if (this.PowerDensityEnabled && dic[Units.UnitType.PowerDensity] is Units.HeatFluxUnit PowerDensityV)
+                PowerDensity = PowerDensityV;
+            if (this.AirFlowRateEnabled && dic[Units.UnitType.AirFlowRate] is Units.VolumeFlowUnit AirFlowRateV)
+                AirFlowRate = AirFlowRateV;
+            if (this.PeopleDensityEnabled && dic[Units.UnitType.PeopleDensity] is Units.ReciprocalAreaUnit PeopleDensityV)
+                PeopleDensity = PeopleDensityV;
+
+            if (this.AirFlowRateAreaEnabled && dic[Units.UnitType.AirFlowRateArea] is Units.VolumeFlowPerAreaUnit AirFlowRateAreaV)
+                AirFlowRateArea = AirFlowRateAreaV;
+            if (this.SpeedEnabled && dic[Units.UnitType.Speed] is Units.SpeedUnit SpeedV)
+                Speed = SpeedV;
+            if (this.IlluminanceEnabled && dic[Units.UnitType.Illuminance] is Units.IlluminanceUnit IlluminanceV)
+                Illuminance = IlluminanceV;
+
+            if (this.ConductivityEnabled && dic[Units.UnitType.Conductivity] is Units.ThermalConductivityUnit ConductivityV)
+                Conductivity = ConductivityV;
+            if (this.ResistanceEnabled && dic[Units.UnitType.Resistance] is Units.ThermalResistanceUnit ResistanceV)
+                Resistance = ResistanceV;
+            if (this.UValueEnabled && dic[Units.UnitType.UValue] is Units.HeatTransferCoefficientUnit uvalueV)
+                UValue = uvalueV;
+            if (this.DensityEnabled && dic[Units.UnitType.Density] is Units.DensityUnit DensityV)
+                Density = DensityV;
+            if (this.SpecificHeatEnabled && dic[Units.UnitType.SpecificEntropy] is Units.SpecificEntropyUnit SpecificHeatV)
+                SpecificHeat = SpecificHeatV;
+        });
+
+       
+
+
     }
 }

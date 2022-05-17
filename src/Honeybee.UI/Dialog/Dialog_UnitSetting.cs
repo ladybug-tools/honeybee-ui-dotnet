@@ -31,8 +31,8 @@ namespace Honeybee.UI
 
 
             // all controls
-            var allToggle = new CheckBox() { Text = "IP Units" };
-            allToggle.Bind(_ => _.Checked, vm, m => m.UseIP);
+            var allToggle = new Button() { Text = "Use Presets" };
+            allToggle.Command = vm.PresetCommand;
             layout.AddRow(allToggle);
 
             // General
