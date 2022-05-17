@@ -106,9 +106,9 @@ namespace Honeybee.UI
             {"21: Cloud cover", _21 },
             {"22: Black to white", _22 },
             {"23: Blue to Green to Red", _23 },
-            {"24: Multi-colored", _24 },
+            {"24: Multi-colored 2", _24 },
 
-            {"25: Multi-colored2", _25 },
+            {"25: Multi-colored 3", _25 },
 
         };
 
