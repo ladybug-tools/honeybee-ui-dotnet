@@ -495,7 +495,7 @@ namespace Honeybee.UI.ConsoleApp
                 errors_btn.Click += (s, e) =>
                 {
                     var dia = new Dialog_Error(report);
-                    dia.ShowModal(Config.Owner);
+                    dia.Show();
                 };
 
                 panel.AddSeparateRow(RoomPropertybtn, RoomPropertybtn2, null);
