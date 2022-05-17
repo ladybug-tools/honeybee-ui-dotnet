@@ -225,7 +225,7 @@ namespace Honeybee.UI
             {
                 var cFactorBefore = colorDomains[i - 1];
                 var cFactor = colorDomains[i];
-                if (factor < cFactor && factor >= cFactorBefore)
+                if (factor <= cFactor && factor >= cFactorBefore)
                 {
                     colorStart = colors[i - 1];
                     colorEnd = colors[i];
