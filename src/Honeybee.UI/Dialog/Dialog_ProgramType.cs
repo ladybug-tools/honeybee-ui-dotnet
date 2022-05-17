@@ -119,11 +119,11 @@ namespace Honeybee.UI
             //Get ServiceHotWater
             container.AddRow(GenSHWPanel());
 
+
             layout.AddRow(container);
             layout.AddRow(null);
 
             layout.EndScrollable();
-
             return layout;
         }
 
@@ -132,7 +132,6 @@ namespace Honeybee.UI
             var vm = this._vm;
 
             var layout = new DynamicLayout();
-            layout.Bind((t) => t.Enabled, vm, v => v.Lighting.IsPanelEnabled);
             layout.Bind((t) => t.Visible, vm, v => v.Lighting.IsPanelEnabled);
 
             layout.DefaultSpacing = new Size(4, 4);
@@ -201,7 +200,6 @@ namespace Honeybee.UI
             var vm = this._vm;
 
             var layout = new DynamicLayout();
-            layout.Bind((t) => t.Enabled, vm, v => v.ElecEquipment.IsPanelEnabled);
             layout.Bind((t) => t.Visible, vm, v => v.ElecEquipment.IsPanelEnabled);
 
             layout.DefaultSpacing = new Size(4, 4);
@@ -261,7 +259,6 @@ namespace Honeybee.UI
             var vm = this._vm;
 
             var layout = new DynamicLayout();
-            layout.Bind((t) => t.Enabled, vm, v => v.Gas.IsPanelEnabled);
             layout.Bind((t) => t.Visible, vm, v => v.Gas.IsPanelEnabled);
 
 
@@ -322,7 +319,6 @@ namespace Honeybee.UI
             var vm = this._vm;
 
             var layout = new DynamicLayout();
-            layout.Bind((t) => t.Enabled, vm, v => v.People.IsPanelEnabled);
             layout.Bind((t) => t.Visible, vm, v => v.People.IsPanelEnabled);
 
             layout.DefaultSpacing = new Size(4, 4);
@@ -388,7 +384,6 @@ namespace Honeybee.UI
             var vm = this._vm;
 
             var layout = new DynamicLayout();
-            layout.Bind((t) => t.Enabled, vm, v => v.Infiltration.IsPanelEnabled);
             layout.Bind((t) => t.Visible, vm, v => v.Infiltration.IsPanelEnabled);
 
             layout.DefaultSpacing = new Size(4, 4);
@@ -448,7 +443,6 @@ namespace Honeybee.UI
             var vm = this._vm;
 
             var layout = new DynamicLayout();
-            layout.Bind((t) => t.Enabled, vm, v => v.Ventilation.IsPanelEnabled);
             layout.Bind((t) => t.Visible, vm, v => v.Ventilation.IsPanelEnabled);
 
 
@@ -517,7 +511,6 @@ namespace Honeybee.UI
             var vm = this._vm;
 
             var layout = new DynamicLayout();
-            layout.Bind((t) => t.Enabled, vm, v => v.Setpoint.IsPanelEnabled);
             layout.Bind((t) => t.Visible, vm, v => v.Setpoint.IsPanelEnabled);
 
 
@@ -571,7 +564,6 @@ namespace Honeybee.UI
             var vm = this._vm;
 
             var layout = new DynamicLayout();
-            layout.Bind((t) => t.Enabled, vm, v => v.ServiceHotWater.IsPanelEnabled);
             layout.Bind((t) => t.Visible, vm, v => v.ServiceHotWater.IsPanelEnabled);
 
 
