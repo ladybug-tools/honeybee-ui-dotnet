@@ -22,11 +22,20 @@ namespace Honeybee.UI
             this.Error = error;
             this.ErrorCode = error.Code;
 
-            this.DisplayMessage = error.Message;
-            this.DisplayFullMessage = $"Error Code: {error?.Code} - {error?.ElementType}({error?.ExtensionType}){Environment.NewLine}{error?.Message}";
-
             this.IsGeometry = !string.IsNullOrEmpty(error?.ElementId);
-            this.HasParentGeometry = (error?.TopParents?.FirstOrDefault() ?? error?.Parents?.FirstOrDefault()) != null;
+
+            var parent = error?.TopParents?.FirstOrDefault() ?? error?.Parents?.FirstOrDefault();
+            this.HasParentGeometry = parent != null;
+
+            var elemName = error?.ElementName ?? error?.ElementId;
+            this.DisplayMessage = $"{error.ElementType} ({elemName})";
+            if (this.HasParentGeometry)
+            {
+                var pName = parent?.Name ?? parent.Id;
+                this.DisplayMessage = $"{parent.ParentType} ({pName}) --> {this.DisplayMessage}";
+            }
+           
+            this.DisplayFullMessage = $"Error Code: {error?.Code} - {error?.ElementType}({error?.ExtensionType}){Environment.NewLine}{error?.Message}";
 
         }
 
@@ -46,7 +55,7 @@ namespace Honeybee.UI
             var errorCount = children.Count();
 
             var errorCountMsg = errorCount == 1 ? $"1 Error" : $"{errorCount} Errors";
-            this.DisplayMessage = $"Found {errorCountMsg}: {children.FirstOrDefault()?.Error?.ErrorType} (Code {errorCode})";
+            this.DisplayMessage = $"Found {children.FirstOrDefault()?.Error?.ErrorType} ({errorCountMsg})";
             this.IsParent = true;
         }
     }
@@ -182,11 +191,23 @@ namespace Honeybee.UI
                 this.Set(() => _selectedError = value, nameof(SelectedError));
                 CurrentErrorMessage = value?.DisplayFullMessage ?? "Select an error in the tree list";
 
-                if (value?.Error != null)
+                if (value != null)
                 {
-                    var i = _errors.IndexOf(value);
-                    _currentIndex = i + 1;
+                    if (value.Error != null)
+                    {
+                        var i = _errors.IndexOf(value);
+                        _currentIndex = i + 1;
+                    }
+                    else if (value.IsParent) //parent
+                    {
+                        if (value.Children.FirstOrDefault() is ErrorData d)
+                        {
+                            var i = _errors.IndexOf(d);
+                            _currentIndex = i;
+                        }
+                    }
                 }
+              
                 Refresh();
             }
         }
@@ -194,12 +215,12 @@ namespace Honeybee.UI
 
         private List<ErrorData> _errors = new List<ErrorData>();
         private HoneybeeSchema.ValidationReport _report;
-        private Eto.Forms.Control _control;
+        private Dialog_Error _control;
         private Action<IEnumerable<HoneybeeSchema.ValidationError>, bool> _showAction;
         private Action _rerunValidationAction;
         public ErrorViewModel(
-            HoneybeeSchema.ValidationReport report, 
-            Eto.Forms.Control control)
+            HoneybeeSchema.ValidationReport report,
+            Dialog_Error control)
         {
             _control = control;
             var rpt = report ?? new HoneybeeSchema.ValidationReport("0.0.0", "0.0.0", false);
@@ -261,7 +282,7 @@ namespace Honeybee.UI
             {
                 this.ShowBtnEnabled = SelectedError.IsGeometry && _showAction != null;
                 this.ShowParentBtnEnabled = SelectedError.HasParentGeometry && _showAction != null;
-                this.MoreBtnEnabled = SelectedError != null && SelectedError.Error != null;
+                this.MoreBtnEnabled = true;
             }
             else
             {
@@ -272,17 +293,66 @@ namespace Honeybee.UI
 
         }
 
+        //public void HighlightSelected()
+        //{
+        //    if (this.SelectedErrors == null || this.SelectedError.Count == 0)
+        //        return;
+
+        //    var viewData = this.GridViewDataCollection.OfType<ErrorData>();
+        //    var index = this.SelectedErrors.Select(_ => HighlightItem(_));
+        //}
+
+        //public int HighlightItem(ErrorData error)
+        //{
+
+        //    var viewData = this.GridViewDataCollection.OfType<ErrorData>();
+        //    var count = 0;
+        //    foreach (var item in viewData)
+        //    {
+        //        if (item.IsParent)
+        //        {
+        //            if (item.ErrorCode == error.ErrorCode)
+        //            {
+        //                var children = item.Children.OfType<ErrorData>();
+        //                foreach (var child in children)
+        //                {
+        //                    if (child == error)
+        //                    {
+        //                        return count;
+        //                    }
+        //                    else
+        //                    {
+        //                        count++;
+        //                        continue;
+        //                    }
+        //                }
+        //            }
+        //            else
+        //            {
+        //                count += item.Children.Count;
+        //                continue;
+        //            }
+                    
+        //        }
+        //        else if(item == error)
+        //        {
+        //            return count;
+        //        }
+
+        //        count++;
+        //        continue;
+        //    }
+
+        //    _control.ReloadGrid();
+        //    return -1;
+        //}
+
         public Eto.Forms.RelayCommand PreBtnCommand => new Eto.Forms.RelayCommand(() =>
         {
             if (_currentIndex <= 1)
                 return;
 
-            _currentIndex -= 1;
-            this.PreBtnEnabled = _currentIndex > 1;
-            this.NextBtnEnabled = _currentIndex < _errors.Count;
-            this.CurrentErrorIndex = $"{_currentIndex} of {this.TotalErrorCount}";
-
-            this.SelectedError = this._errors.ElementAt(_currentIndex - 1);
+            _control.MoveToPrevious();
         });
 
         public Eto.Forms.RelayCommand NextBtnCommand => new Eto.Forms.RelayCommand(() =>
@@ -290,12 +360,8 @@ namespace Honeybee.UI
             if (_currentIndex >= _errors.Count)
                 return;
 
-            _currentIndex += 1;
-            this.PreBtnEnabled = _currentIndex > 1;
-            this.NextBtnEnabled = _currentIndex < _errors.Count;
-            this.CurrentErrorIndex = $"{_currentIndex} of {this.TotalErrorCount}";
+            _control.MoveToNext();
 
-            this.SelectedError = this._errors.ElementAt(_currentIndex - 1);
         });
 
       
