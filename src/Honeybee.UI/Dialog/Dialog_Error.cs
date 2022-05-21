@@ -152,7 +152,89 @@ namespace Honeybee.UI
             return gd;
         }
 
+        public void ReloadGrid()
+        {
+            this._grid.ReloadData();
+        }
 
+        public void SelectGridItem(ErrorData error)
+        {
+            this._grid.SelectedItem = error;
+        }
+
+        public void MoveToNext()
+        {
+            try
+            {
+                var current = _grid.SelectedRow;
+                var currentItem = _grid.SelectedItem as ErrorData;
+                if (current == -1 || currentItem == null)
+                {
+                    current = 0;
+                    currentItem = _vm.GridViewDataCollection.FirstOrDefault() as ErrorData;
+                }
+
+                if (currentItem.IsParent && currentItem.Expandable)
+                {
+                    if (!currentItem.Expanded)
+                    {
+                        currentItem.Expanded = true;
+                        _grid.ReloadData();
+                    }
+                }
+
+                _grid.UnselectAll();
+                var newRow = current + 1;
+                _grid.SelectRow(newRow);
+                _grid.ScrollToRow(newRow);
+
+            }
+            catch (Exception)
+            {
+                //throw;
+            }
+         
+        }
+
+        public void MoveToPrevious()
+        {
+            try
+            {
+                var current = _grid.SelectedRow;
+                var currentItem = _grid.SelectedItem as ErrorData;
+                if (current <= 0 || currentItem == null)
+                {
+                    return;
+                }
+
+                //get previous item
+                _grid.UnselectAll();
+                var newRow = current - 1;
+                _grid.SelectRow(newRow);
+                var preItem = _grid.SelectedItem as ErrorData;
+                if (preItem.IsParent && preItem.Expandable)
+                {
+                    if (!preItem.Expanded)
+                    {
+                        preItem.Expanded = true;
+                        _grid.ReloadData();
+                        _grid.SelectedItem = preItem.Children.Last();
+                    }
+
+                }
+
+                if (_grid.SelectedRow >= 0)
+                {
+                    _grid.ScrollToRow(_grid.SelectedRow);
+                }
+                //_grid.ScrollToRow(newRow);
+
+            }
+            catch (Exception)
+            {
+                //throw;
+            }
+        }
     }
 
 }
