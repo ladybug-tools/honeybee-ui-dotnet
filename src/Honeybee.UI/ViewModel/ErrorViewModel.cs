@@ -293,59 +293,7 @@ namespace Honeybee.UI
 
         }
 
-        //public void HighlightSelected()
-        //{
-        //    if (this.SelectedErrors == null || this.SelectedError.Count == 0)
-        //        return;
-
-        //    var viewData = this.GridViewDataCollection.OfType<ErrorData>();
-        //    var index = this.SelectedErrors.Select(_ => HighlightItem(_));
-        //}
-
-        //public int HighlightItem(ErrorData error)
-        //{
-
-        //    var viewData = this.GridViewDataCollection.OfType<ErrorData>();
-        //    var count = 0;
-        //    foreach (var item in viewData)
-        //    {
-        //        if (item.IsParent)
-        //        {
-        //            if (item.ErrorCode == error.ErrorCode)
-        //            {
-        //                var children = item.Children.OfType<ErrorData>();
-        //                foreach (var child in children)
-        //                {
-        //                    if (child == error)
-        //                    {
-        //                        return count;
-        //                    }
-        //                    else
-        //                    {
-        //                        count++;
-        //                        continue;
-        //                    }
-        //                }
-        //            }
-        //            else
-        //            {
-        //                count += item.Children.Count;
-        //                continue;
-        //            }
-                    
-        //        }
-        //        else if(item == error)
-        //        {
-        //            return count;
-        //        }
-
-        //        count++;
-        //        continue;
-        //    }
-
-        //    _control.ReloadGrid();
-        //    return -1;
-        //}
+       
 
         public Eto.Forms.RelayCommand PreBtnCommand => new Eto.Forms.RelayCommand(() =>
         {
