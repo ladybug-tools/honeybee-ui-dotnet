@@ -333,53 +333,94 @@ namespace Honeybee.UI.ViewModel
             else
                 this.ModifierSet.SetPropetyObj(mSet);
 
+            // Loads
+            UpdateLoads(libSource, rooms);
+
+            // Controls
+            UpdateControls(libSource, rooms);
+
+            // User data
+            UpdateUserData(rooms);
+
+            this._hbObjs = rooms.Select(_ => _.DuplicateRoom()).ToList();
+
+        }
+
+        public void UpdateLoads(ModelProperties libSource, List<Room> rooms)
+        {
+
+            // areas 
+            var areas = rooms.Select(_ => _.CalArea());
 
             // Lighting
-            var allLpds = rooms.Select(_ => _.Properties.Energy?.Lighting).Distinct().ToList();
-            this.Lighting = new LightingViewModel(libSource, allLpds, (s) => _refHBObj.Properties.Energy.Lighting = s as LightingAbridged);
+            var allLpds = rooms.Select(_ => _.Properties.Energy?.Lighting).ToList();
+            this.Lighting = new LightingViewModel(
+                libSource,
+                allLpds,
+                (s) => _refHBObj.Properties.Energy.Lighting = s as LightingAbridged,
+                areas);
 
             // ElecEqp
-            var allEqps = rooms.Select(_ => _.Properties.Energy?.ElectricEquipment).Distinct().ToList();
-            this.ElecEquipment = new ElecEquipmentViewModel(libSource, allEqps, (s) => _refHBObj.Properties.Energy.ElectricEquipment = s as ElectricEquipmentAbridged);
+            var allEqps = rooms.Select(_ => _.Properties.Energy?.ElectricEquipment).ToList();
+            this.ElecEquipment = new ElecEquipmentViewModel(
+                libSource, 
+                allEqps, 
+                (s) => _refHBObj.Properties.Energy.ElectricEquipment = s as ElectricEquipmentAbridged,
+                areas);
 
             // GasEqp
-            var allGas = rooms.Select(_ => _.Properties.Energy?.GasEquipment).Distinct().ToList();
-            this.Gas = new GasEquipmentViewModel(libSource, allGas, (s) => _refHBObj.Properties.Energy.GasEquipment = s as GasEquipmentAbridged);
+            var allGas = rooms.Select(_ => _.Properties.Energy?.GasEquipment).ToList();
+            this.Gas = new GasEquipmentViewModel(
+                libSource, 
+                allGas, 
+                (s) => _refHBObj.Properties.Energy.GasEquipment = s as GasEquipmentAbridged,
+                areas);
 
             // People
-            var allPpls = rooms.Select(_ => _.Properties.Energy?.People).Distinct().ToList();
-            this.People = new PeopleViewModel(libSource, allPpls, (s) => _refHBObj.Properties.Energy.People = s as PeopleAbridged);
+            var allPpls = rooms.Select(_ => _.Properties.Energy?.People).ToList();
+            this.People = new PeopleViewModel(
+                libSource, 
+                allPpls, 
+                (s) => _refHBObj.Properties.Energy.People = s as PeopleAbridged,
+                areas);
 
             // Infiltration
-            var allInfs = rooms.Select(_ => _.Properties.Energy?.Infiltration).Distinct().ToList();
+            var allInfs = rooms.Select(_ => _.Properties.Energy?.Infiltration).ToList();
             this.Infiltration = new InfiltrationViewModel(libSource, allInfs, (s) => _refHBObj.Properties.Energy.Infiltration = s as InfiltrationAbridged);
 
             // Ventilation
-            var allVents = rooms.Select(_ => _.Properties.Energy?.Ventilation).Distinct().ToList();
+            var allVents = rooms.Select(_ => _.Properties.Energy?.Ventilation).ToList();
             this.Ventilation = new VentilationViewModel(libSource, allVents, (s) => _refHBObj.Properties.Energy.Ventilation = s as VentilationAbridged);
 
             // Setpoint
-            var allStps = rooms.Select(_ => _.Properties.Energy?.Setpoint).Distinct().ToList();
+            var allStps = rooms.Select(_ => _.Properties.Energy?.Setpoint).ToList();
             this.Setpoint = new SetpointViewModel(libSource, allStps, (s) => _refHBObj.Properties.Energy.Setpoint = s as SetpointAbridged);
 
             // ServiceHotWater
-            var allSHW = rooms.Select(_ => _.Properties.Energy?.ServiceHotWater).Distinct().ToList();
-            this.ServiceHotWater = new ServiceHotWaterViewModel(libSource, allSHW, (s) => _refHBObj.Properties.Energy.ServiceHotWater = s as ServiceHotWaterAbridged);
+            var allSHW = rooms.Select(_ => _.Properties.Energy?.ServiceHotWater).ToList();
+            this.ServiceHotWater = new ServiceHotWaterViewModel(
+                libSource, 
+                allSHW, 
+                (s) => _refHBObj.Properties.Energy.ServiceHotWater = s as ServiceHotWaterAbridged,
+                areas);
 
             // Process load
-            var allProcessLoads = rooms.Select(_ => _.Properties.Energy?.ProcessLoads?.FirstOrDefault()).Distinct().ToList();
+            var allProcessLoads = rooms.Select(_ => _.Properties.Energy?.ProcessLoads?.FirstOrDefault()).ToList();
             this.ProcessLoad = new ProcessLoadViewModel(libSource, allProcessLoads, (s) => _refHBObj.Properties.Energy.ProcessLoads = new List<ProcessAbridged>() { s as ProcessAbridged });
 
             // InternalMass
-            if (rooms.Select(_ => _.Properties.Energy?.InternalMasses).Any(_=>_?.Count>1))
+            if (rooms.Select(_ => _.Properties.Energy?.InternalMasses).Any(_ => _?.Count > 1))
             {
                 MessageBox.Show("The current room property editor doesn't support multiple internal masses in one room.");
             }
-            var allInMasses = rooms.Select(_ => _.Properties.Energy?.InternalMasses?.FirstOrDefault()).Distinct().ToList();
+            var allInMasses = rooms.Select(_ => _.Properties.Energy?.InternalMasses?.FirstOrDefault()).ToList();
             this.InternalMass = new InternalMassViewModel(libSource, allInMasses, (s) => _refHBObj.Properties.Energy.InternalMasses = new List<InternalMassAbridged>() { s as InternalMassAbridged });
 
 
+        }
 
+        public void UpdateControls(ModelProperties libSource, List<Room> rooms)
+        {
             // VentControl
             var allVentCtrls = rooms.Select(_ => _.Properties.Energy?.WindowVentControl).Distinct().ToList();
             this.VentilationControl = new VentilationControlViewModel(libSource, allVentCtrls, (s) => _refHBObj.Properties.Energy.WindowVentControl = s);
@@ -388,17 +429,16 @@ namespace Honeybee.UI.ViewModel
             var allDltCtrls = rooms.Select(_ => _.Properties.Energy?.DaylightingControl).Distinct().ToList();
             this.DaylightingControl = new DaylightingControlViewModel(libSource, allDltCtrls, (s) => _refHBObj.Properties.Energy.DaylightingControl = s);
 
+        }
 
+        public void UpdateUserData(List<Room> rooms)
+        {
             // User data
             var allUserData = rooms.Select(_ => _.UserData).Distinct().ToList();
             this.UserData = new UserDataViewModel(allUserData, (s) => _refHBObj.UserData = s, _control);
-
-
-            this._hbObjs = rooms.Select(_ => _.DuplicateRoom()).ToList();
-
         }
 
-      
+
 
         public List<Room> GetRooms()
         {
@@ -436,16 +476,17 @@ namespace Honeybee.UI.ViewModel
                     item.Properties.Radiance.ModifierSet = refObj.Properties.Radiance.ModifierSet;
                 }
                 
+                
 
                 // loads
-                item.Properties.Energy.Lighting = this.Lighting.MatchObj(item.Properties.Energy.Lighting);
-                item.Properties.Energy.ElectricEquipment = this.ElecEquipment.MatchObj(item.Properties.Energy.ElectricEquipment);
-                item.Properties.Energy.GasEquipment = this.Gas.MatchObj(item.Properties.Energy.GasEquipment);
-                item.Properties.Energy.People = this.People.MatchObj(item.Properties.Energy.People);
+                item.Properties.Energy.Lighting = this.Lighting.MatchObj(item.Properties.Energy.Lighting, item);
+                item.Properties.Energy.ElectricEquipment = this.ElecEquipment.MatchObj(item.Properties.Energy.ElectricEquipment, item);
+                item.Properties.Energy.GasEquipment = this.Gas.MatchObj(item.Properties.Energy.GasEquipment, item);
+                item.Properties.Energy.People = this.People.MatchObj(item.Properties.Energy.People, item);
                 item.Properties.Energy.Infiltration = this.Infiltration.MatchObj(item.Properties.Energy.Infiltration);
                 item.Properties.Energy.Ventilation = this.Ventilation.MatchObj(item.Properties.Energy.Ventilation);
                 item.Properties.Energy.Setpoint = this.Setpoint.MatchObj(item.Properties.Energy.Setpoint);
-                item.Properties.Energy.ServiceHotWater = this.ServiceHotWater.MatchObj(item.Properties.Energy.ServiceHotWater);
+                item.Properties.Energy.ServiceHotWater = this.ServiceHotWater.MatchObj(item.Properties.Energy.ServiceHotWater, item);
                 var processLoad = this.ProcessLoad.MatchObj(item.Properties.Energy.ProcessLoads?.FirstOrDefault());
                 item.Properties.Energy.ProcessLoads = processLoad == null ? null:  new List<ProcessAbridged>() { processLoad };
 

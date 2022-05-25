@@ -12,6 +12,13 @@ namespace Honeybee.UI
         // double peoplePerArea, string occupancySchedule, string activitySchedule, string displayName = null, double radiantFraction = 0.3, AnyOf<Autocalculate, double> latentFraction = null
 
         // WattsPerArea
+        private bool _peoplePerAreaEnabled = true;
+        public bool PeoplePerAreaEnabled
+        {
+            get => _peoplePerAreaEnabled;
+            set { this.Set(() => _peoplePerAreaEnabled = value, nameof(PeoplePerAreaEnabled)); }
+        }
+
         private DoubleViewModel _peoplePerArea;
 
         public DoubleViewModel PeoplePerArea
@@ -20,6 +27,26 @@ namespace Honeybee.UI
             set {
                 this.Set(() => _peoplePerArea = value, nameof(PeoplePerArea)); 
             }
+        }
+        
+        // WattsPerRoom
+        private double _totalPeoplePerRoom;
+        private bool _peoplePerRoomEnabled;
+        public bool PeoplePerRoomEnabled
+        {
+            get => _peoplePerRoomEnabled;
+            set
+            {
+                this.Set(() => _peoplePerRoomEnabled = value, nameof(PeoplePerRoomEnabled));
+                PeoplePerAreaEnabled = !value;
+            }
+        }
+
+        private DoubleViewModel _peoplePerRoom;
+        public DoubleViewModel PeoplePerRoom
+        {
+            get => _peoplePerRoom;
+            set { this.Set(() => _peoplePerRoom = value, nameof(PeoplePerRoom)); }
         }
 
 
@@ -158,6 +185,29 @@ namespace Honeybee.UI
 
         }
 
+        public PeopleViewModel(
+         ModelProperties libSource,
+         List<PeopleAbridged> loads,
+         Action<IIDdBase> setAction,
+         IEnumerable<double> areas) : this(libSource, loads, setAction)
+        {
+            if (areas == default)
+                throw new ArgumentNullException(nameof(areas));
+            if (areas.Count() != loads.Count)
+                throw new ArgumentException($"The area list doesn't have the same length of the load list");
+
+
+            //WattsPerRoom
+            this.PeoplePerRoom = new DoubleViewModel((n) => _totalPeoplePerRoom = n);
+            //this.PeoplePerRoom.SetUnits(Units..PowerUnit.Watt, Units.UnitType.Power);
+            var wattsPerRooms = loads.Zip(areas, (l, a) => a * (l?.PeoplePerArea).GetValueOrDefault());
+            if (wattsPerRooms.Distinct().Count() > 1)
+                this.PeoplePerRoom.SetNumberText(ReservedText.Varies);
+            else
+                this.PeoplePerRoom.SetBaseUnitNumber(wattsPerRooms.FirstOrDefault());
+
+        }
+
         public PeopleAbridged MatchObj(PeopleAbridged obj)
         {
             // by room program type
@@ -183,6 +233,20 @@ namespace Honeybee.UI
                 obj.LatentFraction = this._refHBObj.LatentFraction;
    
             return obj;
+        }
+        public PeopleAbridged MatchObj(PeopleAbridged obj, Room room)
+        {
+            var checkedObj = MatchObj(obj);
+            if (this.PeoplePerAreaEnabled)
+                return checkedObj;
+
+            if (this.PeoplePerRoom == null || this.PeoplePerRoom.IsVaries)
+                return checkedObj;
+
+            var area = room.CalArea();
+            checkedObj.PeoplePerArea = area > 0 ? this._totalPeoplePerRoom / area : 0;
+            return checkedObj;
+
         }
 
         public RelayCommand ScheduleCommand => new RelayCommand(() =>

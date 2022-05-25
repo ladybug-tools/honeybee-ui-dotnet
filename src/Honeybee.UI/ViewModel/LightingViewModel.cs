@@ -11,14 +11,40 @@ namespace Honeybee.UI
         private LightingAbridged _refHBObj => this.refObjProperty as LightingAbridged;
 
         // WattsPerArea
-        private DoubleViewModel _wattsPerArea;
+        private bool _wattsPerAreaEnabled = true;
+        public bool WattsPerAreaEnabled
+        {
+            get => _wattsPerAreaEnabled;
+            set { this.Set(() => _wattsPerAreaEnabled = value, nameof(WattsPerAreaEnabled)); }
+        }
 
+        private DoubleViewModel _wattsPerArea;
         public DoubleViewModel WattsPerArea
         {
             get => _wattsPerArea;
             set { this.Set(() => _wattsPerArea = value, nameof(WattsPerArea)); }
         }
-        
+
+        // WattsPerRoom
+        private double _totalWattsPerRoom;
+        private bool _wattsPerRoomEnabled;
+        public bool WattsPerRoomEnabled
+        {
+            get => _wattsPerRoomEnabled;
+            set 
+            { 
+                this.Set(() => _wattsPerRoomEnabled = value, nameof(WattsPerRoomEnabled));
+                WattsPerAreaEnabled = !value;
+            }
+        }
+
+        private DoubleViewModel _wattsPerRoom;
+        public DoubleViewModel WattsPerRoom
+        {
+            get => _wattsPerRoom;
+            set { this.Set(() => _wattsPerRoom = value, nameof(WattsPerRoom)); }
+        }
+
 
         // Schedule
         private ButtonViewModel _schedule;
@@ -56,7 +82,7 @@ namespace Honeybee.UI
             set { this.Set(() => _baselineWattsPerArea = value, nameof(BaselineWattsPerArea)); }
         }
 
-        // BaselineWattsPerArea
+        // ReturnAirFraction
         private DoubleViewModel _returnAirFraction;
 
         public DoubleViewModel ReturnAirFraction
@@ -88,7 +114,7 @@ namespace Honeybee.UI
                 this.WattsPerArea.SetNumberText(ReservedText.Varies);
             else
                 this.WattsPerArea.SetBaseUnitNumber(_refHBObj.WattsPerArea);
-
+            
 
             //Schedule
             var sch = libSource.Energy.ScheduleList
@@ -134,6 +160,30 @@ namespace Honeybee.UI
                 this.BaselineWattsPerArea.SetBaseUnitNumber(_refHBObj.BaselineWattsPerArea);
         }
 
+
+        public LightingViewModel(
+            ModelProperties libSource, 
+            List<LightingAbridged> loads, 
+            Action<IIDdBase> setAction, 
+            IEnumerable<double> areas) : this(libSource, loads, setAction)
+        {
+            if (areas == default)
+                throw new ArgumentNullException(nameof(areas));
+            if (areas.Count() != loads.Count)
+                throw new ArgumentException($"The area list doesn't have the same length of the load list");
+
+
+            //WattsPerRoom
+            this.WattsPerRoom = new DoubleViewModel((n) => _totalWattsPerRoom = n);
+            this.WattsPerRoom.SetUnits(Units.PowerUnit.Watt, Units.UnitType.Power);
+            var wattsPerRooms = loads.Zip(areas, (l, a) => a * (l?.WattsPerArea).GetValueOrDefault());
+            if (wattsPerRooms.Distinct().Count() > 1)
+                this.WattsPerRoom.SetNumberText(ReservedText.Varies);
+            else
+                this.WattsPerRoom.SetBaseUnitNumber(wattsPerRooms.FirstOrDefault());
+
+        }
+
         public LightingAbridged MatchObj(LightingAbridged obj)
         {
             if (this.IsCheckboxChecked)
@@ -160,6 +210,24 @@ namespace Honeybee.UI
                 obj.BaselineWattsPerArea = this._refHBObj.BaselineWattsPerArea;
             return obj;
         }
+
+
+        public LightingAbridged MatchObj(LightingAbridged obj, Room room)
+        {
+            var checkedObj = MatchObj(obj);
+            if (this.WattsPerAreaEnabled)
+                return checkedObj;
+
+            if (this.WattsPerRoom == null || this.WattsPerRoom.IsVaries)
+                return checkedObj;
+
+            var area = room.CalArea();
+            checkedObj.WattsPerArea = area > 0 ? this._totalWattsPerRoom / area : 0;
+            return checkedObj;
+
+        }
+
+
 
         public RelayCommand ScheduleCommand => new RelayCommand(() =>
         {
