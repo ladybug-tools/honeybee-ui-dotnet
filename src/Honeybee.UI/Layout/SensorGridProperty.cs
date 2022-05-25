@@ -76,6 +76,7 @@ namespace Honeybee.UI.View
 
             var id = new Label() { Width = 255 };
             id.TextBinding.Bind(_vm, _ => _.Identifier);
+            id.Bind(_ => _.ToolTip, _vm, _ => _.Identifier);
             layout.AddRow("ID:", id);
             layout.AddRow(null, new Label() { Visible = false }); // add space
 
