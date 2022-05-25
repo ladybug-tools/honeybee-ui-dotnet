@@ -21,7 +21,32 @@ namespace Honeybee.UI
                 this.Set(() => _isFlowPerArea = value, nameof(FlowPerArea)); 
             }
         }
-        
+        private bool _flowPerAreaEnabled = true;
+        public bool FlowPerAreaEnabled
+        {
+            get => _flowPerAreaEnabled;
+            set { this.Set(() => _flowPerAreaEnabled = value, nameof(FlowPerAreaEnabled)); }
+        }
+
+        // FlowPerRoom
+        private double _totalFlowPerRoom;
+        private bool _FlowPerRoomEnabled;
+        public bool FlowPerRoomEnabled
+        {
+            get => _FlowPerRoomEnabled;
+            set
+            {
+                this.Set(() => _FlowPerRoomEnabled = value, nameof(FlowPerRoomEnabled));
+                FlowPerAreaEnabled = !value;
+            }
+        }
+
+        private DoubleViewModel _FlowPerRoom;
+        public DoubleViewModel FlowPerRoom
+        {
+            get => _FlowPerRoom;
+            set { this.Set(() => _FlowPerRoom = value, nameof(FlowPerRoom)); }
+        }
 
         // Schedule
         private ButtonViewModel _schedule;
@@ -75,7 +100,7 @@ namespace Honeybee.UI
 
             //WattsPerArea
             this.FlowPerArea = new DoubleViewModel((n) => _refHBObj.FlowPerArea = n);
-            this.FlowPerArea.SetUnits(Units.VolumeFlowPerAreaUnit.CubicMeterPerSecondPerSquareMeter, Units.UnitType.AirFlowRateArea);
+            //this.FlowPerArea.SetUnits(Units.VolumeFlowPerAreaUnit.CubicMeterPerSecondPerSquareMeter, Units.UnitType.AirFlowRateArea);
             if (loads.Select(_ => _?.FlowPerArea).Distinct().Count() > 1)
                 this.FlowPerArea.SetNumberText(ReservedText.Varies);
             else
@@ -117,6 +142,29 @@ namespace Honeybee.UI
                 this.SensibleFraction.SetNumberText(_refHBObj.SensibleFraction.ToString());
         }
 
+        public ServiceHotWaterViewModel(
+            ModelProperties libSource,
+            List<ServiceHotWaterAbridged> loads,
+            Action<IIDdBase> setAction,
+            IEnumerable<double> areas) : this(libSource, loads, setAction)
+        {
+            if (areas == default)
+                throw new ArgumentNullException(nameof(areas));
+            if (areas.Count() != loads.Count)
+                throw new ArgumentException($"The area list doesn't have the same length of the load list");
+
+
+            //FlowPerRoom
+            this.FlowPerRoom = new DoubleViewModel((n) => _totalFlowPerRoom = n);
+            //this.FlowPerRoom.SetUnits(Units.VolumeFlowUnit.CubicMeterPerSecond, Units.UnitType.Power);
+            var FlowPerRooms = loads.Zip(areas, (l, a) => a * (l?.FlowPerArea).GetValueOrDefault());
+            if (FlowPerRooms.Distinct().Count() > 1)
+                this.FlowPerRoom.SetNumberText(ReservedText.Varies);
+            else
+                this.FlowPerRoom.SetBaseUnitNumber(FlowPerRooms.FirstOrDefault());
+
+        }
+
         public ServiceHotWaterAbridged MatchObj(ServiceHotWaterAbridged obj)
         {
             // by room program type
@@ -141,6 +189,20 @@ namespace Honeybee.UI
             if (!this.SensibleFraction.IsVaries)
                 obj.SensibleFraction = this._refHBObj.SensibleFraction;
             return obj;
+        }
+        public ServiceHotWaterAbridged MatchObj(ServiceHotWaterAbridged obj, Room room)
+        {
+            var checkedObj = MatchObj(obj);
+            if (this.FlowPerAreaEnabled)
+                return checkedObj;
+
+            if (this.FlowPerRoom == null || this.FlowPerRoom.IsVaries)
+                return checkedObj;
+
+            var area = room.CalArea();
+            checkedObj.FlowPerArea = area > 0 ? this._totalFlowPerRoom / area : 0;
+            return checkedObj;
+
         }
 
         public RelayCommand ScheduleCommand => new RelayCommand(() =>

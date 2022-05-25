@@ -35,7 +35,7 @@ namespace Honeybee.UI
                     }
                     catch (Exception er)
                     {
-                        MessageBox.Show(er.Message);
+                        MessageBox.Show(this, er.Message);
                         //throw;
                     }
                  

@@ -12,6 +12,13 @@ namespace Honeybee.UI
         // double wattsPerArea, string schedule, double radiantFraction = 0, double latentFraction = 0, double lostFraction = 0
 
         // WattsPerArea
+        private bool _wattsPerAreaEnabled = true;
+        public bool WattsPerAreaEnabled
+        {
+            get => _wattsPerAreaEnabled;
+            set { this.Set(() => _wattsPerAreaEnabled = value, nameof(WattsPerAreaEnabled)); }
+        }
+
         private DoubleViewModel _wattsPerArea;
 
         public DoubleViewModel WattsPerArea
@@ -21,7 +28,26 @@ namespace Honeybee.UI
                 this.Set(() => _wattsPerArea = value, nameof(WattsPerArea)); 
             }
         }
-        
+        // WattsPerRoom
+        private double _totalWattsPerRoom;
+        private bool _wattsPerRoomEnabled;
+        public bool WattsPerRoomEnabled
+        {
+            get => _wattsPerRoomEnabled;
+            set
+            {
+                this.Set(() => _wattsPerRoomEnabled = value, nameof(WattsPerRoomEnabled));
+                WattsPerAreaEnabled = !value;
+            }
+        }
+
+        private DoubleViewModel _wattsPerRoom;
+        public DoubleViewModel WattsPerRoom
+        {
+            get => _wattsPerRoom;
+            set { this.Set(() => _wattsPerRoom = value, nameof(WattsPerRoom)); }
+        }
+
 
         // Schedule
         private ButtonViewModel _schedule;
@@ -117,6 +143,28 @@ namespace Honeybee.UI
                 this.LostFraction.SetNumberText(_refHBObj.LostFraction.ToString());
         }
 
+        public ElecEquipmentViewModel(
+            ModelProperties libSource, 
+            List<ElectricEquipmentAbridged> loads, 
+            Action<IIDdBase> setAction,
+            IEnumerable<double> areas) : this(libSource, loads, setAction)
+        {
+            if (areas == default)
+                throw new ArgumentNullException(nameof(areas));
+            if (areas.Count() != loads.Count)
+                throw new ArgumentException($"The area list doesn't have the same length of the load list");
+
+
+            //WattsPerRoom
+            this.WattsPerRoom = new DoubleViewModel((n) => _totalWattsPerRoom = n);
+            this.WattsPerRoom.SetUnits(Units.PowerUnit.Watt, Units.UnitType.Power);
+            var wattsPerRooms = loads.Zip(areas, (l, a) => a * (l?.WattsPerArea).GetValueOrDefault());
+            if (wattsPerRooms.Distinct().Count() > 1)
+                this.WattsPerRoom.SetNumberText(ReservedText.Varies);
+            else
+                this.WattsPerRoom.SetBaseUnitNumber(wattsPerRooms.FirstOrDefault());
+        }
+
         public ElectricEquipmentAbridged MatchObj(ElectricEquipmentAbridged obj)
         {
             // by room program type
@@ -142,6 +190,23 @@ namespace Honeybee.UI
                 obj.LostFraction = this._refHBObj.LostFraction;
             return obj;
         }
+
+
+        public ElectricEquipmentAbridged MatchObj(ElectricEquipmentAbridged obj, Room room)
+        {
+            var checkedObj = MatchObj(obj);
+            if (this.WattsPerAreaEnabled)
+                return checkedObj;
+
+            if (this.WattsPerRoom == null || this.WattsPerRoom.IsVaries)
+                return checkedObj;
+
+            var area = room.CalArea();
+            checkedObj.WattsPerArea = area > 0 ? this._totalWattsPerRoom / area : 0;
+            return checkedObj;
+
+        }
+
 
         public RelayCommand ScheduleCommand => new RelayCommand(() =>
         {

@@ -24,7 +24,7 @@ namespace Honeybee.UI.View
         public RoomProperty()
         {
             this._vm = new RoomPropertyViewModel(this);
-            Initialize();
+            Init();
         }
 
 
@@ -49,7 +49,7 @@ namespace Honeybee.UI.View
             this._vm.InternalMass.InternalMassAreaPicker = internalMassAreaPicker;
             this._vm.InternalMass.EnableInternalMassAreaPicker = internalMassAreaPicker != null;
         }
-        private void Initialize()
+        private void Init()
         {
             var vm = this._vm;
             var layout = new DynamicLayout();
@@ -89,12 +89,12 @@ namespace Honeybee.UI.View
             layout.DefaultSpacing = new Size(4, 4);
             layout.DefaultPadding = new Padding(4);
 
-            layout.BeginScrollable(BorderType.None);
+            //layout.BeginScrollable(BorderType.None);
             layout.AddRow(GenGeneralPanel());
             layout.AddRow(GenRadiancePanel());
             layout.AddRow(GenEnergyPanel());
             layout.Add(null);
-            layout.EndScrollable();
+            //layout.EndScrollable();
             return layout;
         }
 
@@ -108,6 +108,7 @@ namespace Honeybee.UI.View
 
             var id = new Label() { Width = 255 };
             id.TextBinding.Bind(vm, (_) => _.Identifier);
+            id.Bind(_ => _.ToolTip, vm, _ => _.Identifier);
             layout.AddRow("ID: ", id);
 
             var nameTB = new StringText() { };
@@ -286,11 +287,26 @@ namespace Honeybee.UI.View
             wPerArea.Width = 250;
             wPerArea.ReservedText = ReservedText.Varies;
             wPerArea.SetDefault(_vm.Lighting.Default.WattsPerArea);
+            wPerArea.Bind(_ => _.Enabled, _vm, _ => _.Lighting.WattsPerAreaEnabled);
             wPerArea.TextBinding.Bind(vm, _ => _.Lighting.WattsPerArea.NumberText);
             layout.AddRow("Watts/Area:");
             var unit = new Label();
             unit.TextBinding.Bind(vm, _ => _.Lighting.WattsPerArea.DisplayUnitAbbreviation);
             layout.AddSeparateRow(wPerArea, unit);
+
+            var wPerRoomCheckbox = new CheckBox() { Text = "Watts/Room:" };
+            wPerRoomCheckbox.Bind(_ => _.Checked, _vm, _ => _.Lighting.WattsPerRoomEnabled);
+
+            var wPerRoom = new DoubleText();
+            wPerRoom.Width = 250;
+            wPerRoom.ReservedText = ReservedText.Varies;
+            wPerRoom.SetDefault(0);
+            wPerRoom.Bind(_ => _.Enabled, _vm, _ => _.Lighting.WattsPerRoomEnabled);
+            wPerRoom.TextBinding.Bind(vm, _ => _.Lighting.WattsPerRoom.NumberText);
+            layout.AddRow(wPerRoomCheckbox);
+            var wPerRoomUnit = new Label();
+            wPerRoomUnit.TextBinding.Bind(vm, _ => _.Lighting.WattsPerRoom.DisplayUnitAbbreviation);
+            layout.AddSeparateRow( wPerRoom, wPerRoomUnit);
 
             var sch = new Button();
             sch.TextBinding.Bind(vm, _ => _.Lighting.Schedule.BtnName);
@@ -355,11 +371,27 @@ namespace Honeybee.UI.View
             wPerArea.Width = 250;
             wPerArea.ReservedText = ReservedText.Varies;
             wPerArea.SetDefault(_vm.ElecEquipment.Default.WattsPerArea);
+            wPerArea.Bind(_ => _.Enabled, _vm, _ => _.ElecEquipment.WattsPerAreaEnabled);
             wPerArea.TextBinding.Bind(vm, _ => _.ElecEquipment.WattsPerArea.NumberText);
             layout.AddRow("Watts/Area:");
             var unit = new Label();
             unit.TextBinding.Bind(vm, _ => _.ElecEquipment.WattsPerArea.DisplayUnitAbbreviation);
             layout.AddSeparateRow(wPerArea, unit);
+
+
+            var wPerRoomCheckbox = new CheckBox() { Text = "Watts/Room:" };
+            wPerRoomCheckbox.Bind(_ => _.Checked, _vm, _ => _.ElecEquipment.WattsPerRoomEnabled);
+
+            var wPerRoom = new DoubleText(); 
+            wPerRoom.Width = 250;
+            wPerRoom.ReservedText = ReservedText.Varies;
+            wPerRoom.SetDefault(0);
+            wPerRoom.Bind(_ => _.Enabled, _vm, _ => _.ElecEquipment.WattsPerRoomEnabled);
+            wPerRoom.TextBinding.Bind(vm, _ => _.ElecEquipment.WattsPerRoom.NumberText);
+            layout.AddRow(wPerRoomCheckbox);
+            var wPerRoomUnit = new Label();
+            wPerRoomUnit.TextBinding.Bind(vm, _ => _.ElecEquipment.WattsPerRoom.DisplayUnitAbbreviation);
+            layout.AddSeparateRow(wPerRoom, wPerRoomUnit);
 
             var sch = new Button();
             sch.TextBinding.Bind(vm, _ => _.ElecEquipment.Schedule.BtnName);
@@ -416,11 +448,27 @@ namespace Honeybee.UI.View
             wPerArea.Width = 250;
             wPerArea.ReservedText = ReservedText.Varies;
             wPerArea.SetDefault(_vm.Gas.Default.WattsPerArea);
+            wPerArea.Bind(_ => _.Enabled, _vm, _ => _.Gas.WattsPerAreaEnabled);
             wPerArea.TextBinding.Bind(vm, _ => _.Gas.WattsPerArea.NumberText);
             layout.AddRow("Watts/Area:");
             var unit = new Label();
             unit.TextBinding.Bind(vm, _ => _.Gas.WattsPerArea.DisplayUnitAbbreviation);
             layout.AddSeparateRow(wPerArea, unit);
+
+
+            var wPerRoomCheckbox = new CheckBox() { Text = "Watts/Room:" };
+            wPerRoomCheckbox.Bind(_ => _.Checked, _vm, _ => _.Gas.WattsPerRoomEnabled);
+
+            var wPerRoom = new DoubleText();
+            wPerRoom.Width = 250;
+            wPerRoom.ReservedText = ReservedText.Varies;
+            wPerRoom.SetDefault(0);
+            wPerRoom.Bind(_ => _.Enabled, _vm, _ => _.Gas.WattsPerRoomEnabled);
+            wPerRoom.TextBinding.Bind(vm, _ => _.Gas.WattsPerRoom.NumberText);
+            layout.AddRow(wPerRoomCheckbox);
+            var wPerRoomUnit = new Label();
+            wPerRoomUnit.TextBinding.Bind(vm, _ => _.Gas.WattsPerRoom.DisplayUnitAbbreviation);
+            layout.AddSeparateRow(wPerRoom, wPerRoomUnit);
 
             var sch = new Button();
             sch.TextBinding.Bind(vm, _ => _.Gas.Schedule.BtnName);
@@ -476,11 +524,25 @@ namespace Honeybee.UI.View
             wPerArea.Width = 250;
             wPerArea.ReservedText = ReservedText.Varies;
             wPerArea.SetDefault(_vm.People.Default.PeoplePerArea);
+            wPerArea.Bind(_ => _.Enabled, _vm, _ => _.People.PeoplePerAreaEnabled);
             wPerArea.TextBinding.Bind(vm, _ => _.People.PeoplePerArea.NumberText);
             layout.AddRow("People/Area:");
             var unit = new Label();
             unit.TextBinding.Bind(vm, _ => _.People.PeoplePerArea.DisplayUnitAbbreviation);
             layout.AddSeparateRow(wPerArea, unit);
+
+
+            var wPerRoomCheckbox = new CheckBox() { Text = "People/Room:" };
+            wPerRoomCheckbox.Bind(_ => _.Checked, _vm, _ => _.People.PeoplePerRoomEnabled);
+
+            var wPerRoom = new DoubleText();
+            wPerRoom.Width = 250;
+            wPerRoom.ReservedText = ReservedText.Varies;
+            wPerRoom.SetDefault(0);
+            wPerRoom.Bind(_ => _.Enabled, _vm, _ => _.People.PeoplePerRoomEnabled);
+            wPerRoom.TextBinding.Bind(vm, _ => _.People.PeoplePerRoom.NumberText);
+            layout.AddRow(wPerRoomCheckbox);
+            layout.AddSeparateRow(wPerRoom, "people");
 
             var sch = new Button();
             sch.TextBinding.Bind(vm, _ => _.People.OccupancySchedule.BtnName);
@@ -726,11 +788,25 @@ namespace Honeybee.UI.View
             wPerArea.Width = 250;
             wPerArea.ReservedText = ReservedText.Varies;
             wPerArea.SetDefault(_vm.ServiceHotWater.Default.FlowPerArea);
+            wPerArea.Bind(_ => _.Enabled, _vm, _ => _.ServiceHotWater.FlowPerAreaEnabled);
             wPerArea.TextBinding.Bind(vm, _ => _.ServiceHotWater.FlowPerArea.NumberText);
             layout.AddRow("Flow/Area:");
-            var unit = new Label();
-            unit.TextBinding.Bind(vm, _ => _.ServiceHotWater.FlowPerArea.DisplayUnitAbbreviation);
-            layout.AddSeparateRow(wPerArea, unit);
+            //var unit = new Label();
+            //unit.TextBinding.Bind(vm, _ => _.ServiceHotWater.FlowPerArea.DisplayUnitAbbreviation);
+            layout.AddSeparateRow(wPerArea, "L/h-m2");
+
+
+            var wPerRoomCheckbox = new CheckBox() { Text = "Flow/Room:" };
+            wPerRoomCheckbox.Bind(_ => _.Checked, _vm, _ => _.ServiceHotWater.FlowPerRoomEnabled);
+
+            var wPerRoom = new DoubleText();
+            wPerRoom.Width = 250;
+            wPerRoom.ReservedText = ReservedText.Varies;
+            wPerRoom.SetDefault(0);
+            wPerRoom.Bind(_ => _.Enabled, _vm, _ => _.ServiceHotWater.FlowPerRoomEnabled);
+            wPerRoom.TextBinding.Bind(vm, _ => _.ServiceHotWater.FlowPerRoom.NumberText);
+            layout.AddRow(wPerRoomCheckbox);
+            layout.AddSeparateRow(wPerRoom, "L/h");
 
             var sch = new Button();
             sch.TextBinding.Bind(vm, _ => _.ServiceHotWater.Schedule.BtnName);
