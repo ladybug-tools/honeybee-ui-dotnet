@@ -195,7 +195,7 @@ namespace Honeybee.UI
         public ElectricEquipmentAbridged MatchObj(ElectricEquipmentAbridged obj, Room room)
         {
             var checkedObj = MatchObj(obj);
-            if (this.WattsPerAreaEnabled)
+            if (checkedObj == null || this.WattsPerAreaEnabled)
                 return checkedObj;
 
             if (this.WattsPerRoom == null || this.WattsPerRoom.IsVaries)

@@ -193,7 +193,7 @@ namespace Honeybee.UI
         public ServiceHotWaterAbridged MatchObj(ServiceHotWaterAbridged obj, Room room)
         {
             var checkedObj = MatchObj(obj);
-            if (this.FlowPerAreaEnabled)
+            if (checkedObj == null || this.FlowPerAreaEnabled)
                 return checkedObj;
 
             if (this.FlowPerRoom == null || this.FlowPerRoom.IsVaries)
