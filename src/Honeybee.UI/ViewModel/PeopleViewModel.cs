@@ -237,7 +237,7 @@ namespace Honeybee.UI
         public PeopleAbridged MatchObj(PeopleAbridged obj, Room room)
         {
             var checkedObj = MatchObj(obj);
-            if (this.PeoplePerAreaEnabled)
+            if (checkedObj == null || this.PeoplePerAreaEnabled)
                 return checkedObj;
 
             if (this.PeoplePerRoom == null || this.PeoplePerRoom.IsVaries)
