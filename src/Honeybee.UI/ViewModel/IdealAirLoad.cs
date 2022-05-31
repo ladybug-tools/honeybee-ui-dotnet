@@ -56,7 +56,7 @@ namespace Honeybee.UI
             }
         }
 
-        private double _sensibleHR = 0.5;
+        private double _sensibleHR;
         public double SensibleHR
         {
             get => _sensibleHR;
@@ -67,7 +67,7 @@ namespace Honeybee.UI
         }
 
      
-        private double _latentHR = 0.5;
+        private double _latentHR;
         public double LatentHR
         {
             get => _latentHR;
@@ -78,7 +78,7 @@ namespace Honeybee.UI
         }
 
        
-        private double _heatingAirTemperature = 0.5;
+        private double _heatingAirTemperature;
         public double HeatingAirTemperature
         {
             get => _heatingAirTemperature;
@@ -88,7 +88,7 @@ namespace Honeybee.UI
             }
         }
 
-        private double _coolingAirTemperature = 0.5;
+        private double _coolingAirTemperature;
         public double CoolingAirTemperature
         {
             get => _coolingAirTemperature;
@@ -98,7 +98,7 @@ namespace Honeybee.UI
             }
         }
 
-        private double _heatingLimit = 0.5;
+        private double _heatingLimit;
         public double HeatingLimit
         {
             get => _heatingLimit;
@@ -109,7 +109,7 @@ namespace Honeybee.UI
             }
         }
 
-        private double _coolingLimit = 0.5;
+        private double _coolingLimit;
         public double CoolingLimit
         {
             get => _coolingLimit;
@@ -211,13 +211,35 @@ namespace Honeybee.UI
             }
         }
 
-
-
-        public IdealAirLoadViewModel(HoneybeeSchema.IdealAirSystemAbridged hvac)
+        private string _HeatingAvaliabilityScheduleID;
+        private OptionalButtonViewModel _HeatingAvaliabilitySchedule;
+        public OptionalButtonViewModel HeatingAvaliabilitySchedule
         {
+            get => _HeatingAvaliabilitySchedule;
+            set { this.Set(() => _HeatingAvaliabilitySchedule = value, nameof(HeatingAvaliabilitySchedule)); }
+        }
+
+
+        private string _CoolingAvaliabilityScheduleID;
+        private OptionalButtonViewModel _CoolingAvaliabilitySchedule;
+        public OptionalButtonViewModel CoolingAvaliabilitySchedule
+        {
+            get => _CoolingAvaliabilitySchedule;
+            set { this.Set(() => _CoolingAvaliabilitySchedule = value, nameof(CoolingAvaliabilitySchedule)); }
+        }
+
+
+        private ModelEnergyProperties _libSource;
+        private Dialog_IdealAirLoad _control;
+        public IdealAirLoadViewModel(ModelEnergyProperties libSource, HoneybeeSchema.IdealAirSystemAbridged hvac, Dialog_IdealAirLoad control)
+        {
+            _libSource = libSource;
+            _control = control;
+
             // Add a new
             if (hvac == null)
-                return;
+                throw new ArgumentNullException(nameof(hvac));
+
 
             // Editing existing obj
             this.Name = hvac.DisplayName ?? $"Ideal Air System {Guid.NewGuid().ToString().Substring(0, 8)}";
@@ -243,6 +265,18 @@ namespace Honeybee.UI
                 this.HeatingLimit = htn;
             else
                 this.HeatingLimitNoLimit = true;
+
+            //AvaliabilitySchedule
+            this.HeatingAvaliabilitySchedule = new OptionalButtonViewModel((n) => _HeatingAvaliabilityScheduleID = n?.Identifier);
+            var heatingSch = libSource.ScheduleList.FirstOrDefault(_ => _.Identifier == hvac.HeatingAvailability);
+            heatingSch = heatingSch ?? GetDummyScheduleObj(hvac.HeatingAvailability);
+            this.HeatingAvaliabilitySchedule.SetPropetyObj(heatingSch);
+
+
+            this.CoolingAvaliabilitySchedule = new OptionalButtonViewModel((n) => _CoolingAvaliabilityScheduleID = n?.Identifier);
+            var CoolingSch = libSource.ScheduleList.FirstOrDefault(_ => _.Identifier == hvac.CoolingAvailability);
+            CoolingSch = CoolingSch ?? GetDummyScheduleObj(hvac.CoolingAvailability);
+            this.CoolingAvaliabilitySchedule.SetPropetyObj(CoolingSch);
 
         }
 
@@ -282,10 +316,43 @@ namespace Honeybee.UI
 
             obj.DemandControlledVentilation = this.DCV;
 
+            obj.HeatingAvailability = this._HeatingAvaliabilityScheduleID;
+            obj.CoolingAvailability = this._CoolingAvaliabilityScheduleID;
+
             return obj;
         }
 
+        public RelayCommand HeatingAvaliabilityCommand => new RelayCommand(() =>
+        {
+            var lib = _libSource;
+            var dialog = new Dialog_ScheduleRulesetManager(ref lib, true);
+            var dialog_rc = dialog.ShowModal(_control);
+            if (dialog_rc != null)
+            {
+                this.HeatingAvaliabilitySchedule.SetPropetyObj(dialog_rc[0]);
+            }
+        });
 
+        public RelayCommand RemoveHeatingAvaliabilityCommand => new RelayCommand(() =>
+        {
+            this.HeatingAvaliabilitySchedule.SetPropetyObj(null);
+        });
+
+        public RelayCommand CoolingAvaliabilityCommand => new RelayCommand(() =>
+        {
+            var lib = _libSource;
+            var dialog = new Dialog_ScheduleRulesetManager(ref lib, true);
+            var dialog_rc = dialog.ShowModal(_control);
+            if (dialog_rc != null)
+            {
+                this.CoolingAvaliabilitySchedule.SetPropetyObj(dialog_rc[0]);
+            }
+        });
+
+        public RelayCommand RemoveCoolingAvaliabilityCommand => new RelayCommand(() =>
+        {
+            this.CoolingAvaliabilitySchedule.SetPropetyObj(null);
+        });
 
     }
 
