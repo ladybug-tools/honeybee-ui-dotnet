@@ -397,7 +397,8 @@ namespace Honeybee.UI.ConsoleApp
                 var opsHVACs = new Button() { Text = "OpenStudioHVACs" };
                 opsHVACs.Click += (s, e) =>
                 {
-                    var dialog = new Honeybee.UI.Dialog_OpsHVACs();
+                    var lib = md.Properties.Energy;
+                    var dialog = new Honeybee.UI.Dialog_OpsHVACs(ref lib);
                     dialog.ShowModal(this);
                 };
 
@@ -494,7 +495,8 @@ namespace Honeybee.UI.ConsoleApp
                 var report = new ValidationReport("1.1.0", "1.2.0", false, "Error");
                 errors_btn.Click += (s, e) =>
                 {
-                    var dia = new Dialog_Error(report);
+                    var dia = Dialog_Error.Instance;
+                    dia.Update(report);
                     dia.Show();
                 };
 
