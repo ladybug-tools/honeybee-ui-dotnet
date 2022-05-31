@@ -8,20 +8,20 @@ namespace Honeybee.UI
     public class Dialog_IdealAirLoad : Dialog_ResourceEditor<IdealAirSystemAbridged>
     {
         //private ModelEnergyProperties ModelEnergyProperties { get; set; }
-        public Dialog_IdealAirLoad(IdealAirSystemAbridged hvac = default, bool lockedMode = false)
+        public Dialog_IdealAirLoad(ref HoneybeeSchema.ModelEnergyProperties libSource, IdealAirSystemAbridged hvac = default, bool lockedMode = false)
         {
             var sys = hvac ?? new IdealAirSystemAbridged($"IdealAirSystem_{Guid.NewGuid().ToString().Substring(0, 8)}");
-            var vm = new IdealAirLoadViewModel(sys);
+            var vm = new IdealAirLoadViewModel(libSource, sys, this);
 
-            Padding = new Padding(5);
+            //Padding = new Padding(4);
             Title = $"Ideal Air Load - {DialogHelper.PluginName}";
             WindowStyle = WindowStyle.Default;
             Width = 450;
             this.Icon = DialogHelper.HoneybeeIcon;
 
             var layout = new DynamicLayout() { DataContext = vm };
-            layout.DefaultSpacing = new Size(8, 8);
-            layout.Padding = new Padding(15);
+            layout.DefaultSpacing = new Size(4, 4);
+            layout.Padding = new Padding(10);
 
            
             // string displayName = null, 
@@ -55,6 +55,18 @@ namespace Honeybee.UI
             var coolingLimitNoLimit = new RadioButton() { Text = "No Limit" };
             var coolingLimitNumber = new RadioButton();
             var coolingLimit = new NumericStepper();
+
+            var heatingAvailability = new OptionalButton();
+            heatingAvailability.TextBinding.Bind(vm, _ => _.HeatingAvaliabilitySchedule.BtnName);
+            heatingAvailability.Bind(_ => _.Command, vm, _ => _.HeatingAvaliabilityCommand);
+            heatingAvailability.Bind(_ => _.RemoveCommand, vm, _ => _.RemoveHeatingAvaliabilityCommand);
+            heatingAvailability.Bind(_ => _.IsRemoveVisable, vm, _ => _.HeatingAvaliabilitySchedule.IsRemoveVisable);
+
+            var coolingAvailability = new OptionalButton();
+            coolingAvailability.TextBinding.Bind(vm, _ => _.CoolingAvaliabilitySchedule.BtnName);
+            coolingAvailability.Bind(_ => _.Command, vm, _ => _.CoolingAvaliabilityCommand);
+            coolingAvailability.Bind(_ => _.RemoveCommand, vm, _ => _.RemoveCoolingAvaliabilityCommand);
+            coolingAvailability.Bind(_ => _.IsRemoveVisable, vm, _ => _.CoolingAvaliabilitySchedule.IsRemoveVisable);
 
 
             nameText.TextBinding.BindDataContext((IdealAirLoadViewModel m) => m.Name);
@@ -105,6 +117,11 @@ namespace Honeybee.UI
             layout.AddRow(coolingLimitAuto);
             layout.AddRow(coolingLimitNoLimit);
             layout.AddSeparateRow(coolingLimitNumber, coolingLimit);
+
+            layout.AddRow("Heating Availability");
+            layout.AddRow(heatingAvailability);
+            layout.AddRow("Cooling Availability");
+            layout.AddRow(coolingAvailability);
 
             var locked = new CheckBox() { Text = "Locked", Enabled = false };
             locked.Checked = lockedMode;
