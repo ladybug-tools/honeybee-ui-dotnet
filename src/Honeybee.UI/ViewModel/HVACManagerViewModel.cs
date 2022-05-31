@@ -92,14 +92,15 @@ namespace Honeybee.UI
         private void ShowHVACDialog(HB.Energy.IHvac HVAC)
         {
             HB.Energy.IHvac dialog_rc = null;
+            var lib = _modelEnergyProperties;
             if (HVAC is IdealAirSystemAbridged obj)
             {
-                var dialog = new Dialog_IdealAirLoad(obj);
+                var dialog = new Dialog_IdealAirLoad(ref lib, obj);
                 dialog_rc = dialog.ShowModal(_control);
             }
             else
             {
-                var dialog = new Dialog_OpsHVACs(HVAC);
+                var dialog = new Dialog_OpsHVACs(ref lib, HVAC);
                 dialog_rc = dialog.ShowModal(_control);
             }
 
@@ -182,14 +183,16 @@ namespace Honeybee.UI
             var selectedObj = selected.HVAC;
             var dup = selectedObj.Duplicate() as HB.Energy.IHvac;
             HB.Energy.IHvac dialog_rc = null;
+
+            var lib = _modelEnergyProperties;
             if (dup is IdealAirSystemAbridged obj)
             {
-                var dialog = new Dialog_IdealAirLoad(obj, selected.Locked);
+                var dialog = new Dialog_IdealAirLoad(ref lib, obj, selected.Locked);
                 dialog_rc = dialog.ShowModal(_control);
             }
             else
             {
-                var dialog = new Dialog_OpsHVACs(dup, selected.Locked);
+                var dialog = new Dialog_OpsHVACs(ref lib, dup, selected.Locked);
                 dialog_rc = dialog.ShowModal(_control);
             }
 

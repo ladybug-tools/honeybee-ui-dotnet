@@ -52,29 +52,8 @@ namespace Honeybee.UI
                 if (string.IsNullOrEmpty(value))
                     return;
                 Set(() => _hvacGroup = value, nameof(HvacGroup));
-              
-                if (value == HvacGroups[0])
-                {
-                    HvacTypes = GetAllAirTypes();
-                    EconomizerVisable = true;
-                    LatentHRVisable = true;
-                    SensibleHRVisable = true;
-                }
-                else if (value == HvacGroups[1])
-                {
-                    HvacTypes = GetDOASTypes();
-                    EconomizerVisable = false;
-                    LatentHRVisable = true;
-                    SensibleHRVisable = true;
-                }
-                else if (value == HvacGroups[2])
-                {
-                    HvacTypes = GetOtherTypes();
-                    EconomizerVisable = false;
-                    LatentHRVisable = false;
-                    SensibleHRVisable = false;
-                }
 
+                UpdateUI();
             }
         }
 
@@ -132,7 +111,7 @@ namespace Honeybee.UI
         private string _name;
         public string Name
         {
-            get => _name ?? $"{this.HVACTypesDic[this.HvacType]} {Guid.NewGuid().ToString().Substring(0,5)}";
+            get => _name;
             set
             {
                 if (string.IsNullOrEmpty(value))
@@ -148,30 +127,35 @@ namespace Honeybee.UI
         public string Economizer
         {
             get => _economizer ?? Economizers.First();
-            set
-            {
-                Set(() => _economizer = value, nameof(Economizer));
-            }
+            set => Set(() => _economizer = value, nameof(Economizer));
         }
 
         private bool _economizerVisable = true;
         public bool EconomizerVisable
         {
             get => _economizerVisable;
-            set
-            {
-                Set(() => _economizerVisable = value, nameof(EconomizerVisable));
-            }
+            set => Set(() => _economizerVisable = value, nameof(EconomizerVisable));
         }
 
-        private double _sensibleHR = 0.5;
+        private bool _dcvVisable = false;
+        public bool DcvVisable
+        {
+            get => _dcvVisable;
+            set => Set(() => _dcvVisable = value, nameof(DcvVisable));
+        }
+
+        private bool _dcvChecked = false;
+        public bool DcvChecked
+        {
+            get => _dcvChecked;
+            set => Set(() => _dcvChecked = value, nameof(DcvChecked));
+        }
+
+        private double _sensibleHR = 0;
         public double SensibleHR
         {
             get => _sensibleHR;
-            set
-            {
-                Set(() => _sensibleHR = value, nameof(SensibleHR));
-            }
+            set => Set(() => _sensibleHR = value, nameof(SensibleHR));
         }
 
        
@@ -179,26 +163,17 @@ namespace Honeybee.UI
         public bool SensibleHRVisable
         {
             get => _sensibleHRVisable;
-            set
-            {
-                Set(() => _sensibleHRVisable = value, nameof(SensibleHRVisable));
-            }
+            set => Set(() => _sensibleHRVisable = value, nameof(SensibleHRVisable));
         }
 
 
-        private double _latentHR = 0.5;
+        private double _latentHR = 0;
         public double LatentHR
         {
             get => _latentHR;
-            set
-            {
-                Set(() => _latentHR = value, nameof(LatentHR));
-            }
+            set => Set(() => _latentHR = value, nameof(LatentHR));
         }
 
-     
-
-      
 
         private bool _latentHRVisable = true;
         public bool LatentHRVisable
@@ -210,32 +185,45 @@ namespace Honeybee.UI
             }
         }
 
-        public OpsHVACsViewModel(HoneybeeSchema.Energy.IHvac hvac)
+        // AvailabilitySchedule
+        private bool _AvaliabilityVisable = false;
+        public bool AvaliabilityVisable
+        {
+            get => _AvaliabilityVisable;
+            set => Set(() => _AvaliabilityVisable = value, nameof(AvaliabilityVisable));
+        }
+
+        private string _scheduleID;
+
+        private OptionalButtonViewModel _AvaliabilitySchedule;
+        public OptionalButtonViewModel AvaliabilitySchedule
+        {
+            get => _AvaliabilitySchedule;
+            set { this.Set(() => _AvaliabilitySchedule = value, nameof(AvaliabilitySchedule)); }
+        }
+
+        private ModelEnergyProperties _libSource;
+        private Dialog_OpsHVACs _control;
+        public OpsHVACsViewModel(ModelEnergyProperties libSource, HoneybeeSchema.Energy.IHvac hvac, Dialog_OpsHVACs control)
         {
             if (hvac == null)
-                return;
+                throw new ArgumentNullException(nameof(hvac));
 
-        
+            _libSource = libSource;
+            _control = control;
             var dummy = new VAV("dummy");
             // vintage
             var vintage = hvac.GetType().GetProperty(nameof(dummy.Vintage))?.GetValue(hvac);
             if (vintage is Vintages v)
                 this.Vintage = v.ToString();
 
-     
-
             if (this.IsAllAirGroup(hvac))
             {
                 HvacGroup = HvacGroups[0];
-
-                // Economizer
-                Economizer = hvac.GetType().GetProperty(nameof(dummy.EconomizerType))?.GetValue(hvac)?.ToString();
-                
             }
             else if (this.IsDOASGroup(hvac))
             {
                 HvacGroup = HvacGroups[1];
-
             }
             else if (this.IsOtherGroup(hvac))
             {
@@ -265,7 +253,62 @@ namespace Honeybee.UI
                     SensibleHR = senValue;
             }
 
+            // Economizer
+            Economizer = hvac.GetType().GetProperty(nameof(dummy.EconomizerType))?.GetValue(hvac)?.ToString();
+
+            // DCV
+            var dcv = hvac.GetType().GetProperty(nameof(dummy.DemandControlledVentilation))?.GetValue(hvac)?.ToString();
+            if (dcv != null)
+            {
+                var hasDcvValue = bool.TryParse(dcv, out var dcvOn);
+                DcvChecked = hasDcvValue ? dcvOn : false;
+            }
+
+            //AvaliabilitySchedule
+            var dummyDoas = new FCUwithDOASAbridged("doas");
+            this.AvaliabilitySchedule = new OptionalButtonViewModel((n) => _scheduleID = n?.Identifier);
+
+            var schId = hvac.GetType().GetProperty(nameof(dummyDoas.DoasAvailabilitySchedule))?.GetValue(hvac)?.ToString();
+            var sch = libSource.ScheduleList.FirstOrDefault(_ => _.Identifier == schId);
+            sch = sch ?? GetDummyScheduleObj(schId);
+            this.AvaliabilitySchedule.SetPropetyObj(sch);
+
+            UpdateUI();
         }
+
+
+        private void UpdateUI()
+        {
+            var group = HvacGroup;
+            if (group == HvacGroups[0])
+            {
+                HvacTypes = GetAllAirTypes();
+                EconomizerVisable = true;
+                LatentHRVisable = true;
+                SensibleHRVisable = true;
+                DcvVisable = true;
+                AvaliabilityVisable = false;
+            }
+            else if (group == HvacGroups[1])
+            {
+                HvacTypes = GetDOASTypes();
+                EconomizerVisable = false;
+                LatentHRVisable = true;
+                SensibleHRVisable = true;
+                DcvVisable = true;
+                AvaliabilityVisable = true;
+            }
+            else if (group == HvacGroups[2])
+            {
+                HvacTypes = GetOtherTypes();
+                EconomizerVisable = false;
+                LatentHRVisable = false;
+                SensibleHRVisable = false;
+                DcvVisable = false;
+                AvaliabilityVisable = false;
+            }
+        }
+
         private IEnumerable<Type> GetAllAirTypes()
         {
             
@@ -591,6 +634,10 @@ namespace Honeybee.UI
                 hvacType.GetProperty(nameof(dumy.SensibleHeatRecovery)).SetValue(sys, sen);
                 // LatentHeatRecovery
                 hvacType.GetProperty(nameof(dumy.LatentHeatRecovery)).SetValue(sys, lat);
+
+                // DCV
+                hvacType.GetProperty(nameof(dumy.DemandControlledVentilation)).SetValue(sys, this.DcvChecked);
+
             }
             else if (HvacGroup == HvacGroups[1])      // DOAS
             {
@@ -598,11 +645,35 @@ namespace Honeybee.UI
                 hvacType.GetProperty(nameof(dumy.SensibleHeatRecovery)).SetValue(sys, sen);
                 // LatentHeatRecovery
                 hvacType.GetProperty(nameof(dumy.LatentHeatRecovery)).SetValue(sys, lat);
+
+                // DCV
+                hvacType.GetProperty(nameof(dumy.DemandControlledVentilation)).SetValue(sys, this.DcvChecked);
+
+                //AvaliabilitySchedule
+                hvacType.GetProperty("DoasAvailabilitySchedule").SetValue(sys, this._scheduleID);
+
             }
             
             return sys;
         }
 
+
+
+        public RelayCommand AvaliabilityCommand => new RelayCommand(() =>
+        {
+            var lib = _libSource;
+            var dialog = new Dialog_ScheduleRulesetManager(ref lib, true);
+            var dialog_rc = dialog.ShowModal(_control);
+            if (dialog_rc != null)
+            {
+                this.AvaliabilitySchedule.SetPropetyObj(dialog_rc[0]);
+            }
+        });
+
+        public RelayCommand RemoveAvaliabilityCommand => new RelayCommand(() =>
+        {
+            this.AvaliabilitySchedule.SetPropetyObj(null);
+        });
 
 
     }
