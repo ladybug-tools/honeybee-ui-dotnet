@@ -20,7 +20,7 @@ namespace Honeybee.UI.View
                 return _instance;
             }
         }
-
+        public Button SchemaDataBtn;
         private ShadeProperty()
         {
             this._vm = new ShadePropertyViewModel(this);
@@ -62,9 +62,9 @@ namespace Honeybee.UI.View
             layout.AddRow(tb);
 
             layout.Add(null);
-            var data_button = new Button { Text = "Schema Data" };
-            data_button.Command = vm.HBDataBtnClick;
-            layout.AddSeparateRow(data_button, null);
+            SchemaDataBtn = new Button { Text = "Data" };
+            SchemaDataBtn.Command = vm.HBDataBtnClick;
+            //layout.AddSeparateRow(data_button, null);
 
             this.Content = layout;
         }
