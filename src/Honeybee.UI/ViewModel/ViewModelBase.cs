@@ -19,6 +19,7 @@ namespace Honeybee.UI
                     var eng = HoneybeeSchema.ModelEnergyProperties.Default;
                     eng.MergeWith(HoneybeeSchema.Helper.EnergyLibrary.StandardEnergyLibrary);
                     eng.MergeWith(HoneybeeSchema.Helper.EnergyLibrary.UserEnergyLibrary);
+                    eng.Shws = eng.Shws ?? new List<SHWSystem>();
                     _systemEnergyLib = eng;
                 }
                 return _systemEnergyLib;

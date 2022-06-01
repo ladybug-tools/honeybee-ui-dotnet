@@ -384,6 +384,23 @@ namespace Honeybee.UI.ConsoleApp
                     var dialog_rc = dialog.ShowModal(this);
                 };
 
+
+                var shwMngBtn = new Button() { Text = "SHW Manager" };
+                shwMngBtn.Click += (s, e) =>
+                {
+                    var lib = md.Properties.Energy;
+                    var dialog = new Honeybee.UI.Dialog_SHWManager(ref lib);
+
+                    var dialog_rc = dialog.ShowModal(this);
+                };
+
+                var shwBtn = new Button() { Text = "SHW Editor" };
+                shwBtn.Click += (s, e) =>
+                {
+                    var dialog = new Honeybee.UI.Dialog_SHW();
+                    var dialog_rc = dialog.ShowModal(this);
+                };
+
                 var outputs = new Button() { Text = "EPOutputs" };
                 outputs.Click += (s, e) =>
                 {
@@ -515,6 +532,7 @@ namespace Honeybee.UI.ConsoleApp
                 panel.AddSeparateRow(modelManager);
                 panel.AddSeparateRow(materialBtn);
                 panel.AddSeparateRow(modifierBtn, modifierSetMngBtn, modifierBtn, mIntSetSel_btn, null);
+                panel.AddSeparateRow(shwMngBtn, shwBtn);
                 panel.AddSeparateRow(outputs);
                 panel.AddSeparateRow(opsHVACs);
                 panel.AddSeparateRow(HVACManager);
