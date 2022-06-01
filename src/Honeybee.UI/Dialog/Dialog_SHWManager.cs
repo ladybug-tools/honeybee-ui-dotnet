@@ -6,29 +6,28 @@ using HoneybeeSchema;
 
 namespace Honeybee.UI
 {
-    public class Dialog_HVACManager : Dialog<List<HB.Energy.IHvac>>
+    public class Dialog_SHWManager : Dialog<List<HB.SHWSystem>>
     {
         private bool _returnSelectedOnly;
-        private HVACManagerViewModel _vm { get; set; }
+        private SHWManagerViewModel _vm { get; set; }
 
-        private Dialog_HVACManager()
+        private Dialog_SHWManager()
         {
             Padding = new Padding(5);
             Resizable = true;
-            Title = $"HVAC Manager - {DialogHelper.PluginName}";
+            Title = $"Service Hot Water System Manager - {DialogHelper.PluginName}";
             WindowStyle = WindowStyle.Default;
             Width = 650;
             this.Icon = DialogHelper.HoneybeeIcon;
         }
 
      
-        public Dialog_HVACManager(ref ModelEnergyProperties libSource, bool returnSelectedOnly = false) : this()
+        public Dialog_SHWManager(ref ModelEnergyProperties libSource, bool returnSelectedOnly = false) : this()
         {
             libSource.FillNulls();
 
-
             this._returnSelectedOnly = returnSelectedOnly;
-            this._vm = new HVACManagerViewModel(libSource, this);
+            this._vm = new SHWManagerViewModel(libSource, this);
             Content = Init(out var gd);
             this._vm.GridControl = gd;
         }
@@ -52,7 +51,7 @@ namespace Honeybee.UI
             var remove = new Button { Text = "Remove" };
             remove.Command = _vm.RemoveCommand;
 
-            layout.AddSeparateRow("HVACs:", null, addNew, duplicate, edit, remove);
+            layout.AddSeparateRow("Service Hot Water Systems:", null, addNew, duplicate, edit, remove);
 
             // search bar
             var filter = new TextBox() { PlaceholderText = "Filter" };
@@ -86,13 +85,13 @@ namespace Honeybee.UI
             var gd = new GridView();
             gd.Bind(_ => _.DataStore, _vm, _ => _.GridViewDataCollection);
             gd.SelectedItemsChanged += (s, e) => {
-                _vm.SelectedData = gd.SelectedItem as HVACViewData;
+                _vm.SelectedData = gd.SelectedItem as SHWViewData;
             };
 
             gd.Height = 250;
             gd.Columns.Add(new GridColumn
             {
-                DataCell = new TextBoxCell { Binding = Binding.Delegate<HVACViewData, string>(r => r.Name) },
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<SHWViewData, string>(r => r.Name) },
                 HeaderText = "Name",
                 Sortable = true,
                 Width = 200
@@ -100,23 +99,43 @@ namespace Honeybee.UI
 
             gd.Columns.Add(new GridColumn
             {
-                DataCell = new TextBoxCell { Binding = Binding.Delegate<HVACViewData, string>(r => r.CType) },
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<SHWViewData, string>(r => r.EType) },
                 HeaderText = "Type",
                 Sortable = true,
-                Width = 250
             });
 
-           
             gd.Columns.Add(new GridColumn
             {
-                DataCell = new CheckBoxCell { Binding = Binding.Delegate<HVACViewData, bool?>(r => r.Locked) },
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<SHWViewData, string>(r => r.HeaterEfficiency) },
+                HeaderText = "Efficiency",
+                Sortable = true,
+            });
+
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<SHWViewData, string>(r => r.Condition) },
+                HeaderText = "Condition",
+                Sortable = true,
+            });
+
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<SHWViewData, string>(r => r.LossCoeff) },
+                HeaderText = "LossCoeff",
+                Sortable = true,
+            });
+
+
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new CheckBoxCell { Binding = Binding.Delegate<SHWViewData, bool?>(r => r.Locked) },
                 HeaderText = "Locked",
                 Sortable = true
             });
 
             gd.Columns.Add(new GridColumn
             {
-                DataCell = new TextBoxCell { Binding = Binding.Delegate<HVACViewData, string>(r => r.Source) },
+                DataCell = new TextBoxCell { Binding = Binding.Delegate<SHWViewData, string>(r => r.Source) },
                 HeaderText = "Source",
                 Sortable = true
             });
@@ -132,22 +151,31 @@ namespace Honeybee.UI
         {
             var cell = e.Column.DataCell;
             var colName = e.Column.HeaderText;
-            System.Func<HVACViewData, string> sortFunc = null;
+            System.Func<SHWViewData, string> sortFunc = null;
             var isNumber = false;
             switch (colName)
             {
 
                 case "Name":
-                    sortFunc = (HVACViewData _) => _.Name;
+                    sortFunc = (SHWViewData _) => _.Name;
                     break;
-                case "Type":
-                    sortFunc = (HVACViewData _) => _.CType;
+                case "EType":
+                    sortFunc = (SHWViewData _) => _.EType;
+                    break;
+                case "Efficiency":
+                    sortFunc = (SHWViewData _) => _.HeaterEfficiency;
+                    break;
+                case "Condition":
+                    sortFunc = (SHWViewData _) => _.Condition;
+                    break;
+                case "LossCoeff":
+                    sortFunc = (SHWViewData _) => _.LossCoeff;
                     break;
                 case "Locked":
-                    sortFunc = (HVACViewData _) => _.Locked.ToString();
+                    sortFunc = (SHWViewData _) => _.Locked.ToString();
                     break;
                 case "Source":
-                    sortFunc = (HVACViewData _) => _.Source;
+                    sortFunc = (SHWViewData _) => _.Source;
                     break;
                 default:
                     break;

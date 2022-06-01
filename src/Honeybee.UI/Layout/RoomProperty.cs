@@ -21,6 +21,8 @@ namespace Honeybee.UI.View
             }
         }
 
+        public Button SchemaDataBtn;
+
         public RoomProperty()
         {
             this._vm = new RoomPropertyViewModel(this);
@@ -58,7 +60,7 @@ namespace Honeybee.UI.View
             layout.DefaultSpacing = new Size(4, 4);
             layout.DefaultPadding = new Padding(4);
 
-            var tb = new TabControl() { Height = 450 };
+            var tb = new TabControl() { Height = 480 };
             tb.Bind(_ => _.SelectedIndex, vm, _ => _.TabIndex);
             var basis = GenGeneralTab();
             tb.Pages.Add(new TabPage(basis) { Text = "General" });
@@ -74,9 +76,9 @@ namespace Honeybee.UI.View
             layout.AddRow(tb);
 
             layout.AddRow(null);
-            var data_button = new Button { Text = "Schema Data" };
-            data_button.Command = this._vm.HBDataBtnClick;
-            layout.AddSeparateRow(data_button, null);
+            SchemaDataBtn = new Button { Text = "Data" };
+            SchemaDataBtn.Command = this._vm.HBDataBtnClick;
+            //layout.AddSeparateRow(data_button, null);
 
 
             this.Content = layout;
@@ -205,6 +207,17 @@ namespace Honeybee.UI.View
 
             layout.AddRow("HVAC:", hvacByProgram);
             layout.AddRow(null, hvacDP);
+
+            //Get SHW
+            var shwDP = new Button();
+            shwDP.Bind((t) => t.Enabled, vm, v => v.SHW.IsBtnEnabled);
+            shwDP.TextBinding.Bind(vm, _ => _.SHW.BtnName);
+            shwDP.Command = vm.RoomSHWCommand;
+            var shwByProgram = new CheckBox() { Text = ReservedText.NoSystem };
+            shwByProgram.CheckedBinding.Bind(vm, _ => _.SHW.IsCheckboxChecked);
+
+            layout.AddRow("Service Hot Water:", shwByProgram);
+            layout.AddRow(null, shwDP);
 
             gp.Content = layout;
             return gp;
@@ -1149,7 +1162,7 @@ namespace Honeybee.UI.View
 
             var gd = new GridView();
             gd.Width = 350;
-            gd.Height = 260;
+            gd.Height = 360;
             gd.Bind(_ => _.DataStore, _vm, _ => _.UserData.GridViewDataCollection);
             gd.SelectedItemsChanged += (s, e) => 
             {
@@ -1180,7 +1193,7 @@ namespace Honeybee.UI.View
             ltnByProgram.CheckedBinding.Bind(vm, _ => _.UserData.IsCheckboxChecked);
 
             var gp = new GroupBox() { Text = "User Data" };
-            gp.Content = new StackLayout(ltnByProgram, layout) { Spacing = 4, Padding = new Padding(4), Height = 330 };
+            gp.Content = new StackLayout(ltnByProgram, layout) { Spacing = 4, Padding = new Padding(4), Height = 430 };
 
             return gp;
         }

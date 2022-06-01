@@ -120,6 +120,15 @@ namespace Honeybee.UI.ViewModel
 
         #endregion
 
+        #region SHW
+        private CheckboxButtonViewModel _SHW;
+        public CheckboxButtonViewModel SHW
+        {
+            get => _SHW;
+            set { this.Set(() => _SHW = value, nameof(SHW)); }
+        }
+
+        #endregion
 
         #region ModifierSet
 
@@ -319,6 +328,17 @@ namespace Honeybee.UI.ViewModel
                 this.HVAC.SetBtnName(ReservedText.Varies);
             else
                 this.HVAC.SetPropetyObj(hvac);
+
+
+            var shw = _libSource.Energy.Shws?
+             .FirstOrDefault(_ => _.Identifier == _refHBObj.Properties.Energy.Shw);
+            this.SHW = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.Shw = s?.Identifier);
+
+            // shw
+            if (rooms.Select(_ => _.Properties.Energy?.Shw).Distinct().Count() > 1)
+                this.SHW.SetBtnName(ReservedText.Varies);
+            else
+                this.SHW.SetPropetyObj(shw);
 
 
             var mSet = _libSource.Radiance.ModifierSets?
@@ -540,6 +560,17 @@ namespace Honeybee.UI.ViewModel
             if (dialog_rc != null)
             {
                 this.HVAC.SetPropetyObj(dialog_rc[0]);
+            }
+        });
+
+        public ICommand RoomSHWCommand => new RelayCommand(() =>
+        {
+            var lib = _libSource.Energy;
+            var dialog = new Dialog_SHWManager(ref lib, true);
+            var dialog_rc = dialog.ShowModal(this._control);
+            if (dialog_rc != null)
+            {
+                this.SHW.SetPropetyObj(dialog_rc[0]);
             }
         });
 
