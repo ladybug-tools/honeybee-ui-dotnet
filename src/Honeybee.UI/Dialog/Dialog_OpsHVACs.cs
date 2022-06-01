@@ -17,9 +17,12 @@ namespace Honeybee.UI
             Width = 450;
             this.Icon = DialogHelper.HoneybeeIcon;
 
-            var refHvac = hvac ?? new HoneybeeSchema.VAV($"VAV {Guid.NewGuid().ToString().Substring(0, 5)}");
-            _vm = new OpsHVACsViewModel(libSource, refHvac, this);
-            var layout = new DynamicLayout() { DataContext = _vm};
+            if (hvac == null) // add a new system
+                _vm = new OpsHVACsViewModel(libSource, this);
+            else  // edit existing system
+                _vm = new OpsHVACsViewModel(libSource, hvac, this);
+
+            var layout = new DynamicLayout() { DataContext = _vm };
             layout.DefaultSpacing = new Size(5, 5);
             layout.DefaultPadding = new Padding(5);
 
@@ -52,7 +55,7 @@ namespace Honeybee.UI
                 layout.AddRow(null);
             }
 
-            
+
 
             var year = new DropDown();
             var nameText = new TextBox();
@@ -77,7 +80,7 @@ namespace Honeybee.UI
             sensible.BindDataContext(c => c.Value, (OpsHVACsViewModel m) => m.SensibleHR);
             sensible.BindDataContext(c => c.Visible, (OpsHVACsViewModel m) => m.SensibleHRVisable);
             sensibleTitle.BindDataContext(c => c.Visible, (OpsHVACsViewModel m) => m.SensibleHRVisable);
-      
+
 
             var latentTitle = new Label() { Text = "Latent Heat Recovery:" };
             latent.BindDataContext(c => c.Value, (OpsHVACsViewModel m) => m.LatentHR);
@@ -97,29 +100,52 @@ namespace Honeybee.UI
             availability.Bind(_ => _.RemoveCommand, _vm, _ => _.RemoveAvaliabilityCommand);
             availability.Bind(_ => _.IsRemoveVisable, _vm, _ => _.AvaliabilitySchedule.IsRemoveVisable);
 
-            layout.BeginGroup("HVAC System settings", new Padding(5), new Size(5, 5), yscale: true);
-            layout.AddRow("Name:");
-            layout.AddRow(nameText);
-            layout.AddRow("Vintage:");
-            layout.AddRow(year);
-            layout.AddRow(economizerTitle);
-            layout.AddRow(economizer);
-            layout.AddRow(sensibleTitle);
-            layout.AddRow(sensible);
-            layout.AddRow(latentTitle);
-            layout.AddRow(latent);
+            var radSettings = GenRadSettingsPanel();
 
-            layout.AddRow(availabilityTitle);
-            layout.AddRow(availability);
-            layout.AddRow(dcv);
-            layout.EndGroup();
-            //layout.AddSeparateRow(cloneBtn);
+            var gp = new GroupBox() { Text = "HVAC System settings" };
+            var gpLayout = new DynamicLayout();
+            gpLayout.DefaultPadding = new Padding(5);
+
+            // fix the height of layout in case of creating a new system, otherwise, autosize height
+            if (hvac == null)
+            {
+                gpLayout.Height = 250;
+                gpLayout.BeginScrollable(BorderType.None);
+            }
+
+            var gpGeneralLayout = new DynamicLayout();
+            //gpLayout.BeginGroup("HVAC System settings", new Padding(5), new Size(5, 0));
+            gpGeneralLayout.Spacing = new Size(5, 2);
+
+
+            gpGeneralLayout.AddRow("Name:");
+            gpGeneralLayout.AddRow(nameText);
+            gpGeneralLayout.AddRow("Vintage:");
+            gpGeneralLayout.AddRow(year);
+            gpGeneralLayout.AddRow(economizerTitle);
+            gpGeneralLayout.AddRow(economizer);
+            gpGeneralLayout.AddRow(sensibleTitle);
+            gpGeneralLayout.AddRow(sensible);
+            gpGeneralLayout.AddRow(latentTitle);
+            gpGeneralLayout.AddRow(latent);
+
+            gpGeneralLayout.AddRow(availabilityTitle);
+            gpGeneralLayout.AddRow(availability);
+            gpGeneralLayout.AddRow(dcv);
+
+            gpLayout.AddRow(gpGeneralLayout);
+            gpLayout.AddRow(radSettings);
+            //gpLayout.EndGroup();
+            gp.Content = gpLayout;
+
+            layout.AddRow(gp);
 
             var locked = new CheckBox() { Text = "Locked", Enabled = false };
             locked.Checked = lockedMode;
 
             var OKButton = new Button { Text = "OK", Enabled = !lockedMode };
-            OKButton.Click += (sender, e) => {
+            OKButton.Click += (sender, e) =>
+            {
                 var obj = _vm.GreateHvac(hvac);
                 OkCommand.Execute(obj);
             };
@@ -133,8 +159,33 @@ namespace Honeybee.UI
 
 
         }
-        
-     
+
+        private DynamicLayout GenRadSettingsPanel()
+        {
+            //radiant system
+            var radFaceType = new EnumDropDown<HoneybeeSchema.RadiantFaceTypes>();
+            radFaceType.Bind(_ => _.SelectedValue, _vm, _ => _.RadiantFaceType);
+            //radFaceType.Bind(_ => _.Visible, _vm, _ => _.RadiantVisable);
+
+            var minOptTime = new NumericStepper() { MinValue = 0, MaxValue = 24, MaximumDecimalPlaces = 1, Increment = 1 };
+            var switchOverTime = new NumericStepper() { MinValue = 0, MaxValue = 24, MaximumDecimalPlaces = 1, Increment = 1 };
+            minOptTime.Bind(_ => _.Value, _vm, _ => _.MinOptTime);
+            //minOptTime.Bind(_ => _.Visible, _vm, _ => _.RadiantVisable);
+            switchOverTime.Bind(_ => _.Value, _vm, _ => _.SwitchTime);
+            //switchOverTime.Bind(_ => _.Visible, _vm, _ => _.RadiantVisable);
+
+            var radSettings = new DynamicLayout();
+            radSettings.DefaultSpacing = new Size(5, 2);
+            radSettings.Bind(_ => _.Visible, _vm, _ => _.RadiantVisable);
+            radSettings.AddRow("Radiant Face Type:");
+            radSettings.AddRow(radFaceType);
+            radSettings.AddRow("Minimum Operation Time:");
+            radSettings.AddRow(minOptTime);
+            radSettings.AddRow("Switch Over Time:");
+            radSettings.AddRow(switchOverTime);
+            return radSettings;
+        }
+
 
     }
 }

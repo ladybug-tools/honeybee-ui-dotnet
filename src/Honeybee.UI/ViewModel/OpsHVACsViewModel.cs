@@ -53,7 +53,7 @@ namespace Honeybee.UI
                     return;
                 Set(() => _hvacGroup = value, nameof(HvacGroup));
 
-                UpdateUI();
+                UpdateUI_Group();
             }
         }
 
@@ -81,6 +81,7 @@ namespace Honeybee.UI
                 Set(() => _hvacType = value, nameof(HvacType));
                 HvacEquipmentTypes = GetHVACTypes(value);
                 this.Name = $"{this.HVACTypesDic[this.HvacType]} {Guid.NewGuid().ToString().Substring(0, 5)}";
+                UpdateUI_Rad();
             }
         }
 
@@ -179,10 +180,7 @@ namespace Honeybee.UI
         public bool LatentHRVisable
         {
             get => _latentHRVisable;
-            set
-            {
-                Set(() => _latentHRVisable = value, nameof(LatentHRVisable));
-            }
+            set => Set(() => _latentHRVisable = value, nameof(LatentHRVisable));
         }
 
         // AvailabilitySchedule
@@ -202,8 +200,49 @@ namespace Honeybee.UI
             set { this.Set(() => _AvaliabilitySchedule = value, nameof(AvaliabilitySchedule)); }
         }
 
+        private bool _RadiantVisable;
+        public bool RadiantVisable
+        {
+            get => _RadiantVisable;
+            set => Set(() => _RadiantVisable = value, nameof(RadiantVisable));
+        }
+
+        private RadiantFaceTypes _RadiantFaceType;
+        public RadiantFaceTypes RadiantFaceType
+        {
+            get => _RadiantFaceType;
+            set { this.Set(() => _RadiantFaceType = value, nameof(RadiantFaceType)); }
+        }
+
+        private double _MinOptTime = 0;
+        public double MinOptTime
+        {
+            get => _MinOptTime;
+            set => Set(() => _MinOptTime = value, nameof(MinOptTime));
+        }
+
+        private double _SwitchTime = 0;
+        public double SwitchTime
+        {
+            get => _SwitchTime;
+            set => Set(() => _SwitchTime = value, nameof(SwitchTime));
+        }
+
+        private static VAV dummy = new VAV("dummy");
+        private static FCUwithDOASAbridged dummyDoas = new FCUwithDOASAbridged("doas");
+        private static RadiantwithDOASAbridged dummyRad = new RadiantwithDOASAbridged("rad");
+
+
         private ModelEnergyProperties _libSource;
         private Dialog_OpsHVACs _control;
+
+        // create a new system
+        public OpsHVACsViewModel(ModelEnergyProperties libSource, Dialog_OpsHVACs control): 
+            this(libSource, new HoneybeeSchema.VAV($"VAV {Guid.NewGuid().ToString().Substring(0, 5)}"), control)
+        {
+            UpdateUI_Group();
+        }
+        // edit an existing system
         public OpsHVACsViewModel(ModelEnergyProperties libSource, HoneybeeSchema.Energy.IHvac hvac, Dialog_OpsHVACs control)
         {
             if (hvac == null)
@@ -211,7 +250,6 @@ namespace Honeybee.UI
 
             _libSource = libSource;
             _control = control;
-            var dummy = new VAV("dummy");
             // vintage
             var vintage = hvac.GetType().GetProperty(nameof(dummy.Vintage))?.GetValue(hvac);
             if (vintage is Vintages v)
@@ -228,6 +266,10 @@ namespace Honeybee.UI
             else if (this.IsOtherGroup(hvac))
             {
                 HvacGroup = HvacGroups[2];
+            }
+            else
+            {
+                throw new ArgumentException($"{hvac?.GetType()} is not a supported HVAC system, please contact developers!");
             }
 
             // equipment type
@@ -265,7 +307,7 @@ namespace Honeybee.UI
             }
 
             //AvaliabilitySchedule
-            var dummyDoas = new FCUwithDOASAbridged("doas");
+            
             this.AvaliabilitySchedule = new OptionalButtonViewModel((n) => _scheduleID = n?.Identifier);
 
             var schId = hvac.GetType().GetProperty(nameof(dummyDoas.DoasAvailabilitySchedule))?.GetValue(hvac)?.ToString();
@@ -273,11 +315,28 @@ namespace Honeybee.UI
             sch = sch ?? GetDummyScheduleObj(schId);
             this.AvaliabilitySchedule.SetPropetyObj(sch);
 
-            UpdateUI();
+            //Radiant system
+            var hasRad = Enum.TryParse<RadiantFaceTypes>(hvac.GetType().GetProperty(nameof(dummyRad.RadiantFaceType))?.GetValue(hvac)?.ToString(), out var radFaceType);
+            if (hasRad)
+            {
+                //RadiantFaceType
+                this.RadiantFaceType = radFaceType;
+
+                var sot = hvac.GetType().GetProperty(nameof(dummyRad.SwitchOverTime))?.GetValue(hvac)?.ToString();
+                double.TryParse(sot, out var switchTime);
+                this.SwitchTime = switchTime;
+
+                //MinimumOperationTime
+                var mot = hvac.GetType().GetProperty(nameof(dummyRad.MinimumOperationTime))?.GetValue(hvac)?.ToString();
+                double.TryParse(mot, out var mintime);
+                this.MinOptTime = mintime;
+            }
+            this.RadiantVisable = hasRad;
+
         }
 
 
-        private void UpdateUI()
+        private void UpdateUI_Group()
         {
             var group = HvacGroup;
             if (group == HvacGroups[0])
@@ -307,6 +366,13 @@ namespace Honeybee.UI
                 DcvVisable = false;
                 AvaliabilityVisable = false;
             }
+        }
+
+        private void UpdateUI_Rad()
+        {
+            var isRad = HvacType == typeof(RadiantwithDOASEquipmentType);
+            isRad |= HvacType == typeof(RadiantEquipmentType);
+            this.RadiantVisable = isRad;
         }
 
         private IEnumerable<Type> GetAllAirTypes()
@@ -354,6 +420,7 @@ namespace Honeybee.UI
                 typeof(FCUwithDOASEquipmentType),
                 typeof(VRFwithDOASEquipmentType),
                 typeof(WSHPwithDOASEquipmentType),
+                typeof(RadiantwithDOASEquipmentType)
             };
 
             return types;
@@ -364,7 +431,7 @@ namespace Honeybee.UI
             var isDoas = hvac is FCUwithDOASAbridged;
             isDoas |= hvac is VRFwithDOASAbridged;
             isDoas |= hvac is WSHPwithDOASAbridged;
-
+            isDoas |= hvac is RadiantwithDOASAbridged;
             return isDoas;
         }
         private IEnumerable<Type> GetOtherTypes()
@@ -379,6 +446,7 @@ namespace Honeybee.UI
                 typeof(VRFEquipmentType),
                 typeof(WSHPEquipmentType),
                 typeof(WindowACEquipmentType),
+                typeof(RadiantEquipmentType),
             };
 
             return types;
@@ -394,6 +462,7 @@ namespace Honeybee.UI
             isGroup |= hvac is VRF;
             isGroup |= hvac is WSHP;
             isGroup |= hvac is WindowAC;
+            isGroup |= hvac is Radiant;
             return isGroup;
         }
 
@@ -408,14 +477,16 @@ namespace Honeybee.UI
                 {  typeof(FCUwithDOASEquipmentType), "DOAS with fan coil unit"},
                 {  typeof(VRFwithDOASEquipmentType), "DOAS with VRF"},
                 {  typeof(WSHPwithDOASEquipmentType), "DOAS with water source heat pumps"},
+                {  typeof(RadiantwithDOASEquipmentType), "DOAS with radiant systems"},
                 {  typeof(BaseboardEquipmentType), "Baseboard"},
                 {  typeof(EvaporativeCoolerEquipmentType), "Direct evaporative coolers"},
                 {  typeof(FCUEquipmentType),"Fan coil systems"},
                 {  typeof(GasUnitHeaterEquipmentType), "Gas unit heaters"},
-                {  typeof(ResidentialEquipmentType), "Residential Equipments"},
+                {  typeof(ResidentialEquipmentType), "Residential equipments"},
                 {  typeof(VRFEquipmentType), "VRF"},
                 {  typeof(WSHPEquipmentType), "Water source heat pumps"},
                 {  typeof(WindowACEquipmentType), "Window AC"},
+                {  typeof(RadiantEquipmentType), "Radiant equipments"},
 
             };
 
@@ -430,6 +501,7 @@ namespace Honeybee.UI
                 {  typeof(FCUwithDOASEquipmentType), typeof(FCUwithDOASAbridged)},
                 {  typeof(VRFwithDOASEquipmentType), typeof(VRFwithDOASAbridged)},
                 {  typeof(WSHPwithDOASEquipmentType), typeof(WSHPwithDOASAbridged)},
+                {  typeof(RadiantwithDOASEquipmentType), typeof(RadiantwithDOASAbridged)},
                 {  typeof(BaseboardEquipmentType), typeof(Baseboard)},
                 {  typeof(EvaporativeCoolerEquipmentType), typeof(EvaporativeCooler)},
                 {  typeof(FCUEquipmentType),typeof(FCU)},
@@ -438,6 +510,7 @@ namespace Honeybee.UI
                 {  typeof(VRFEquipmentType), typeof(VRF)},
                 {  typeof(WSHPEquipmentType), typeof(WSHP)},
                 {  typeof(WindowACEquipmentType), typeof(WindowAC)},
+                {  typeof(RadiantEquipmentType), typeof(Radiant)},
 
           };
 
@@ -500,6 +573,7 @@ namespace Honeybee.UI
                 { "PTAC","PTAC with no heat"},
                 { "PTHP","PTHP"},
                 { "Furnace","Forced air furnace"},
+
                 { "DOAS_FCU_Chiller_Boiler","DOAS with fan coil chiller with boiler"},
                 { "DOAS_FCU_Chiller_ASHP","DOAS with fan coil chiller with central air source heat pump"},
                 { "DOAS_FCU_Chiller_DHW","DOAS with fan coil chiller with district hot water"},
@@ -523,6 +597,17 @@ namespace Honeybee.UI
                 { "DOAS_WSHP_CoolingTower_Boiler","DOAS with water source heat pumps cooling tower with boiler"},
                 { "DOAS_WSHP_GSHP","DOAS with water source heat pumps with ground source heat pump"},
                 { "DOAS_WSHP_DCW_DHW","DOAS with water source heat pumps district chilled water with district hot water"},
+
+                { "DOAS_Radiant_Chiller_Boiler","DOAS with low temperature radiant chiller with boiler" },
+                { "DOAS_Radiant_Chiller_ASHP","DOAS with low temperature radiant chiller with air source heat pump" },
+                { "DOAS_Radiant_Chiller_DHW", "DOAS with low temperature radiant chiller with district hot water"},
+                { "DOAS_Radiant_ACChiller_Boiler", "DOAS with low temperature radiant air-cooled chiller with boiler"},
+                { "DOAS_Radiant_ACChiller_ASHP", "DOAS with low temperature radiant air-cooled chiller with air source heat pump" },
+                { "DOAS_Radiant_ACChiller_DHW",  "DOAS with low temperature radiant air-cooled chiller with district hot water"},
+                { "DOAS_Radiant_DCW_Boiler","DOAS with low temperature radiant district chilled water with boiler"},
+                { "DOAS_Radiant_DCW_ASHP", "DOAS with low temperature radiant district chilled water with air source heat pump"},
+                { "DOAS_Radiant_DCW_DHW", "DOAS with low temperature radiant district chilled water with district hot water" },
+
                 { "ElectricBaseboard","Baseboard electric"},
                 { "BoilerBaseboard","Baseboard gas boiler"},
                 { "ASHPBaseboard","Baseboard central air source heat pump"},
@@ -574,6 +659,15 @@ namespace Honeybee.UI
                 { "WindowAC_Furnace","Window AC with forced air furnace"},
                 { "WindowAC_GasHeaters","Window AC with unit heaters"},
                 { "WindowAC","Window AC with no heat"},
+                { "Radiant_Chiller_Boiler", "Low temperature radiant chiller with boiler"},
+                { "Radiant_Chiller_ASHP", "Low temperature radiant chiller with air source heat pump"},
+                { "Radiant_Chiller_DHW", "Low temperature radiant chiller with district hot water"},
+                { "Radiant_ACChiller_Boiler", "Low temperature radiant air-cooled chiller with boiler"},
+                { "Radiant_ACChiller_ASHP", "Low temperature radiant air-cooled chiller with air source heat pump"},
+                { "Radiant_ACChiller_DHW",  "Low temperature radiant air-cooled chiller with district hot water"},
+                { "Radiant_DCW_Boiler",  "Low temperature radiant district chilled water with boiler"},
+                { "Radiant_DCW_ASHP", "Low temperature radiant district chilled water with air source heat pump"},
+                { "Radiant_DCW_DHW", "Low temperature radiant district chilled water with district hot water"},
 
             };
 
