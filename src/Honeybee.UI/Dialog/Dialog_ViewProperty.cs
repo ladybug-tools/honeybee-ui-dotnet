@@ -21,15 +21,16 @@ namespace Honeybee.UI
                 p.DefaultSpacing = new Size(4, 4);
                 p.DefaultPadding = new Padding(4);
 
-                p.AddRow(ViewProperty.Instance);
-                ViewProperty.Instance.UpdatePanel(views);
+                var panel = ViewProperty.Instance;
+                p.AddRow(panel);
+                panel.UpdatePanel(views);
 
                 var OKButton = new Button() { Text = "OK" };
                 OKButton.Click += (s, e) =>
                 {
                     try
                     {
-                        this.Close(ViewProperty.Instance.GetViews());
+                        this.Close(panel.GetViews());
                     }
                     catch (Exception er)
                     {
@@ -42,7 +43,7 @@ namespace Honeybee.UI
                 AbortButton = new Button { Text = "Cancel" };
                 AbortButton.Click += (sender, e) => Close();
 
-                p.AddSeparateRow(null, OKButton, this.AbortButton, null);
+                p.AddSeparateRow(null, null, OKButton, this.AbortButton, null, panel.SchemaDataBtn);
                 p.Add(null);
                 this.Content = p;
             }

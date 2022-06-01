@@ -21,15 +21,17 @@ namespace Honeybee.UI
                 p.DefaultSpacing = new Size(4, 4);
                 p.DefaultPadding = new Padding(4);
 
-                p.AddRow(SensorGridProperty.Instance);
-                SensorGridProperty.Instance.UpdatePanel(sensorGrids);
+
+                var panel = SensorGridProperty.Instance;
+                p.AddRow(panel);
+                panel.UpdatePanel(sensorGrids);
 
                 var OKButton = new Button() { Text = "OK" };
                 OKButton.Click += (s, e) =>
                 {
                     try
                     {
-                        this.Close(SensorGridProperty.Instance.GetSensorGrids());
+                        this.Close(panel.GetSensorGrids());
                     }
                     catch (Exception er)
                     {
@@ -42,7 +44,7 @@ namespace Honeybee.UI
                 AbortButton = new Button { Text = "Cancel" };
                 AbortButton.Click += (sender, e) => Close();
 
-                p.AddSeparateRow(null, OKButton, this.AbortButton, null);
+                p.AddSeparateRow(null, null, OKButton, this.AbortButton, null, panel.SchemaDataBtn);
                 p.Add(null);
                 this.Content = p;
             }

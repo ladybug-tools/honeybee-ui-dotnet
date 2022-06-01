@@ -12,7 +12,7 @@ namespace Honeybee.UI.View
         private ViewPropertyViewModel _vm { get; set; }
         private static ViewProperty _instance;
         public static ViewProperty Instance => _instance ?? (_instance = new ViewProperty());
-
+        public Button SchemaDataBtn;
         private ViewProperty()
         {
             this._vm = new ViewPropertyViewModel(this);
@@ -49,9 +49,9 @@ namespace Honeybee.UI.View
 
 
             layout.Add(null);
-            var data_button = new Button { Text = "Schema Data" };
-            data_button.Command = vm.HBDataBtnClick;
-            layout.AddSeparateRow(data_button, null);
+            SchemaDataBtn = new Button { Text = "Data" };
+            SchemaDataBtn.Command = vm.HBDataBtnClick;
+            //layout.AddSeparateRow(data_button, null);
 
             this.Content = layout;
         }

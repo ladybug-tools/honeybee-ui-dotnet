@@ -11,7 +11,7 @@ namespace Honeybee.UI.View
         private SensorGridPropertyViewModel _vm { get; set; }
         private static SensorGridProperty _instance;
         public static SensorGridProperty Instance => _instance ?? (_instance = new SensorGridProperty());
-
+        public Button SchemaDataBtn;
         private SensorGridProperty()
         {
             this._vm = new SensorGridPropertyViewModel(this);
@@ -48,9 +48,9 @@ namespace Honeybee.UI.View
 
 
             layout.Add(null);
-            var data_button = new Button { Text = "Schema Data" };
-            data_button.Command = vm.HBDataBtnClick;
-            layout.AddSeparateRow(data_button, null);
+            SchemaDataBtn = new Button { Text = "Data" };
+            SchemaDataBtn.Command = vm.HBDataBtnClick;
+            //layout.AddSeparateRow(data_button, null);
 
             this.Content = layout;
         }
