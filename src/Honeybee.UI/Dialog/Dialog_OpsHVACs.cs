@@ -91,7 +91,7 @@ namespace Honeybee.UI
             dcv.Bind(_ => _.Checked, _vm, _ => _.DcvChecked);
             dcv.Bind(c => c.Visible, _vm, _ => _.DcvVisable);
 
-            var availabilityTitle = new Label() { Text = "Availability Schedule:" };
+            var availabilityTitle = new Label() { Text = "DOAS Availability Schedule:" };
             availabilityTitle.Bind(c => c.Visible, _vm, _ => _.AvaliabilityVisable);
             var availability = new OptionalButton();
             availability.Bind(c => c.Visible, _vm, _ => _.AvaliabilityVisable);
