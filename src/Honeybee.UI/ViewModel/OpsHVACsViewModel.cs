@@ -124,7 +124,7 @@ namespace Honeybee.UI
         private IEnumerable<string> _economizers = Enum.GetNames(typeof(AllAirEconomizerType)).ToList();
         public IEnumerable<string> Economizers => _economizers;
 
-        private string _economizer;
+        private string _economizer = dummy.EconomizerType.ToString();
         public string Economizer
         {
             get => _economizer ?? Economizers.First();
@@ -145,14 +145,14 @@ namespace Honeybee.UI
             set => Set(() => _dcvVisable = value, nameof(DcvVisable));
         }
 
-        private bool _dcvChecked = false;
+        private bool _dcvChecked = dummyDoas.DemandControlledVentilation;
         public bool DcvChecked
         {
             get => _dcvChecked;
             set => Set(() => _dcvChecked = value, nameof(DcvChecked));
         }
 
-        private double _sensibleHR = 0;
+        private double _sensibleHR = dummy.SensibleHeatRecovery;
         public double SensibleHR
         {
             get => _sensibleHR;
@@ -168,7 +168,7 @@ namespace Honeybee.UI
         }
 
 
-        private double _latentHR = 0;
+        private double _latentHR = dummy.LatentHeatRecovery;
         public double LatentHR
         {
             get => _latentHR;
@@ -207,21 +207,21 @@ namespace Honeybee.UI
             set => Set(() => _RadiantVisable = value, nameof(RadiantVisable));
         }
 
-        private RadiantFaceTypes _RadiantFaceType;
+        private RadiantFaceTypes _RadiantFaceType = dummyRad.RadiantFaceType;
         public RadiantFaceTypes RadiantFaceType
         {
             get => _RadiantFaceType;
             set { this.Set(() => _RadiantFaceType = value, nameof(RadiantFaceType)); }
         }
 
-        private double _MinOptTime = 0;
+        private double _MinOptTime = dummyRad.MinimumOperationTime;
         public double MinOptTime
         {
             get => _MinOptTime;
             set => Set(() => _MinOptTime = value, nameof(MinOptTime));
         }
 
-        private double _SwitchTime = 0;
+        private double _SwitchTime = dummyRad.SwitchOverTime;
         public double SwitchTime
         {
             get => _SwitchTime;
@@ -250,6 +250,7 @@ namespace Honeybee.UI
 
             _libSource = libSource;
             _control = control;
+
             // vintage
             var vintage = hvac.GetType().GetProperty(nameof(dummy.Vintage))?.GetValue(hvac);
             if (vintage is Vintages v)
@@ -305,7 +306,7 @@ namespace Honeybee.UI
                 var hasDcvValue = bool.TryParse(dcv, out var dcvOn);
                 DcvChecked = hasDcvValue ? dcvOn : false;
             }
-
+ 
             //AvaliabilitySchedule
             
             this.AvaliabilitySchedule = new OptionalButtonViewModel((n) => _scheduleID = n?.Identifier);
@@ -322,6 +323,7 @@ namespace Honeybee.UI
                 //RadiantFaceType
                 this.RadiantFaceType = radFaceType;
 
+                //SwitchOverTime
                 var sot = hvac.GetType().GetProperty(nameof(dummyRad.SwitchOverTime))?.GetValue(hvac)?.ToString();
                 double.TryParse(sot, out var switchTime);
                 this.SwitchTime = switchTime;
@@ -332,7 +334,6 @@ namespace Honeybee.UI
                 this.MinOptTime = mintime;
             }
             this.RadiantVisable = hasRad;
-
         }
 
 
@@ -370,9 +371,14 @@ namespace Honeybee.UI
 
         private void UpdateUI_Rad()
         {
-            var isRad = HvacType == typeof(RadiantwithDOASEquipmentType);
-            isRad |= HvacType == typeof(RadiantEquipmentType);
-            this.RadiantVisable = isRad;
+            this.RadiantVisable = HvacType == typeof(RadiantwithDOASEquipmentType) || HvacType == typeof(RadiantEquipmentType);
+        }
+
+        private bool IsRadiantSystem(HoneybeeSchema.Energy.IHvac hvac)
+        {
+            var isGroup = hvac is RadiantwithDOASAbridged;
+            isGroup |= hvac is Radiant;
+            return isGroup;
         }
 
         private IEnumerable<Type> GetAllAirTypes()
@@ -694,7 +700,6 @@ namespace Honeybee.UI
             id = $"{hvacType.Name}_{id}";
             id = existing == null ? id : existing.Identifier;
 
-            var dumy = new VAV(id);
 
             var constructor = hvacType.GetConstructors().FirstOrDefault();
             var parameters = constructor.GetParameters().Select(_ => _.HasDefaultValue ? _.DefaultValue : default).ToArray();
@@ -703,13 +708,13 @@ namespace Honeybee.UI
             var sys = obj as HoneybeeSchema.Energy.IHvac;
 
             // assign Name
-            hvacType.GetProperty(nameof(dumy.DisplayName)).SetValue(sys, this.Name);
+            hvacType.GetProperty(nameof(dummy.DisplayName)).SetValue(sys, this.Name);
 
             // assign Vintage
-            hvacType.GetProperty(nameof(dumy.Vintage)).SetValue(sys, vintage);
+            hvacType.GetProperty(nameof(dummy.Vintage)).SetValue(sys, vintage);
 
             // equipment type 
-            var prop = hvacType.GetProperty(nameof(dumy.EquipmentType));
+            var prop = hvacType.GetProperty(nameof(dummy.EquipmentType));
             var hvacSysType = Enum.Parse(prop.PropertyType, this.HvacEquipmentType);
             prop.SetValue(sys, hvacSysType);
 
@@ -722,32 +727,47 @@ namespace Honeybee.UI
             {
                 // economizer
                 var economizer = Enum.Parse(typeof(AllAirEconomizerType), this.Economizer);
-                hvacType.GetProperty(nameof(dumy.EconomizerType)).SetValue(sys, economizer);
+                hvacType.GetProperty(nameof(dummy.EconomizerType)).SetValue(sys, economizer);
 
                 // SensibleHeatRecovery
-                hvacType.GetProperty(nameof(dumy.SensibleHeatRecovery)).SetValue(sys, sen);
+                hvacType.GetProperty(nameof(dummy.SensibleHeatRecovery)).SetValue(sys, sen);
                 // LatentHeatRecovery
-                hvacType.GetProperty(nameof(dumy.LatentHeatRecovery)).SetValue(sys, lat);
+                hvacType.GetProperty(nameof(dummy.LatentHeatRecovery)).SetValue(sys, lat);
 
                 // DCV
-                hvacType.GetProperty(nameof(dumy.DemandControlledVentilation)).SetValue(sys, this.DcvChecked);
+                hvacType.GetProperty(nameof(dummy.DemandControlledVentilation)).SetValue(sys, this.DcvChecked);
 
             }
             else if (HvacGroup == HvacGroups[1])      // DOAS
             {
                 // SensibleHeatRecovery
-                hvacType.GetProperty(nameof(dumy.SensibleHeatRecovery)).SetValue(sys, sen);
+                hvacType.GetProperty(nameof(dummy.SensibleHeatRecovery)).SetValue(sys, sen);
                 // LatentHeatRecovery
-                hvacType.GetProperty(nameof(dumy.LatentHeatRecovery)).SetValue(sys, lat);
+                hvacType.GetProperty(nameof(dummy.LatentHeatRecovery)).SetValue(sys, lat);
 
                 // DCV
-                hvacType.GetProperty(nameof(dumy.DemandControlledVentilation)).SetValue(sys, this.DcvChecked);
+                hvacType.GetProperty(nameof(dummy.DemandControlledVentilation)).SetValue(sys, this.DcvChecked);
 
                 //AvaliabilitySchedule
-                hvacType.GetProperty("DoasAvailabilitySchedule").SetValue(sys, this._scheduleID);
+                hvacType.GetProperty(nameof(dummyDoas.DoasAvailabilitySchedule)).SetValue(sys, this._scheduleID);
 
             }
-            
+            else if (IsRadiantSystem(sys))
+            {
+                //RadiantFaceType
+                hvacType.GetProperty(nameof(dummyRad.RadiantFaceType)).SetValue(sys, this.RadiantFaceType);
+
+                //SwitchOverTime
+                hvacType.GetProperty(nameof(dummyRad.SwitchOverTime)).SetValue(sys, this.SwitchTime);
+
+                //MinimumOperationTime
+                hvacType.GetProperty(nameof(dummyRad.MinimumOperationTime)).SetValue(sys, this.MinOptTime);
+
+            }
+
+            // validate
+            (sys as OpenAPIGenBaseModel)?.IsValid(true);
+           
             return sys;
         }
 
