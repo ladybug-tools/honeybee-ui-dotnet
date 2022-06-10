@@ -490,6 +490,9 @@ namespace Honeybee.UI.ViewModel
                 if (!this.HVAC.IsVaries)
                     item.Properties.Energy.Hvac = refObj.Properties.Energy.Hvac;
 
+                if (!this.SHW.IsVaries)
+                    item.Properties.Energy.Shw = refObj.Properties.Energy.Shw;
+
                 if (!this.ModifierSet.IsVaries)
                 {
                     item.Properties.Radiance = item.Properties.Radiance ?? new RoomRadiancePropertiesAbridged();

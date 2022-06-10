@@ -53,7 +53,7 @@ namespace Honeybee.UI
         public void UpdateLibSource()
         {
             var newItems = this._userData.Select(_ => _.System);
-            this._modelEnergyProperties.Hvacs.Clear();
+            this._modelEnergyProperties.Shws.Clear();
             this._modelEnergyProperties.AddSHWs(newItems);
         }
 
