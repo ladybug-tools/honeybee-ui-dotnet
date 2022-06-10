@@ -26,8 +26,12 @@ jobs:
           Compress-Archive -U -Path src\Honeybee.UI\bin\Release\* -DestinationPath HoneybeeUI
           Compress-Archive -U -Path src\Honeybee.UI\bin\Release_Rhino\* -DestinationPath HoneybeeUI_Rhino
 
-      - name: Semantic Release
-        uses: cycjimmy/semantic-release-action@v2
+      # this is for fixing semantic-release-action
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - uses: cycjimmy/semantic-release-action@v3
         id: semantic
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
