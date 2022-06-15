@@ -569,12 +569,16 @@ namespace Honeybee.UI.ViewModel
         public ICommand RoomSHWCommand => new RelayCommand(() =>
         {
             var lib = _libSource.Energy;
-            var dialog = new Dialog_SHWManager(ref lib, true);
-            var dialog_rc = dialog.ShowModal(this._control);
-            if (dialog_rc != null)
+            var dialog = new Dialog_SHWManager(ref lib, true, roomIDPicker: AmbientCoffConditionRoomPicker);
+            Action<List<SHWSystem>> doneAction = (List<SHWSystem> items) =>
             {
-                this.SHW.SetPropetyObj(dialog_rc[0]);
-            }
+                if (items != null)
+                {
+                    this.SHW.SetPropetyObj(items[0]);
+                }
+            };
+            dialog.SetDoneAction(doneAction);
+            dialog.ShowModal(this._control);
         });
 
         public ICommand ModifierSetCommand => new RelayCommand(() =>
@@ -593,7 +597,8 @@ namespace Honeybee.UI.ViewModel
             Honeybee.UI.Dialog_Message.Show(this._control, this._refHBObj.ToJson(true), "Schema Data");
         });
 
-
+        public Func<string> AmbientCoffConditionRoomPicker { get; set; }
+     
 
     }
 

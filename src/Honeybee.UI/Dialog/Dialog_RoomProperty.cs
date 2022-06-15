@@ -65,6 +65,11 @@ namespace Honeybee.UI
         {
             RoomProperty.Instance.SetInternalMassPicker(internalMassAreaPicker);
         }
+        public void SetAmbientCoffConditionRoomPicker(Func<string> RoomIDPicker)
+        {
+            RoomProperty.Instance.SetAmbientCoffConditionRoomPicker(RoomIDPicker);
+        }
+
     }
 
 

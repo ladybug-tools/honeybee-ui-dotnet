@@ -122,7 +122,24 @@ namespace Honeybee.UI
                 {
                     this.AmbientCoffConditionNumberEnabled = false;
                 }
+
+                this.VisibleAmbientCoffConditionRoomInput = AmbientCoffConditionRoomPicker == null;
+                this.VisibleAmbientCoffConditionRoomPicker = AmbientCoffConditionRoomPicker != null;
             }
+        }
+        public Func<string> AmbientCoffConditionRoomPicker { get; set; }
+
+
+        public bool VisibleAmbientCoffConditionRoomInput
+        {
+            get => AmbientCoffConditionRoomPicker == null;
+            set => this.RefreshControl(nameof(VisibleAmbientCoffConditionRoomInput));
+        }
+
+        public bool VisibleAmbientCoffConditionRoomPicker
+        {
+            get => AmbientCoffConditionRoomPicker != null;
+            set => this.RefreshControl(nameof(VisibleAmbientCoffConditionRoomPicker));
         }
 
         private double _AmbientLostCoff;
@@ -157,12 +174,17 @@ namespace Honeybee.UI
             this.AmbientCoffConditionNumber = new DoubleViewModel((n) => _ambientCoffCondition = n);
             this.AmbientCoffConditionNumber.SetUnits(Units.TemperatureUnit.DegreeCelsius, Units.UnitType.Temperature);
 
+            this.AmbientCoffConditionRoomIDEnabled = false;
             if (hvac.AmbientCondition == null)
                 this.AmbientCoffConditionNumber.SetBaseUnitNumber(22);
             else if (hvac.AmbientCondition.Obj is double condition)
                 this.AmbientCoffConditionNumber.SetBaseUnitNumber(condition);
             else if (hvac.AmbientCondition.Obj is string htn)
+            {
                 this.AmbientCoffConditionRoomID = htn;
+                this.AmbientCoffConditionRoomIDEnabled = true;
+            }
+           
 
         }
 
@@ -199,6 +221,34 @@ namespace Honeybee.UI
             obj.IsValid(true);
             return obj;
         }
+
+        public void SetAmbientCoffConditionRoomPicker(Func<string> RoomIDPicker)
+        {
+            this.AmbientCoffConditionRoomPicker = RoomIDPicker;
+        }
+
+        public RelayCommand AmbientCoffConditionRoomPickerCommand => new RelayCommand(() =>
+        {
+            try
+            {
+                if (this.AmbientCoffConditionRoomPicker == null)
+                    return;
+
+                this._control.ParentWindow.Visible = false;
+                var roomID = this.AmbientCoffConditionRoomPicker?.Invoke();
+                //if (this._control == null || this._control.IsDisposed)
+                //    return;
+                if (!string.IsNullOrEmpty(roomID))
+                {
+                    this.AmbientCoffConditionRoomID = roomID;
+                }
+            }
+            finally
+            {
+                this._control.ParentWindow.Visible = true;
+            }
+            
+        });
 
 
     }

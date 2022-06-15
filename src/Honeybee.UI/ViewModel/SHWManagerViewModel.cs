@@ -13,8 +13,10 @@ namespace Honeybee.UI
         private HB.ModelEnergyProperties _modelEnergyProperties { get; set; }
         private static ManagerItemComparer<SHWViewData> _viewDataComparer = new ManagerItemComparer<SHWViewData>();
 
-        public SHWManagerViewModel(HB.ModelEnergyProperties libSource, Control control = default):base(control)
+        public Func<string> AmbientCoffConditionRoomPicker { get; set; }
+        public SHWManagerViewModel(HB.ModelEnergyProperties libSource, Control control = default, Func<string> roomIDPicker = default) :base(control)
         {
+            AmbientCoffConditionRoomPicker = roomIDPicker;
             _modelEnergyProperties = libSource;
 
             this._userData = libSource.Shws.Select(_ => new SHWViewData(_)).ToList();
@@ -89,22 +91,32 @@ namespace Honeybee.UI
 
     
 
-        private void ShowHVACDialog(HB.SHWSystem system)
+        private void ShowSHWDialog(HB.SHWSystem system, Action<SHWSystem> doneAction = default)
         {
-            var dialog = new Dialog_SHW(system);
-            var dialog_rc = dialog.ShowModal(_control);
 
-            if (dialog_rc != null)
+            this._control.Visible = false;
+            var dialog = new Dialog_SHW(system, roomIDPicker: AmbientCoffConditionRoomPicker);
+            System.Action<SHWSystem> f = (SHWSystem s) =>
             {
-                AddUserData(dialog_rc);
-                ResetDataCollection();
-            }
+                if (s != null)
+                {
+                    if (doneAction != default)
+                        doneAction(s); //edit object
+                    else
+                        AddUserData(s); // add/duplicate object
+                    ResetDataCollection();
+                }
+                this._control.Visible = true;
+            };
+
+
+            dialog.ShowModal(_control, f);
 
         }
     
         public RelayCommand AddCommand => new RelayCommand(() =>
         {
-            ShowHVACDialog(null);
+            ShowSHWDialog(null);
         });
 
         public RelayCommand DuplicateCommand => new RelayCommand(() =>
@@ -121,7 +133,7 @@ namespace Honeybee.UI
             dup.Identifier = name;
             dup.DisplayName = name;
 
-            ShowHVACDialog(dup);
+            ShowSHWDialog(dup);
 
         });
 
@@ -134,24 +146,23 @@ namespace Honeybee.UI
                 return;
             }
 
-            //if (selected.Locked)
-            //{
-            //    MessageBox.Show(_control, "You cannot edit an item of system library! Try to duplicate it first!");
-            //    return;
-            //}
+            if (selected.Locked)
+            {
+                MessageBox.Show(_control, "You cannot edit an item of system library! Try to duplicate it first!");
+                return;
+            }
 
             var selectedObj = selected.System;
             var dup = selectedObj.Duplicate() as HB.SHWSystem;
-            HB.SHWSystem dialog_rc = null;
 
-            var lib = _modelEnergyProperties;
-            var dialog = new Dialog_SHW(dup, selected.Locked);
-            dialog_rc = dialog.ShowModal(_control);
+            System.Action<SHWSystem> f = (SHWSystem s) =>
+            {
+                if (s == null) return;
+                ReplaceUserData(selected, s);
+            };
 
-            if (dialog_rc == null) return;
+            ShowSHWDialog(dup, f);
 
-            ReplaceUserData(selected, dialog_rc);
-            ResetDataCollection();
 
         });
 

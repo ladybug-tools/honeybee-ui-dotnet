@@ -3,6 +3,7 @@ using Eto.Forms;
 using HB = HoneybeeSchema;
 using System.Collections.Generic;
 using HoneybeeSchema;
+using System;
 
 namespace Honeybee.UI
 {
@@ -22,12 +23,12 @@ namespace Honeybee.UI
         }
 
      
-        public Dialog_SHWManager(ref ModelEnergyProperties libSource, bool returnSelectedOnly = false) : this()
+        public Dialog_SHWManager(ref ModelEnergyProperties libSource, bool returnSelectedOnly = false, Func<string> roomIDPicker = default) : this()
         {
             libSource.FillNulls();
 
             this._returnSelectedOnly = returnSelectedOnly;
-            this._vm = new SHWManagerViewModel(libSource, this);
+            this._vm = new SHWManagerViewModel(libSource, this, roomIDPicker: roomIDPicker);
             Content = Init(out var gd);
             this._vm.GridControl = gd;
         }
@@ -194,10 +195,15 @@ namespace Honeybee.UI
         public RelayCommand OkCommand => new RelayCommand(() =>
         {
             var itemsToReturn = _vm.GetUserItems(this._returnSelectedOnly);
+            _doneAction?.Invoke(itemsToReturn);
             Close(itemsToReturn);
         });
 
-
+        private Action<List<HB.SHWSystem>> _doneAction;
+        public void SetDoneAction(Action<List<HB.SHWSystem>> doneAction)
+        {
+            _doneAction = doneAction;
+        }
 
     }
 }
