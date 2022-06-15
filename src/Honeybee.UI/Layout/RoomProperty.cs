@@ -51,6 +51,12 @@ namespace Honeybee.UI.View
             this._vm.InternalMass.InternalMassAreaPicker = internalMassAreaPicker;
             this._vm.InternalMass.EnableInternalMassAreaPicker = internalMassAreaPicker != null;
         }
+
+        public void SetAmbientCoffConditionRoomPicker(Func<string> RoomIDPicker)
+        {
+            this._vm.AmbientCoffConditionRoomPicker = RoomIDPicker;
+        }
+      
         private void Init()
         {
             var vm = this._vm;
