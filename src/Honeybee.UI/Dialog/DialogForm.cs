@@ -5,6 +5,7 @@ namespace Honeybee.UI
 {
     public abstract class DialogForm<T> : Form
     {
+        private T _result;
         private System.Action<T> _returnFunc;
         public void ShowModal(Eto.Forms.Control owner, System.Action<T> returnFunc)
         {
@@ -22,14 +23,20 @@ namespace Honeybee.UI
 
         public void Close(T obj)
         {
-            _returnFunc?.Invoke(obj);
+            _result = obj;
             base.Close();
         }
 
         public override void Close()
         {
-            _returnFunc?.Invoke(default(T));
+            _result = default(T);
             base.Close();
+        }
+
+        protected override void OnClosed(System.EventArgs e)
+        {
+            _returnFunc?.Invoke(_result);
+            base.OnClosed(e);
         }
 
         public RelayCommand<T> OkCommand =>
