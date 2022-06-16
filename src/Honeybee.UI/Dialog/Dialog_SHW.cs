@@ -40,6 +40,10 @@ namespace Honeybee.UI
             var heaterEffNumber = new RadioButton();
             var heaterEff = new NumericStepper();
 
+            // ambientCoffCondition
+            var ambientLayout = new DynamicLayout();
+            ambientLayout.DefaultSpacing = new Size(5, 5);
+
             var ambientCoffConditionNumber = new RadioButton();
             var ambientCoffConditionRoom = new RadioButton() { Text = "Room ID" };
 
@@ -49,6 +53,14 @@ namespace Honeybee.UI
             var ambientCoffConditionRoomID_btn = new Button();
             ambientCoffConditionRoomLayout.AddRow(ambientCoffConditionRoomID);
             ambientCoffConditionRoomLayout.AddRow(ambientCoffConditionRoomID_btn);
+
+            var ambientCoffConditionUnit = new Label();
+            ambientCoffConditionUnit.TextBinding.Bind(vm, _ => _.AmbientCoffConditionNumber.DisplayUnitAbbreviation);
+
+            ambientLayout.AddSeparateRow("Ambient Condition:");
+            ambientLayout.AddSeparateRow(ambientCoffConditionNumber, ambientCoffCondition, ambientCoffConditionUnit);
+            ambientLayout.AddSeparateRow(ambientCoffConditionRoom, ambientCoffConditionRoomLayout);
+            ambientLayout.Bind(_ => _.Enabled, vm, _ => _.AmbientCoffConditionEnabled);
 
 
             var ambientLossCoefficient = new NumericStepper() {  MaximumDecimalPlaces = 2 };
@@ -77,9 +89,7 @@ namespace Honeybee.UI
             ambientCoffCondition.ReservedText = ReservedText.Varies;
             ambientCoffCondition.SetDefault(22);
             ambientCoffCondition.TextBinding.Bind(vm, _ => _.AmbientCoffConditionNumber.NumberText);
-            var ambientCoffConditionUnit = new Label();
-            ambientCoffConditionUnit.TextBinding.Bind(vm, _ => _.AmbientCoffConditionNumber.DisplayUnitAbbreviation);
-     
+         
 
             ambientLossCoefficient.Bind(_ => _.Value, vm, _ => _.AmbientLostCoff);
 
@@ -92,9 +102,7 @@ namespace Honeybee.UI
             layout.AddRow(heaterEffAuto);
             layout.AddSeparateRow(heaterEffNumber, heaterEff);
 
-            layout.AddSeparateRow("Ambient Condition:");
-            layout.AddSeparateRow(ambientCoffConditionNumber, ambientCoffCondition, ambientCoffConditionUnit);
-            layout.AddSeparateRow(ambientCoffConditionRoom, ambientCoffConditionRoomLayout);
+            layout.AddRow(ambientLayout);
 
             layout.AddRow("Ambient Loss Coefficient [W/K]");
             layout.AddRow(ambientLossCoefficient);
