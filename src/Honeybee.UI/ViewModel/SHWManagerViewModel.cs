@@ -221,7 +221,7 @@ namespace Honeybee.UI
             else
                 this.HeaterEfficiency = c.HeaterEfficiency?.Obj?.ToString();
 
-            this.Condition = c.AmbientCondition.Obj?.ToString();
+            this.Condition = c.AmbientCondition?.Obj?.ToString();
             this.LossCoeff = c.AmbientLossCoefficient.ToString();
             this.System = c;
 
