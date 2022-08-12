@@ -45,7 +45,7 @@ namespace Honeybee.UI
                 AbortButton = new Button { Text = "Cancel" };
                 AbortButton.Click += (sender, e) => Close();
 
-                p.AddSeparateRow(null, null, OKButton, this.AbortButton, null, panel);
+                p.AddSeparateRow(null, null, OKButton, this.AbortButton, null, panel.SchemaDataBtn);
                 p.Add(null);
                 this.Content = p;
             }
