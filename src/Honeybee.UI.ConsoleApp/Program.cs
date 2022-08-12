@@ -398,7 +398,7 @@ namespace Honeybee.UI.ConsoleApp
                 shwBtn.Click += (s, e) =>
                 {
                     var dialog = new Honeybee.UI.Dialog_SHW();
-                    var dialog_rc = dialog.ShowModal(this);
+                    dialog.ShowModal(this, null);
                 };
 
                 var outputs = new Button() { Text = "EPOutputs" };
