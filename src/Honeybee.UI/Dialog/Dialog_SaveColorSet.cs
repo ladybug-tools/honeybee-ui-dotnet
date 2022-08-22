@@ -4,7 +4,7 @@ namespace Honeybee.UI
 {
     public class Dialog_SaveColorSet : Eto.Forms.Dialog
     {
-        public Dialog_SaveColorSet(System.Collections.Generic.List<HoneybeeSchema.Color> colors)
+        public Dialog_SaveColorSet(System.Collections.Generic.List<LadybugDisplaySchema.Color> colors)
         {
             this.Title = "Save as a preset";
             this.Width = 300;

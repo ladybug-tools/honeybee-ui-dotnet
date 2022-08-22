@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LB = LadybugDisplaySchema;
 
 namespace Honeybee.UI
 {
@@ -15,75 +16,76 @@ namespace Honeybee.UI
 
         public int X
         {
-            get => _legendParameter.X;
-            set => Set(() => _legendParameter.X = value, nameof(X));
+            get => (int)_legendParameter.X;
+            set => Set(() => _legendParameter.BasePlane.O[0] = value, nameof(X));
         }
    
         public int Y
         {
-            get => _legendParameter.Y;
-            set => Set(() => _legendParameter.Y = value, nameof(Y));
+            get => (int)_legendParameter.Y;
+            set => Set(() => _legendParameter.BasePlane.O[1] = value, nameof(Y));
         }
   
         public int W
         {
-            get => _legendParameter.Width;
-            set => Set(() => _legendParameter.Width = value, nameof(W));
+            get => (int)_legendParameter.SegmentWidthValue;
+            set => Set(() => _legendParameter.SegmentWidth = value, nameof(W));
         }
         public int H
         {
-            get => _legendParameter.Height;
-            set => Set(() => _legendParameter.Height = value, nameof(H));
+            get => (int)_legendParameter.SegmentHeightValue;
+            set => Set(() => _legendParameter.SegmentHeight = value, nameof(H));
         }
         public int FontHeight
         {
-            get => _legendParameter.FontHeight;
-            set => Set(() => _legendParameter.FontHeight = value, nameof(FontHeight));
+            get => (int)_legendParameter.TextHeightValue;
+            set => Set(() => _legendParameter.TextHeight = value, nameof(FontHeight));
         }
-        public Eto.Drawing.Color FontColor
-        {
-            get => Eto.Drawing.Color.FromArgb(_legendParameter.FontColor.R, _legendParameter.FontColor.G, _legendParameter.FontColor.B) ;
-            set => Set(() => _legendParameter.FontColor = new HoneybeeSchema.Color(value.Rb, value.Gb, value.Bb), nameof(FontColor));
-        }
+        //public Eto.Drawing.Color FontColor
+        //{
+        //    get => Eto.Drawing.Color.FromArgb(_legendParameter.FontColor.R, _legendParameter.FontColor.G, _legendParameter.FontColor.B) ;
+        //    set => Set(() => _legendParameter.FontColor = new HoneybeeSchema.Color(value.Rb, value.Gb, value.Bb), nameof(FontColor));
+        //}
 
         public double Min
         {
-            get => _legendParameter.Min;
+            get => _legendParameter.MinValue;
             set => Set(() => _legendParameter.Min = value, nameof(Min));
         }
      
         public double Max
         {
-            get => _legendParameter.Max;
+            get => _legendParameter.MaxValue;
             set => Set(() => _legendParameter.Max = value, nameof(Max));
         }
       
         public int NumSeg
         {
-            get => _legendParameter.NumSegment;
-            set => Set(() => _legendParameter.NumSegment = value, nameof(NumSeg));
+            get => _legendParameter.SegmentCountValue;
+            set => Set(() => _legendParameter.SegmentCount = value, nameof(NumSeg));
         }
         public int DecimalPlaces
         {
-            get => _legendParameter.DecimalPlaces;
-            set => Set(() => _legendParameter.DecimalPlaces = value, nameof(DecimalPlaces));
+            get => _legendParameter.DecimalCount;
+            set => Set(() => _legendParameter.DecimalCount = value, nameof(DecimalPlaces));
         }
         public bool Continuous
         {
-            get => _legendParameter.Continuous;
-            set => Set(() => _legendParameter.Continuous = value, nameof(Continuous));
+            get => _legendParameter.ContinuousLegend;
+            set => Set(() => _legendParameter.ContinuousLegend = value, nameof(Continuous));
         }
 
         public bool IsNumberValues
         {
-            get => !_legendParameter.StringValues;
-            set => Set(() => _legendParameter.StringValues = !value, nameof(IsNumberValues));
+            get => !_legendParameter.HasOrdinalDictionary;
+            //set => Set(() => _legendParameter.StringValues = !value, nameof(IsNumberValues));
         }
+
         public bool IsHorizontal
         {
-            get => _legendParameter.Horizontal;
+            get => !_legendParameter.Vertical;
             set { 
-                Set(() => _legendParameter.Horizontal = value, nameof(IsHorizontal));
+                Set(() => _legendParameter.Vertical = !value, nameof(IsHorizontal));
                 if (value)
                 {
                     if (W > H)
@@ -134,13 +136,13 @@ namespace Honeybee.UI
             set => Set(() => _selectedRow = value, nameof(SelectedRow));
         }
 
-        private LegendParameter _legendParameter;
+        private LB.LegendParameters _legendParameter;
         private Control _control;
 
-        public LegendViewModel(LegendParameter parameter, Control control)
+        public LegendViewModel(LB.LegendParameters parameter, Control control)
         {
             _control = control;
-            _legendParameter = parameter ?? new LegendParameter(50, 100);
+            _legendParameter = parameter ?? new LB.LegendParameters(50, 100);
             var colors = _legendParameter.Colors.Select(_ => Eto.Drawing.Color.FromArgb(_.R, _.G, _.B));
             colors = colors.Reverse();
             var vd = colors.Select(_ => new ColorDataItem(_));
@@ -153,15 +155,15 @@ namespace Honeybee.UI
                 Eto.Forms.MessageBox.Show(_control, "Max value has to be smaller than Min value");
             return valid;
         }
-        private List<HoneybeeSchema.Color> GetColors()
+        private List<LB.Color> GetColors()
         {
             var colors = GridViewDataCollection.Select(_ => _.Color)
-            .Select(_ => new HoneybeeSchema.Color(_.Rb, _.Gb, _.Bb))
+            .Select(_ => new LB.Color(_.Rb, _.Gb, _.Bb))
             .ToList();
             colors.Reverse();
             return colors;
         }
-        public LegendParameter GetLegend()
+        public LB.LegendParameters GetLegend()
         {
             var lg = this._legendParameter;
             lg.Colors = GetColors();
@@ -169,17 +171,17 @@ namespace Honeybee.UI
 
         }
 
-        public RelayCommand FontColorCommand => new RelayCommand(() =>
-        {
-            var dia = new Eto.Forms.ColorDialog();
-            dia.AllowAlpha = false;
-            dia.Color = FontColor;
-            var res = dia.ShowDialog(_control);
-            if (res != DialogResult.Ok)
-                return;
-            FontColor = dia.Color;
+        //public RelayCommand FontColorCommand => new RelayCommand(() =>
+        //{
+        //    var dia = new Eto.Forms.ColorDialog();
+        //    dia.AllowAlpha = false;
+        //    dia.Color = FontColor;
+        //    var res = dia.ShowDialog(_control);
+        //    if (res != DialogResult.Ok)
+        //        return;
+        //    FontColor = dia.Color;
 
-        });
+        //});
 
         
         public RelayCommand PresetCommand => new RelayCommand(() => {
