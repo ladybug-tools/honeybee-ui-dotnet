@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 
 namespace Honeybee.UI
 {
+    [System.Obsolete("Use the new LadybugDisplaySchema.LegendParameters instead", true)]
     [DataContract]
     public class LegendParameter
     {
@@ -38,9 +39,9 @@ namespace Honeybee.UI
         /// Colors
         /// </summary>
         [DataMember(Name = "colors")]
-        public List<HoneybeeSchema.Color> Colors { get; set; }
+        public List<LadybugDisplaySchema.Color> Colors { get; set; }
 
-        public List<HoneybeeSchema.Color> ColorsReverse { get; }
+        public List<LadybugDisplaySchema.Color> ColorsReverse { get; }
         /// <summary>s
         /// Font size of the legend labels
         /// </summary>
@@ -87,7 +88,7 @@ namespace Honeybee.UI
         public LegendParameter()
         {
             initDefault();
-            Colors = new List<HoneybeeSchema.Color>();
+            Colors = new List<LadybugDisplaySchema.Color>();
         }
 
         public LegendParameter(int x = 50, int y = 100)
@@ -98,7 +99,7 @@ namespace Honeybee.UI
 
             Colors = LegendColorSet.Presets.First().Value.ToList();
         }
-        public LegendParameter(double min, double max, int numSegs, List<HoneybeeSchema.Color> colors = default)
+        public LegendParameter(double min, double max, int numSegs, List<LadybugDisplaySchema.Color> colors = default)
         {
             initDefault();
             Min = min;
@@ -106,7 +107,7 @@ namespace Honeybee.UI
             NumSegment = numSegs;
 
             var c = colors ?? _defaultColorSet.ToList();
-            Colors = numSegs >1 ? c : new List<HoneybeeSchema.Color>() { c[0], c[0] };
+            Colors = numSegs >1 ? c : new List<LadybugDisplaySchema.Color>() { c[0], c[0] };
         }
 
         private void initDefault()
@@ -126,7 +127,7 @@ namespace Honeybee.UI
             Colors = _defaultColorSet.ToList();
         }
 
-        private List<HoneybeeSchema.Color> _defaultColorSet = LegendColorSet.Presets.First().Value.ToList();
+        private List<LadybugDisplaySchema.Color> _defaultColorSet = LegendColorSet.Presets.First().Value.ToList();
 
         public System.Drawing.Rectangle GetBoundary => new System.Drawing.Rectangle(this.X, this.Y, this.Width, this.Height);
   
@@ -175,81 +176,6 @@ namespace Honeybee.UI
             return FromJson(json);
         }
 
-        private List<double> _colorDomains;
-        private List<double> ColorDomains()
-        {
-            if (_colorDomains != null && _colorDomains.Count == this.Colors.Count)
-                return _colorDomains;
-
-            if (this.Colors.Count < 2)
-                throw new System.ArgumentException("Need at least 2 colors");
-
-            var cs = this.Colors;
-            double factor = 1.0 / (cs.Count - 1);
-            var bounds = cs.Select((_, i) => i * factor).ToList();
-            _colorDomains = bounds;
-            return bounds;
-        }
-        /// <summary>
-        /// Blend between two colors based on input value.
-        /// </summary>
-        /// <param name="value"></param>
-        public HoneybeeSchema.Color CalColor(double value, ref Dictionary<double, HoneybeeSchema.Color> cache)
-        {
-            if (cache.TryGetValue(value, out var c))
-                return c;
-            var newColor = CalColor(value);
-            cache.Add(value, newColor);
-            return newColor;
-        }
-
-        public HoneybeeSchema.Color CalColor(double value)
-        {
-         
-            var colors = this.Colors.ToList();
-
-            var colorStart = colors.First();
-            var colorEnd = colors.Last();
-            if (value <= this.Min)
-                return colorStart;
-            if (value >= this.Max)
-                return colorEnd;
-
-            var range_p = this.Max - this.Min;
-            var factor = range_p == 0 ? 0 : (value - this.Min) / range_p;
-
-            var colorDomains = ColorDomains();
-            var segFactor = colorDomains[1];
-            var colorFactor = 0.0;
-            for (int i = 1; i < colorDomains.Count; i++)
-            {
-                var cFactorBefore = colorDomains[i - 1];
-                var cFactor = colorDomains[i];
-                if (factor <= cFactor && factor >= cFactorBefore)
-                {
-                    colorStart = colors[i - 1];
-                    colorEnd = colors[i];
-                    colorFactor = (factor - cFactorBefore) / segFactor;
-                }
-                else
-                    continue;
-            }
-
-            var newColor = BlendColors(colorFactor, colorStart, colorEnd);
-        
-            return newColor;
-        }
-
-        private HoneybeeSchema.Color BlendColors(double factor, HoneybeeSchema.Color c1, HoneybeeSchema.Color c2)
-        {
-            var red = (int)(factor * (c2.R - c1.R) + c1.R);
-            var green = (int)(factor * (c2.G - c1.G) + c1.G);
-            var blue = (int)(factor * (c2.B - c1.B) + c1.B);
-
-            return new HoneybeeSchema.Color(red, green, blue);
-        }
-
-       
 
     }
 }

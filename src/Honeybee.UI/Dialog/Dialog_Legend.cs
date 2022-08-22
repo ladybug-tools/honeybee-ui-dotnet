@@ -1,13 +1,14 @@
 ﻿using Eto.Forms;
 using System;
+using LB = LadybugDisplaySchema;
 
 namespace Honeybee.UI
 {
-    public class Dialog_Legend : Eto.Forms.Dialog<LegendParameter>
+    public class Dialog_Legend : Eto.Forms.Dialog<LB.LegendParameters>
     {
         private LegendViewModel _vm;
 
-        public Dialog_Legend(LegendParameter parameter, Action<LegendParameter> previewAction = default)
+        public Dialog_Legend(LB.LegendParameters parameter, Action<LB.LegendParameters> previewAction = default)
         {
             this.Title = $"Legend Parameters - {DialogHelper.PluginName}";
             this.Width = 400;
@@ -21,7 +22,7 @@ namespace Honeybee.UI
             var w = new Eto.Forms.NumericStepper() { MinValue = 1 };
             var h = new Eto.Forms.NumericStepper() { MinValue = 1 };
             var fontH = new Eto.Forms.NumericStepper() { MinValue = 1 };
-            var fontColor = new Button();
+            //var fontColor = new Button();
             var decimalPlaces = new Eto.Forms.NumericStepper() { DecimalPlaces = 0, MinValue = 0 };
             
 
@@ -31,8 +32,8 @@ namespace Honeybee.UI
             w.ValueBinding.Bind(_vm, _ => _.W);
             h.ValueBinding.Bind(_vm, _ => _.H);
             fontH.ValueBinding.Bind(_vm, _ => _.FontHeight);
-            fontColor.Bind(_=>_.BackgroundColor, _vm, _ => _.FontColor);
-            fontColor.Command = _vm.FontColorCommand;
+            //fontColor.Bind(_=>_.BackgroundColor, _vm, _ => _.FontColor);
+            //fontColor.Command = _vm.FontColorCommand;
             decimalPlaces.ValueBinding.Bind(_vm, _ => _.DecimalPlaces);
 
             var minNum = new Eto.Forms.NumericStepper() { MaximumDecimalPlaces = 5 };
@@ -61,7 +62,7 @@ namespace Honeybee.UI
             general.DefaultSpacing = new Eto.Drawing.Size(5, 5);
             general.DefaultPadding = new Eto.Drawing.Padding(5);
             general.AddRow("Font height:", fontH);
-            general.AddRow("Font color:", fontColor);
+            //general.AddRow("Font color:", fontColor);
             general.AddRow("Location X:", x);
             general.AddRow("Location Y:", y);
             general.AddRow("Width:", w);
