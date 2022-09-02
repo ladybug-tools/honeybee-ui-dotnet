@@ -44,7 +44,7 @@ namespace Honeybee.UI
         //public Eto.Drawing.Color FontColor
         //{
         //    get => Eto.Drawing.Color.FromArgb(_legendParameter.FontColor.R, _legendParameter.FontColor.G, _legendParameter.FontColor.B) ;
-        //    set => Set(() => _legendParameter.FontColor = new HoneybeeSchema.Color(value.Rb, value.Gb, value.Bb), nameof(FontColor));
+        //    set => Set(() => _legendParameter.FontColor = new LB.Color(value.Rb, value.Gb, value.Bb), nameof(FontColor));
         //}
 
         public double Min
@@ -248,7 +248,7 @@ namespace Honeybee.UI
             
         });
 
-        public System.Windows.Input.ICommand AddColorsCommand => new RelayCommand<List<HoneybeeSchema.Color>>((cs) => {
+        public System.Windows.Input.ICommand AddColorsCommand => new RelayCommand<List<LB.Color>>((cs) => {
             if (cs == null || !cs.Any())
                 return;
             var colors = cs.Select(_ => Eto.Drawing.Color.FromArgb(_.R, _.G, _.B)).ToList();

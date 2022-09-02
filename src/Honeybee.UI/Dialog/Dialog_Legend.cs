@@ -67,7 +67,7 @@ namespace Honeybee.UI
             general.AddRow("Location Y:", y);
             general.AddRow("Width:", w);
             general.AddRow("Height:", h);
-            general.AddRow("Decimal places", decimalPlaces);
+            general.AddRow("Decimal places:", decimalPlaces);
             general.AddRow(null, null);
             tb.Pages.Add(new TabPage(general) { Text = "Settings" });
 
