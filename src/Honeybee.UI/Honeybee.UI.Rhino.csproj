@@ -37,7 +37,7 @@
 		<PackageReference Include="LadybugDisplaySchema" Version="0.0.2.7" />
 		<PackageReference Include="RhinoCommon" Version="6.23.20055.13111" IncludeAssets="compile; build;" />
 		<PackageReference Include="Ladybug.Geometry.Light" Version="2.0.2" />
-		<PackageReference Include="UnitsNet" Version="4.132.0" />
+		<PackageReference Include="UnitsNet" Version="4.144.0" />
 	</ItemGroup>
 
 </Project>
