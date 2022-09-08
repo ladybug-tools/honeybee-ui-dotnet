@@ -640,7 +640,7 @@ namespace Honeybee.UI
                     dupLib.AddMaterial(dup);
                 }
 
-                tc.CalThermalValues(dupLib);
+                var valid = tc.CalThermalValues(dupLib);
 
                 _showIP = ShowIPUnit;
 
@@ -648,9 +648,13 @@ namespace Honeybee.UI
                 var u = ShowIPUnit ? Math.Round(tc.UValue / 5.678263337, 5) : Math.Round(tc.UValue, 5);
                 var uf = ShowIPUnit ? Math.Round(tc.UFactor / 5.678263337, 5) : Math.Round(tc.UFactor, 5);
 
-                _r_value.Text = r < 0 ? "Skylight only" : r.ToString();
-                _u_value.Text = u < 0 ? "Skylight only" : u.ToString();
-                _uf_value.Text = uf.ToString();
+                var rText = valid ? (r < 0 ? "Skylight only" : r.ToString()) : "Invalid";
+                var uText = valid ? (u < 0 ? "Skylight only" : u.ToString()) : "Invalid";
+                var ufText = valid ? uf.ToString() : "Invalid";
+
+                _r_value.Text = rText;
+                _u_value.Text = uText;
+                _uf_value.Text = ufText;
                 _r_label.Text = ShowIPUnit ? _r_ip : _r_si;
                 _u_label.Text = ShowIPUnit ? _u_ip : _u_si;
                 _uf_label.Text = ShowIPUnit ? _uf_ip : _uf_si;
