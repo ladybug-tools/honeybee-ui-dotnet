@@ -143,7 +143,7 @@ namespace Honeybee.UI
         {
             _control = control;
             _legendParameter = parameter ?? new LB.LegendParameters(50, 100);
-            var colors = _legendParameter.Colors.Select(_ => Eto.Drawing.Color.FromArgb(_.R, _.G, _.B));
+            var colors = _legendParameter.ColorsWithDefault.Select(_ => Eto.Drawing.Color.FromArgb(_.R, _.G, _.B));
             colors = colors.Reverse();
             var vd = colors.Select(_ => new ColorDataItem(_));
             GridViewDataCollection = new DataStoreCollection<ColorDataItem>(vd);
