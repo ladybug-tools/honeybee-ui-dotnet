@@ -476,7 +476,7 @@ namespace Honeybee.UI
             = new Dictionary<Type, string>()
             {
                 {  typeof(VAVEquipmentType), "VAV systems"},
-                {  typeof(PVAVEquipmentType), "PVAC"},
+                {  typeof(PVAVEquipmentType), "PVAV"},
                 {  typeof(PSZEquipmentType), "PSZ-AC"},
                 {  typeof(PTACEquipmentType), "PTAC"},
                 {  typeof(FurnaceEquipmentType), "Forced air furnace"},
