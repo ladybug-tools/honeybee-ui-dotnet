@@ -112,7 +112,7 @@ namespace Honeybee.UI
             if (this.IsCheckboxChecked)
                 return null;
 
-            obj = obj?.DuplicateSetpointAbridged() ?? new SetpointAbridged(Guid.NewGuid().ToString(), "Not Set", "Not Set");
+            obj = obj?.DuplicateSetpointAbridged() ?? new SetpointAbridged(Guid.NewGuid().ToString(), ReservedText.NotSet, ReservedText.NotSet);
 
             if (!this.CoolingSchedule.IsVaries)
             {

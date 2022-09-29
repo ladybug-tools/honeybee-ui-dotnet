@@ -122,7 +122,7 @@ namespace Honeybee.UI
             if (this.IsCheckboxChecked)
                 return null;
 
-            obj = obj?.DuplicateInfiltrationAbridged() ?? new InfiltrationAbridged(Guid.NewGuid().ToString(), 0, "Not Set");
+            obj = obj?.DuplicateInfiltrationAbridged() ?? new InfiltrationAbridged(Guid.NewGuid().ToString(), 0, ReservedText.NotSet);
 
             if (!this.FlowPerExteriorArea.IsVaries)
                 obj.FlowPerExteriorArea = this._refHBObj.FlowPerExteriorArea;

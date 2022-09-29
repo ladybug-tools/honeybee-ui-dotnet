@@ -35,7 +35,7 @@ namespace Honeybee.UI
             if (objs.Select(_ => string.Join(";", _?.BoundaryConditionObjects)).Distinct().Count() > 1)
                 this.AdjacentSurfaceText = new List<string>() { ReservedText.Varies };
             else
-                this.AdjacentSurfaceText = this._refHBObj.BoundaryConditionObjects ?? new List<string>() { "Not Set" };
+                this.AdjacentSurfaceText = this._refHBObj.BoundaryConditionObjects ?? new List<string>() { ReservedText.NotSet };
 
             setAction?.Invoke(this._refHBObj);
             _setAction = setAction;

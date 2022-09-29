@@ -172,7 +172,7 @@ namespace Honeybee.UI
             if (this.IsCheckboxChecked)
                 return null;
 
-            obj = obj?.DuplicateProcessAbridged() ?? new ProcessAbridged(Guid.NewGuid().ToString(), 0, "Not Set", FuelTypes.Electricity);
+            obj = obj?.DuplicateProcessAbridged() ?? new ProcessAbridged(Guid.NewGuid().ToString(), 0, ReservedText.NotSet, FuelTypes.Electricity);
 
 
             if (!this._isEndUseCategoryVaries)

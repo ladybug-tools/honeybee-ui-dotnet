@@ -171,7 +171,7 @@ namespace Honeybee.UI
             if (this.IsCheckboxChecked)
                 return null;
 
-            obj = obj?.DuplicateServiceHotWaterAbridged() ?? new ServiceHotWaterAbridged(Guid.NewGuid().ToString(), 0, "Not Set");
+            obj = obj?.DuplicateServiceHotWaterAbridged() ?? new ServiceHotWaterAbridged(Guid.NewGuid().ToString(), 0, ReservedText.NotSet);
 
             if (!this.FlowPerArea.IsVaries)
                 obj.FlowPerArea = this._refHBObj.FlowPerArea;

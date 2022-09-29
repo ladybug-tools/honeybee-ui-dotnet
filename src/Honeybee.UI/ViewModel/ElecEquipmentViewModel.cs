@@ -171,7 +171,7 @@ namespace Honeybee.UI
             if (this.IsCheckboxChecked)
                 return null;
 
-            obj = obj?.DuplicateElectricEquipmentAbridged() ?? new ElectricEquipmentAbridged(Guid.NewGuid().ToString(), 0, "Not Set");
+            obj = obj?.DuplicateElectricEquipmentAbridged() ?? new ElectricEquipmentAbridged(Guid.NewGuid().ToString(), 0, ReservedText.NotSet);
 
             if (!this.WattsPerArea.IsVaries)
                 obj.WattsPerArea = this._refHBObj.WattsPerArea;
