@@ -17,6 +17,7 @@
         public readonly static string ByGlobalSetting = "By Global Setting";
         public readonly static string ByParentSetting = "By Parent Setting";
         public readonly static string NoSchedule = "No Control Schedule";
+        public readonly static string NotSet = "<Not Set>";
 
     }
 
