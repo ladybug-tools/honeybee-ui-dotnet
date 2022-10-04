@@ -86,10 +86,10 @@ namespace Honeybee.UI
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateDaylightingControl();
 
 
-            if (loads.Distinct().Count() == 1 && loads.FirstOrDefault() == null)
-            {
-                this.IsCheckboxChecked = true;
-            }
+            if (loads.Distinct().Count() == 1) 
+                this.IsCheckboxChecked = loads.FirstOrDefault() == null;
+            else
+                this.IsCheckboxVaries();
 
 
             //IlluminanceSetpoint
@@ -145,8 +145,11 @@ namespace Honeybee.UI
         public DaylightingControl MatchObj(DaylightingControl obj)
         {
             // by room program type
-            if (this.IsCheckboxChecked)
+            if (this.IsCheckboxChecked.GetValueOrDefault())
                 return null;
+
+            if (this.IsVaries)
+                return obj?.DuplicateDaylightingControl();
 
             obj = obj?.DuplicateDaylightingControl() ?? new DaylightingControl(new List<double>());
 

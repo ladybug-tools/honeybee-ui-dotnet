@@ -45,10 +45,10 @@ namespace Honeybee.UI
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateInternalMassAbridged();
 
 
-            if (loads.Distinct().Count() == 1 && loads.FirstOrDefault() == null)
-            {
-                this.IsCheckboxChecked = true;
-            }
+            if (loads.Distinct().Count() == 1) 
+                this.IsCheckboxChecked = loads.FirstOrDefault() == null;
+            else
+                this.IsCheckboxVaries();
 
 
             //Area
@@ -74,8 +74,11 @@ namespace Honeybee.UI
         public InternalMassAbridged MatchObj(InternalMassAbridged obj)
         {
             // by room program type
-            if (this.IsCheckboxChecked)
+            if (this.IsCheckboxChecked.GetValueOrDefault())
                 return null;
+
+            if (this.IsVaries)
+                return obj?.DuplicateInternalMassAbridged();
 
             obj = obj?.DuplicateInternalMassAbridged() ?? new InternalMassAbridged(Guid.NewGuid().ToString(), ReservedText.NotSet, 0);
 

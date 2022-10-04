@@ -76,10 +76,10 @@ namespace Honeybee.UI
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateVentilationControlAbridged();
 
 
-            if (loads.Distinct().Count() == 1 && loads.FirstOrDefault() == null)
-            {
-                this.IsCheckboxChecked = true;
-            }
+            if (loads.Distinct().Count() == 1) 
+                this.IsCheckboxChecked = loads.FirstOrDefault() == null;
+            else
+                this.IsCheckboxVaries();
 
 
             //MinIndoorTemperature
@@ -141,8 +141,11 @@ namespace Honeybee.UI
         public VentilationControlAbridged MatchObj(VentilationControlAbridged obj)
         {
             // by room program type
-            if (this.IsCheckboxChecked)
+            if (this.IsCheckboxChecked.GetValueOrDefault())
                 return null;
+
+            if (this.IsVaries)
+                return obj?.DuplicateVentilationControlAbridged();
 
             obj = obj?.DuplicateVentilationControlAbridged() ?? new VentilationControlAbridged();
 

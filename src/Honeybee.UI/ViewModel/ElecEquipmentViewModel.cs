@@ -93,10 +93,10 @@ namespace Honeybee.UI
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateElectricEquipmentAbridged();
 
 
-            if (loads.Distinct().Count() == 1 && loads.FirstOrDefault() == null)
-            {
-                this.IsCheckboxChecked = true;
-            }
+            if (loads.Distinct().Count() == 1) 
+                this.IsCheckboxChecked = loads.FirstOrDefault() == null;
+            else
+                this.IsCheckboxVaries();
 
 
             //WattsPerArea
@@ -168,8 +168,11 @@ namespace Honeybee.UI
         public ElectricEquipmentAbridged MatchObj(ElectricEquipmentAbridged obj)
         {
             // by room program type
-            if (this.IsCheckboxChecked)
+            if (this.IsCheckboxChecked.GetValueOrDefault())
                 return null;
+
+            if (this.IsVaries)
+                return obj?.DuplicateElectricEquipmentAbridged();
 
             obj = obj?.DuplicateElectricEquipmentAbridged() ?? new ElectricEquipmentAbridged(Guid.NewGuid().ToString(), 0, ReservedText.NotSet);
 

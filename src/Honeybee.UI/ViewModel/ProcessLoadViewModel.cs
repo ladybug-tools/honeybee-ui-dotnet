@@ -104,10 +104,10 @@ namespace Honeybee.UI
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateProcessAbridged();
 
 
-            if (loads.Distinct().Count() == 1 && loads.FirstOrDefault() == null)
-            {
-                this.IsCheckboxChecked = true;
-            }
+            if (loads.Distinct().Count() == 1) 
+                this.IsCheckboxChecked = loads.FirstOrDefault() == null;
+            else
+                this.IsCheckboxVaries();
 
             // EndUseCategory
             if (loads.Select(_ => _?.EndUseCategory).Distinct().Count() > 1)
@@ -169,8 +169,11 @@ namespace Honeybee.UI
         public ProcessAbridged MatchObj(ProcessAbridged obj)
         {
             // by room program type
-            if (this.IsCheckboxChecked)
+            if (this.IsCheckboxChecked.GetValueOrDefault())
                 return null;
+
+            if (this.IsVaries)
+                return obj?.DuplicateProcessAbridged();
 
             obj = obj?.DuplicateProcessAbridged() ?? new ProcessAbridged(Guid.NewGuid().ToString(), 0, ReservedText.NotSet, FuelTypes.Electricity);
 

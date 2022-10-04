@@ -93,24 +93,24 @@ namespace Honeybee.UI
 
         public LightingAbridged Default { get; private set; }
 
-        public LightingViewModel(ModelProperties libSource, List<LightingAbridged> lights, Action<IIDdBase> setAction):base(libSource, setAction)
+        public LightingViewModel(ModelProperties libSource, List<LightingAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
             this.Default = new LightingAbridged(Guid.NewGuid().ToString(), 0, ReservedText.None);
-            this.refObjProperty = lights.FirstOrDefault()?.DuplicateLightingAbridged();
+            this.refObjProperty = loads.FirstOrDefault()?.DuplicateLightingAbridged();
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateLightingAbridged();
 
 
 
-            if (lights.Distinct().Count() == 1 && lights.FirstOrDefault() == null)
-            {
-                this.IsCheckboxChecked = true;
-            }
+            if (loads.Distinct().Count() == 1) 
+                this.IsCheckboxChecked = loads.FirstOrDefault() == null;
+            else
+                this.IsCheckboxVaries();
 
 
             //WattsPerArea
             this.WattsPerArea = new DoubleViewModel((n) => _refHBObj.WattsPerArea = n);
             this.WattsPerArea.SetUnits(Units.HeatFluxUnit.WattPerSquareMeter, Units.UnitType.PowerDensity);
-            if (lights.Select(_ => _?.WattsPerArea).Distinct().Count() > 1)
+            if (loads.Select(_ => _?.WattsPerArea).Distinct().Count() > 1)
                 this.WattsPerArea.SetNumberText(ReservedText.Varies);
             else
                 this.WattsPerArea.SetBaseUnitNumber(_refHBObj.WattsPerArea);
@@ -121,7 +121,7 @@ namespace Honeybee.UI
                 .FirstOrDefault(_ => _.Identifier == _refHBObj.Schedule);
             sch = sch ?? GetDummyScheduleObj(_refHBObj.Schedule);
             this.Schedule = new ButtonViewModel((n) => _refHBObj.Schedule = n?.Identifier);
-            if (lights.Select(_ => _?.Schedule).Distinct().Count() > 1)
+            if (loads.Select(_ => _?.Schedule).Distinct().Count() > 1)
                 this.Schedule.SetBtnName(ReservedText.Varies);
             else
                 this.Schedule.SetPropetyObj(sch);
@@ -129,7 +129,7 @@ namespace Honeybee.UI
 
             //RadiantFraction
             this.RadiantFraction = new DoubleViewModel((n) => _refHBObj.RadiantFraction = n);
-            if (lights.Select(_ => _?.RadiantFraction).Distinct().Count() > 1)
+            if (loads.Select(_ => _?.RadiantFraction).Distinct().Count() > 1)
                 this.RadiantFraction.SetNumberText(ReservedText.Varies);
             else
                 this.RadiantFraction.SetNumberText(_refHBObj.RadiantFraction.ToString());
@@ -137,7 +137,7 @@ namespace Honeybee.UI
 
             //VisibleFraction
             this.VisibleFraction = new DoubleViewModel((n) => _refHBObj.VisibleFraction = n);
-            if (lights.Select(_ => _?.VisibleFraction).Distinct().Count() > 1)
+            if (loads.Select(_ => _?.VisibleFraction).Distinct().Count() > 1)
                 this.VisibleFraction.SetNumberText(ReservedText.Varies);
             else
                 this.VisibleFraction.SetNumberText(_refHBObj.VisibleFraction.ToString());
@@ -145,7 +145,7 @@ namespace Honeybee.UI
 
             //ReturnAirFraction
             this.ReturnAirFraction = new DoubleViewModel((n) => _refHBObj.ReturnAirFraction = n);
-            if (lights.Select(_ => _?.ReturnAirFraction).Distinct().Count() > 1)
+            if (loads.Select(_ => _?.ReturnAirFraction).Distinct().Count() > 1)
                 this.ReturnAirFraction.SetNumberText(ReservedText.Varies);
             else
                 this.ReturnAirFraction.SetNumberText(_refHBObj.ReturnAirFraction.ToString());
@@ -154,7 +154,7 @@ namespace Honeybee.UI
             //BaselineWattsPerArea
             this.BaselineWattsPerArea = new DoubleViewModel((n) => _refHBObj.BaselineWattsPerArea = n);
             this.BaselineWattsPerArea.SetUnits(Units.HeatFluxUnit.WattPerSquareMeter, Units.UnitType.PowerDensity);
-            if (lights.Select(_ => _?.BaselineWattsPerArea).Distinct().Count() > 1)
+            if (loads.Select(_ => _?.BaselineWattsPerArea).Distinct().Count() > 1)
                 this.BaselineWattsPerArea.SetNumberText(ReservedText.Varies);
             else
                 this.BaselineWattsPerArea.SetBaseUnitNumber(_refHBObj.BaselineWattsPerArea);
@@ -186,8 +186,11 @@ namespace Honeybee.UI
 
         public LightingAbridged MatchObj(LightingAbridged obj)
         {
-            if (this.IsCheckboxChecked)
+            if (this.IsCheckboxChecked.GetValueOrDefault())
                 return null;
+
+            if (this.IsVaries)
+                return obj?.DuplicateLightingAbridged();
 
             obj = obj?.DuplicateLightingAbridged() ?? new LightingAbridged(Guid.NewGuid().ToString(), 0, ReservedText.NotSet);
 

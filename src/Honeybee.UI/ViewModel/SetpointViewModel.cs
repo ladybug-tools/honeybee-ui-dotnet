@@ -57,10 +57,10 @@ namespace Honeybee.UI
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateSetpointAbridged();
 
 
-            if (loads.Distinct().Count() == 1 && loads.FirstOrDefault() == null)
-            {
-                this.IsCheckboxChecked = true;
-            }
+            if (loads.Distinct().Count() == 1) 
+                this.IsCheckboxChecked = loads.FirstOrDefault() == null;
+            else
+                this.IsCheckboxVaries();
 
 
             //CoolingSchedule
@@ -109,8 +109,11 @@ namespace Honeybee.UI
         public SetpointAbridged MatchObj(SetpointAbridged obj)
         {
             // by room program type
-            if (this.IsCheckboxChecked)
+            if (this.IsCheckboxChecked.GetValueOrDefault())
                 return null;
+
+            if (this.IsVaries)
+                return obj?.DuplicateSetpointAbridged();
 
             obj = obj?.DuplicateSetpointAbridged() ?? new SetpointAbridged(Guid.NewGuid().ToString(), ReservedText.NotSet, ReservedText.NotSet);
 
