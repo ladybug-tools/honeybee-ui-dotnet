@@ -297,7 +297,7 @@ namespace Honeybee.UI.View
 
             var layout = new DynamicLayout();
             layout.Bind((t) => t.Enabled, vm, v => v.Lighting.IsPanelEnabled);
-            layout.Bind((t) => t.Visible, vm, v => v.Lighting.IsPanelEnabled);
+            layout.Bind((t) => t.Visible, vm, v => v.Lighting.IsPanelVisible);
 
             layout.DefaultSpacing = new Size(4, 4);
             //layout.DefaultPadding = new Padding(0);
@@ -381,7 +381,7 @@ namespace Honeybee.UI.View
 
             var layout = new DynamicLayout();
             layout.Bind((t) => t.Enabled, vm, v => v.ElecEquipment.IsPanelEnabled);
-            layout.Bind((t) => t.Visible, vm, v => v.ElecEquipment.IsPanelEnabled);
+            layout.Bind((t) => t.Visible, vm, v => v.ElecEquipment.IsPanelVisible);
 
             layout.DefaultSpacing = new Size(4, 4);
             //layout.DefaultPadding = new Padding(4);
@@ -457,7 +457,7 @@ namespace Honeybee.UI.View
 
             var layout = new DynamicLayout();
             layout.Bind((t) => t.Enabled, vm, v => v.Gas.IsPanelEnabled);
-            layout.Bind((t) => t.Visible, vm, v => v.Gas.IsPanelEnabled);
+            layout.Bind((t) => t.Visible, vm, v => v.Gas.IsPanelVisible);
 
 
             layout.DefaultSpacing = new Size(4, 4);
@@ -534,7 +534,7 @@ namespace Honeybee.UI.View
 
             var layout = new DynamicLayout();
             layout.Bind((t) => t.Enabled, vm, v => v.People.IsPanelEnabled);
-            layout.Bind((t) => t.Visible, vm, v => v.People.IsPanelEnabled);
+            layout.Bind((t) => t.Visible, vm, v => v.People.IsPanelVisible);
 
             layout.DefaultSpacing = new Size(4, 4);
             //layout.DefaultPadding = new Padding(4);
@@ -614,7 +614,7 @@ namespace Honeybee.UI.View
 
             var layout = new DynamicLayout();
             layout.Bind((t) => t.Enabled, vm, v => v.Infiltration.IsPanelEnabled);
-            layout.Bind((t) => t.Visible, vm, v => v.Infiltration.IsPanelEnabled);
+            layout.Bind((t) => t.Visible, vm, v => v.Infiltration.IsPanelVisible);
 
             layout.DefaultSpacing = new Size(4, 4);
             //layout.DefaultPadding = new Padding(4);
@@ -674,7 +674,7 @@ namespace Honeybee.UI.View
 
             var layout = new DynamicLayout();
             layout.Bind((t) => t.Enabled, vm, v => v.Ventilation.IsPanelEnabled);
-            layout.Bind((t) => t.Visible, vm, v => v.Ventilation.IsPanelEnabled);
+            layout.Bind((t) => t.Visible, vm, v => v.Ventilation.IsPanelVisible);
 
 
             layout.DefaultSpacing = new Size(4, 4);
@@ -743,7 +743,7 @@ namespace Honeybee.UI.View
 
             var layout = new DynamicLayout();
             layout.Bind((t) => t.Enabled, vm, v => v.Setpoint.IsPanelEnabled);
-            layout.Bind((t) => t.Visible, vm, v => v.Setpoint.IsPanelEnabled);
+            layout.Bind((t) => t.Visible, vm, v => v.Setpoint.IsPanelVisible);
 
 
             layout.DefaultSpacing = new Size(4, 4);
@@ -797,7 +797,7 @@ namespace Honeybee.UI.View
 
             var layout = new DynamicLayout();
             layout.Bind((t) => t.Enabled, vm, v => v.ServiceHotWater.IsPanelEnabled);
-            layout.Bind((t) => t.Visible, vm, v => v.ServiceHotWater.IsPanelEnabled);
+            layout.Bind((t) => t.Visible, vm, v => v.ServiceHotWater.IsPanelVisible);
 
 
             layout.DefaultSpacing = new Size(4, 4);
@@ -876,7 +876,7 @@ namespace Honeybee.UI.View
 
             var layout = new DynamicLayout();
             layout.Bind((t) => t.Enabled, vm, v => v.InternalMass.IsPanelEnabled);
-            layout.Bind((t) => t.Visible, vm, v => v.InternalMass.IsPanelEnabled);
+            layout.Bind((t) => t.Visible, vm, v => v.InternalMass.IsPanelVisible);
 
 
             layout.DefaultSpacing = new Size(4, 4);
@@ -923,7 +923,7 @@ namespace Honeybee.UI.View
 
             var layout = new DynamicLayout();
             layout.Bind((t) => t.Enabled, vm, v => v.ProcessLoad.IsPanelEnabled);
-            layout.Bind((t) => t.Visible, vm, v => v.ProcessLoad.IsPanelEnabled);
+            layout.Bind((t) => t.Visible, vm, v => v.ProcessLoad.IsPanelVisible);
 
 
             layout.DefaultSpacing = new Size(4, 4);
@@ -1011,7 +1011,7 @@ namespace Honeybee.UI.View
 
             var layout = new DynamicLayout();
             layout.Bind((t) => t.Enabled, vm, v => v.VentilationControl.IsPanelEnabled);
-            layout.Bind((t) => t.Visible, vm, v => v.VentilationControl.IsPanelEnabled);
+            layout.Bind((t) => t.Visible, vm, v => v.VentilationControl.IsPanelVisible);
 
 
             layout.DefaultSpacing = new Size(4, 4);
@@ -1088,7 +1088,7 @@ namespace Honeybee.UI.View
 
             var layout = new DynamicLayout();
             layout.Bind((t) => t.Enabled, vm, v => v.DaylightingControl.IsPanelEnabled);
-            layout.Bind((t) => t.Visible, vm, v => v.DaylightingControl.IsPanelEnabled);
+            layout.Bind((t) => t.Visible, vm, v => v.DaylightingControl.IsPanelVisible);
 
 
             layout.DefaultSpacing = new Size(4, 4);

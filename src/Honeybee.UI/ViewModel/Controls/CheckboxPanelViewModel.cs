@@ -33,20 +33,33 @@ namespace Honeybee.UI
         public bool IsPanelEnabled
         {
             get => _isPanelEnabled;
-            set { this.Set(() => _isPanelEnabled = value, nameof(IsPanelEnabled)); }
+            set 
+            { 
+                this.Set(() => _isPanelEnabled = value, nameof(IsPanelEnabled)); 
+                this.IsPanelVisible = value;
+            }
         }
 
-        private bool _isCheckboxChecked;
+        private bool _isPanelVisible = true;
 
-        public bool IsCheckboxChecked
+        public bool IsPanelVisible
+        {
+            get => _isPanelVisible;
+            set { this.Set(() => _isPanelVisible = value, nameof(IsPanelVisible)); }
+        }
+
+
+        private bool? _isCheckboxChecked;
+
+        public bool? IsCheckboxChecked
         {
             get => _isCheckboxChecked;
 
             set
             {
                 this.Set(() => _isCheckboxChecked = value, nameof(IsCheckboxChecked));
-                IsPanelEnabled = !value;
-                if (_isCheckboxChecked)
+                IsPanelEnabled = !value.GetValueOrDefault();
+                if (_isCheckboxChecked.GetValueOrDefault())
                     SetHBProperty(default(T));
                 else
                 {
@@ -68,6 +81,15 @@ namespace Honeybee.UI
         {
             this.refObjProperty = obj;
         }
+
+        public void IsCheckboxVaries()
+        {
+            this.IsCheckboxChecked = null;
+            this.IsPanelEnabled = false;
+            this.IsPanelVisible = true;
+        }
+
+        public bool IsVaries => this.IsCheckboxChecked == null;
 
     }
 

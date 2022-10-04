@@ -77,10 +77,10 @@ namespace Honeybee.UI
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateVentilationOpening();
 
 
-            if (loads.Distinct().Count() == 1 && loads.FirstOrDefault() == null)
-            {
-                this.IsCheckboxChecked = true;
-            }
+            if (loads.Distinct().Count() == 1) 
+                this.IsCheckboxChecked = loads.FirstOrDefault() == null;
+            else
+                this.IsCheckboxVaries();
 
 
             //FractionAreaOperable
@@ -138,8 +138,11 @@ namespace Honeybee.UI
         public VentilationOpening MatchObj(VentilationOpening obj)
         {
             // by room program type
-            if (this.IsCheckboxChecked)
+            if (this.IsCheckboxChecked.GetValueOrDefault())
                 return null;
+
+            if (this.IsVaries)
+                return obj?.DuplicateVentilationOpening();
 
             obj = obj?.DuplicateVentilationOpening() ?? new VentilationOpening();
 
