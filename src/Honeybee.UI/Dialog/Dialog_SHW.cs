@@ -38,7 +38,7 @@ namespace Honeybee.UI
             var eqpType = new EnumDropDown<SHWEquipmentType>();
             var heaterEffAuto = new RadioButton() { Text = "Autocalculate" };
             var heaterEffNumber = new RadioButton();
-            var heaterEff = new NumericStepper();
+            var heaterEff = new NumericStepper() { MaximumDecimalPlaces = 2};
 
             // ambientCoffCondition
             var ambientLayout = new DynamicLayout();
