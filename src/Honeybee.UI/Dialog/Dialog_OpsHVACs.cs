@@ -32,29 +32,29 @@ namespace Honeybee.UI
             {
                 // UI for system groups
                 var hvacGroups = new DropDown();
-                var hvacTypes = new DropDown();
-                var hvacEquipments = new DropDown();
 
                 hvacGroups.BindDataContext(c => c.DataStore, (OpsHVACsViewModel m) => m.HvacGroups);
                 hvacGroups.SelectedKeyBinding.BindDataContext((OpsHVACsViewModel m) => m.HvacGroup);
 
-                hvacTypes.BindDataContext(c => c.DataStore, (OpsHVACsViewModel m) => m.HvacTypes);
-                hvacTypes.ItemTextBinding = Binding.Delegate<Type, string>(t => _vm.HVACTypesDic[t]);
-                hvacTypes.SelectedValueBinding.BindDataContext((OpsHVACsViewModel m) => m.HvacType);
-
-                hvacEquipments.BindDataContext(c => c.DataStore, (OpsHVACsViewModel m) => m.HvacEquipmentTypes);
-                hvacEquipments.ItemTextBinding = Binding.Delegate<string, string>(t => _vm.HVACsDic[t]);
-                hvacEquipments.SelectedKeyBinding.BindDataContext((OpsHVACsViewModel m) => m.HvacEquipmentType);
-
                 layout.AddRow("HVAC Groups:");
                 layout.AddRow(hvacGroups);
-                layout.AddRow("HVAC Types:");
-                layout.AddRow(hvacTypes);
-                layout.AddRow("HVAC Equipment Types:");
-                layout.AddRow(hvacEquipments);
-                layout.AddRow(null);
+           
             }
 
+            var hvacTypes = new DropDown();
+            var hvacEquipments = new DropDown();
+            hvacTypes.BindDataContext(c => c.DataStore, (OpsHVACsViewModel m) => m.HvacTypes);
+            hvacTypes.ItemTextBinding = Binding.Delegate<Type, string>(t => _vm.HVACTypesDic[t]);
+            hvacTypes.SelectedValueBinding.BindDataContext((OpsHVACsViewModel m) => m.HvacType);
+
+            hvacEquipments.BindDataContext(c => c.DataStore, (OpsHVACsViewModel m) => m.HvacEquipmentTypes);
+            hvacEquipments.ItemTextBinding = Binding.Delegate<string, string>(t => _vm.HVACsDic[t]);
+            hvacEquipments.SelectedKeyBinding.BindDataContext((OpsHVACsViewModel m) => m.HvacEquipmentType);
+            layout.AddRow("HVAC Types:");
+            layout.AddRow(hvacTypes);
+            layout.AddRow("HVAC Equipment Types:");
+            layout.AddRow(hvacEquipments);
+            layout.AddRow(null);
 
 
             var year = new DropDown();
@@ -106,12 +106,8 @@ namespace Honeybee.UI
             var gpLayout = new DynamicLayout();
             gpLayout.DefaultPadding = new Padding(5);
 
-            // fix the height of layout in case of creating a new system, otherwise, autosize height
-            if (hvac == null)
-            {
-                gpLayout.Height = 250;
-                gpLayout.BeginScrollable(BorderType.None);
-            }
+            gpLayout.Height = 250;
+            gpLayout.BeginScrollable(BorderType.None);
 
             var gpGeneralLayout = new DynamicLayout();
             //gpLayout.BeginGroup("HVAC System settings", new Padding(5), new Size(5, 0));
@@ -146,8 +142,15 @@ namespace Honeybee.UI
             var OKButton = new Button { Text = "OK", Enabled = !lockedMode };
             OKButton.Click += (sender, e) =>
             {
-                var obj = _vm.GreateHvac(hvac);
-                OkCommand.Execute(obj);
+                try
+                {
+                    var obj = _vm.GreateHvac(hvac); 
+                    OkCommand.Execute(obj);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             };
 
             AbortButton = new Button { Text = "Cancel" };

@@ -80,8 +80,9 @@ namespace Honeybee.UI
                     return;
                 Set(() => _hvacType = value, nameof(HvacType));
                 HvacEquipmentTypes = GetHVACTypes(value);
-                this.Name = $"{this.HVACTypesDic[this.HvacType]} {Guid.NewGuid().ToString().Substring(0, 5)}";
+                this.Name = $"{HVACTypesDic[value]} {Guid.NewGuid().ToString().Substring(0, 5)}";
                 UpdateUI_Rad();
+                UpdateUI_PTAC();
             }
         }
 
@@ -251,10 +252,13 @@ namespace Honeybee.UI
             _libSource = libSource;
             _control = control;
 
+            var hvacClassType = hvac.GetType();
+
             // vintage
-            var vintage = hvac.GetType().GetProperty(nameof(dummy.Vintage))?.GetValue(hvac);
+            var vintage = hvacClassType.GetProperty(nameof(dummy.Vintage))?.GetValue(hvac);
             if (vintage is Vintages v)
                 this.Vintage = v.ToString();
+
 
             if (this.IsAllAirGroup(hvac))
             {
@@ -270,18 +274,22 @@ namespace Honeybee.UI
             }
             else
             {
-                throw new ArgumentException($"{hvac?.GetType()} is not a supported HVAC system, please contact developers!");
+                throw new ArgumentException($"{hvacClassType} is not a supported HVAC system, please contact developers!");
             }
 
+
+            // type
+            this.HvacType = HVACTypeMapper.First(_=>_.Value == hvacClassType).Key;
+
             // equipment type
-            var eqpType = hvac.GetType().GetProperty(nameof(dummy.EquipmentType))?.GetValue(hvac);
+            var eqpType = hvacClassType.GetProperty(nameof(dummy.EquipmentType))?.GetValue(hvac);
             this.HvacEquipmentType = eqpType.ToString();
 
 
             this.Name = hvac.DisplayName;
 
             // LatentHeatRecovery
-            var lat = hvac.GetType()?.GetProperty(nameof(dummy.LatentHeatRecovery))?.GetValue(hvac);
+            var lat = hvacClassType?.GetProperty(nameof(dummy.LatentHeatRecovery))?.GetValue(hvac);
             if (lat != null)
             {
                 if (double.TryParse(lat.ToString(), out var latValue))
@@ -289,7 +297,7 @@ namespace Honeybee.UI
             }
 
             // SensibleHeatRecovery
-            var sen = hvac.GetType()?.GetProperty(nameof(dummy.SensibleHeatRecovery))?.GetValue(hvac);
+            var sen = hvacClassType?.GetProperty(nameof(dummy.SensibleHeatRecovery))?.GetValue(hvac);
             if (sen != null)
             {
                 if (double.TryParse(sen.ToString(), out var senValue))
@@ -297,10 +305,10 @@ namespace Honeybee.UI
             }
 
             // Economizer
-            Economizer = hvac.GetType().GetProperty(nameof(dummy.EconomizerType))?.GetValue(hvac)?.ToString();
+            Economizer = hvacClassType.GetProperty(nameof(dummy.EconomizerType))?.GetValue(hvac)?.ToString();
 
             // DCV
-            var dcv = hvac.GetType().GetProperty(nameof(dummy.DemandControlledVentilation))?.GetValue(hvac)?.ToString();
+            var dcv = hvacClassType.GetProperty(nameof(dummy.DemandControlledVentilation))?.GetValue(hvac)?.ToString();
             if (dcv != null)
             {
                 var hasDcvValue = bool.TryParse(dcv, out var dcvOn);
@@ -373,7 +381,14 @@ namespace Honeybee.UI
         {
             this.RadiantVisable = HvacType == typeof(RadiantwithDOASEquipmentType) || HvacType == typeof(RadiantEquipmentType);
         }
-
+        private void UpdateUI_PTAC()
+        {
+            var isPTAC = HvacType == typeof(PTACEquipmentType);
+            EconomizerVisable = !isPTAC;
+            LatentHRVisable = !isPTAC;
+            SensibleHRVisable = !isPTAC;
+            DcvVisable = !isPTAC;
+        }
         private bool IsRadiantSystem(HoneybeeSchema.Energy.IHvac hvac)
         {
             var isGroup = hvac is RadiantwithDOASAbridged;
@@ -475,10 +490,10 @@ namespace Honeybee.UI
         public Dictionary<Type, string> HVACTypesDic
             = new Dictionary<Type, string>()
             {
-                {  typeof(VAVEquipmentType), "VAV systems"},
-                {  typeof(PVAVEquipmentType), "PVAV"},
-                {  typeof(PSZEquipmentType), "PSZ-AC"},
-                {  typeof(PTACEquipmentType), "PTAC"},
+                {  typeof(VAVEquipmentType), "Variable air volume (VAV)"},
+                {  typeof(PVAVEquipmentType), "Packaged variable air volume (PVAV)"},
+                {  typeof(PSZEquipmentType), "Packaged rooftop air conditioner (PSZ-AC)"},
+                {  typeof(PTACEquipmentType), "Packaged terminal air conditioner (PTAC) or heat pump (PTHP)"},
                 {  typeof(FurnaceEquipmentType), "Forced air furnace"},
                 {  typeof(FCUwithDOASEquipmentType), "DOAS with fan coil unit"},
                 {  typeof(VRFwithDOASEquipmentType), "DOAS with VRF"},
@@ -489,7 +504,7 @@ namespace Honeybee.UI
                 {  typeof(FCUEquipmentType),"Fan coil systems"},
                 {  typeof(GasUnitHeaterEquipmentType), "Gas unit heaters"},
                 {  typeof(ResidentialEquipmentType), "Residential equipments"},
-                {  typeof(VRFEquipmentType), "VRF"},
+                {  typeof(VRFEquipmentType), "Variable refrigerant flow (VRF)"},
                 {  typeof(WSHPEquipmentType), "Water source heat pumps"},
                 {  typeof(WindowACEquipmentType), "Window AC"},
                 {  typeof(RadiantEquipmentType), "Radiant equipments"},
@@ -566,7 +581,7 @@ namespace Honeybee.UI
                 { "PSZAC_DCW_ASHP","PSZ-AC district chilled water with central air source heat pump"},
                 { "PSZAC_DCW_DHW","PSZ-AC district chilled water with district hot water"},
                 { "PSZAC_DCW","PSZ-AC district chilled water with no heat"},
-                { "PSZHP","PSZ-HP"},
+                { "PSZHP","Packaged rooftop heat pump (PSZHP)"},
                 { "PTAC_ElectricBaseboard","PTAC with baseboard electric"},
                 { "PTAC_BoilerBaseboard","PTAC with baseboard gas boiler"},
                 { "PTAC_DHWBaseboard","PTAC with baseboard district hot water"},
@@ -577,7 +592,7 @@ namespace Honeybee.UI
                 { "PTAC_ASHP","PTAC with central air source heat pump"},
                 { "PTAC_DHW","PTAC with district hot water"},
                 { "PTAC","PTAC with no heat"},
-                { "PTHP","PTHP"},
+                { "PTHP","Packaged terminal heat pump (PTHP)"},
                 { "Furnace","Forced air furnace"},
 
                 { "DOAS_FCU_Chiller_Boiler","DOAS with fan coil chiller with boiler"},
@@ -695,7 +710,7 @@ namespace Honeybee.UI
             var vintage = Enum.Parse( typeof(Vintages), this.Vintage);
 
             var hvacType = HVACTypeMapper[sysType];
-            hvacType = existing == null ? hvacType : existing.GetType();
+            //hvacType = existing == null ? hvacType : existing.GetType();
             var id = Guid.NewGuid().ToString().Substring(0, 8);
             id = $"{hvacType.Name}_{id}";
             id = existing == null ? id : existing.Identifier;
@@ -723,8 +738,10 @@ namespace Honeybee.UI
             // LatentHeatRecovery
             var lat = this.LatentHR;
 
-            if (HvacGroup == HvacGroups[0])     // All air
+            if (HvacGroup == HvacGroups[0] && hvacType != typeof(PTAC))     // All air 
             {
+                // PTAC doesn't have these settings
+
                 // economizer
                 var economizer = Enum.Parse(typeof(AllAirEconomizerType), this.Economizer);
                 hvacType.GetProperty(nameof(dummy.EconomizerType)).SetValue(sys, economizer);
