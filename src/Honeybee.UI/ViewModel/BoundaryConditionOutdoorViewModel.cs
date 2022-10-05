@@ -8,7 +8,6 @@ namespace Honeybee.UI
 {
     public class BoundaryConditionOutdoorViewModel : ViewModelBase
     {
-        public string Varies => "<varies>";
         private Outdoors _refHBObj;
 
         // SunExposure

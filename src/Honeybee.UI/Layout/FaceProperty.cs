@@ -41,7 +41,7 @@ namespace Honeybee.UI.View
         {
             var vm = this._vm;
             var layout = new DynamicLayout();
-            layout.Width = 400;
+            layout.Width = 420;
 
             layout.DefaultSpacing = new Size(4, 4);
             layout.DefaultPadding = new Padding(4);
@@ -183,12 +183,15 @@ namespace Honeybee.UI.View
             typeDp.AddRow(bcDP);
             layout.AddRow("Boundary Condition:", typeDp);
 
-
-            // outdoor bc
+            // bc
+            var bc = new DynamicLayout() { Height = 75};
             var outdoorBc = CreateOutdoorLayout();
-            layout.AddRow(null, outdoorBc);
+            bc.AddRow(outdoorBc);
             var surfaceBc = CreateSurfaceLayout();
-            layout.AddRow(null, surfaceBc);
+            bc.AddRow(surfaceBc);
+            var otherSideBc = CreateOtherSideTemperatureLayout();
+            bc.AddRow(otherSideBc);
+            layout.AddRow(null, bc);
 
             //AFN
             var afnByProgram = new CheckBox() { Text = ReservedText.ByParentSetting };
@@ -210,6 +213,7 @@ namespace Honeybee.UI.View
             layout.DefaultSpacing = new Size(4, 4);
 
             layout.Bind(_ => _.Enabled, _vm, _ => _.IsOutdoorBoundary);
+            layout.Bind(_ => _.Visible, _vm, _ => _.IsOutdoorBoundary);
 
             var sun_CB = new CheckBox() { Text = "Sun Exposure" };
             sun_CB.CheckedBinding.Bind(_vm, _ => _.BCOutdoor.SunExposure.IsChecked);
@@ -217,9 +221,7 @@ namespace Honeybee.UI.View
             var wind_CB = new CheckBox() { Text = "Wind Exposure" };
             wind_CB.CheckedBinding.Bind(_vm, _ => _.BCOutdoor.WindExposure.IsChecked);
 
-            layout.AddRow(sun_CB);
-            layout.AddRow(wind_CB);
-
+            layout.AddSeparateRow(sun_CB, wind_CB);
 
             var vFactor = new DoubleText();
             vFactor.ReservedText = ReservedText.Varies;
@@ -228,12 +230,10 @@ namespace Honeybee.UI.View
             vFactor.Bind(_ => _.Enabled, _vm, _ => _.BCOutdoor.IsViewFactorInputEnabled);
             var autosize = new CheckBox() { Text = "Autocalculate" };
             autosize.Bind(_ => _.Checked, _vm, _ => _.BCOutdoor.IsViewFactorAutocalculate);
-            layout.AddRow(autosize);
+  
+            layout.AddSeparateRow("View Factor:", autosize);
             layout.AddRow(vFactor);
-
-            layout.AddRow("View Factor:");
-            layout.AddRow(autosize);
-            layout.AddRow(vFactor);
+            //layout.AddRow(vFactor);
 
             return layout;
         }
@@ -243,10 +243,44 @@ namespace Honeybee.UI.View
             layout.DefaultSpacing = new Size(4, 4);
 
             layout.Bind(_ => _.Enabled, _vm, _ => _.IsSurfaceBoundary);
+            layout.Bind(_ => _.Visible, _vm, _ => _.IsSurfaceBoundary);
 
             var adjBtn = new Button() { Text = "Adjacent Surface" };
             adjBtn.Command = _vm.SurfaceBCCommand;
             layout.AddRow(adjBtn);
+
+            return layout;
+        }
+
+        private DynamicLayout CreateOtherSideTemperatureLayout()
+        {
+            var layout = new DynamicLayout();
+            layout.DefaultSpacing = new Size(4, 4);
+
+            layout.Bind(_ => _.Enabled, _vm, _ => _.IsOtherSideTemperatureBoundary);
+            layout.Bind(_ => _.Visible, _vm, _ => _.IsOtherSideTemperatureBoundary);
+            //layout.AddRow("Other Side Temperature:");
+
+            var wPerArea = new DoubleText();
+            //wPerArea.Width = 250;
+            wPerArea.ReservedText = ReservedText.Varies;
+            wPerArea.SetDefault(0);
+            wPerArea.TextBinding.Bind(_vm, _ => _.BCOtherSideTemperature.HeatTransferCoefficient.NumberText);
+            layout.AddSeparateRow("Heat Transfer Coefficient:", wPerArea);
+            //layout.AddRow(wPerArea);
+
+
+            var vFactor = new DoubleText();
+            vFactor.ReservedText = ReservedText.Varies;
+            vFactor.SetDefault(0);
+            vFactor.TextBinding.Bind(_vm, _ => _.BCOtherSideTemperature.Temperature.NumberText);
+            vFactor.Bind(_ => _.Enabled, _vm, _ => _.BCOtherSideTemperature.IsTemperatureInputEnabled);
+            var autosize = new CheckBox() { Text = "Autocalculate" };
+            autosize.Bind(_ => _.Checked, _vm, _ => _.BCOtherSideTemperature.IsTemperatureAutocalculate);
+
+            layout.AddSeparateRow("Temperature:", autosize);
+            layout.AddRow(vFactor);
+            layout.AddRow(null);
 
             return layout;
         }
@@ -298,7 +332,7 @@ namespace Honeybee.UI.View
 
             var gd = new GridView();
             gd.Width = 350;
-            gd.Height = 460;
+            gd.Height = 400;
             gd.Bind(_ => _.DataStore, _vm, _ => _.UserData.GridViewDataCollection);
             gd.SelectedItemsChanged += (s, e) =>
             {

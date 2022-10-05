@@ -88,13 +88,14 @@ namespace Honeybee.UI.ViewModel
             set => this.Set(() => _construction = value, nameof(Construction)); 
         }
 
-        public static Dictionary<string, AnyOf<Ground, Outdoors, Adiabatic, Surface>> Bcs =>
-            new Dictionary<string, AnyOf<Ground, Outdoors, Adiabatic, Surface>>()
+        public static Dictionary<string, AnyOf<Ground, Outdoors, Adiabatic, Surface, OtherSideTemperature>> Bcs =>
+            new Dictionary<string, AnyOf<Ground, Outdoors, Adiabatic, Surface, OtherSideTemperature>>()
             {
                 {nameof(Ground), new Ground()},
                 {nameof(Outdoors), new Outdoors()},
                 {nameof(Adiabatic), new Adiabatic()},
-                {nameof(Surface), new Surface(new List<string>())}
+                {nameof(Surface), new Surface(new List<string>())},
+                {nameof(OtherSideTemperature), new OtherSideTemperature(temperature : new Autocalculate())}
             };
 
         public List<string> BoundaryConditionTexts { get; } = Bcs.Keys.ToList();
@@ -124,6 +125,12 @@ namespace Honeybee.UI.ViewModel
                     var srf = this._refHBObj.BoundaryCondition.Obj as Surface;
                     this.BCSurface = new BoundaryConditionSurfaceViewModel(new List<Surface>() { srf }, (o) => _refHBObj.BoundaryCondition = o);
                 }
+                this.IsOtherSideTemperatureBoundary = value == nameof(OtherSideTemperature);
+                if (this.IsOtherSideTemperatureBoundary)
+                {
+                    var other = this._refHBObj.BoundaryCondition.Obj as OtherSideTemperature;
+                    this.BCOtherSideTemperature = new BoundaryConditionOtherSideTemperatureViewModel(new List<OtherSideTemperature>() { other }, (o) => _refHBObj.BoundaryCondition = o);
+                }
                 this.Set(()=> _boundaryConditionText = value, nameof(BoundaryConditionText));
             }
         }
@@ -149,12 +156,28 @@ namespace Honeybee.UI.ViewModel
             set => this.Set(() => _isSurfaceBoundary = value, nameof(IsSurfaceBoundary));
         }
 
+
         private BoundaryConditionSurfaceViewModel _bcSurface;
         public BoundaryConditionSurfaceViewModel BCSurface
         {
             get => _bcSurface;
             set => this.Set(() => _bcSurface = value, nameof(BCSurface));
         }
+
+        private bool _isOtherSideTemperatureBoundary = false;
+        public bool IsOtherSideTemperatureBoundary
+        {
+            get => _isOtherSideTemperatureBoundary;
+            set => this.Set(() => _isOtherSideTemperatureBoundary = value, nameof(IsOtherSideTemperatureBoundary));
+        }
+
+        private BoundaryConditionOtherSideTemperatureViewModel _bcOtherSideTemperature;
+        public BoundaryConditionOtherSideTemperatureViewModel BCOtherSideTemperature
+        {
+            get => _bcOtherSideTemperature;
+            set => this.Set(() => _bcOtherSideTemperature = value, nameof(BCOtherSideTemperature));
+        }
+
 
 
         // AFNCrack
@@ -274,6 +297,11 @@ namespace Honeybee.UI.ViewModel
                 var srfs = objs.Select(_ => _.BoundaryCondition).OfType<Surface>().Distinct().ToList();
                 this.BCSurface = new BoundaryConditionSurfaceViewModel(srfs, (o) => _refHBObj.BoundaryCondition = o);
             }
+            else if (this.IsOtherSideTemperatureBoundary)
+            {
+                var others = objs.Select(_ => _.BoundaryCondition).OfType<OtherSideTemperature>().Distinct().ToList();
+                this.BCOtherSideTemperature = new BoundaryConditionOtherSideTemperatureViewModel(others, (o)=> _refHBObj.BoundaryCondition = o);
+            }
 
          
             var afns = objs.Select(_ => _.Properties.Energy?.VentCrack).Distinct().ToList();
@@ -315,6 +343,10 @@ namespace Honeybee.UI.ViewModel
                     else if (this.IsSurfaceBoundary)
                     {
                         item.BoundaryCondition = this.BCSurface.MatchObj(item.BoundaryCondition.Obj as Surface);
+                    }
+                    else if (this.IsOtherSideTemperatureBoundary)
+                    {
+                        item.BoundaryCondition = this.BCOtherSideTemperature.MatchObj(item.BoundaryCondition.Obj as OtherSideTemperature);
                     }
                     else
                     {
