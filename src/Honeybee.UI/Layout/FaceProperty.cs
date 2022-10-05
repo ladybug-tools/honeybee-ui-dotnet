@@ -1,13 +1,12 @@
 ﻿using Eto.Drawing;
 using Eto.Forms;
 using HB = HoneybeeSchema;
-using System;
 using Honeybee.UI.ViewModel;
 using System.Collections.Generic;
 
 namespace Honeybee.UI.View
 {
-    
+
     public class FaceProperty : Panel
     {
         private FacePropertyViewModel _vm { get; set; }
@@ -59,7 +58,9 @@ namespace Honeybee.UI.View
 
             var userData = GenUserDataPanel();
             tb.Pages.Add(new TabPage(userData) { Text = "User Data" });
+            //tb.
             layout.AddRow(tb);
+            //layout.Add(tb, true, false);
 
 
             layout.Add(null);
@@ -184,23 +185,18 @@ namespace Honeybee.UI.View
             layout.AddRow("Boundary Condition:", typeDp);
 
             // bc
-            var bc = new DynamicLayout() { Height = 75};
             var outdoorBc = CreateOutdoorLayout();
-            bc.AddRow(outdoorBc);
             var surfaceBc = CreateSurfaceLayout();
-            bc.AddRow(surfaceBc);
             var otherSideBc = CreateOtherSideTemperatureLayout();
-            bc.AddRow(otherSideBc);
-            layout.AddRow(null, bc);
 
             //AFN
-            var afnByProgram = new CheckBox() { Text = ReservedText.ByParentSetting };
-            afnByProgram.CheckedBinding.Bind(_vm, _ => _.AFNCrack.IsCheckboxChecked);
-            layout.AddRow("AFNCrack:", afnByProgram);
             var afn = GenAFNPanel();
 
-            var masterlayout = new DynamicLayout();
+            var masterlayout = new DynamicLayout() { Height = 245};
             masterlayout.AddRow(layout);
+            masterlayout.AddRow(outdoorBc);
+            masterlayout.AddRow(surfaceBc);
+            masterlayout.AddRow(otherSideBc);
             masterlayout.AddRow(afn);
 
             gp.Content = masterlayout;
@@ -211,6 +207,7 @@ namespace Honeybee.UI.View
         {
             var layout = new DynamicLayout();
             layout.DefaultSpacing = new Size(4, 4);
+            layout.DefaultPadding = new Padding(4);
 
             layout.Bind(_ => _.Enabled, _vm, _ => _.IsOutdoorBoundary);
             layout.Bind(_ => _.Visible, _vm, _ => _.IsOutdoorBoundary);
@@ -220,8 +217,9 @@ namespace Honeybee.UI.View
        
             var wind_CB = new CheckBox() { Text = "Wind Exposure" };
             wind_CB.CheckedBinding.Bind(_vm, _ => _.BCOutdoor.WindExposure.IsChecked);
-
-            layout.AddSeparateRow(sun_CB, wind_CB);
+            var exposureLayout = new DynamicLayout() { Width = 250};
+            exposureLayout.AddRow(sun_CB, wind_CB);
+            layout.AddRow(null, exposureLayout);
 
             var vFactor = new DoubleText();
             vFactor.ReservedText = ReservedText.Varies;
@@ -230,10 +228,10 @@ namespace Honeybee.UI.View
             vFactor.Bind(_ => _.Enabled, _vm, _ => _.BCOutdoor.IsViewFactorInputEnabled);
             var autosize = new CheckBox() { Text = "Autocalculate" };
             autosize.Bind(_ => _.Checked, _vm, _ => _.BCOutdoor.IsViewFactorAutocalculate);
-  
-            layout.AddSeparateRow("View Factor:", autosize);
-            layout.AddRow(vFactor);
-            //layout.AddRow(vFactor);
+
+            layout.AddRow("View Factor:", autosize);
+            layout.AddRow(null, vFactor);
+            layout.AddRow(null);
 
             return layout;
         }
@@ -241,13 +239,14 @@ namespace Honeybee.UI.View
         {
             var layout = new DynamicLayout();
             layout.DefaultSpacing = new Size(4, 4);
+            layout.DefaultPadding = new Padding(4);
 
             layout.Bind(_ => _.Enabled, _vm, _ => _.IsSurfaceBoundary);
             layout.Bind(_ => _.Visible, _vm, _ => _.IsSurfaceBoundary);
 
-            var adjBtn = new Button() { Text = "Adjacent Surface" };
+            var adjBtn = new Button() { Text = "Adjacent Surface", Width = 250 };
             adjBtn.Command = _vm.SurfaceBCCommand;
-            layout.AddRow(adjBtn);
+            layout.AddRow(null, adjBtn);
 
             return layout;
         }
@@ -256,17 +255,22 @@ namespace Honeybee.UI.View
         {
             var layout = new DynamicLayout();
             layout.DefaultSpacing = new Size(4, 4);
+            layout.DefaultPadding = new Padding(4);
 
             layout.Bind(_ => _.Enabled, _vm, _ => _.IsOtherSideTemperatureBoundary);
             layout.Bind(_ => _.Visible, _vm, _ => _.IsOtherSideTemperatureBoundary);
             //layout.AddRow("Other Side Temperature:");
 
             var wPerArea = new DoubleText();
-            //wPerArea.Width = 250;
+            wPerArea.Width = 200;
             wPerArea.ReservedText = ReservedText.Varies;
             wPerArea.SetDefault(0);
             wPerArea.TextBinding.Bind(_vm, _ => _.BCOtherSideTemperature.HeatTransferCoefficient.NumberText);
-            layout.AddSeparateRow("Heat Transfer Coefficient:", wPerArea);
+            var unit = new Label();
+            unit.TextBinding.Bind(_vm, _ => _.BCOtherSideTemperature.HeatTransferCoefficient.DisplayUnitAbbreviation);
+            var wPerAreaLayout = new DynamicLayout() { Width = 250};
+            wPerAreaLayout.AddRow(wPerArea, unit);
+            layout.AddRow("Heat Transfer Coeff:", wPerAreaLayout);
             //layout.AddRow(wPerArea);
 
 
@@ -279,10 +283,12 @@ namespace Honeybee.UI.View
             var autosize = new CheckBox() { Text = "Autocalculate" };
             autosize.Bind(_ => _.Checked, _vm, _ => _.BCOtherSideTemperature.IsTemperatureAutocalculate);
 
-            var unit = new Label();
-            unit.TextBinding.Bind(_vm, _ => _.BCOtherSideTemperature.Temperature.DisplayUnitAbbreviation);
-            layout.AddSeparateRow("Temperature:", autosize);
-            layout.AddSeparateRow(vFactor, unit);
+            var unitT = new Label();
+            unitT.TextBinding.Bind(_vm, _ => _.BCOtherSideTemperature.Temperature.DisplayUnitAbbreviation);
+            layout.AddRow("Temperature:", autosize);
+            var vFactorLayout = new DynamicLayout();
+            vFactorLayout.AddRow(vFactor, unitT);
+            layout.AddRow(null, vFactorLayout);
             layout.AddRow(null);
 
             return layout;
@@ -293,25 +299,36 @@ namespace Honeybee.UI.View
             var vm = this._vm;
 
             var layout = new DynamicLayout();
-            layout.Bind((t) => t.Enabled, vm, v => v.AFNCrack.IsPanelEnabled);
+            //layout.Bind((t) => t.Enabled, vm, v => v.AFNCrack.IsPanelEnabled);
             //layout.Bind((t) => t.Visible, vm, v => v.AFNCrack.IsPanelEnabled);
 
             layout.DefaultSpacing = new Size(4, 4);
             layout.DefaultPadding = new Padding(4);
+
+
+            var afnByProgram = new CheckBox() { Text = ReservedText.ByParentSetting };
+            afnByProgram.CheckedBinding.Bind(_vm, _ => _.AFNCrack.IsCheckboxChecked);
+            layout.AddRow("AFNCrack:", afnByProgram);
 
             var wPerArea = new DoubleText();
             wPerArea.Width = 250;
             wPerArea.ReservedText = ReservedText.Varies;
             wPerArea.SetDefault(_vm.AFNCrack.Default.FlowCoefficient);
             wPerArea.TextBinding.Bind(vm, _ => _.AFNCrack.FlowCoefficient.NumberText);
-            layout.AddRow("Flow Coefficient:", wPerArea);
+            var flowLabel = new Label() { Text = "Flow Coefficient:" };
+            flowLabel.Bind((t) => t.Enabled, vm, v => v.AFNCrack.IsPanelEnabled);
+            wPerArea.Bind((t) => t.Enabled, vm, v => v.AFNCrack.IsPanelEnabled);
+            layout.AddRow(flowLabel, wPerArea);
 
        
             var radFraction = new DoubleText();
             radFraction.ReservedText = ReservedText.Varies;
             radFraction.SetDefault(_vm.AFNCrack.Default.FlowExponent);
-            radFraction.TextBinding.Bind(vm, _ => _.AFNCrack.FlowExponent.NumberText);
-            layout.AddRow("Flow Exponent:", radFraction);
+            radFraction.TextBinding.Bind(vm, _ => _.AFNCrack.FlowExponent.NumberText); 
+            var exponentLabel = new Label() { Text = "Flow Exponent:" };
+            exponentLabel.Bind((t) => t.Enabled, vm, v => v.AFNCrack.IsPanelEnabled);
+            radFraction.Bind((t) => t.Enabled, vm, v => v.AFNCrack.IsPanelEnabled);
+            layout.AddRow(exponentLabel, radFraction);
 
             layout.AddRow(null);
 
@@ -356,7 +373,6 @@ namespace Honeybee.UI.View
             });
 
             layout.AddRow(gd);
-            layout.AddRow(null);
 
             add.Bind(_ => _.Command, vm, _ => _.UserData.AddDataCommand);
             edit.Bind(_ => _.Command, vm, _ => _.UserData.EditDataCommand);
