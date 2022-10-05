@@ -70,6 +70,7 @@ namespace Honeybee.UI
 
             // Temperature
             this.Temperature = new DoubleViewModel((n) => _refHBObj.Temperature = n);
+            this.Temperature.SetUnits(Units.TemperatureUnit.DegreeCelsius, Units.UnitType.Temperature);
             var tps = objs.Select(_ => _?.Temperature).Distinct();
             if (tps.Count() > 1)
             {
@@ -78,13 +79,14 @@ namespace Honeybee.UI
             }
             else
             {
-                this.Temperature.SetNumberText("0");
                 this.IsTemperatureAutocalculate = tps?.FirstOrDefault(_ => _?.Obj is Autocalculate) != null;
                 if (!IsTemperatureAutocalculate)
                 {
-                    var t = _refHBObj.Temperature ?? "0";
-                    this.Temperature.SetNumberText(t);
+                    var t = _refHBObj.Temperature?.Obj is double tt ? tt : 0;
+                    this.Temperature.SetBaseUnitNumber(t);
                 }
+                else
+                    this.Temperature.SetNumberText("0");
             }
 
             setAction?.Invoke(this._refHBObj);
