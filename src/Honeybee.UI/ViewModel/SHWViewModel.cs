@@ -31,8 +31,9 @@ namespace Honeybee.UI
             set 
             {
                 Set(() => _EquipType = value, nameof(EquipType));
-                // disable AmbientCoffCondition for HeatPump_WaterHeater
-                AmbientCoffConditionEnabled = value != SHWEquipmentType.HeatPump_WaterHeater;
+                // disable AmbientCoffConditionNumberEnabled for HeatPump_WaterHeater
+                AmbientCoffConditionNumberEnabled = value != SHWEquipmentType.HeatPump_WaterHeater;
+                AmbientCoffConditionRoomIDEnabled = !AmbientCoffConditionNumberEnabled;
             } 
         }
 
@@ -48,7 +49,7 @@ namespace Honeybee.UI
             }
         }
 
-        private bool _AmbientCoffConditionEnabled;
+        private bool _AmbientCoffConditionEnabled = true;
         public bool AmbientCoffConditionEnabled
         {
             get => _AmbientCoffConditionEnabled;
@@ -220,18 +221,25 @@ namespace Honeybee.UI
             else
                 obj.HeaterEfficiency = this.HeaterEff;
 
-            if (obj.EquipmentType != SHWEquipmentType.HeatPump_WaterHeater)
+            if (this.AmbientCoffConditionNumberEnabled)
             {
-                if (this.AmbientCoffConditionNumberEnabled)
-                    obj.AmbientCondition = this._ambientCoffCondition;
-                else
-                {
-                    if (string.IsNullOrEmpty(this.AmbientCoffConditionRoomID))
-                        throw new ArgumentException("Room ID for Ambient CoffCondition cannot be empty");
-                    obj.AmbientCondition = this.AmbientCoffConditionRoomID;
-                }
+                // check for heat pump
+                if (obj.EquipmentType == SHWEquipmentType.HeatPump_WaterHeater)
+                    throw new ArgumentException("Room ID for Ambient CoffCondition is required for HeatPump water heater");
+                obj.AmbientCondition = this._ambientCoffCondition;
+                
             }
-            
+            else
+            {
+                if (string.IsNullOrEmpty(this.AmbientCoffConditionRoomID))
+                    throw new ArgumentException("Room ID for Ambient CoffCondition cannot be empty");
+                obj.AmbientCondition = this.AmbientCoffConditionRoomID;
+            }
+
+
+           
+
+                
             obj.AmbientLossCoefficient = this.AmbientLostCoff;
 
             obj.IsValid(true);
