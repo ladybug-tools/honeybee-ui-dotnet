@@ -271,6 +271,7 @@ namespace Honeybee.UI.View
 
 
             var vFactor = new DoubleText();
+            vFactor.Width = 200;
             vFactor.ReservedText = ReservedText.Varies;
             vFactor.SetDefault(0);
             vFactor.TextBinding.Bind(_vm, _ => _.BCOtherSideTemperature.Temperature.NumberText);
@@ -278,8 +279,10 @@ namespace Honeybee.UI.View
             var autosize = new CheckBox() { Text = "Autocalculate" };
             autosize.Bind(_ => _.Checked, _vm, _ => _.BCOtherSideTemperature.IsTemperatureAutocalculate);
 
+            var unit = new Label();
+            unit.TextBinding.Bind(_vm, _ => _.BCOtherSideTemperature.Temperature.DisplayUnitAbbreviation);
             layout.AddSeparateRow("Temperature:", autosize);
-            layout.AddRow(vFactor);
+            layout.AddSeparateRow(vFactor, unit);
             layout.AddRow(null);
 
             return layout;
