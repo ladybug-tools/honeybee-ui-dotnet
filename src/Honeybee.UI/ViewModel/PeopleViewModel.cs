@@ -175,12 +175,14 @@ namespace Honeybee.UI
             }
             else
             {
-                this.LatentFraction.SetNumberText("0");
                 this.IsLatentFractionAutocalculate = latFractions?.FirstOrDefault(_ => _?.Obj is Autocalculate) != null;
                 if (!IsLatentFractionAutocalculate)
                 {
-                    this.LatentFraction.SetNumberText(_refHBObj.LatentFraction.ToString());
+                    var num = _refHBObj.LatentFraction?.Obj is double tt ? tt.ToString() : "0";
+                    this.LatentFraction.SetNumberText(num);
                 }
+                else 
+                    this.LatentFraction.SetNumberText("0");
             }
 
         }
