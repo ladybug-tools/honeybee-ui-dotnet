@@ -63,10 +63,11 @@ namespace Honeybee.UI
 
             // HeatTransferCoefficient
             this.HeatTransferCoefficient = new DoubleViewModel((n) => _refHBObj.HeatTransferCoefficient = n);
+            this.HeatTransferCoefficient.SetUnits(Units.HeatTransferCoefficientUnit.WattPerSquareMeterKelvin, Units.UnitType.UValue);
             if (objs.Select(_ => _?.HeatTransferCoefficient).Distinct().Count() > 1)
                 this.HeatTransferCoefficient.SetNumberText(ReservedText.Varies);
             else
-                this.HeatTransferCoefficient.SetNumberText(_refHBObj.HeatTransferCoefficient.ToString());
+                this.HeatTransferCoefficient.SetBaseUnitNumber(_refHBObj.HeatTransferCoefficient);
 
             // Temperature
             this.Temperature = new DoubleViewModel((n) => _refHBObj.Temperature = n);
