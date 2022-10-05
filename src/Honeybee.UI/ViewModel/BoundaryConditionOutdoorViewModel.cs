@@ -97,12 +97,14 @@ namespace Honeybee.UI
             }
             else
             {
-                this.ViewFactor.SetNumberText("0");
                 this.IsViewFactorAutocalculate = vfs?.FirstOrDefault(_ => _?.Obj is Autocalculate) != null;
                 if (!IsViewFactorAutocalculate)
                 {
-                    this.ViewFactor.SetNumberText(_refHBObj.ViewFactor.ToString());
+                    var num = _refHBObj.ViewFactor?.Obj is double tt ? tt.ToString() : "0";
+                    this.ViewFactor.SetNumberText(num);
                 }
+                else
+                    this.ViewFactor.SetNumberText("0");
             }
 
             setAction?.Invoke(this._refHBObj);
