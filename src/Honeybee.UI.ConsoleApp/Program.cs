@@ -249,8 +249,30 @@ namespace Honeybee.UI.ConsoleApp
                 Messagebtn.Click += (s, e) =>
                 {
                     var energyProp = new HoneybeeSchema.RoomEnergyPropertiesAbridged();
-                    Dialog_Message.Show(this, energyProp.ToJson());
+                    Dialog_Message.Show(this, "This is a message!This is a message! This is a message! This is a message!", null, null);
                     
+                };
+
+                var Message2btn = new Button() { Text = "full message text" };
+                Message2btn.Click += (s, e) =>
+                {
+                    var energyProp = HoneybeeSchema.ModelEnergyProperties.Default;
+                    Dialog_Message.Show(this, "this is a message This is a message! This is a message!This is a message! This is a message!\n\n This is a message!", energyProp.ToJson(), null);
+
+                };
+
+                var Message3btn = new Button() { Text = "full message text only" };
+                Message3btn.Click += (s, e) =>
+                {
+                    var energyProp = new HoneybeeSchema.RoomEnergyPropertiesAbridged();
+                    Dialog_Message.Show(this, null, energyProp.ToJson(), null);
+                };
+
+                var Message4btn = new Button() { Text = "error message" };
+                Message4btn.Click += (s, e) =>
+                {
+                    var error = new ArgumentException("This is an error");
+                    Dialog_Message.Show(this, error);
                 };
 
                 var cSetbtn = new Button() { Text = "ConstructionSet" };
@@ -524,7 +546,7 @@ namespace Honeybee.UI.ConsoleApp
                 panel.AddSeparateRow(shdPropertybtn, shdPropertybtn2, null);
                 panel.AddSeparateRow(viewPropertybtn, viewPropertybtn2, null);
                 panel.AddSeparateRow(sensorGridPropertybtn, sensorGridPropertybtn2, null);
-                panel.AddSeparateRow(Messagebtn);
+                panel.AddSeparateRow(Messagebtn, Message2btn, Message3btn, Message4btn, null);
                 panel.AddSeparateRow(conbtn, cSetbtn, cIntSetSel_btn, cSetManager, cSetSel_btn, null);
                 panel.AddSeparateRow(pTypebtn, pTypeMngbtn, null);
                 panel.AddSeparateRow(schbtn);
