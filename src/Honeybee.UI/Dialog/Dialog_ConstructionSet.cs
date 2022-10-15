@@ -94,7 +94,7 @@ namespace Honeybee.UI
             }
             catch (Exception e)
             {
-                Dialog_Message.Show(e.ToString());
+                Dialog_Message.ShowFullMessage(e.ToString());
                 //throw e;
             }
 

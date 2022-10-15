@@ -102,7 +102,7 @@ namespace Honeybee.UI
 
         public static void Show(string message)
         {
-            ShowFullMessage(message, null);
+            Show(null, message);
         }
 
         public static void ShowFullMessage(string fullMessage)
