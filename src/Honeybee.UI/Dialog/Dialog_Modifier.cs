@@ -46,7 +46,7 @@ namespace Honeybee.UI
             var buttonSource = new Button { Text = "Schema Data" };
             buttonSource.Click += (s, e) =>
             {
-                Dialog_Message.Show(this, _hbObj.ToJson(true));
+                Dialog_Message.ShowFullMessage(this, _hbObj.ToJson(true));
             };
 
             layout.AddRow(docLink);
