@@ -232,7 +232,7 @@ namespace Honeybee.UI
             this.ScheduleRuleset = c;
 
             var typeLimit = libSource.FirstOrDefault(_ => _.Identifier == c.ScheduleTypeLimit);
-            this.TypeLimit =  typeLimit?.DisplayName ?? typeLimit?.Identifier;
+            this.TypeLimit =  (typeLimit?.DisplayName ?? typeLimit?.Identifier) ?? ReservedText.Unspecified;
             this.TypeLimitObj = typeLimit;
             this.SearchableText = $"{this.Name}_{this.TypeLimit}";
 
@@ -250,7 +250,7 @@ namespace Honeybee.UI
             this.ScheduleRuleset = ToAbridged(c);
 
             this.TypeLimitObj = c.ScheduleTypeLimit;
-            this.TypeLimit = TypeLimitObj?.DisplayName ?? TypeLimitObj?.Identifier;
+            this.TypeLimit = (TypeLimitObj?.DisplayName ?? TypeLimitObj?.Identifier) ?? ReservedText.Unspecified;
         
             this.SearchableText = $"{this.Name}_{this.TypeLimit}";
 
@@ -274,7 +274,8 @@ namespace Honeybee.UI
             
             var eng = new ModelEnergyProperties();
             eng.AddSchedule(this.ScheduleRuleset);
-            eng.AddScheduleTypeLimit(this.TypeLimitObj);
+            if (this.TypeLimitObj != null)
+                eng.AddScheduleTypeLimit(this.TypeLimitObj);
             return eng.DuplicateModelEnergyProperties();
 
         }
