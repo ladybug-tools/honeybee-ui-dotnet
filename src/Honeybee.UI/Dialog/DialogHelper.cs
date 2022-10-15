@@ -126,13 +126,8 @@ namespace Honeybee.UI
         public static HoneybeeSchema.ScheduleRuleset CreateSchedule(Control parent = default)
         {
             var dialog = new Dialog_ScheduleTypeLimit();
-            var dialog_rc = dialog.ShowModal(parent);
-            if (dialog_rc == null)
-            {
-                return null;
-            }
-            var typeLimit = dialog_rc;
-
+            var typeLimit = dialog.ShowModal(parent);
+            
             var dayId = Guid.NewGuid().ToString();
             var dayName = $"New Schedule Day {dayId.Substring(0, 5)}";
             var newDay = new ScheduleDay(
@@ -149,6 +144,7 @@ namespace Honeybee.UI
                 dayId,
                 $"New Schedule Ruleset {id.Substring(0, 5)}"
                 );
+
 
             newSch.ScheduleTypeLimit = typeLimit;
 

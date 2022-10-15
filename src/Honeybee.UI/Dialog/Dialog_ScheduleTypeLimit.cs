@@ -36,7 +36,14 @@ namespace Honeybee.UI
             DefaultButton = new Button { Text = "OK" };
             DefaultButton.Click += (sender, e) =>
             {
-                var sel = (dropDowns.SelectedValue as ListItem)?.Tag as ScheduleTypeLimit;
+                var item = dropDowns.SelectedValue as ListItem;
+                if (item.Key == ReservedText.Unspecified)
+                {
+                    Close(null);
+                    return;
+                }
+
+                var sel = item?.Tag as ScheduleTypeLimit;
                 if (sel == null)
                 {
                     MessageBox.Show("Failed to select a ScheduleTypeLimit");
@@ -58,6 +65,7 @@ namespace Honeybee.UI
         private static NoLimit _noLimit = new NoLimit();
         private static readonly Dictionary<string, ScheduleTypeLimit> _typeLimitLib = new Dictionary<string, ScheduleTypeLimit>()
             {
+                { ReservedText.Unspecified, null},
                 { "Dimensionless 1 [NoLimit ~ NoLimit]",
                     new ScheduleTypeLimit("Dimensionless 1","Dimensionless 1", _noLimit, _noLimit, ScheduleNumericType.Continuous, ScheduleUnitType.Dimensionless)},
                 { "Dimensionless 2 [-1 ~ 1]",
