@@ -33,8 +33,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="HoneybeeSchema" Version="1.49.0.27" />
-		<PackageReference Include="LadybugDisplaySchema" Version="0.0.2.8" />
+		<PackageReference Include="HoneybeeSchema" Version="1.49.0.29" />
+		<PackageReference Include="LadybugDisplaySchema" Version="0.0.2.9" />
 		<PackageReference Include="RhinoCommon" Version="6.23.20055.13111" IncludeAssets="compile; build;" />
 		<PackageReference Include="Ladybug.Geometry.Light" Version="2.0.2" />
 		<PackageReference Include="UnitsNet" Version="4.132.0" />
