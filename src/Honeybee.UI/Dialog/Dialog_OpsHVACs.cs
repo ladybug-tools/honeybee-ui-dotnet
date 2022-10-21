@@ -47,11 +47,16 @@ namespace Honeybee.UI
             hvacTypes.ItemTextBinding = Binding.Delegate<Type, string>(t => _vm.HVACTypesDic[t]);
             hvacTypes.SelectedValueBinding.BindDataContext((OpsHVACsViewModel m) => m.HvacType);
 
+            var hvacSummary = new TextArea() { Height = 70};
+            hvacSummary.Bind(c => c.Text, _vm, _ => _.HvacTypeSummary);
+
+
             hvacEquipments.BindDataContext(c => c.DataStore, (OpsHVACsViewModel m) => m.HvacEquipmentTypes);
             hvacEquipments.ItemTextBinding = Binding.Delegate<string, string>(t => _vm.HVACsDic[t]);
             hvacEquipments.SelectedKeyBinding.BindDataContext((OpsHVACsViewModel m) => m.HvacEquipmentType);
             layout.AddRow("HVAC Types:");
             layout.AddRow(hvacTypes);
+            layout.AddRow(hvacSummary);
             layout.AddRow("HVAC Equipment Types:");
             layout.AddRow(hvacEquipments);
             layout.AddRow(null);

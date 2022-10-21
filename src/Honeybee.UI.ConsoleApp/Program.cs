@@ -249,7 +249,7 @@ namespace Honeybee.UI.ConsoleApp
                 Messagebtn.Click += (s, e) =>
                 {
                     var energyProp = new HoneybeeSchema.RoomEnergyPropertiesAbridged();
-                    Dialog_Message.Show(this, "This is a message!This is a message! This is a message! This is a message!", null, null);
+                    Dialog_Message.Show(this, "This is a message!This is a message! This is a message! This is a message!", null, null, null);
                     
                 };
 
@@ -257,15 +257,15 @@ namespace Honeybee.UI.ConsoleApp
                 Message2btn.Click += (s, e) =>
                 {
                     var energyProp = HoneybeeSchema.ModelEnergyProperties.Default;
-                    Dialog_Message.Show(this, "this is a message This is a message! This is a message!This is a message! This is a message!\n\n This is a message!", energyProp.ToJson(), null);
+                    Dialog_Message.Show(this, "this is a message This is a message! This is a message!This is a message! This is a message!\n\n This is a message!", energyProp.ToJson(), null, null);
 
                 };
 
-                var Message3btn = new Button() { Text = "full message text only" };
+                var Message3btn = new Button() { Text = "full message text only (VAV)" };
                 Message3btn.Click += (s, e) =>
                 {
-                    var energyProp = new HoneybeeSchema.RoomEnergyPropertiesAbridged();
-                    Dialog_Message.Show(this, null, energyProp.ToJson(), null);
+                    var vavSummary = HoneybeeSchema.SummaryAttribute.GetSummary(typeof(VAV));
+                    Dialog_Message.Show(this, null, vavSummary, null, null);
                 };
 
                 var Message4btn = new Button() { Text = "error message" };
