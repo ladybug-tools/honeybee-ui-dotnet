@@ -37,18 +37,18 @@ namespace Honeybee.UI
             var lbg = face.ToLBG();
             var plane = lbg.Plane;
             var projected = lbg.BoundaryPoints.Select(_ => plane.XYZtoXY(_)).ToArray();
-            var b = new Ladybug.Geometry.Polygon2D(projected);
+            var b = new LadybugDisplaySchema.Polygon2D(projected);
             return b.Area;
         }
 
-        public static Ladybug.Geometry.Face3D ToLBG(this HoneybeeSchema.Face3D face)
+        public static LadybugDisplaySchema.Face3D ToLBG(this HoneybeeSchema.Face3D face)
         {
-            return new Ladybug.Geometry.Face3D(face.Boundary, face.Plane?.ToLBG(), face.Holes);
+            return new LadybugDisplaySchema.Face3D(face.Boundary, face.Holes, face.Plane?.ToLBG());
         }
 
-        public static Ladybug.Geometry.Plane ToLBG(this HoneybeeSchema.Plane geo)
+        public static LadybugDisplaySchema.Plane ToLBG(this HoneybeeSchema.Plane geo)
         {
-            return new Ladybug.Geometry.Plane(geo.N, geo.O, geo.X);
+            return new LadybugDisplaySchema.Plane(geo.N, geo.O, geo.X);
         }
 
     }
