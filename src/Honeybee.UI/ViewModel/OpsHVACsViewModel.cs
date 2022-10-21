@@ -83,8 +83,28 @@ namespace Honeybee.UI
                 this.Name = $"{HVACTypesDic[value]} {Guid.NewGuid().ToString().Substring(0, 5)}";
                 UpdateUI_Rad();
                 UpdateUI_PTAC();
+
+                try
+                {
+                    HvacTypeSummary = "";
+                    HvacTypeSummary = HoneybeeSchema.SummaryAttribute.GetSummary(HVACTypeMapper[value]);
+                }
+                catch (Exception)
+                {
+                    // do nothing
+                }
+              
             }
         }
+
+        private string _hvacTypeSummary;
+
+        public string HvacTypeSummary
+        {
+            get => _hvacTypeSummary;
+            set => Set(() => _hvacTypeSummary = value, nameof(HvacTypeSummary));
+        }
+
 
         private IEnumerable<string> _hvacEquipmentTypes;
         public IEnumerable<string> HvacEquipmentTypes
@@ -701,6 +721,7 @@ namespace Honeybee.UI
 
             return names;
         }
+
 
         public HoneybeeSchema.Energy.IHvac GreateHvac(HoneybeeSchema.Energy.IHvac existing = default)
         {
