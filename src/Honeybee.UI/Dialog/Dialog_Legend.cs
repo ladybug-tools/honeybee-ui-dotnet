@@ -27,11 +27,11 @@ namespace Honeybee.UI
             
 
             title.TextBinding.Bind(_vm, _=>_.Title);
-            x.ValueBinding.Bind(_vm, _=>_.X);
-            y.ValueBinding.Bind(_vm, _ => _.Y);
-            w.ValueBinding.Bind(_vm, _ => _.W);
-            h.ValueBinding.Bind(_vm, _ => _.H);
-            fontH.ValueBinding.Bind(_vm, _ => _.FontHeight);
+            x.ValueBinding.Bind(_vm, _=>_.X2D);
+            y.ValueBinding.Bind(_vm, _ => _.Y2D);
+            w.ValueBinding.Bind(_vm, _ => _.W2D);
+            h.ValueBinding.Bind(_vm, _ => _.H2D);
+            fontH.ValueBinding.Bind(_vm, _ => _.TextHeight2D);
             //fontColor.Bind(_=>_.BackgroundColor, _vm, _ => _.FontColor);
             //fontColor.Command = _vm.FontColorCommand;
             decimalPlaces.ValueBinding.Bind(_vm, _ => _.DecimalPlaces);
@@ -46,7 +46,7 @@ namespace Honeybee.UI
             maxNum.ValueBinding.Bind(_vm, _ => _.Max);
             numSeg.ValueBinding.Bind(_vm, _=>_.NumSeg);
             continuous.CheckedBinding.Bind(_vm, _=>_.Continuous);
-            horizontal.CheckedBinding.Bind(_vm, _ => _.IsHorizontal);
+            horizontal.CheckedBinding.Bind(_vm, _ => _.IsHorizontal2D);
             minNum.Bind(_ => _.Enabled, _vm, _ => _.IsNumberValues);
             maxNum.Bind(_ => _.Enabled, _vm, _ => _.IsNumberValues); 
             numSeg.Bind(_ => _.Enabled, _vm, _ => _.IsNumberValues);
