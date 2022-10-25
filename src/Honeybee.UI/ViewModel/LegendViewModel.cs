@@ -1,4 +1,5 @@
 ﻿using Eto.Forms;
+using LadybugDisplaySchema;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,44 +9,84 @@ namespace Honeybee.UI
 {
     public class LegendViewModel : ViewModelBase
     {
+        private const string _unit = "px"; 
         public string Title
         {
             get => _legendParameter.Title;
             set => Set(() => _legendParameter.Title = value, nameof(Title));
         }
 
-        public int X
+        #region 2D Properties
+
+        public int X2D
         {
-            get => (int)_legendParameter.X;
-            set => Set(() => _legendParameter.BasePlane.O[0] = value, nameof(X));
-        }
+            get => (int)GetPxValue(_legend2D.OriginX, 10);
+            set => Set(() => _legend2D.OriginX = SetPxValue(value), nameof(X2D));
+        }  
    
-        public int Y
+        public int Y2D
         {
-            get => (int)_legendParameter.Y;
-            set => Set(() => _legendParameter.BasePlane.O[1] = value, nameof(Y));
+            get => (int)GetPxValue(_legend2D.OriginY, 100);
+            set => Set(() => _legend2D.OriginY = SetPxValue(value), nameof(Y2D));
         }
   
-        public int W
+        public int W2D
         {
-            get => (int)_legendParameter.SegmentWidthValue;
-            set => Set(() => _legendParameter.SegmentWidth = value, nameof(W));
+            get => (int)GetPxValue(_legend2D.SegmentWidth, 25);
+            set => Set(() => _legend2D.SegmentWidth = SetPxValue(value), nameof(W2D));
         }
-        public int H
+        public int H2D
         {
-            get => (int)_legendParameter.SegmentHeightValue;
-            set => Set(() => _legendParameter.SegmentHeight = value, nameof(H));
+            get => (int)GetPxValue(_legend2D.SegmentHeight, 36);
+            set => Set(() => _legend2D.SegmentHeight = SetPxValue( value), nameof(H2D));
         }
-        public int FontHeight
+        public int TextHeight2D
         {
-            get => (int)_legendParameter.TextHeightValue;
-            set => Set(() => _legendParameter.TextHeight = value, nameof(FontHeight));
+            get => (int)GetPxValue(_legend2D.TextHeight, 12);
+            set => Set(() => _legend2D.TextHeight = SetPxValue( value), nameof(TextHeight2D));
         }
-        //public Eto.Drawing.Color FontColor
-        //{
-        //    get => Eto.Drawing.Color.FromArgb(_legendParameter.FontColor.R, _legendParameter.FontColor.G, _legendParameter.FontColor.B) ;
-        //    set => Set(() => _legendParameter.FontColor = new LB.Color(value.Rb, value.Gb, value.Bb), nameof(FontColor));
-        //}
+
+        #endregion
+
+        #region 3D properties
+
+        public double X3D
+        {
+            get => GetValue(_legend3D?.BasePlane?.O?.GetElementByIndex(0));
+            set => Set(() => _legend3D.BasePlane.O[0] = value, nameof(X3D));
+        }
+
+        public double Y3D
+        {
+            get => GetValue(_legend3D?.BasePlane?.O?.GetElementByIndex(1));
+            set => Set(() => _legend3D.BasePlane.O[1] = value, nameof(Y3D));
+        }
+
+        public double Z3D
+        {
+            get => GetValue(_legend3D?.BasePlane?.O?.GetElementByIndex(2));
+            set => Set(() => _legend3D.BasePlane.O[2] = value, nameof(Z3D));
+        }
+
+        public double W3D
+        {
+            get => GetValue(_legend3D?.SegmentWidth);
+            set => Set(() => _legend3D.SegmentWidth = value, nameof(W3D));
+        }
+        public double H3D
+        {
+            get => GetValue(_legend3D?.SegmentHeight);
+            set => Set(() => _legend3D.SegmentHeight= value, nameof(H3D));
+        }
+        public double TextHeight3D
+        {
+            get => GetValue(_legend3D?.TextHeight);
+            set => Set(() => _legend3D.TextHeight = value, nameof(TextHeight3D));
+        }
+
+        #endregion
+
+        #region Common Properties
 
         public double Min
         {
@@ -75,32 +116,34 @@ namespace Honeybee.UI
             set => Set(() => _legendParameter.ContinuousLegend = value, nameof(Continuous));
         }
 
+        #endregion
+        
         public bool IsNumberValues
         {
             get => !_legendParameter.HasOrdinalDictionary;
             //set => Set(() => _legendParameter.StringValues = !value, nameof(IsNumberValues));
         }
 
-        public bool IsHorizontal
+        public bool IsHorizontal2D
         {
             get => !_legendParameter.Vertical;
             set { 
-                Set(() => _legendParameter.Vertical = !value, nameof(IsHorizontal));
+                Set(() => _legendParameter.Vertical = !value, nameof(IsHorizontal2D));
                 if (value)
                 {
-                    if (W > H)
+                    if (W2D > H2D)
                         return;
-                    var _w = W;
-                    W = H;
-                    H = _w;
+                    var _w = W2D;
+                    W2D = H2D;
+                    H2D = _w;
                 }
                 else
                 {
-                    if (W < H)
+                    if (W2D < H2D)
                         return;
-                    var _w = W;
-                    W = H;
-                    H = _w;
+                    var _w = W2D;
+                    W2D = H2D;
+                    H2D = _w;
                 }
             }
         }
@@ -136,6 +179,9 @@ namespace Honeybee.UI
             set => Set(() => _selectedRow = value, nameof(SelectedRow));
         }
 
+        private LB.Legend3DParameters _legend3D => _legendParameter.Properties3d;
+        private LB.Legend2DParameters _legend2D => _legendParameter.Properties2d;
+
         private LB.LegendParameters _legendParameter;
         private Control _control;
 
@@ -148,6 +194,47 @@ namespace Honeybee.UI
             var vd = colors.Select(_ => new ColorDataItem(_));
             GridViewDataCollection = new DataStoreCollection<ColorDataItem>(vd);
         }
+
+        private static double GetValue(double? input, double defaultValue = default)
+        {
+            return input.GetValueOrDefault(defaultValue);
+        }
+        private static double GetValue(AnyOf<LB.Default, double> input, double defaultValue = default)
+        {
+            var value = defaultValue;
+            if (input == null || input.Obj is Default)
+                value = defaultValue;
+            else if(input.Obj is double dd)
+                value = dd;
+
+            return value;
+        }
+        private static double GetPxValue(AnyOf<LB.Default, string> input, double defaultValue = default)
+        {
+            var value = defaultValue;
+            if (input == null || input.Obj is Default)
+                value = defaultValue;
+            else if (input.Obj is string ss)
+            {
+                ss = ss.ToLower().Trim();
+                if (ss.Contains(_unit))
+                {
+                    ss = ss.Replace(_unit, "");
+                    double.TryParse(ss, out value);
+                }
+                else value = defaultValue;
+            }
+            else
+                value = defaultValue;
+
+            return value;
+        }
+
+        private static string SetPxValue(double value)
+        {
+            return $"{value}{_unit}";
+        }
+
         public bool Validate()
         {
             var valid = Max >= Min;
@@ -352,6 +439,8 @@ namespace Honeybee.UI
             GridViewDataCollection.AddRange(cs);
             //gridView.DataStore = cs;
         });
+
+
 
 
 
