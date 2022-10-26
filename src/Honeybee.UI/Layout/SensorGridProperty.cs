@@ -70,27 +70,42 @@ namespace Honeybee.UI.View
 
         private DynamicLayout GenGeneralPanel()
         {
+            var dummy = new HB.SensorGrid("test", new List<HB.Sensor>());
+
             var layout = new DynamicLayout();
             layout.DefaultSpacing = new Size(4, 4);
             layout.DefaultPadding = new Padding(4);
 
+            var idLabel = new Label() { Text = "ID:" };
+            idLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.SensorGrid), nameof(dummy.Identifier)));
+
             var id = new Label() { Width = 255 };
             id.TextBinding.Bind(_vm, _ => _.Identifier);
             id.Bind(_ => _.ToolTip, _vm, _ => _.Identifier);
-            layout.AddRow("ID:", id);
+            layout.AddRow(idLabel, id);
             layout.AddRow(null, new Label() { Visible = false }); // add space
+
+            var nameTBLabel = new Label() { Text = "Name:" };
+            nameTBLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.SensorGrid), nameof(dummy.DisplayName)));
 
             var nameTB = new StringText();
             nameTB.TextBinding.Bind(_vm, _ => _.DisplayName);
-            layout.AddRow("Name:", nameTB);
+            layout.AddRow(nameTBLabel, nameTB);
+
+            var groupIDLabel = new Label() { Text = "Group ID:" };
+            groupIDLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.SensorGrid), nameof(dummy.GroupIdentifier)));
 
             var groupID = new StringText();
             groupID.TextBinding.Bind(_vm, _ => _.GroupID);
-            layout.AddRow("Group ID:", groupID);
+            layout.AddRow(groupIDLabel, groupID);
+
+
+            var roomIDLabel = new Label() { Text = "Room ID:" };
+            roomIDLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.SensorGrid), nameof(dummy.RoomIdentifier)));
 
             var roomID = new StringText();
             roomID.TextBinding.Bind(_vm, _ => _.RoomID);
-            layout.AddRow("Room ID:", roomID);
+            layout.AddRow(roomIDLabel, roomID);
 
             return layout;
         }

@@ -21,6 +21,8 @@ namespace Honeybee.UI.View
             }
         }
         public Button SchemaDataBtn;
+
+        private static HB.Shade _dummy = new HB.Shade("test", new HB.Face3D(new List<List<double>>()), new HB.ShadePropertiesAbridged());
         private ShadeProperty()
         {
             this._vm = new ShadePropertyViewModel(this);
@@ -72,23 +74,33 @@ namespace Honeybee.UI.View
 
         private DynamicLayout GenGeneralPanel()
         {
+
             var layout = new DynamicLayout();
             layout.DefaultSpacing = new Size(4, 4);
             layout.DefaultPadding = new Padding(4);
 
+            var idLabel = new Label() { Text = "ID:" };
+            idLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.Shade), nameof(_dummy.Identifier)));
+
             var id = new Label() { Width = 255 };
             id.TextBinding.Bind(_vm, _ => _.Identifier);
             id.Bind(_ => _.ToolTip, _vm, _ => _.Identifier);
-            layout.AddRow("ID:", id);
+            layout.AddRow(idLabel, id);
             layout.AddRow(null, new Label() { Visible = false }); // add space
+
+            var nameTBLabel = new Label() { Text = "Name:" };
+            nameTBLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.Shade), nameof(_dummy.DisplayName)));
 
             var nameTB = new StringText();
             nameTB.TextBinding.Bind(_vm, _ => _.DisplayName);
-            layout.AddRow("Name:", nameTB);
+            layout.AddRow(nameTBLabel, nameTB);
+
+            var IsDetachedLabel = new Label() { Text = "Is Site Context:" };
+            IsDetachedLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.Shade), nameof(_dummy.IsDetached)));
 
             var IsDetached = new CheckBox();
             IsDetached.CheckedBinding.Bind(_vm, _ => _.IsDetached.IsChecked);
-            layout.AddRow("Is Site Context:", IsDetached);
+            layout.AddRow(IsDetachedLabel, IsDetached);
             return layout;
         }
 
@@ -100,6 +112,9 @@ namespace Honeybee.UI.View
             layout.DefaultSpacing = new Size(4, 4);
             layout.DefaultPadding = new Padding(4);
 
+            var cLabel = new Label() { Text = "Modifier:" };
+            cLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.ShadeRadiancePropertiesAbridged), nameof(_dummy.Properties.Radiance.Modifier)));
+
             var c = new Button();
             c.Width = 250;
             c.Bind(_ => _.Enabled, _vm, v => v.Modifier.IsBtnEnabled);
@@ -108,8 +123,11 @@ namespace Honeybee.UI.View
             var cByRoom = new CheckBox() { Text = ReservedText.ByGlobalSetting };
             cByRoom.CheckedBinding.Bind(_vm, _ => _.Modifier.IsCheckboxChecked);
 
-            layout.AddRow("Modifier:", cByRoom);
+            layout.AddRow(cLabel, cByRoom);
             layout.AddRow(null, c);
+
+            var mbLabel = new Label() { Text = "Modifier Blk:" };
+            mbLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.ShadeRadiancePropertiesAbridged), nameof(_dummy.Properties.Radiance.ModifierBlk)));
 
             var mb = new Button();
             mb.Bind(_ => _.Enabled, _vm, v => v.ModifierBlk.IsBtnEnabled);
@@ -117,12 +135,15 @@ namespace Honeybee.UI.View
             mb.Command = this._vm.ModifierBlkCommand;
             var mbByRoom = new CheckBox() { Text = ReservedText.ByGlobalSetting };
             mbByRoom.CheckedBinding.Bind(_vm, _ => _.ModifierBlk.IsCheckboxChecked);
-            layout.AddRow("Modifier Blk:", mbByRoom);
+            layout.AddRow(mbLabel, mbByRoom);
             layout.AddRow(null, mb);
+
+            var dynamicGroupLabel = new Label() { Text = "Dynamic Group ID:" };
+            dynamicGroupLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.ShadeRadiancePropertiesAbridged), nameof(_dummy.Properties.Radiance.DynamicGroupIdentifier)));
 
             var dynamicGroup = new StringText();
             dynamicGroup.TextBinding.Bind(_vm, _ => _.DynamicGroupIdentifier);
-            layout.AddRow("Dynamic Group ID:", dynamicGroup);
+            layout.AddRow(dynamicGroupLabel, dynamicGroup);
 
             gp.Content = layout;
             return gp;
@@ -137,6 +158,9 @@ namespace Honeybee.UI.View
             layout.DefaultPadding = new Padding(4);
 
 
+            var cLabel = new Label() { Text = "Construction:" };
+            cLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.ShadeEnergyPropertiesAbridged), nameof(_dummy.Properties.Energy.Construction)));
+
             var c = new Button();
             c.Width = 250;
             c.Bind(_ => _.Enabled, _vm, v => v.Construction.IsBtnEnabled);
@@ -145,9 +169,12 @@ namespace Honeybee.UI.View
             var cByRoom = new CheckBox() { Text = ReservedText.ByGlobalSetting };
             cByRoom.CheckedBinding.Bind(_vm, _ => _.Construction.IsCheckboxChecked);
 
-            layout.AddRow("Construction:", cByRoom);
+            layout.AddRow(cLabel, cByRoom);
             layout.AddRow(null, c);
 
+
+            var schLabel = new Label() { Text = "Transmittance Schedule:" };
+            schLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.ShadeEnergyPropertiesAbridged), nameof(_dummy.Properties.Energy.TransmittanceSchedule)));
 
             var sch = new Button();
             sch.Bind(_ => _.Enabled, _vm, v => v.TransmittanceSchedule.IsBtnEnabled);
@@ -156,7 +183,7 @@ namespace Honeybee.UI.View
             var noSch = new CheckBox() { Text = ReservedText.NoSchedule };
             noSch.CheckedBinding.Bind(_vm, _ => _.TransmittanceSchedule.IsCheckboxChecked);
 
-            layout.AddRow("Transmittance Schedule:", noSch);
+            layout.AddRow(schLabel, noSch);
             layout.AddRow(null, sch);
 
 

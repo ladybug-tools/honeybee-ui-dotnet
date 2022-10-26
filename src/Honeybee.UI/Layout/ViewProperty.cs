@@ -71,6 +71,8 @@ namespace Honeybee.UI.View
 
         private DynamicLayout GenGeneralPanel()
         {
+            var _dummy = new HB.View("test", new List<double>(), new List<double>(), new List<double>());
+
             var layout = new DynamicLayout();
             layout.DefaultSpacing = new Size(4, 4);
             layout.DefaultPadding = new Padding(4);
@@ -81,9 +83,15 @@ namespace Honeybee.UI.View
             layout.AddRow("ID:", id);
             layout.AddRow(null, new Label() { Visible = false }); // add space
 
+            var nameTBLabel = new Label() { Text = "Name:" };
+            nameTBLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.View), nameof(_dummy.DisplayName)));
+
             var nameTB = new StringText();
             nameTB.TextBinding.Bind(_vm, _ => _.DisplayName);
-            layout.AddRow("Name:", nameTB);
+            layout.AddRow(nameTBLabel, nameTB);
+
+            var pxLabel = new Label() { Text = "Position:" };
+            pxLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.View), nameof(_dummy.Position)));
 
             var px = new DoubleText() {Width = 70 };
             px.ReservedText = ReservedText.Varies;
@@ -99,9 +107,13 @@ namespace Honeybee.UI.View
             pz.TextBinding.Bind(_vm, _ => _.Pz.NumberText);
             var position = new DynamicLayout() { DefaultSpacing = new Size(4, 4) };
             position.AddRow("X", px, "Y", py, "Z", pz);
-            layout.AddRow("Position:", position);
+            layout.AddRow(pxLabel, position);
 
             // direction
+
+            var vxLabel = new Label() { Text = "Direction:" };
+            vxLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.View), nameof(_dummy.Direction)));
+
             var vx = new DoubleText() { Width = 70 };
             vx.ReservedText = ReservedText.Varies;
             vx.SetDefault(_vm.Default.Direction[0]);
@@ -116,9 +128,12 @@ namespace Honeybee.UI.View
             vz.TextBinding.Bind(_vm, _ => _.Vz.NumberText);
             var direction = new DynamicLayout() { DefaultSpacing = new Size(4, 4) };
             direction.AddRow("X", vx, "Y", vy, "Z", vz);
-            layout.AddRow("Direction:", direction);
+            layout.AddRow(vxLabel, direction);
 
             // up vector
+            var UxLabel = new Label() { Text = "Up Vector:" };
+            UxLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.View), nameof(_dummy.UpVector)));
+
             var Ux = new DoubleText() { Width = 70 };
             Ux.ReservedText = ReservedText.Varies;
             Ux.SetDefault(_vm.Default.UpVector[0]);
@@ -133,9 +148,12 @@ namespace Honeybee.UI.View
             Uz.TextBinding.Bind(_vm, _ => _.Uz.NumberText);
             var upvec = new DynamicLayout() { DefaultSpacing = new Size(4, 4) };
             upvec.AddRow("X", Ux, "Y", Uy, "Z", Uz);
-            layout.AddRow("Up Vector:", upvec);
+            layout.AddRow(UxLabel, upvec);
 
             // view type
+            var viewTypeLabel = new Label() { Text = "View type:" };
+            viewTypeLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.View), nameof(_dummy.ViewType)));
+
             var viewTypeText = new TextBox();
             viewTypeText.Bind(_ => _.Text, _vm, _ => _.ViewTypeText);
             var viewTypeDP = new DropDown() { Height = 24 };
@@ -154,51 +172,75 @@ namespace Honeybee.UI.View
             var typeDp = new DynamicLayout();
             typeDp.AddRow(viewTypeText);
             typeDp.AddRow(viewTypeDP);
-            layout.AddRow("View type:", typeDp);
+            layout.AddRow(viewTypeLabel, typeDp);
+
+            var hSizeLabel = new Label() { Text = "Horizontal angle:" };
+            hSizeLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.View), nameof(_dummy.HSize)));
 
             var hSize = new DoubleText();
             hSize.ReservedText = ReservedText.Varies;
             hSize.SetDefault(_vm.Default.HSize);
             hSize.TextBinding.Bind(_vm, _ => _.HSize.NumberText);
-            layout.AddRow("Horizontal angle:", hSize);
+            layout.AddRow(hSizeLabel, hSize);
+
+            var vSizeLabel = new Label() { Text = "Vertical angle:" };
+            vSizeLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.View), nameof(_dummy.VSize)));
 
             var vSize = new DoubleText();
             vSize.ReservedText = ReservedText.Varies;
             vSize.SetDefault(_vm.Default.VSize);
             vSize.TextBinding.Bind(_vm, _ => _.VSize.NumberText);
-            layout.AddRow("Vertical angle:", vSize);
+            layout.AddRow(vSizeLabel, vSize);
+
+            var shiftLabel = new Label() { Text = "Shift:" };
+            shiftLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.View), nameof(_dummy.Shift)));
 
             var shift = new DoubleText();
             shift.ReservedText = ReservedText.Varies;
             shift.SetDefault(_vm.Default.Shift);
             shift.TextBinding.Bind(_vm, _ => _.Shift.NumberText);
-            layout.AddRow("Shift:", shift);
+            layout.AddRow(shiftLabel, shift);
+
+            var liftLabel = new Label() { Text = "Lift:" };
+            liftLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.View), nameof(_dummy.Lift)));
 
             var lift = new DoubleText();
             lift.ReservedText = ReservedText.Varies;
             lift.SetDefault(_vm.Default.Lift);
             lift.TextBinding.Bind(_vm, _ => _.Lift.NumberText);
-            layout.AddRow("Lift:", lift);
+            layout.AddRow(liftLabel, lift);
+
+            var foreClipLabel = new Label() { Text = "ForeClip:" };
+            foreClipLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.View), nameof(_dummy.ForeClip)));
 
             var foreClip = new DoubleText();
-            foreClip.ReservedText = ReservedText.Varies;
+            foreClip.ReservedText = ReservedText.Varies; 
             foreClip.SetDefault(_vm.Default.ForeClip);
             foreClip.TextBinding.Bind(_vm, _ => _.ForeClip.NumberText);
-            layout.AddRow("ForeClip:", foreClip);
+            layout.AddRow(foreClipLabel, foreClip);
+
+            var AfterClipLabel = new Label() { Text = "AfterClip:" };
+            AfterClipLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.View), nameof(_dummy.AftClip)));
 
             var afterClip = new DoubleText();
             afterClip.ReservedText = ReservedText.Varies;
             afterClip.SetDefault(_vm.Default.AftClip);
             afterClip.TextBinding.Bind(_vm, _ => _.AftClip.NumberText);
-            layout.AddRow("AfterClip:", afterClip);
+            layout.AddRow(AfterClipLabel, afterClip);
+
+            var groupIDLabel = new Label() { Text = "Group ID:" };
+            groupIDLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.View), nameof(_dummy.GroupIdentifier)));
 
             var groupID = new StringText();
             groupID.TextBinding.Bind(_vm, _ => _.GroupID);
-            layout.AddRow("Group ID:", groupID);
+            layout.AddRow(groupIDLabel, groupID);
+
+            var roomIDLabel = new Label() { Text = "Room ID:" };
+            roomIDLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.View), nameof(_dummy.RoomIdentifier)));
 
             var roomID = new StringText();
             roomID.TextBinding.Bind(_vm, _ => _.RoomID);
-            layout.AddRow("Room ID:", roomID);
+            layout.AddRow(roomIDLabel, roomID);
 
             return layout;
         }

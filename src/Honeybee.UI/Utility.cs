@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 namespace Honeybee.UI
 {
@@ -49,6 +50,20 @@ namespace Honeybee.UI
         public static LadybugDisplaySchema.Plane ToLBG(this HoneybeeSchema.Plane geo)
         {
             return new LadybugDisplaySchema.Plane(geo.N, geo.O, geo.X);
+        }
+
+        public static string NiceDescription(string description)
+        {
+            if (string.IsNullOrEmpty(description))
+                return description;
+
+            var charCount = 0;
+            var maxLineLength = 50;
+            var lines = description
+                .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                .GroupBy(w => (charCount += w.Length + 1) / maxLineLength)
+                .Select(g => string.Join(" ", g));
+            return string.Join(Environment.NewLine, lines);
         }
 
     }

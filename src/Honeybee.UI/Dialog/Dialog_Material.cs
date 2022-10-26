@@ -10,17 +10,12 @@ namespace Honeybee.UI
 
     public class Dialog_Material : Dialog_ResourceEditor<HB.Energy.IMaterial>
     {
-        private Label _r_label;
-        private Label _u_label;
         private TextBox _r_value;
         private TextBox _u_value;
 
-        const string _r_si = "R Value [m2·K/W]";
-        const string _r_ip = "R Value [ft2·F·h/BTU]";
-        const string _u_si = "U Value [W/m2·K]";
-        const string _u_ip = "U Value [BTU/ft2·F·h]";
+        const string _r_si = "RValue";
+        const string _u_si = "UValue";
 
-        private bool _showIP = false;
         public Dialog_Material(HB.Energy.IMaterial material, bool lockedMode = false)
         {
             try
@@ -52,14 +47,6 @@ namespace Honeybee.UI
                 layout.DefaultSpacing = new Size(5, 5);
                 layout.DefaultPadding = new Padding(5);
 
-                // unit switchs
-                var unit = new RadioButtonList();
-                unit.Items.Add("Metric");
-                unit.Items.Add("Imperial");
-                unit.SelectedIndex = 0;
-                unit.Spacing = new Size(5, 0);
-                unit.SelectedIndexChanged += (s, e) => CalRValue(_hbObj, unit.SelectedIndex == 1);
-
                 var buttonSource = new Button { Text = "Schema Data" };
                 buttonSource.Click += (s, e) =>
                 {
@@ -68,7 +55,7 @@ namespace Honeybee.UI
 
                 var materialPanel = GenParmPanel(_hbObj);
                 layout.AddRow(materialPanel);
-                layout.AddSeparateRow( null, "R/U value unit:", unit);
+                //layout.AddSeparateRow( null, "R/U value unit:", unit);
                 layout.AddSeparateRow(locked, null, OkButton, AbortButton, null, buttonSource);
                 layout.AddRow(null);
 
@@ -92,7 +79,8 @@ namespace Honeybee.UI
             panel.DefaultSpacing = new Size(5, 5);
             panel.DefaultPadding = new Padding(5);
 
-            var properties = hbObj.GetType().GetProperties().Where(_ => _.CanWrite);
+            var hbObjType = hbObj.GetType();
+            var properties = hbObjType.GetProperties().Where(_ => _.CanWrite);
             if (properties.Count() > 15)
             {
                 panel.Height = 300;
@@ -102,17 +90,23 @@ namespace Honeybee.UI
             var name = new TextBox();
             hbObj.DisplayName = hbObj.DisplayName ?? hbObj.Identifier;
             name.TextBinding.Bind(() => hbObj.DisplayName, (v) => hbObj.DisplayName = v);
+            var nameLabel = new Label() { Text = "Name" };
+            var nameDescription = HoneybeeSchema.SummaryAttribute.GetSummary(hbObjType, nameof(hbObj.DisplayName));
+            nameLabel.ToolTip = Utility.NiceDescription( nameDescription);
+            panel.AddRow(nameLabel, name);
 
-            panel.AddRow("Name", name);
+            var rUnit = _RValueUnit.displayUnit.ToUnitsNetEnum().GetAbbreviation();
+            var uUnit = _UValueUnit.displayUnit.ToUnitsNetEnum().GetAbbreviation();
 
-            _r_label = new Label() {Text = _r_si };
-            _u_label = new Label() { Text = _u_si };
-
+            var rLabel = new Label() { Text = $"RValue [{rUnit}]" }; 
+            var uLabel = new Label() { Text = $"UValue [{uUnit}]" };
             _r_value = new TextBox() { Enabled = false, PlaceholderText = "Not available" };
             _u_value = new TextBox() { Enabled = false, PlaceholderText = "Not available" };
-            panel.AddRow(_r_label, _r_value);
-            panel.AddRow(_u_label, _u_value);
-            CalRValue(hbObj, false);
+            rLabel.ToolTip = Utility.NiceDescription("R-value of the material. Note that R-values do NOT include the resistance of air films on either side of the material."); ;
+            uLabel.ToolTip = Utility.NiceDescription("U-value of the material. Note that U-values do NOT include the resistance of air films on either side of the material."); ;
+            panel.AddRow(rLabel, _r_value);
+            panel.AddRow(uLabel, _u_value);
+            CalRValue(hbObj);
 
             foreach (var item in properties)
             {
@@ -121,17 +115,23 @@ namespace Honeybee.UI
 
                 var value = item.GetValue(hbObj);
                 var type = item.PropertyType;
+
+                var label = new Label() { Text = item.Name };
+                var description = HoneybeeSchema.SummaryAttribute.GetSummary(hbObjType, item.Name);
+                label.ToolTip = Utility.NiceDescription(description);
                 if (value is string stringvalue)
                 {
                     var textBox = new TextBox();
-                    //textBox.Text = stringvalue;
                     textBox.TextBinding.Bind(() => stringvalue, (v) => item.SetValue(hbObj, v));
-                    panel.AddRow(item.Name, textBox);
+                
+                    panel.AddRow(label, textBox);
                 }
                 else if (value is double numberValue)
                 {
                     var numberTB = new MaskedTextBox();
                     numberTB.Provider = new NumericMaskedTextProvider() { AllowDecimal = true };
+                    label.ToolTip = Utility.NiceDescription(description);
+
                     var hasUnits = _propertyUnits.TryGetValue(item.Name, out var units);
                     if (hasUnits)
                     {
@@ -147,12 +147,12 @@ namespace Honeybee.UI
                             Utility.TryParse(v, out var numValue);
                             var baseValue = Units.ConvertValueWithUnits(numValue, displayUnit, baseUnit);
                             item.SetValue(hbObj, baseValue);
-                            CalRValue(hbObj, _showIP);
+                            CalRValue(hbObj);
                         }
                         );
                         var abb = displayUnit.GetAbbreviation();
-                        var nameWithUnit = $"{item.Name} [{abb}]";
-                        panel.AddRow(nameWithUnit, numberTB);
+                        label.Text = $"{item.Name} [{abb}]";
+                        panel.AddRow(label, numberTB);
                     }
                     else // unitless property
                     {
@@ -161,12 +161,12 @@ namespace Honeybee.UI
                         (v) => {
                             Utility.TryParse(v, out var numValue);
                             item.SetValue(hbObj, numValue);
-                            CalRValue(hbObj, _showIP);
+                            CalRValue(hbObj);
                         }
                         );
-                        panel.AddRow(item.Name, numberTB);
+                        panel.AddRow(label, numberTB);
                     }
-                  
+               
                 }
                 else if (value is int intValue)
                 {
@@ -176,10 +176,11 @@ namespace Honeybee.UI
                         () => intValue, 
                         (v) => { 
                             item.SetValue(hbObj, v);
-                            CalRValue(hbObj, _showIP);
+                            CalRValue(hbObj);
                         }
-                    );
-                    panel.AddRow(item.Name, numberTB);
+                    ); 
+                    label.ToolTip = Utility.NiceDescription(description);
+                    panel.AddRow(label, numberTB);
                 }
                 else if (Nullable.GetUnderlyingType(type) != null)
                 {
@@ -199,7 +200,9 @@ namespace Honeybee.UI
                         (v) => item.SetValue(hbObj, Enum.Parse(enumType, v))
                         );
 
-                    panel.AddRow(item.Name, dropdown);
+                    label.ToolTip = Utility.NiceDescription(description);
+
+                    panel.AddRow(label, dropdown);
 
 
                 }
@@ -216,7 +219,8 @@ namespace Honeybee.UI
                         (v) => item.SetValue(hbObj, Enum.Parse(type, v))
                         );
 
-                    panel.AddRow(item.Name, dropdown);
+                    label.ToolTip = Utility.NiceDescription(description);
+                    panel.AddRow(label, dropdown);
 
                 }
             }
@@ -227,27 +231,43 @@ namespace Honeybee.UI
 
         }
 
+        private static (Enum baseUnit, Enum displayUnit) _RValueUnit => _propertyUnits["RValue"];
+        private static (Enum baseUnit, Enum displayUnit) _UValueUnit => _propertyUnits["UValue"];
         private static Dictionary<string, (Enum baseUnit, Enum displayUnit)> _propertyUnits => new Dictionary<string, (Enum, Enum)>()
         {
             { "Thickness", (Units.LengthUnit.Meter, Units.CustomUnitSettings[Units.UnitType.Length])},
             { "Conductivity", (Units.ThermalConductivityUnit.WattPerMeterKelvin, Units.CustomUnitSettings[Units.UnitType.Conductivity])},
+            { "UFactor", (Units.HeatTransferCoefficientUnit.WattPerSquareMeterKelvin, Units.CustomUnitSettings[Units.UnitType.UValue])},
+            { "UValue", (Units.HeatTransferCoefficientUnit.WattPerSquareMeterKelvin, Units.CustomUnitSettings[Units.UnitType.UValue])},
             { "RValue", (Units.ThermalResistanceUnit.SquareMeterDegreeCelsiusPerWatt, Units.CustomUnitSettings[Units.UnitType.Resistance])},
             { "Density", (Units.DensityUnit.KilogramPerCubicMeter, Units.CustomUnitSettings[Units.UnitType.Density])},
             { "SpecificHeat", (Units.SpecificEntropyUnit.JoulePerKilogramKelvin, Units.CustomUnitSettings[Units.UnitType.SpecificEntropy])},
 
         };
 
-        void CalRValue(HB.Energy.IMaterial tc, bool ShowIPUnit)
+        void CalRValue(HB.Energy.IMaterial tc)
         {
-            _showIP = ShowIPUnit;
+            try
+            {
+                var r = tc.RValue;
+                var rUnit = _RValueUnit;
+                var baseUnit = rUnit.baseUnit.ToUnitsNetEnum();
+                var displayUnit = rUnit.displayUnit.ToUnitsNetEnum();
+                r = Units.ConvertValueWithUnits(r, baseUnit, displayUnit);
 
-            var r = ShowIPUnit ? Math.Round(tc.RValue * 5.678263337, 5) : Math.Round(tc.RValue, 5);
-            var u = ShowIPUnit ? Math.Round(tc.UValue / 5.678263337, 5) : Math.Round(tc.UValue, 5);
+                var u = 1 / r;
 
-            _r_value.Text = r < 0 ? "Skylight only" : r.ToString();
-            _u_value.Text = u < 0 ? "Skylight only" : u.ToString();
-            _r_label.Text = ShowIPUnit ? _r_ip : _r_si;
-            _u_label.Text = ShowIPUnit ? _u_ip : _u_si;
+                r = Math.Round(r, 5);
+                u = Math.Round(u, 5);
+
+                _r_value.Text = r < 0 ? "Skylight only" : r.ToString();
+                _u_value.Text = u < 0 ? "Skylight only" : u.ToString();
+            }
+            catch (Exception)
+            {
+                //throw;
+            }
+           
         }
     }
 }

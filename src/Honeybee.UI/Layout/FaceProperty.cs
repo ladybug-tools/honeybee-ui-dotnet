@@ -3,6 +3,7 @@ using Eto.Forms;
 using HB = HoneybeeSchema;
 using Honeybee.UI.ViewModel;
 using System.Collections.Generic;
+using System;
 
 namespace Honeybee.UI.View
 {
@@ -20,6 +21,10 @@ namespace Honeybee.UI.View
             }
         }
         public Button SchemaDataBtn;
+
+        private static Type _HBObjType = typeof(HB.Face);
+        private static HB.Face _dummy = new HB.Face("test", new HB.Face3D(new List<List<double>>()), HB.FaceType.Wall, new HB.Outdoors(), new HB.FacePropertiesAbridged());
+
         private FaceProperty()
         {
             this._vm = new FacePropertyViewModel(this);
@@ -77,16 +82,22 @@ namespace Honeybee.UI.View
             layout.DefaultSpacing = new Size(4, 4);
             layout.DefaultPadding = new Padding(4);
 
+            var idLabel = new Label() { Text = "ID:" };
+            idLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(_HBObjType, nameof(_dummy.Identifier)));
+
+
             var id = new Label() { Width = 255 };
             id.TextBinding.Bind(_vm, (_) => _.Identifier);
             id.Bind(_ => _.ToolTip, _vm, _ => _.Identifier);
-            layout.AddRow("ID:", id);
+            layout.AddRow(idLabel, id);
             layout.AddRow(null, new Label() { Visible = false }); // add space
+
+            var NameLabel = new Label() { Text = "Name:" };
+            NameLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(_HBObjType, nameof(_dummy.DisplayName)));
 
             var nameTB = new StringText();
             nameTB.TextBinding.Bind(_vm, (_) => _.DisplayName);
-            layout.AddRow("Name:", nameTB);
-          
+            layout.AddRow(NameLabel, nameTB);
 
 
             var faceTypeText = new TextBox();
@@ -126,8 +137,14 @@ namespace Honeybee.UI.View
             var cByRoom = new CheckBox() { Text = ReservedText.ByParentSetting };
             cByRoom.CheckedBinding.Bind(_vm, _ => _.Modifier.IsCheckboxChecked);
 
-            layout.AddRow("Modifier:", cByRoom);
+            var ModifierLabel = new Label() { Text = "Modifier:" };
+            ModifierLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.PropertiesBaseAbridged), nameof(_dummy.Properties.Radiance.Modifier)));
+
+            layout.AddRow(ModifierLabel, cByRoom);
             layout.AddRow(null, c);
+
+            var ModifierBlkLabel = new Label() { Text = "Modifier Blk:" };
+            ModifierBlkLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.FaceRadiancePropertiesAbridged), nameof(_dummy.Properties.Radiance.ModifierBlk)));
 
             var mb = new Button();
             mb.Bind(_ => _.Enabled, _vm, v => v.ModifierBlk.IsBtnEnabled);
@@ -135,7 +152,7 @@ namespace Honeybee.UI.View
             mb.Command = this._vm.ModifierBlkCommand;
             var mbByRoom = new CheckBox() { Text = ReservedText.ByParentSetting };
             mbByRoom.CheckedBinding.Bind(_vm, _ => _.ModifierBlk.IsCheckboxChecked);
-            layout.AddRow("Modifier Blk:", mbByRoom);
+            layout.AddRow(ModifierBlkLabel, mbByRoom);
             layout.AddRow(null, mb);
 
             gp.Content = layout;
@@ -159,7 +176,10 @@ namespace Honeybee.UI.View
             var cByRoom = new CheckBox() { Text = ReservedText.ByParentSetting };
             cByRoom.CheckedBinding.Bind(_vm, _ => _.Construction.IsCheckboxChecked);
 
-            layout.AddRow("Construction:", cByRoom);
+            var ConstructionLabel = new Label() { Text = "Construction:" };
+            ConstructionLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.FaceEnergyPropertiesAbridged), nameof(_dummy.Properties.Energy.Construction)));
+
+            layout.AddRow(ConstructionLabel, cByRoom);
             layout.AddRow(null, c);
 
 
@@ -179,10 +199,14 @@ namespace Honeybee.UI.View
                 bcDP.Visible = false;
             };
 
+            var bcLabel = new Label() { Text = "Boundary Condition:" };
+            bcLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(_HBObjType, nameof(_dummy.BoundaryCondition)));
+
+
             var typeDp = new DynamicLayout();
             typeDp.AddRow(bcText);
             typeDp.AddRow(bcDP);
-            layout.AddRow("Boundary Condition:", typeDp);
+            layout.AddRow(bcLabel, typeDp);
 
             // bc
             var outdoorBc = CreateOutdoorLayout();
@@ -229,7 +253,12 @@ namespace Honeybee.UI.View
             var autosize = new CheckBox() { Text = "Autocalculate" };
             autosize.Bind(_ => _.Checked, _vm, _ => _.BCOutdoor.IsViewFactorAutocalculate);
 
-            layout.AddRow("View Factor:", autosize);
+            var outdoorDummy = new HB.Outdoors();
+            var vFactorLabel = new Label() { Text = "View Factor:" };
+            vFactorLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(outdoorDummy.GetType(), nameof(outdoorDummy.ViewFactor)));
+
+
+            layout.AddRow(vFactorLabel, autosize);
             layout.AddRow(null, vFactor);
             layout.AddRow(null);
 
@@ -261,6 +290,10 @@ namespace Honeybee.UI.View
             layout.Bind(_ => _.Visible, _vm, _ => _.IsOtherSideTemperatureBoundary);
             //layout.AddRow("Other Side Temperature:");
 
+            var dummy = new HB.OtherSideTemperature();
+            var wPerAreaLabel = new Label() { Text = "Heat Transfer Coeff:" };
+            wPerAreaLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.OtherSideTemperature), nameof(dummy.HeatTransferCoefficient)));
+
             var wPerArea = new DoubleText();
             wPerArea.Width = 200;
             wPerArea.ReservedText = ReservedText.Varies;
@@ -270,9 +303,12 @@ namespace Honeybee.UI.View
             unit.TextBinding.Bind(_vm, _ => _.BCOtherSideTemperature.HeatTransferCoefficient.DisplayUnitAbbreviation);
             var wPerAreaLayout = new DynamicLayout() { Width = 250};
             wPerAreaLayout.AddRow(wPerArea, unit);
-            layout.AddRow("Heat Transfer Coeff:", wPerAreaLayout);
+            layout.AddRow(wPerAreaLabel, wPerAreaLayout);
             //layout.AddRow(wPerArea);
 
+
+            var vFactorLabel = new Label() { Text = "Temperature:" };
+            vFactorLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.OtherSideTemperature), nameof(dummy.Temperature)));
 
             var vFactor = new DoubleText();
             vFactor.Width = 200;
@@ -285,7 +321,7 @@ namespace Honeybee.UI.View
 
             var unitT = new Label();
             unitT.TextBinding.Bind(_vm, _ => _.BCOtherSideTemperature.Temperature.DisplayUnitAbbreviation);
-            layout.AddRow("Temperature:", autosize);
+            layout.AddRow(vFactorLabel, autosize);
             var vFactorLayout = new DynamicLayout();
             vFactorLayout.AddRow(vFactor, unitT);
             layout.AddRow(null, vFactorLayout);
@@ -304,18 +340,19 @@ namespace Honeybee.UI.View
 
             layout.DefaultSpacing = new Size(4, 4);
             layout.DefaultPadding = new Padding(4);
-
-
+            
             var afnByProgram = new CheckBox() { Text = ReservedText.ByParentSetting };
             afnByProgram.CheckedBinding.Bind(_vm, _ => _.AFNCrack.IsCheckboxChecked);
             layout.AddRow("AFNCrack:", afnByProgram);
 
+          
             var wPerArea = new DoubleText();
             wPerArea.Width = 250;
             wPerArea.ReservedText = ReservedText.Varies;
             wPerArea.SetDefault(_vm.AFNCrack.Default.FlowCoefficient);
             wPerArea.TextBinding.Bind(vm, _ => _.AFNCrack.FlowCoefficient.NumberText);
             var flowLabel = new Label() { Text = "Flow Coefficient:" };
+            flowLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.AFNCrack), nameof(_dummy.Properties.Energy.VentCrack.FlowCoefficient)));
             flowLabel.Bind((t) => t.Enabled, vm, v => v.AFNCrack.IsPanelEnabled);
             wPerArea.Bind((t) => t.Enabled, vm, v => v.AFNCrack.IsPanelEnabled);
             layout.AddRow(flowLabel, wPerArea);
@@ -326,6 +363,7 @@ namespace Honeybee.UI.View
             radFraction.SetDefault(_vm.AFNCrack.Default.FlowExponent);
             radFraction.TextBinding.Bind(vm, _ => _.AFNCrack.FlowExponent.NumberText); 
             var exponentLabel = new Label() { Text = "Flow Exponent:" };
+            exponentLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.AFNCrack), nameof(_dummy.Properties.Energy.VentCrack.FlowExponent)));
             exponentLabel.Bind((t) => t.Enabled, vm, v => v.AFNCrack.IsPanelEnabled);
             radFraction.Bind((t) => t.Enabled, vm, v => v.AFNCrack.IsPanelEnabled);
             layout.AddRow(exponentLabel, radFraction);
