@@ -40,6 +40,13 @@ namespace Honeybee.UI
             }
         }
 
+        private string _VintageTip;
+        public string VintageTip
+        {
+            get => _VintageTip;
+            set => Set(() => _VintageTip = value, nameof(VintageTip));
+        }
+
         public List<string> HvacGroups => new List<string>() { "All Air (non DOAS)", "Heating Cooling with DOAS", "Heating Cooling Only" };
 
 
@@ -142,6 +149,13 @@ namespace Honeybee.UI
             }
         }
 
+        private string _NameTip;
+        public string NameTip
+        {
+            get => _NameTip;
+            set => Set(() => _NameTip = value, nameof(NameTip));
+        }
+
         private IEnumerable<string> _economizers = Enum.GetNames(typeof(AllAirEconomizerType)).ToList();
         public IEnumerable<string> Economizers => _economizers;
 
@@ -150,6 +164,13 @@ namespace Honeybee.UI
         {
             get => _economizer ?? Economizers.First();
             set => Set(() => _economizer = value, nameof(Economizer));
+        }
+
+        private string _EconomizerTip;
+        public string EconomizerTip
+        {
+            get => _EconomizerTip;
+            set => Set(() => _EconomizerTip = value, nameof(EconomizerTip));
         }
 
         private bool _economizerVisable = true;
@@ -173,6 +194,13 @@ namespace Honeybee.UI
             set => Set(() => _dcvChecked = value, nameof(DcvChecked));
         }
 
+        private string _DCVTip;
+        public string DCVTip
+        {
+            get => _DCVTip;
+            set => Set(() => _DCVTip = value, nameof(DCVTip));
+        }
+
         private double _sensibleHR = dummy.SensibleHeatRecovery;
         public double SensibleHR
         {
@@ -188,6 +216,12 @@ namespace Honeybee.UI
             set => Set(() => _sensibleHRVisable = value, nameof(SensibleHRVisable));
         }
 
+        private string _SensibleHRTip;
+        public string SensibleHRTip
+        {
+            get => _SensibleHRTip;
+            set => Set(() => _SensibleHRTip = value, nameof(SensibleHRTip));
+        }
 
         private double _latentHR = dummy.LatentHeatRecovery;
         public double LatentHR
@@ -202,6 +236,13 @@ namespace Honeybee.UI
         {
             get => _latentHRVisable;
             set => Set(() => _latentHRVisable = value, nameof(LatentHRVisable));
+        }
+
+        private string _LatentHRTip;
+        public string LatentHRTip
+        {
+            get => _LatentHRTip;
+            set => Set(() => _LatentHRTip = value, nameof(LatentHRTip));
         }
 
         // AvailabilitySchedule
@@ -221,11 +262,25 @@ namespace Honeybee.UI
             set { this.Set(() => _AvaliabilitySchedule = value, nameof(AvaliabilitySchedule)); }
         }
 
+        private string _AvaliabilityTip;
+        public string AvaliabilityTip
+        {
+            get => _AvaliabilityTip;
+            set => Set(() => _AvaliabilityTip = value, nameof(AvaliabilityTip));
+        }
+
         private bool _RadiantVisable;
         public bool RadiantVisable
         {
             get => _RadiantVisable;
             set => Set(() => _RadiantVisable = value, nameof(RadiantVisable));
+        }
+
+        private string _RadiantFaceTip;
+        public string RadiantFaceTip
+        {
+            get => _RadiantFaceTip;
+            set => Set(() => _RadiantFaceTip = value, nameof(RadiantFaceTip));
         }
 
         private RadiantFaceTypes _RadiantFaceType = dummyRad.RadiantFaceType;
@@ -235,6 +290,7 @@ namespace Honeybee.UI
             set { this.Set(() => _RadiantFaceType = value, nameof(RadiantFaceType)); }
         }
 
+
         private double _MinOptTime = dummyRad.MinimumOperationTime;
         public double MinOptTime
         {
@@ -242,11 +298,25 @@ namespace Honeybee.UI
             set => Set(() => _MinOptTime = value, nameof(MinOptTime));
         }
 
+        private string _MinOptTimeTip;
+        public string MinOptTimeTip
+        {
+            get => _MinOptTimeTip;
+            set => Set(() => _MinOptTimeTip = value, nameof(MinOptTimeTip));
+        }
+
         private double _SwitchTime = dummyRad.SwitchOverTime;
         public double SwitchTime
         {
             get => _SwitchTime;
             set => Set(() => _SwitchTime = value, nameof(SwitchTime));
+        }
+
+        private string _SwitchTimeTip;
+        public string SwitchTimeTip
+        {
+            get => _SwitchTimeTip;
+            set => Set(() => _SwitchTimeTip = value, nameof(SwitchTimeTip));
         }
 
         private static VAV dummy = new VAV("dummy");
@@ -278,7 +348,7 @@ namespace Honeybee.UI
             var vintage = hvacClassType.GetProperty(nameof(dummy.Vintage))?.GetValue(hvac);
             if (vintage is Vintages v)
                 this.Vintage = v.ToString();
-
+            this.VintageTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(hvacClassType, nameof(dummy.Vintage)));
 
             if (this.IsAllAirGroup(hvac))
             {
@@ -307,6 +377,7 @@ namespace Honeybee.UI
 
 
             this.Name = hvac.DisplayName;
+            this.NameTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(hvacClassType, nameof(dummy.DisplayName)));
 
             // LatentHeatRecovery
             var lat = hvacClassType?.GetProperty(nameof(dummy.LatentHeatRecovery))?.GetValue(hvac);
@@ -315,6 +386,7 @@ namespace Honeybee.UI
                 if (double.TryParse(lat.ToString(), out var latValue))
                     LatentHR = latValue;
             }
+            LatentHRTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(hvacClassType, nameof(dummy.LatentHeatRecovery)));
 
             // SensibleHeatRecovery
             var sen = hvacClassType?.GetProperty(nameof(dummy.SensibleHeatRecovery))?.GetValue(hvac);
@@ -323,9 +395,12 @@ namespace Honeybee.UI
                 if (double.TryParse(sen.ToString(), out var senValue))
                     SensibleHR = senValue;
             }
+            SensibleHRTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(hvacClassType, nameof(dummy.SensibleHeatRecovery)));
 
             // Economizer
             Economizer = hvacClassType.GetProperty(nameof(dummy.EconomizerType))?.GetValue(hvac)?.ToString();
+            EconomizerTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(hvacClassType, nameof(dummy.EconomizerType)));
+      
 
             // DCV
             var dcv = hvacClassType.GetProperty(nameof(dummy.DemandControlledVentilation))?.GetValue(hvac)?.ToString();
@@ -334,33 +409,40 @@ namespace Honeybee.UI
                 var hasDcvValue = bool.TryParse(dcv, out var dcvOn);
                 DcvChecked = hasDcvValue ? dcvOn : false;
             }
- 
+            DCVTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(hvacClassType, nameof(dummy.DemandControlledVentilation)));
+
             //AvaliabilitySchedule
-            
+
             this.AvaliabilitySchedule = new OptionalButtonViewModel((n) => _scheduleID = n?.Identifier);
 
-            var schId = hvac.GetType().GetProperty(nameof(dummyDoas.DoasAvailabilitySchedule))?.GetValue(hvac)?.ToString();
+            var schId = hvacClassType.GetProperty(nameof(dummyDoas.DoasAvailabilitySchedule))?.GetValue(hvac)?.ToString();
             var sch = libSource.ScheduleList.FirstOrDefault(_ => _.Identifier == schId);
             sch = sch ?? GetDummyScheduleObj(schId);
             this.AvaliabilitySchedule.SetPropetyObj(sch);
+            this.AvaliabilityTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(dummyDoas.GetType(), nameof(dummyDoas.DoasAvailabilitySchedule)));
+
 
             //Radiant system
-            var hasRad = Enum.TryParse<RadiantFaceTypes>(hvac.GetType().GetProperty(nameof(dummyRad.RadiantFaceType))?.GetValue(hvac)?.ToString(), out var radFaceType);
+            var hasRad = Enum.TryParse<RadiantFaceTypes>(hvacClassType.GetProperty(nameof(dummyRad.RadiantFaceType))?.GetValue(hvac)?.ToString(), out var radFaceType); 
+            var radType = dummyRad.GetType();
             if (hasRad)
             {
                 //RadiantFaceType
                 this.RadiantFaceType = radFaceType;
 
                 //SwitchOverTime
-                var sot = hvac.GetType().GetProperty(nameof(dummyRad.SwitchOverTime))?.GetValue(hvac)?.ToString();
+                var sot = radType.GetProperty(nameof(dummyRad.SwitchOverTime))?.GetValue(hvac)?.ToString();
                 double.TryParse(sot, out var switchTime);
                 this.SwitchTime = switchTime;
 
                 //MinimumOperationTime
-                var mot = hvac.GetType().GetProperty(nameof(dummyRad.MinimumOperationTime))?.GetValue(hvac)?.ToString();
+                var mot = radType.GetProperty(nameof(dummyRad.MinimumOperationTime))?.GetValue(hvac)?.ToString();
                 double.TryParse(mot, out var mintime);
                 this.MinOptTime = mintime;
             }
+            this.RadiantFaceTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(radType, nameof(dummyRad.RadiantFaceType)));
+            this.SwitchTimeTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(radType, nameof(dummyRad.SwitchOverTime)));
+            this.MinOptTimeTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(radType, nameof(dummyRad.MinimumOperationTime)));
             this.RadiantVisable = hasRad;
         }
 

@@ -65,7 +65,8 @@ namespace Honeybee.UI
             panel.DefaultSpacing = new Size(5, 5);
             panel.DefaultPadding = new Padding(5);
 
-            var properties = hbObj.GetType().GetProperties().Where(_ => _.CanWrite);
+            var hbObjType = hbObj.GetType();
+            var properties = hbObjType.GetProperties().Where(_ => _.CanWrite);
             if (properties.Count() > 15)
             {
                 panel.Height = 360;
@@ -85,26 +86,31 @@ namespace Honeybee.UI
 
                 var value = item.GetValue(hbObj);
                 var type = item.PropertyType;
+
+                var label = new Label() { Text = item.Name };
+                var description = HoneybeeSchema.SummaryAttribute.GetSummary(hbObjType, item.Name);
+                label.ToolTip = Utility.NiceDescription(description);
+
                 if (value is string stringvalue)
                 {
                     var textBox = new TextBox();
                     //textBox.Text = stringvalue;
                     textBox.TextBinding.Bind(() => stringvalue, (v) => item.SetValue(hbObj, v));
-                    panel.AddRow(item.Name, textBox);
+                    panel.AddRow(label, textBox);
                 }
                 else if (value is double numberValue)
                 {
                     var numberTB = new MaskedTextBox();
                     numberTB.Provider = new NumericMaskedTextProvider() { AllowDecimal = true };
                     numberTB.TextBinding.Bind(() => numberValue.ToString(), (v) => item.SetValue(hbObj, Convert.ChangeType(v, type)));
-                    panel.AddRow(item.Name, numberTB);
+                    panel.AddRow(label, numberTB);
                 }
                 else if (value is int intValue)
                 {
                     var numberTB = new NumericStepper();
                     numberTB.DecimalPlaces = 0;
                     numberTB.Value = intValue;
-                    panel.AddRow(item.Name, numberTB);
+                    panel.AddRow(label, numberTB);
                 }
                 else if (Nullable.GetUnderlyingType(type) != null)
                 {
@@ -124,7 +130,7 @@ namespace Honeybee.UI
                         (v) => item.SetValue(hbObj, Enum.Parse(enumType, v))
                         );
 
-                    panel.AddRow(item.Name, dropdown);
+                    panel.AddRow(label, dropdown);
 
 
                 }
@@ -141,7 +147,7 @@ namespace Honeybee.UI
                         (v) => item.SetValue(hbObj, Enum.Parse(type, v))
                         );
 
-                    panel.AddRow(item.Name, dropdown);
+                    panel.AddRow(label, dropdown);
 
                 }
             }

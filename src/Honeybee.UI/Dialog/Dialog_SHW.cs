@@ -24,7 +24,7 @@ namespace Honeybee.UI
             layout.DefaultSpacing = new Size(5, 5);
             layout.Padding = new Padding(10);
 
-
+            var hbType = sys.GetType();
             //string identifier,
             //string displayName = null,
             //object userData = null,
@@ -33,7 +33,23 @@ namespace Honeybee.UI
             //AnyOf< double, string> ambientCondition = null,
             //double ambientLossCoefficient = 6.0
 
+            var nameLabel = new Label() { Text = "Name:" };
+            nameLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(hbType, nameof(sys.DisplayName)));
+
             var nameText = new TextBox();
+
+            var eqpTypeLabel = new Label() { Text = "Equipment Type:" };
+            eqpTypeLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(hbType, nameof(sys.EquipmentType)));
+
+            var heaterEffLabel = new Label() { Text = "Heater Efficiency:" };
+            heaterEffLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(hbType, nameof(sys.HeaterEfficiency)));
+
+
+            var ambientLabel = new Label() { Text = "Ambient Condition:" };
+            ambientLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(hbType, nameof(sys.AmbientCondition)));
+
+            var ambientCoffLabel = new Label() { Text = "Ambient Loss Coefficient [W/K]" };
+            ambientCoffLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(hbType, nameof(sys.AmbientLossCoefficient)));
 
             var eqpType = new EnumDropDown<SHWEquipmentType>();
             var heaterEffAuto = new RadioButton() { Text = "Autocalculate" };
@@ -57,7 +73,7 @@ namespace Honeybee.UI
             var ambientCoffConditionUnit = new Label();
             ambientCoffConditionUnit.TextBinding.Bind(vm, _ => _.AmbientCoffConditionNumber.DisplayUnitAbbreviation);
 
-            ambientLayout.AddSeparateRow("Ambient Condition:");
+            ambientLayout.AddSeparateRow(ambientLabel);
             ambientLayout.AddSeparateRow(ambientCoffConditionNumber, ambientCoffCondition, ambientCoffConditionUnit);
             ambientLayout.AddSeparateRow(ambientCoffConditionRoom, ambientCoffConditionRoomLayout);
             ambientLayout.Bind(_ => _.Enabled, vm, _ => _.AmbientCoffConditionEnabled);
@@ -93,18 +109,18 @@ namespace Honeybee.UI
 
             ambientLossCoefficient.Bind(_ => _.Value, vm, _ => _.AmbientLostCoff);
 
-            layout.AddRow("Name:");
+            layout.AddRow(nameLabel);
             layout.AddRow(nameText);
-            layout.AddRow("Equipment Type:");
+            layout.AddRow(eqpTypeLabel);
             layout.AddRow(eqpType);
 
-            layout.AddRow("Heater Efficiency:");
+            layout.AddRow(heaterEffLabel);
             layout.AddRow(heaterEffAuto);
             layout.AddSeparateRow(heaterEffNumber, heaterEff);
 
             layout.AddRow(ambientLayout);
 
-            layout.AddRow("Ambient Loss Coefficient [W/K]");
+            layout.AddRow(ambientCoffLabel);
             layout.AddRow(ambientLossCoefficient);
 
             var locked = new CheckBox() { Text = "Locked", Enabled = false };

@@ -21,6 +21,10 @@ namespace Honeybee.UI.View
             }
         }
         public Button SchemaDataBtn;
+
+        private static Type _HBObjType = typeof(HB.Door);
+        private static HB.Door _dummy = new HB.Door("test", new HB.Face3D(new List<List<double>>()), new HB.Outdoors(), new HB.DoorPropertiesAbridged());
+
         private DoorProperty()
         {
             this._vm = new DoorPropertyViewModel(this);
@@ -89,19 +93,30 @@ namespace Honeybee.UI.View
             layout.DefaultSpacing = new Size(4, 4);
             layout.DefaultPadding = new Padding(4);
 
+            var idLabel = new Label() { Text = "ID:" };
+            idLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(_HBObjType, nameof(_dummy.Identifier)));
+
             var id = new Label() { Width = 255 };
             id.TextBinding.Bind(_vm, _ => _.Identifier);
             id.Bind(_ => _.ToolTip, _vm, _ => _.Identifier);
-            layout.AddRow("ID:", id);
+            layout.AddRow(idLabel, id);
             layout.AddRow(null, new Label() { Visible = false }); // add space
+
+
+            var NameLabel = new Label() { Text = "Name:" };
+            NameLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(_HBObjType, nameof(_dummy.DisplayName)));
 
             var nameTB = new StringText();
             nameTB.TextBinding.Bind(_vm, _ => _.DisplayName);
-            layout.AddRow("Name:", nameTB);
+            layout.AddRow(NameLabel, nameTB);
+
+            var isOperableLabel = new Label() { Text = "Is Glass:" };
+            isOperableLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(_HBObjType, nameof(_dummy.IsGlass)));
 
             var isOperable = new CheckBox();
             isOperable.CheckedBinding.Bind(_vm, _ => _.IsGlass.IsChecked);
-            layout.AddRow("Is Glass:", isOperable);
+            layout.AddRow(isOperableLabel, isOperable);
+
             return layout;
         }
 
@@ -121,7 +136,10 @@ namespace Honeybee.UI.View
             var cByRoom = new CheckBox() { Text = ReservedText.ByGlobalSetting };
             cByRoom.CheckedBinding.Bind(_vm, _ => _.Modifier.IsCheckboxChecked);
 
-            layout.AddRow("Modifier:", cByRoom);
+            var ModifierLabel = new Label() { Text = "Modifier:" };
+            ModifierLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.PropertiesBaseAbridged), nameof(_dummy.Properties.Radiance.Modifier)));
+
+            layout.AddRow(ModifierLabel, cByRoom);
             layout.AddRow(null, c);
 
             var mb = new Button();
@@ -130,12 +148,20 @@ namespace Honeybee.UI.View
             mb.Command = this._vm.ModifierBlkCommand;
             var mbByRoom = new CheckBox() { Text = ReservedText.ByGlobalSetting };
             mbByRoom.CheckedBinding.Bind(_vm, _ => _.ModifierBlk.IsCheckboxChecked);
-            layout.AddRow("Modifier Blk:", mbByRoom);
+
+            var ModifierBlkLabel = new Label() { Text = "Modifier Blk:" };
+            ModifierBlkLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.DoorRadiancePropertiesAbridged), nameof(_dummy.Properties.Radiance.ModifierBlk)));
+
+            layout.AddRow(ModifierBlkLabel, mbByRoom);
             layout.AddRow(null, mb);
+
+
+            var DynamicGroupIdentifierLabel = new Label() { Text = "Dynamic Group ID:" };
+            DynamicGroupIdentifierLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.DoorRadiancePropertiesAbridged), nameof(_dummy.Properties.Radiance.DynamicGroupIdentifier)));
 
             var dynamicGroup = new StringText();
             dynamicGroup.TextBinding.Bind(_vm, _ => _.DynamicGroupIdentifier);
-            layout.AddRow("Dynamic Group ID:", dynamicGroup);
+            layout.AddRow(DynamicGroupIdentifierLabel, dynamicGroup);
 
             gp.Content = layout;
             return gp;
@@ -158,7 +184,10 @@ namespace Honeybee.UI.View
             var cByRoom = new CheckBox() { Text = ReservedText.ByGlobalSetting };
             cByRoom.CheckedBinding.Bind(_vm, _ => _.Construction.IsCheckboxChecked);
 
-            layout.AddRow("Construction:", cByRoom);
+            var ConstructionLabel = new Label() { Text = "Construction:" };
+            ConstructionLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.DoorEnergyPropertiesAbridged), nameof(_dummy.Properties.Energy.Construction)));
+
+            layout.AddRow(ConstructionLabel, cByRoom);
             layout.AddRow(null, c);
 
 
@@ -178,10 +207,14 @@ namespace Honeybee.UI.View
                 bcDP.Visible = false;
             };
 
+            var bcLabel = new Label() { Text = "Boundary Condition:" };
+            bcLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(_HBObjType, nameof(_dummy.BoundaryCondition)));
+
+
             var typeDp = new DynamicLayout();
             typeDp.AddRow(bcText);
             typeDp.AddRow(bcDP);
-            layout.AddRow("Boundary Condition:", typeDp);
+            layout.AddRow(bcLabel, typeDp);
 
 
             // outdoor bc
@@ -221,7 +254,12 @@ namespace Honeybee.UI.View
             layout.AddRow(autosize);
             layout.AddRow(vFactor);
 
-            layout.AddRow("View Factor:");
+            var outdoorDummy = new HB.Outdoors();
+            var vFactorLabel = new Label() { Text = "View Factor:" };
+            vFactorLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(outdoorDummy.GetType(), nameof(outdoorDummy.ViewFactor)));
+
+
+            layout.AddRow(vFactorLabel);
             layout.AddRow(autosize);
             layout.AddRow(vFactor);
 
@@ -255,51 +293,73 @@ namespace Honeybee.UI.View
             layout.DefaultSpacing = new Size(4, 4);
             layout.DefaultPadding = new Padding(4);
 
+            var wPerAreaLabel = new Label() { Text = "Fraction Area Operable:" };
+            wPerAreaLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.VentilationOpening), nameof(_dummy.Properties.Energy.VentOpening.FractionAreaOperable)));
+
             var wPerArea = new DoubleText();
             wPerArea.Width = 250;
             wPerArea.ReservedText = ReservedText.Varies;
             wPerArea.SetDefault(_vm.VentilationOpening.Default.FractionAreaOperable);
             wPerArea.TextBinding.Bind(vm, _ => _.VentilationOpening.FractionAreaOperable.NumberText);
-            layout.AddRow("Fraction Area Operable:");
+            layout.AddRow(wPerAreaLabel);
             layout.AddRow(wPerArea);
+
+            var radFractionLabel = new Label() { Text = "Fraction Height Operable:" };
+            radFractionLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.VentilationOpening), nameof(_dummy.Properties.Energy.VentOpening.FractionHeightOperable)));
 
             var radFraction = new DoubleText();
             radFraction.ReservedText = ReservedText.Varies;
             radFraction.SetDefault(_vm.VentilationOpening.Default.FractionHeightOperable);
             radFraction.TextBinding.Bind(vm, _ => _.VentilationOpening.FractionHeightOperable.NumberText);
-            layout.AddRow("Fraction Height Operable:");
+            layout.AddRow(radFractionLabel);
             layout.AddRow(radFraction);
+
+            var visFractionLabel = new Label() { Text = "Discharge Coefficient:" };
+            visFractionLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.VentilationOpening), nameof(_dummy.Properties.Energy.VentOpening.DischargeCoefficient)));
 
             var visFraction = new DoubleText();
             visFraction.ReservedText = ReservedText.Varies;
             visFraction.SetDefault(_vm.VentilationOpening.Default.DischargeCoefficient);
             visFraction.TextBinding.Bind(vm, _ => _.VentilationOpening.DischargeCoefficient.NumberText);
-            layout.AddRow("Discharge Coefficient:");
+            layout.AddRow(visFractionLabel);
             layout.AddRow(visFraction);
 
-            var autosize = new CheckBox() { Text = "WindCrossVent" };
+            var autosizeLabel = new Label() { Text = "WindCrossVent:" };
+            autosizeLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.VentilationOpening), nameof(_dummy.Properties.Energy.VentOpening.WindCrossVent)));
+
+            var autosize = new CheckBox();
             autosize.CheckedBinding.Bind( _vm, _ => _.VentilationOpening.WindCrossVent.IsChecked);
-            layout.AddRow(autosize);
+            layout.AddSeparateRow(autosizeLabel, autosize);
+
+
+            var airFractionLabel = new Label() { Text = "Flow Coefficient Closed:" };
+            airFractionLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.VentilationOpening), nameof(_dummy.Properties.Energy.VentOpening.FlowCoefficientClosed)));
 
             var airFraction = new DoubleText();
             airFraction.ReservedText = ReservedText.Varies;
             airFraction.SetDefault(_vm.VentilationOpening.Default.FlowCoefficientClosed);
             airFraction.TextBinding.Bind(vm, _ => _.VentilationOpening.FlowCoefficientClosed.NumberText);
-            layout.AddRow("Flow Coefficient Closed:");
+            layout.AddRow(airFractionLabel);
             layout.AddRow(airFraction);
+
+            var deltaLabel = new Label() { Text = "Flow Exponent Closed:" };
+            deltaLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.VentilationOpening), nameof(_dummy.Properties.Energy.VentOpening.FlowExponentClosed)));
 
             var delta = new DoubleText();
             delta.ReservedText = ReservedText.Varies;
             delta.SetDefault(_vm.VentilationOpening.Default.FlowExponentClosed);
             delta.TextBinding.Bind(vm, _ => _.VentilationOpening.FlowExponentClosed.NumberText);
-            layout.AddRow("Flow Exponent Closed:");
+            layout.AddRow(deltaLabel);
             layout.AddRow(delta);
+
+            var twoWayLabel = new Label() { Text = "Two Way Threshold:" };
+            twoWayLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.VentilationOpening), nameof(_dummy.Properties.Energy.VentOpening.TwoWayThreshold)));
 
             var twoWay = new DoubleText();
             twoWay.ReservedText = ReservedText.Varies;
             twoWay.SetDefault(_vm.VentilationOpening.Default.TwoWayThreshold);
             twoWay.TextBinding.Bind(vm, _ => _.VentilationOpening.TwoWayThreshold.NumberText);
-            layout.AddRow("Two Way Threshold:");
+            layout.AddRow(twoWayLabel);
             layout.AddRow(twoWay);
 
             layout.AddRow(null);
