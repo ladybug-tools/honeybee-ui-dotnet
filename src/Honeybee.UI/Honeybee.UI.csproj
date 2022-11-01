@@ -27,7 +27,7 @@
     <PackageReference Include="HoneybeeSchema" Version="1.51.5.1" />
     <PackageReference Include="LadybugDisplaySchema" Version="0.0.2.13" />
     <PackageReference Include="Eto.Forms" Version="2.6.1" />
-    <PackageReference Include="UnitsNet" Version="4.132.0" />
+    <PackageReference Include="UnitsNet" Version="4.146.0" />
   </ItemGroup>
 
 </Project>
