@@ -56,7 +56,7 @@ namespace Honeybee.UI
           }
           catch (System.Exception err)
           {
-              MessageBox.Show(err.Message);
+              Dialog_Message.Show(this, err);
           }
 
       });

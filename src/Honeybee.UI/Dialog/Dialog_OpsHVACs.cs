@@ -163,7 +163,7 @@ namespace Honeybee.UI
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message);
+                    Dialog_Message.Show(this, ex);
                 }
             };
 
