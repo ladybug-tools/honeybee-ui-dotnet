@@ -36,10 +36,7 @@ namespace Honeybee.UI
         public static double CalArea(this HoneybeeSchema.Face3D face)
         {
             var lbg = face.ToLBG();
-            var plane = lbg.Plane;
-            var projected = lbg.BoundaryPoints.Select(_ => plane.XYZtoXY(_)).ToArray();
-            var b = new LadybugDisplaySchema.Polygon2D(projected);
-            return b.Area;
+            return lbg.Area;
         }
 
         public static LadybugDisplaySchema.Face3D ToLBG(this HoneybeeSchema.Face3D face)
