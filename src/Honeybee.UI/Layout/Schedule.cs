@@ -135,7 +135,7 @@ namespace Honeybee.UI
                 }
                 catch (Exception err)
                 {
-                    MessageBox.Show(err.Message);
+                    Dialog_Message.Show(this, err);
                 }
 
             };
@@ -155,7 +155,7 @@ namespace Honeybee.UI
                 }
                 catch (Exception err)
                 {
-                    MessageBox.Show(err.Message);
+                    Dialog_Message.Show(this, err);
                 }
                
             };
@@ -172,7 +172,7 @@ namespace Honeybee.UI
                 }
                 catch (Exception err)
                 {
-                    MessageBox.Show(err.Message);
+                    Dialog_Message.Show(this, err);
                 }
             };
             _scheduleDaydrawable.LostFocus += (s, e) =>
@@ -264,7 +264,7 @@ namespace Honeybee.UI
                 }
                 catch (Exception err)
                 {
-                    MessageBox.Show(err.Message);
+                    Dialog_Message.Show(this, err);
                 }
 
             };
@@ -326,7 +326,7 @@ namespace Honeybee.UI
                 }
                 catch (Exception err)
                 {
-                    MessageBox.Show(err.Message);
+                    Dialog_Message.Show(this, err);
                 }
              
 
@@ -443,7 +443,7 @@ namespace Honeybee.UI
                 }
                 catch (Exception err)
                 {
-                    MessageBox.Show(err.Message);
+                    Dialog_Message.Show(this, err);
                 }
                 
             };
@@ -476,7 +476,7 @@ namespace Honeybee.UI
                 }
                 catch (Exception err)
                 {
-                    MessageBox.Show(err.Message);
+                    Dialog_Message.Show(this, err);
                 }
 
 

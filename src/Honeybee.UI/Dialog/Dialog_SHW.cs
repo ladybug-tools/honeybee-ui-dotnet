@@ -134,7 +134,7 @@ namespace Honeybee.UI
                 }
                 catch (Exception er)
                 {
-                    MessageBox.Show(this, er.Message);
+                    Dialog_Message.Show(this, er);
                     //throw;
                 }
             }; 

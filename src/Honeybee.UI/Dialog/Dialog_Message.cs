@@ -36,7 +36,7 @@ namespace Honeybee.UI
 
                 var textLabel = new Label();
                 //textLabel.Height = 50;
-                textLabel.TextAlignment = TextAlignment.Center;
+                //textLabel.TextAlignment = TextAlignment.Center;
                 textLabel.Bind(_ => _.Text, vm, _ => _.MessageText);
                 textLabel.Bind(_ => _.Visible, vm, _ => _.HasMessageText);
                 layout.AddRow(textLabel);
