@@ -54,16 +54,20 @@ namespace Honeybee.UI
             return new ScheduleDay(name, new List<double>(), displayName: name);
         }
 
-        protected void Set(Action setAction, string memberName)
+     
+        protected void Set(Action setAction, [CallerMemberName] string memberName = default)
         {
             setAction?.Invoke();
             OnPropertyChanged(memberName);
         }
+
         void OnPropertyChanged([CallerMemberName] string memberName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(memberName));
         }
         public event PropertyChangedEventHandler PropertyChanged;
+
+      
 
 
         public void RefreshControl(string memberName)
@@ -79,6 +83,20 @@ namespace Honeybee.UI
             }
             
         }
+
+        protected bool Set<T>(T value, ref T member, [CallerMemberName] string propertyName = null)
+        {
+            if (object.Equals(member, value))
+            {
+                return false;
+            }
+
+            member = value;
+            OnPropertyChanged(propertyName);
+            return true;
+        }
+
+       
     }
 
 
