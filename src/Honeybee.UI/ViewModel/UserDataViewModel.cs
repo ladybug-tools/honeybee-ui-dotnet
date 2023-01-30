@@ -120,8 +120,7 @@ namespace Honeybee.UI
                 return obj;
 
             var dic = UserItemsToDic(this.refObjProperty);
-            var s = Newtonsoft.Json.JsonConvert.SerializeObject(dic);
-            return s;
+            return dic;
         }
 
         private void UpdateRefObj()
