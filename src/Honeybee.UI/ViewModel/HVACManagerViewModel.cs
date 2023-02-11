@@ -190,6 +190,11 @@ namespace Honeybee.UI
                 var dialog = new Dialog_IdealAirLoad(ref lib, obj, selected.Locked);
                 dialog_rc = dialog.ShowModal(_control);
             }
+            else if (dup is DetailedHVAC dt)
+            {
+                MessageBox.Show(_control, "Detailed HVAC cannot be edited at here!");
+                return;
+            }
             else
             {
                 var dialog = new Dialog_OpsHVACs(ref lib, dup, selected.Locked);
