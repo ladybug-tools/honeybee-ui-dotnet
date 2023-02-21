@@ -257,7 +257,9 @@ namespace Honeybee.UI.ConsoleApp
                 Message2btn.Click += (s, e) =>
                 {
                     var energyProp = HoneybeeSchema.ModelEnergyProperties.Default;
-                    Dialog_Message.Show(this, "this is a message This is a message! This is a message!This is a message! This is a message!\n\n This is a message!", energyProp.ToJson(), null, null);
+                    Dialog_Message.Show(this, "this is a message This is a message! This is a message!This is a message! This is a message!\n\n This is a message!" +
+                        "this is a message This is a message! This is a message!This is a message! This is a message!\n\n This is a message!" +
+                        "this is a message This is a message! This is a message!This is a message! This is a message!\n\n This is a message!", energyProp.ToJson(), null, null);
 
                 };
 

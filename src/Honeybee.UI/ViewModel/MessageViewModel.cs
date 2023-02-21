@@ -101,7 +101,14 @@ namespace Honeybee.UI
             this.ShowDetailButton = this.HasFullMessageText;
         }
 
+        private Control _control;
+        public void SetControl(Control control)
+        {
+            this._control = control;
+        }
 
+
+        private int initHeight = 200;
         public ICommand DetailBtnClick => new RelayCommand(() =>
         {
             if (!this.HasFullMessageText)
@@ -111,11 +118,13 @@ namespace Honeybee.UI
 
             if (this.ShowFullMessageText)
             {
-               
+                initHeight = _control.Height;
+                _control.Height += 300;
 
             }
             else // hide
             {
+                _control.Height = Math.Max(initHeight, 200);
             }
 
 
