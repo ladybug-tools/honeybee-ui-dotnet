@@ -270,12 +270,12 @@ namespace Honeybee.UI
         {
             if (fromUnit == default || toUnit == default)
                 return value;
-            if (fromUnit == toUnit)
+            if (fromUnit.ToString() == toUnit.ToString())
                 return value;
 
 
             var quantity = UnitsNet.Quantity.From(value, fromUnit);
-            return quantity.ToUnit(toUnit).Value;
+            return quantity.As(toUnit);
         }
 
         public static string GetAbbreviation(this Enum unit)
