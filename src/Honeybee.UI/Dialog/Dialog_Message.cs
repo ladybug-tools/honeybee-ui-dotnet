@@ -7,6 +7,7 @@ namespace Honeybee.UI
     public class Dialog_Message : Dialog
     {
         private MessageViewModel vm;
+        internal RichTextArea richTextArea;
         private Dialog_Message(string message, string fullMessage, string title, string info)
         {
             try
@@ -22,10 +23,11 @@ namespace Honeybee.UI
 
                 vm = MessageViewModel.Instance;
                 vm.Update(message, fullMessage, title, info);
+                vm.SetControl(this);
 
 
                 this.Bind(_ => _.Title, vm, _ => _.TitleText);
-
+                //this.Bind(_ => _.Height, vm, _ => _.Height);
                 var layout = new DynamicLayout { };
                 //layout.Spacing = new Size(10, 20);
                 layout.Padding = new Padding(10, 20);
@@ -33,17 +35,18 @@ namespace Honeybee.UI
                 layout.DefaultSpacing = new Size(4, 4);
 
                 var textLabel = new Label();
-                //textLabel.Height = 50;
+                //textLabel.Height = 100;
                 //textLabel.TextAlignment = TextAlignment.Center;
                 textLabel.Bind(_ => _.Text, vm, _ => _.MessageText);
                 textLabel.Bind(_ => _.Visible, vm, _ => _.HasMessageText);
                 layout.AddRow(textLabel);
 
-                var textArea = new RichTextArea();
-                textArea.Height = 300;
-                textArea.Bind(_ => _.Text, vm, _ => _.FullMessageText);
-                textArea.Bind(_ => _.Visible, vm, _ => _.ShowFullMessageText);
-                layout.AddSeparateRow(controls: new[] { textArea }, xscale: true, yscale: true);
+                richTextArea = new RichTextArea();
+                richTextArea.Height = 300;
+                richTextArea.Bind(_ => _.Text, vm, _ => _.FullMessageText);
+                richTextArea.Bind(_ => _.Visible, vm, _ => _.ShowFullMessageText);
+                layout.AddSeparateRow(controls: new[] { richTextArea }, xscale: true, yscale: true);
+
 
                 var infoLabel = new Label();
                 infoLabel.Enabled = false;
@@ -59,8 +62,9 @@ namespace Honeybee.UI
                 DefaultButton.Click += (sender, e) => Close();
 
                 layout.AddSeparateRow(infoLabel, null, moreDetailBtn, this.DefaultButton );
+                //layout.
 
-
+              
                 //Create layout
                 Content = layout;
             }
