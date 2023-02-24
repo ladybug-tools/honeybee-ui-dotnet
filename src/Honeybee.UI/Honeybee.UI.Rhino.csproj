@@ -39,7 +39,7 @@
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(Configuration)'!='Debug'">
-		<PackageReference Include="LadybugDisplaySchema" Version="0.0.2.23" />
+		<PackageReference Include="LadybugDisplaySchema" Version="0.0.2.24" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(Configuration)'=='Debug'">
