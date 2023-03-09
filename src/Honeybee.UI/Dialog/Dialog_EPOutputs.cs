@@ -16,15 +16,20 @@ namespace Honeybee.UI
                 var output = simulationOutput;
 
                 Padding = new Padding(5);
-                Resizable = true;
                 Title = $"EnergyPlus Output Names - {DialogHelper.PluginName}";
                 WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(450, 500);
                 this.Icon = DialogHelper.HoneybeeIcon;
 
                 var layout = new DynamicLayout();
-                layout.Spacing = new Size(8, 8);
-                layout.Padding = new Padding(15);
+                layout.Spacing = new Size(5, 5);
+                layout.Padding = new Padding(5);
+
+                var rept_DP = new EnumDropDown<HB.ReportingFrequency>();
+                rept_DP.SelectedValueBinding.Bind(() => output.ReportingFrequency, v => output.ReportingFrequency = v);
+                rept_DP.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SimulationOutput), nameof(output.ReportingFrequency)));
+                layout.AddRow("Reporting Frequency:");
+                layout.AddRow(rept_DP);
 
                 //Outputs
                 var outputListBox = new RichTextArea();
@@ -40,7 +45,8 @@ namespace Honeybee.UI
                 }
                 );
                 outputListBox.Height = 200;
-                
+                outputListBox.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SimulationOutput), nameof(output.Outputs)));
+
                 layout.AddRow("EnergyPlus Output Names:");
                 layout.AddRow(outputListBox);
 
@@ -59,6 +65,7 @@ namespace Honeybee.UI
                     output.SummaryReports = v.Split(new[] { Environment.NewLine, "\n"}, StringSplitOptions.RemoveEmptyEntries).Select(_ => _.Trim()).ToList();
                 }
                 );
+                sumReportsListBox.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SimulationOutput), nameof(output.SummaryReports)));
                 layout.AddRow("EnergyPlus Summary Report:");
                 layout.AddSeparateRow(sumReportsListBox);
 
