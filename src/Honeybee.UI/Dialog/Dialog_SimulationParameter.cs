@@ -1,5 +1,6 @@
 ﻿using Eto.Drawing;
 using Eto.Forms;
+using HoneybeeSchema;
 using System;
 using System.Collections.Generic;
 using HB = HoneybeeSchema;
@@ -16,14 +17,12 @@ namespace Honeybee.UI
             {
 
                 var param = simulationParameter;
+
                 var layout = new DynamicLayout();
                 //layout.DefaultSpacing = new Size(3, 15);
-                layout.DefaultPadding = new Padding(10);
-                //layout.BeginScrollable();
+                layout.DefaultPadding = new Padding(5);
 
-
-                Padding = new Padding(5);
-                Resizable = true;
+                Resizable = false;
                 Title = $"Simulation Parameter - {DialogHelper.PluginName}";
                 //WindowStyle = WindowStyle.Default;
                 MinimumSize = new Size(450, 620);
@@ -38,18 +37,17 @@ namespace Honeybee.UI
                 AbortButton.Click += (sender, e) => Close();
 
 
-            
-
                 //NorthAngle
                 var northNum = new NumericStepper() { };
                 northNum.ValueBinding.Bind( Binding.Delegate(() => param.NorthAngle, v => param.NorthAngle = v));
-                
+                northNum.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SimulationParameter), nameof(param.NorthAngle)));
+
 
                 //TerrainType
                 var terrainTypeDP = new EnumDropDown<HB.TerrianTypes>();
-                param.TerrainType = param.TerrainType;
+                //param.TerrainType = param.TerrainType;
                 terrainTypeDP.SelectedValueBinding.Bind(Binding.Delegate(() => param.TerrainType, v => param.TerrainType = v));
-                
+                terrainTypeDP.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SimulationParameter), nameof(param.TerrainType)));
 
                 // RunPeriod
                 var year = 2017;
@@ -59,12 +57,14 @@ namespace Honeybee.UI
                     () => new DateTime(year, runP.StartDate[0], runP.StartDate[1]), 
                     (d) => param.RunPeriod.StartDate = new List<int>() { d.Value.Month, d.Value.Day });
                 d1.Width = 100;
-               
+                d1.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.RunPeriod), nameof(runP.StartDate)));
+
                 var d2 = new DateTimePicker();
                 d2.ValueBinding.Bind(
                     () => new DateTime(year, runP.EndDate[0], runP.EndDate[1]),
                     (d) => param.RunPeriod.EndDate = new List<int>() { d.Value.Month, d.Value.Day });
                 d2.Width = 100;
+                d2.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.RunPeriod), nameof(runP.EndDate)));
 
                 param.RunPeriod = runP;
 
@@ -85,27 +85,8 @@ namespace Honeybee.UI
                     () => param.Timestep,
                     (d) => param.Timestep = (int)d
                     );
+                timeSteps_NS.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SimulationParameter), nameof(param.Timestep)));
 
-
-                // SizingParameter
-                param.SizingParameter = param.SizingParameter ?? new HB.SizingParameter();
-                // CoolingFactor
-                var cooling_NS = new NumericStepper();
-                cooling_NS.DecimalPlaces = 2;
-                cooling_NS.MinValue = 0;
-                cooling_NS.ValueBinding.Bind(
-                    () => param.SizingParameter.CoolingFactor,
-                    (d) => param.SizingParameter.CoolingFactor = d
-                    );
-
-                // HeatingFactor
-                var heating_NS = new NumericStepper();
-                heating_NS.DecimalPlaces = 2;
-                heating_NS.MinValue = 0;
-                heating_NS.ValueBinding.Bind(
-                    () => param.SizingParameter.HeatingFactor,
-                    (d) => param.SizingParameter.HeatingFactor = d
-                    );
 
                 //var sizingParam_GB = new GroupBox();
                 //sizingParam_GB.Text = "Sizing Parameter";
@@ -118,11 +99,57 @@ namespace Honeybee.UI
                 topPanel.AddSeparateRow(new Label() { Text = "Terrain Type:", Width = 150 }, terrainTypeDP);
                 topPanel.AddSeparateRow(new Label() { Text = "Run Period:", Width = 150 }, d1, new Label() { Text = "To:" }, d2, null);
                 topPanel.AddSeparateRow(new Label() { Text = "Timesteps per Hour:", Width = 150 }, timeSteps_NS);
-                topPanel.AddSeparateRow(new Label() { Text = "Cooling Sizing Factor:", Width = 150 }, cooling_NS);
-                topPanel.AddSeparateRow(new Label() { Text = "Heating Sizing Factor:", Width = 150 }, heating_NS);
                 layout.AddSeparateRow(topPanel);
-                //sizingParam_GB.Content = sizingParamLayout;
-                //layout.AddRow(subLayout);
+
+
+                // SizingParameter
+                param.SizingParameter = param.SizingParameter ?? new HB.SizingParameter();
+                // CoolingFactor
+                var cooling_NS = new NumericStepper();
+                cooling_NS.DecimalPlaces = 2;
+                cooling_NS.MinValue = 0;
+                cooling_NS.ValueBinding.Bind(
+                    () => param.SizingParameter.CoolingFactor,
+                    (d) => param.SizingParameter.CoolingFactor = d
+                    );
+                cooling_NS.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SizingParameter), nameof(param.SizingParameter.CoolingFactor)));
+
+                // HeatingFactor
+                var heating_NS = new NumericStepper();
+                heating_NS.DecimalPlaces = 2;
+                heating_NS.MinValue = 0;
+                heating_NS.ValueBinding.Bind(
+                    () => param.SizingParameter.HeatingFactor,
+                    (d) => param.SizingParameter.HeatingFactor = d
+                    );
+                heating_NS.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SizingParameter), nameof(param.SizingParameter.HeatingFactor)));
+
+                var effStdDP = new EnumDropDown<HB.EfficiencyStandards>();
+                effStdDP.SelectedValueBinding.Bind(Binding.Delegate(() => param.SizingParameter.EfficiencyStandard, v => param.SizingParameter.EfficiencyStandard = v));
+                effStdDP.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SizingParameter), nameof(param.SizingParameter.EfficiencyStandard)));
+
+
+                var bldnType = new TextBox();
+                bldnType.TextBinding.Bind(Binding.Delegate(() => param.SizingParameter.BuildingType, v => param.SizingParameter.BuildingType = v));
+                bldnType.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SizingParameter), nameof(param.SizingParameter.BuildingType)));
+
+                var climateZone = new EnumDropDown<HB.ClimateZones>();
+                climateZone.SelectedValueBinding.Bind(Binding.Delegate(() => param.SizingParameter.ClimateZone, v => param.SizingParameter.ClimateZone = v));
+                climateZone.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SizingParameter), nameof(param.SizingParameter.CoolingFactor)));
+
+                var sizing_GB = new GroupBox();
+                sizing_GB.Font = new Font(sizing_GB.Font.Family, sizing_GB.Font.Size, FontStyle.Bold);
+                sizing_GB.Text = "Sizing Parameter";
+
+                var sizingLayout = new DynamicLayout();
+                sizingLayout.Spacing = new Size(5, 5);
+                sizingLayout.AddRow(new Label() { Text = "Cooling Sizing Factor:", Width = 145 }, cooling_NS);
+                sizingLayout.AddRow("Heating Sizing Factor:", heating_NS);
+                sizingLayout.AddRow("Efficiency Standards:", effStdDP);
+                sizingLayout.AddRow("Bilding Type:", bldnType);
+                sizingLayout.AddRow("Climate Zone:", climateZone);
+                sizing_GB.Content = sizingLayout;
+                layout.AddSeparateRow(sizing_GB);
 
 
                 // ShadowCalculation
@@ -137,16 +164,17 @@ namespace Honeybee.UI
                     () => shadowCal.CalculationFrequency,
                     (d) => shadowCal.CalculationFrequency = (int)d
                     );
+                freq_NS.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.ShadowCalculation), nameof(shadowCal.CalculationFrequency)));
 
                 //shadowCal.SolarDistribution
-                shadowCal.SolarDistribution = shadowCal.SolarDistribution;
                 var solarDist_DP = new EnumDropDown<HB.SolarDistribution>();
                 solarDist_DP.SelectedValueBinding.Bind(() => shadowCal.SolarDistribution, v => shadowCal.SolarDistribution = v);
+                solarDist_DP.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.ShadowCalculation), nameof(shadowCal.SolarDistribution)));
 
                 //shadowCal.CalculationMethodEnum
-                shadowCal.CalculationMethod = shadowCal.CalculationMethod;
                 var CalMethod_DP = new EnumDropDown<HB.CalculationMethod>();
                 CalMethod_DP.SelectedValueBinding.Bind(() => shadowCal.CalculationMethod, v => shadowCal.CalculationMethod = v);
+                CalMethod_DP.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.ShadowCalculation), nameof(shadowCal.CalculationMethod)));
 
                 // MaximumFigures
                 var maxFigure_NS = new NumericStepper();
@@ -155,6 +183,8 @@ namespace Honeybee.UI
                     () => shadowCal.MaximumFigures,
                     (d) => shadowCal.MaximumFigures = (int)d
                     );
+                maxFigure_NS.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.ShadowCalculation), nameof(shadowCal.MaximumFigures)));
+
 
 
                 param.ShadowCalculation = shadowCal;
@@ -179,22 +209,28 @@ namespace Honeybee.UI
                 var plantSz_CB = new CheckBox();
                 plantSz_CB.CheckedBinding.Bind(simuCtrl, v => v.DoPlantSizing);
                 plantSz_CB.Text = "Do Plant Sizing";
-         
+                plantSz_CB.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SimulationControl), nameof(simuCtrl.DoPlantSizing)));
+
+
                 var zoneSz_CB = new CheckBox();
                 zoneSz_CB.CheckedBinding.Bind(simuCtrl, v => v.DoZoneSizing);
                 zoneSz_CB.Text = "Do Zone Sizing";
+                zoneSz_CB.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SimulationControl), nameof(simuCtrl.DoZoneSizing)));
 
                 var sysSz_CB = new CheckBox();
                 sysSz_CB.CheckedBinding.Bind(simuCtrl, v => v.DoSystemSizing);
                 sysSz_CB.Text = "Do System Sizing";
+                sysSz_CB.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SimulationControl), nameof(simuCtrl.DoSystemSizing)));
 
                 var runPeriods_CB = new CheckBox();
                 runPeriods_CB.CheckedBinding.Bind(simuCtrl.RunForRunPeriods, v => v);
                 runPeriods_CB.Text = "Run For Weather File Run Periods";
+                runPeriods_CB.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SimulationControl), nameof(simuCtrl.RunForRunPeriods)));
 
                 var runForSizing_CB = new CheckBox();
                 runForSizing_CB.CheckedBinding.Bind(simuCtrl, v => v.RunForSizingPeriods);
                 runForSizing_CB.Text = "Run For Sizing Periods";
+                runForSizing_CB.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SimulationControl), nameof(simuCtrl.RunForSizingPeriods)));
                 //var plantSz_TB = new ToggleButton();
                 //plantSz_TB.TextBinding.Bind(() => simuCtrl.DoPlantSizing.ToString(), v => simuCtrl.DoPlantSizing = bool.Parse(v));
                 //plantSz_TB.Bind(v => simuCtrl.DoPlantSizing, simuCtrl.DoPlantSizing, v => simuCtrl.DoPlantSizing);
@@ -229,10 +265,14 @@ namespace Honeybee.UI
                 var outputNamesBtn = new Button { Text = "EnergyPlus Output/Summary Report" };
                 outputNamesBtn.Click += (s, e) =>
                 {
-                    var outputRs = OutputNamesBtn_Click(param.Output);
+                    var simuOutput = param.Output ?? new HB.SimulationOutput();
+                    simuOutput = simuOutput.DuplicateSimulationOutput();
+                    var dialog = new UI.Dialog_EPOutputs(simuOutput);
+                    var outputRs = dialog.ShowModal(Config.Owner);
                     if (outputRs != null)
-                        param.Output.Outputs = outputRs.Outputs;
+                        param.Output = outputRs;
                 };
+                outputNamesBtn.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SimulationParameter), nameof(param.Output)));
                 simuOutputLayout.AddRow(outputNamesBtn);
                 //simuOutputLayout.AddRow(outputListBox);
                 //simuOutputLayout.AddRow("EnergyPlus Summary Report:");
@@ -243,12 +283,7 @@ namespace Honeybee.UI
 
                 layout.AddSeparateRow(null, this.DefaultButton, this.AbortButton, null);
                 layout.AddRow(null);
-                //layout.EndScrollable();
-         
-                //Content = layout;
 
-                //var g = new GroupBox();
-                //g.Content = layout;
                 Content = layout;
                
             }
@@ -258,16 +293,6 @@ namespace Honeybee.UI
                 //Rhino.RhinoApp.WriteLine(e.Message);
             }
 
-            HB.SimulationOutput OutputNamesBtn_Click(HB.SimulationOutput simulationOutput)
-            {
-                var simuOutput = simulationOutput ?? new HB.SimulationOutput();
-                simuOutput = simulationOutput.DuplicateSimulationOutput();
-                var dialog = new UI.Dialog_EPOutputs(simuOutput);
-                var dialog_rc = dialog.ShowModal(Config.Owner);
-         
-                return dialog_rc;
-               
-            }
 
         }
 
