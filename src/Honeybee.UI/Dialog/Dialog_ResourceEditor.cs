@@ -12,8 +12,6 @@ namespace Honeybee.UI
             try
             {
                 var isValid = false;
-                if (obj is HB.IIDdBase idd)
-                    idd.Identifier = idd.DisplayName;
                 if (obj is HB.OpenAPIGenBaseModel m)
                     isValid = m.IsValid(true);
                 if (isValid)

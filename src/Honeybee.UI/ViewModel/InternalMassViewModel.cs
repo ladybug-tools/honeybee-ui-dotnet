@@ -40,7 +40,7 @@ namespace Honeybee.UI
         public InternalMassAbridged Default { get; private set; }
         public InternalMassViewModel(ModelProperties libSource, List<InternalMassAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-            this.Default = new InternalMassAbridged(Guid.NewGuid().ToString(), ReservedText.None, 0);
+            this.Default = new InternalMassAbridged(Guid.NewGuid().ToString().Substring(0, 5), ReservedText.None, 0);
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateInternalMassAbridged();
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateInternalMassAbridged();
 
@@ -80,7 +80,7 @@ namespace Honeybee.UI
             if (this.IsVaries)
                 return obj?.DuplicateInternalMassAbridged();
 
-            obj = obj?.DuplicateInternalMassAbridged() ?? new InternalMassAbridged(Guid.NewGuid().ToString(), ReservedText.NotSet, 0);
+            obj = obj?.DuplicateInternalMassAbridged() ?? new InternalMassAbridged(Guid.NewGuid().ToString().Substring(0, 5), ReservedText.NotSet, 0);
 
             if (!this.Area.IsVaries)
                 obj.Area = this._refHBObj.Area;

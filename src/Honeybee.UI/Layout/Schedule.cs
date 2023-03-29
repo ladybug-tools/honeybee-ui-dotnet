@@ -1497,8 +1497,8 @@ namespace Honeybee.UI
             if (day == null)
             {
                 day = _vm.DefaultDaySchedule.DuplicateScheduleDay();
-                day.Identifier = Guid.NewGuid().ToString();
-                day.DisplayName = $"Summer Day {day.Identifier.Substring(0, 5)}";
+                day.Identifier = Guid.NewGuid().ToString().Substring(0, 5);
+                day.DisplayName = $"Summer Day {day.Identifier}";
                 _vm.SummerDay_hbObj = day;
                 _vm.DaySchedules.Add(day);
             }
@@ -1515,8 +1515,8 @@ namespace Honeybee.UI
             if (day == null)
             {
                 day = _vm.DefaultDaySchedule.DuplicateScheduleDay();
-                day.Identifier = Guid.NewGuid().ToString();
-                day.DisplayName = $"Winter Day {day.Identifier.Substring(0, 5)}";
+                day.Identifier = Guid.NewGuid().ToString().Substring(0, 5);
+                day.DisplayName = $"Winter Day {day.Identifier}";
                 _vm.WinterDay_hbObj = day;
                 _vm.DaySchedules.Add(day);
             }
@@ -1533,8 +1533,8 @@ namespace Honeybee.UI
             if (day == null)
             {
                 day = _vm.DefaultDaySchedule.DuplicateScheduleDay();
-                day.Identifier = Guid.NewGuid().ToString();
-                day.DisplayName = $"Holiday Day {day.Identifier.Substring(0, 5)}";
+                day.Identifier = Guid.NewGuid().ToString().Substring(0, 5);
+                day.DisplayName = $"Holiday Day {day.Identifier}";
                 _vm.HolidayDay_hbObj = day;
                 _vm.DaySchedules.Add(day);
             }
@@ -1548,8 +1548,8 @@ namespace Honeybee.UI
         public ICommand AddRuleCommand => new RelayCommand<DynamicLayout>((layout) =>
         {
             var defaultDay = _vm.DefaultDaySchedule.DuplicateScheduleDay();
-            defaultDay.Identifier = Guid.NewGuid().ToString();
-            defaultDay.DisplayName = $"New Schedule Day {defaultDay.Identifier.Substring(0,5)}";
+            defaultDay.Identifier = Guid.NewGuid().ToString().Substring(0, 5);
+            defaultDay.DisplayName = $"New Schedule Day {defaultDay.Identifier}";
             var newRule = new HB.ScheduleRuleAbridged(defaultDay.Identifier);
             newRule.StartDate = new List<int>() { 1, 1 };
             newRule.EndDate = new List<int>() { 12, 31 };

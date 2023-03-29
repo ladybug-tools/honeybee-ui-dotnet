@@ -219,7 +219,7 @@ namespace Honeybee.UI
             if (this.IsVaries)
                 return obj?.DuplicatePeopleAbridged();
 
-            obj = obj?.DuplicatePeopleAbridged() ?? new PeopleAbridged(Guid.NewGuid().ToString(), 0, ReservedText.NotSet);
+            obj = obj?.DuplicatePeopleAbridged() ?? new PeopleAbridged(Guid.NewGuid().ToString().Substring(0, 5), 0, ReservedText.NotSet);
 
             if (!this.PeoplePerArea.IsVaries)
                 obj.PeoplePerArea = this._refHBObj.PeoplePerArea;

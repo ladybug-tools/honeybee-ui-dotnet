@@ -64,9 +64,9 @@ namespace Honeybee.UI
 
         public RelayCommand AddCommand => new RelayCommand(() =>
         {
-            var id = Guid.NewGuid().ToString();
-            var name = $"New Construction Set {id.Substring(0, 5)}";
-            var newItem = new ConstructionSetAbridged(name);
+            var id = Guid.NewGuid().ToString().Substring(0, 5);
+            var name = $"New Construction Set {id}";
+            var newItem = new ConstructionSetAbridged(id, name);
             var lib = this._modelEnergyProperties;
             var dialog = new Honeybee.UI.Dialog_ConstructionSet(ref lib, newItem);
             var dialog_rc = dialog.ShowModal(_control);
@@ -97,7 +97,7 @@ namespace Honeybee.UI
 
             var dup = selected.ConstructionSet.Duplicate() as ConstructionSetAbridged;
             var name = $"{dup.DisplayName ?? dup.Identifier}_dup";
-            dup.Identifier = name;
+            dup.Identifier = Guid.NewGuid().ToString().Substring(0, 5);
             dup.DisplayName = name;
             var lib = this._modelEnergyProperties;
             var dialog = new Honeybee.UI.Dialog_ConstructionSet(ref lib, dup);

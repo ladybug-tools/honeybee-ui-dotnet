@@ -97,7 +97,6 @@ namespace Honeybee.UI
                 name = $"{name} {Guid.NewGuid().ToString().Substring(0, 5)}";
                 MessageBox.Show(_control, $"Name [{obj.DisplayName}] is conflicting with an existing item, and now it is changed to [{name}].");
             }
-            obj.Identifier = name;
             obj.DisplayName = name;
             return obj;
         }

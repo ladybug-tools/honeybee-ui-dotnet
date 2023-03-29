@@ -87,7 +87,7 @@ namespace Honeybee.UI
         public ServiceHotWaterAbridged Default { get; private set; }
         public ServiceHotWaterViewModel(ModelProperties libSource, List<ServiceHotWaterAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-            this.Default = new ServiceHotWaterAbridged(Guid.NewGuid().ToString(), 0, ReservedText.None);
+            this.Default = new ServiceHotWaterAbridged(Guid.NewGuid().ToString().Substring(0, 5), 0, ReservedText.None);
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateServiceHotWaterAbridged();
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateServiceHotWaterAbridged();
 
@@ -174,7 +174,7 @@ namespace Honeybee.UI
             if (this.IsVaries)
                 return obj?.DuplicateServiceHotWaterAbridged();
 
-            obj = obj?.DuplicateServiceHotWaterAbridged() ?? new ServiceHotWaterAbridged(Guid.NewGuid().ToString(), 0, ReservedText.NotSet);
+            obj = obj?.DuplicateServiceHotWaterAbridged() ?? new ServiceHotWaterAbridged(Guid.NewGuid().ToString().Substring(0, 5), 0, ReservedText.NotSet);
 
             if (!this.FlowPerArea.IsVaries)
                 obj.FlowPerArea = this._refHBObj.FlowPerArea;
