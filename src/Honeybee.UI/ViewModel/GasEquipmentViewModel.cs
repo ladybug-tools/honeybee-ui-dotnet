@@ -85,7 +85,7 @@ namespace Honeybee.UI
         public GasEquipmentAbridged Default { get; private set; }
         public GasEquipmentViewModel(ModelProperties libSource, List<GasEquipmentAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-            this.Default = new GasEquipmentAbridged(Guid.NewGuid().ToString(), 0, ReservedText.None);
+            this.Default = new GasEquipmentAbridged(Guid.NewGuid().ToString().Substring(0, 5), 0, ReservedText.None);
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateGasEquipmentAbridged();
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateGasEquipmentAbridged();
 
@@ -171,7 +171,7 @@ namespace Honeybee.UI
             if (this.IsVaries)
                 return obj?.DuplicateGasEquipmentAbridged();
 
-            obj = obj?.DuplicateGasEquipmentAbridged() ?? new GasEquipmentAbridged(Guid.NewGuid().ToString(), 0, ReservedText.NotSet);
+            obj = obj?.DuplicateGasEquipmentAbridged() ?? new GasEquipmentAbridged(Guid.NewGuid().ToString().Substring(0, 5), 0, ReservedText.NotSet);
 
             if (!this.WattsPerArea.IsVaries)
                 obj.WattsPerArea = this._refHBObj.WattsPerArea;

@@ -91,7 +91,7 @@ namespace Honeybee.UI
         public RelayCommand AddCommand => new RelayCommand(() =>
         {
             var id = System.Guid.NewGuid().ToString().Substring(0, 5);
-            var newItem = new ProgramTypeAbridged($"New program type {id}");
+            var newItem = new ProgramTypeAbridged(id, $"New program type {id}");
             var lib = this._modelProperties;
             var dialog = new Honeybee.UI.Dialog_ProgramType(ref lib, newItem);
             var dialog_rc = dialog.ShowModal(_control);
@@ -116,7 +116,7 @@ namespace Honeybee.UI
            
             var dup = selected.ProgramType.Duplicate() as HB.ProgramTypeAbridged;
             var name = $"{dup.Identifier}_dup";
-            dup.Identifier = name;
+            dup.Identifier = System.Guid.NewGuid().ToString().Substring(0, 5);
             dup.DisplayName = name;
 
             var lib = this._modelProperties;

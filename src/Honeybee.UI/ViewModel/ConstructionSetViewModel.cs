@@ -189,7 +189,7 @@ namespace Honeybee.UI
             libSource.FillNulls();
 
             //this._libSource = libSource;
-            var cSet = constructionSet?.DuplicateConstructionSetAbridged() ?? new HB.ConstructionSetAbridged(identifier: System.Guid.NewGuid().ToString());
+            var cSet = constructionSet?.DuplicateConstructionSetAbridged() ?? new HB.ConstructionSetAbridged(identifier: System.Guid.NewGuid().ToString().Substring(0, 5));
             _refHBObj = cSet;
 
             this.Name = _refHBObj.DisplayName ?? _refHBObj.Identifier;

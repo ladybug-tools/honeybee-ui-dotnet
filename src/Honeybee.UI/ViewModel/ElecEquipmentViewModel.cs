@@ -88,7 +88,7 @@ namespace Honeybee.UI
 
         public ElecEquipmentViewModel(ModelProperties libSource, List<ElectricEquipmentAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-            this.Default = new ElectricEquipmentAbridged(Guid.NewGuid().ToString(), 0, ReservedText.None);
+            this.Default = new ElectricEquipmentAbridged(Guid.NewGuid().ToString().Substring(0, 5), 0, ReservedText.None);
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateElectricEquipmentAbridged();
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateElectricEquipmentAbridged();
 
@@ -174,7 +174,7 @@ namespace Honeybee.UI
             if (this.IsVaries)
                 return obj?.DuplicateElectricEquipmentAbridged();
 
-            obj = obj?.DuplicateElectricEquipmentAbridged() ?? new ElectricEquipmentAbridged(Guid.NewGuid().ToString(), 0, ReservedText.NotSet);
+            obj = obj?.DuplicateElectricEquipmentAbridged() ?? new ElectricEquipmentAbridged(Guid.NewGuid().ToString().Substring(0, 5), 0, ReservedText.NotSet);
 
             if (!this.WattsPerArea.IsVaries)
                 obj.WattsPerArea = this._refHBObj.WattsPerArea;

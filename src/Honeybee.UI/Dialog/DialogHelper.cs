@@ -128,8 +128,8 @@ namespace Honeybee.UI
             var dialog = new Dialog_ScheduleTypeLimit();
             var typeLimit = dialog.ShowModal(parent);
             
-            var dayId = Guid.NewGuid().ToString();
-            var dayName = $"New Schedule Day {dayId.Substring(0, 5)}";
+            var dayId = Guid.NewGuid().ToString().Substring(0, 5);
+            var dayName = $"New Schedule Day {dayId}";
             var newDay = new ScheduleDay(
                 dayId,
                 new List<double> { 0.3 },
@@ -137,12 +137,12 @@ namespace Honeybee.UI
                 new List<List<int>>() { new List<int> { 0, 0 } }
                 );
 
-            var id = Guid.NewGuid().ToString();
+            var id = Guid.NewGuid().ToString().Substring(0, 5);
             var newSch = new ScheduleRuleset(
                 id,
                 new List<ScheduleDay> { newDay },
                 dayId,
-                $"New Schedule Ruleset {id.Substring(0, 5)}"
+                $"New Schedule Ruleset {id}"
                 );
 
 

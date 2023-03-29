@@ -432,7 +432,7 @@ namespace Honeybee.UI
             var index = 0;
             foreach (var item in _layers)
             {
-                var id = Guid.NewGuid();
+                //var id = Guid.NewGuid();
                 var dropin = GenDropInArea(index, item, actionAfterChanged,
                     (i) => {
                         _layers.RemoveAt(i);

@@ -95,7 +95,7 @@ namespace Honeybee.UI
 
         public LightingViewModel(ModelProperties libSource, List<LightingAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-            this.Default = new LightingAbridged(Guid.NewGuid().ToString(), 0, ReservedText.None);
+            this.Default = new LightingAbridged(Guid.NewGuid().ToString().Substring(0, 5), 0, ReservedText.None);
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateLightingAbridged();
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateLightingAbridged();
 
@@ -192,7 +192,7 @@ namespace Honeybee.UI
             if (this.IsVaries)
                 return obj?.DuplicateLightingAbridged();
 
-            obj = obj?.DuplicateLightingAbridged() ?? new LightingAbridged(Guid.NewGuid().ToString(), 0, ReservedText.NotSet);
+            obj = obj?.DuplicateLightingAbridged() ?? new LightingAbridged(Guid.NewGuid().ToString().Substring(0, 5), 0, ReservedText.NotSet);
 
             if (!this.WattsPerArea.IsVaries)
                 obj.WattsPerArea = this._refHBObj.WattsPerArea;

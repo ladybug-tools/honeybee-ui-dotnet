@@ -64,8 +64,9 @@ namespace Honeybee.UI
 
         public RelayCommand AddCommand => new RelayCommand(() =>
         {
-            var name = $"New_ModifierSet_{Guid.NewGuid().ToString().Substring(0, 5)}";
-            var newSet = new ModifierSetAbridged(name, displayName: name);
+            var id = Guid.NewGuid().ToString().Substring(0, 5);
+            var name = $"New_ModifierSet_{id}";
+            var newSet = new ModifierSetAbridged(id, displayName: name);
             var lib = this._modelRadianceProperties;
             var dialog = new Honeybee.UI.Dialog_ModifierSet(ref lib, newSet);
             var dialog_rc = dialog.ShowModal(_control);
@@ -90,7 +91,7 @@ namespace Honeybee.UI
 
             var dup = selected.ModifierSet.Duplicate() as ModifierSetAbridged;
             var name = $"{dup.DisplayName ?? dup.Identifier}_dup";
-            dup.Identifier = name;
+            dup.Identifier = Guid.NewGuid().ToString().Substring(0, 5);
             dup.DisplayName = name;
             var lib = this._modelRadianceProperties;
             var dialog = new Honeybee.UI.Dialog_ModifierSet(ref lib, dup);

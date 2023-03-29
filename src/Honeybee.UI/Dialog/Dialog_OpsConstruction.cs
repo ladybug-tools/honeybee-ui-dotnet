@@ -52,7 +52,7 @@ namespace Honeybee.UI
                     var cSet = vm.ConstructionWithMats.ConstructionSet;
                     var consts = vm.ConstructionWithMats.constructions;
                     var mats = vm.ConstructionWithMats.materials;
-                    var id = Guid.NewGuid().ToString();
+                    var id = Guid.NewGuid().ToString().Substring(0, 5);
 
                     cSet.DisplayName =  $"{vm.FullConstructionSet}_dup";
                     cSet.Identifier = id;
@@ -82,7 +82,7 @@ namespace Honeybee.UI
                     var mats = vm.ConstructionWithMats.materials;
 
                     cSet.DisplayName = vm.FullConstructionSet;
-                    cSet.Identifier = Guid.NewGuid().ToString();
+                    cSet.Identifier = Guid.NewGuid().ToString().Substring(0, 5);
 
                     Close((cSet, consts, mats));
                 }; 

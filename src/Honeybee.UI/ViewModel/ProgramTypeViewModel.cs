@@ -122,7 +122,7 @@ namespace Honeybee.UI
 
             this.ModelEnergyProp = libSource;
             _refHBObj = programType?.DuplicateProgramTypeAbridged() ?? new ProgramTypeAbridged(Guid.NewGuid().ToString());
-            _hbObj = programType;
+            _hbObj = _refHBObj.DuplicateProgramTypeAbridged();
 
             this.Name = _refHBObj.DisplayName ?? _refHBObj.Identifier;
 
@@ -160,7 +160,6 @@ namespace Honeybee.UI
         public ProgramTypeAbridged GetHBObject()
         {
             _hbObj.DisplayName = this.Name;
-            _hbObj.Identifier = this.Name;
 
             // loads
             _hbObj.Lighting = this.Lighting.MatchObj(_hbObj.Lighting);

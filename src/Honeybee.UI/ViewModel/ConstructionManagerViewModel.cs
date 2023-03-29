@@ -151,9 +151,9 @@ namespace Honeybee.UI
 
 
         public ICommand AddOpaqueConstructionCommand => new RelayCommand(() => {
-            var id = Guid.NewGuid().ToString();
-            var name = $"New Opaque Construction {id.Substring(0, 5)}";
-            var newConstrucion = new HB.OpaqueConstructionAbridged(name, new List<string>(), name);
+            var id = Guid.NewGuid().ToString().Substring(0, 5);
+            var name = $"New Opaque Construction {id}";
+            var newConstrucion = new HB.OpaqueConstructionAbridged(id, new List<string>(), name);
 
             ShowConstructionDialog(newConstrucion);
         });
@@ -161,24 +161,24 @@ namespace Honeybee.UI
 
 
         public ICommand AddWindowConstructionCommand => new RelayCommand(() => {
-            var id = Guid.NewGuid().ToString();
-            var name = $"New Window Construction {id.Substring(0, 5)}";
-            var newConstrucion = new HB.WindowConstructionAbridged(name, new List<string>(), name);
+            var id = Guid.NewGuid().ToString().Substring(0, 5);
+            var name = $"New Window Construction {id}";
+            var newConstrucion = new HB.WindowConstructionAbridged(id, new List<string>(), name);
 
             ShowConstructionDialog(newConstrucion);
         });
         public ICommand AddShadeConstructionCommand => new RelayCommand(() => {
-            var id = Guid.NewGuid().ToString();
-            var name = $"New Shade Construction {id.Substring(0, 5)}";
-            var newConstrucion = new HB.ShadeConstruction(name, name);
+            var id = Guid.NewGuid().ToString().Substring(0, 5);
+            var name = $"New Shade Construction {id}";
+            var newConstrucion = new HB.ShadeConstruction(id, name);
 
             ShowConstructionDialog(newConstrucion);
         });
 
         public ICommand AddAirBoundaryConstructionCommand => new RelayCommand(() => {
-            var id = Guid.NewGuid().ToString();
-            var name = $"New AirBoundary Construction {id.Substring(0, 5)}";
-            var newConstrucion = new HB.AirBoundaryConstructionAbridged(name, name);
+            var id = Guid.NewGuid().ToString().Substring(0, 5);
+            var name = $"New AirBoundary Construction {id}";
+            var newConstrucion = new HB.AirBoundaryConstructionAbridged(id, name);
 
             ShowConstructionDialog(newConstrucion);
         });
@@ -231,7 +231,7 @@ namespace Honeybee.UI
            
             var dup = selected.Construction.Duplicate() as HB.Energy.IConstruction;
             var name = $"{dup.Identifier}_dup";
-            dup.Identifier = name;
+            dup.Identifier = Guid.NewGuid().ToString().Substring(0, 5);
             dup.DisplayName = name;
             ShowConstructionDialog(dup);
         });

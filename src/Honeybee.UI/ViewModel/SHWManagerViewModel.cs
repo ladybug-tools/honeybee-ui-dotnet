@@ -94,7 +94,6 @@ namespace Honeybee.UI
         private void ShowSHWDialog(HB.SHWSystem system, Action<SHWSystem> doneAction = default)
         {
 
-            this._control.Visible = false;
             var dialog = new Dialog_SHW(system, roomIDPicker: AmbientCoffConditionRoomPicker);
             System.Action<SHWSystem> f = (SHWSystem s) =>
             {
@@ -106,7 +105,6 @@ namespace Honeybee.UI
                         AddUserData(s); // add/duplicate object
                     ResetDataCollection();
                 }
-                this._control.Visible = true;
             };
 
 
@@ -130,7 +128,7 @@ namespace Honeybee.UI
            
             var dup = selected.System.Duplicate() as HB.SHWSystem;
             var name = $"{dup.DisplayName ?? dup.Identifier}_dup";
-            dup.Identifier = name;
+            dup.Identifier = Guid.NewGuid().ToString().Substring(0, 5);
             dup.DisplayName = name;
 
             ShowSHWDialog(dup);

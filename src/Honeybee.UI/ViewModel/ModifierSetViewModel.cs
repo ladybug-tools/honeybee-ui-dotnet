@@ -176,7 +176,7 @@ namespace Honeybee.UI
             libSource.FillNulls();
 
             //this._libSource = libSource;
-            var cSet = ModifierSet?.DuplicateModifierSetAbridged() ?? new HB.ModifierSetAbridged(identifier: System.Guid.NewGuid().ToString());
+            var cSet = ModifierSet?.DuplicateModifierSetAbridged() ?? new HB.ModifierSetAbridged(identifier: System.Guid.NewGuid().ToString().Substring(0, 5));
             _refHBObj = cSet;
 
             this.Name = _refHBObj.DisplayName ?? _refHBObj.Identifier;

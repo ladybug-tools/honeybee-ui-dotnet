@@ -62,7 +62,7 @@ namespace Honeybee.UI
         public InfiltrationAbridged Default { get; private set; }
         public InfiltrationViewModel(ModelProperties libSource, List<InfiltrationAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-            this.Default = new InfiltrationAbridged(Guid.NewGuid().ToString(), 0, ReservedText.None);
+            this.Default = new InfiltrationAbridged(Guid.NewGuid().ToString().Substring(0, 5), 0, ReservedText.None);
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateInfiltrationAbridged();
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateInfiltrationAbridged();
 
@@ -125,7 +125,7 @@ namespace Honeybee.UI
             if (this.IsVaries)
                 return obj?.DuplicateInfiltrationAbridged();
 
-            obj = obj?.DuplicateInfiltrationAbridged() ?? new InfiltrationAbridged(Guid.NewGuid().ToString(), 0, ReservedText.NotSet);
+            obj = obj?.DuplicateInfiltrationAbridged() ?? new InfiltrationAbridged(Guid.NewGuid().ToString().Substring(0, 5), 0, ReservedText.NotSet);
 
             if (!this.FlowPerExteriorArea.IsVaries)
                 obj.FlowPerExteriorArea = this._refHBObj.FlowPerExteriorArea;

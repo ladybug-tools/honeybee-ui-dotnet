@@ -52,7 +52,7 @@ namespace Honeybee.UI
         public SetpointAbridged Default { get; private set; }
         public SetpointViewModel(ModelProperties libSource, List<SetpointAbridged> loads, Action<IIDdBase> setAction):base(libSource, setAction)
         {
-            this.Default = new SetpointAbridged(Guid.NewGuid().ToString(), ReservedText.None, ReservedText.None);
+            this.Default = new SetpointAbridged(Guid.NewGuid().ToString().Substring(0, 5), ReservedText.None, ReservedText.None);
             this.refObjProperty = loads.FirstOrDefault()?.DuplicateSetpointAbridged();
             this.refObjProperty = this._refHBObj ?? this.Default.DuplicateSetpointAbridged();
 
@@ -115,7 +115,7 @@ namespace Honeybee.UI
             if (this.IsVaries)
                 return obj?.DuplicateSetpointAbridged();
 
-            obj = obj?.DuplicateSetpointAbridged() ?? new SetpointAbridged(Guid.NewGuid().ToString(), ReservedText.NotSet, ReservedText.NotSet);
+            obj = obj?.DuplicateSetpointAbridged() ?? new SetpointAbridged(Guid.NewGuid().ToString().Substring(0, 5), ReservedText.NotSet, ReservedText.NotSet);
 
             if (!this.CoolingSchedule.IsVaries)
             {

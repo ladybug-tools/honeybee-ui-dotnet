@@ -124,7 +124,7 @@ namespace Honeybee.UI
 
             var dup = selected.ScheduleRuleset.Duplicate() as ScheduleRulesetAbridged;
             var name = $"{dup.DisplayName ?? dup.Identifier}_dup";
-            dup.Identifier = name;
+            dup.Identifier = System.Guid.NewGuid().ToString().Substring(0, 5);
             dup.DisplayName = name;
             var realObj = AbridgedToReal(dup);
             var dialog = new Honeybee.UI.Dialog_Schedule(realObj);

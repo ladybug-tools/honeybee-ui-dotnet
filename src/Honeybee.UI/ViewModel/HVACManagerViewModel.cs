@@ -114,9 +114,9 @@ namespace Honeybee.UI
     
  
         public ICommand AddIdealAirLoadCommand => new RelayCommand<HoneybeeSchema.IdealAirSystemAbridged>((obj) => {
-            var id = Guid.NewGuid().ToString();
-            var name = $"New Ideal Air System {id.Substring(0, 5)}";
-            obj = obj ?? new IdealAirSystemAbridged(name, displayName: name);
+            var id = Guid.NewGuid().ToString().Substring(0, 5);
+            var name = $"New Ideal Air System {id}";
+            obj = obj ?? new IdealAirSystemAbridged(id, displayName: name);
             ShowHVACDialog(obj);
         });
         public ICommand AddOpsHVACCommand => new RelayCommand<HoneybeeSchema.Energy.IHvac>((obj) => {
@@ -158,7 +158,7 @@ namespace Honeybee.UI
            
             var dup = selected.HVAC.Duplicate() as HB.Energy.IHvac;
             var name = $"{dup.DisplayName ?? dup.Identifier}_dup";
-            dup.Identifier = name;
+            dup.Identifier = Guid.NewGuid().ToString().Substring(0, 5);
             dup.DisplayName = name;
 
             ShowHVACDialog(dup);
