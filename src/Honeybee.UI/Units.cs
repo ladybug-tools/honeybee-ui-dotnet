@@ -46,9 +46,9 @@ namespace Honeybee.UI
         {
             get
             {
-                if (!System.IO.Directory.Exists(HoneybeeSchema.Helper.Pathes.UserAppDataDotnet))
-                    System.IO.Directory.CreateDirectory(HoneybeeSchema.Helper.Pathes.UserAppDataDotnet);
-                var file = System.IO.Path.Combine(HoneybeeSchema.Helper.Pathes.UserAppDataDotnet, "UISettings.json");
+                if (!System.IO.Directory.Exists(HoneybeeSchema.Helper.Paths.UserAppDataDotnet))
+                    System.IO.Directory.CreateDirectory(HoneybeeSchema.Helper.Paths.UserAppDataDotnet);
+                var file = System.IO.Path.Combine(HoneybeeSchema.Helper.Paths.UserAppDataDotnet, "UISettings.json");
                 return file;
             }
             //private set; 
