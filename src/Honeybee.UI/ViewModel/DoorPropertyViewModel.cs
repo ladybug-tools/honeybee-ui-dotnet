@@ -378,7 +378,14 @@ namespace Honeybee.UI.ViewModel
             var dialog_rc = dialog.ShowModal(this._control);
             if (dialog_rc != null)
             {
-                this.Construction.SetPropetyObj(dialog_rc[0]);
+                var c = dialog_rc[0];
+                var isWindC = c is HoneybeeSchema.Energy.IWindowConstruction;
+                if (this.IsGlass.IsChecked.GetValueOrDefault() && !isWindC)
+                {
+                    Honeybee.UI.Dialog_Message.Show($"Cannot assign {c?.GetType()?.Name} to a glass door!");
+                    return;
+                }
+                this.Construction.SetPropetyObj(c);
             }
         });
 
