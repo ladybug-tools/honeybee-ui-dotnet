@@ -403,9 +403,16 @@ namespace Honeybee.UI.ViewModel
             var lib = _libSource.Energy;
             var dialog = new Dialog_ConstructionManager(ref lib, true);
             var dialog_rc = dialog.ShowModal(this._control);
+            
             if (dialog_rc != null)
             {
-                this.Construction.SetPropetyObj(dialog_rc[0]);
+                var c = dialog_rc[0];
+                if (c is HoneybeeSchema.Energy.IWindowConstruction)
+                {
+                    Honeybee.UI.Dialog_Message.Show($"Cannot assign WindowConstruction to the {this.FaceTypeText} face!");
+                    return;
+                }
+                this.Construction.SetPropetyObj(c);
             }
         });
 
