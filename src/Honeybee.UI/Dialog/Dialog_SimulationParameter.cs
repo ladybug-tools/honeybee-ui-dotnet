@@ -3,6 +3,7 @@ using Eto.Forms;
 using HoneybeeSchema;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using HB = HoneybeeSchema;
 
 
@@ -124,8 +125,22 @@ namespace Honeybee.UI
                     );
                 heating_NS.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SizingParameter), nameof(param.SizingParameter.HeatingFactor)));
 
-                var effStdDP = new EnumDropDown<HB.EfficiencyStandards>();
-                effStdDP.SelectedValueBinding.Bind(Binding.Delegate(() => param.SizingParameter.EfficiencyStandard, v => param.SizingParameter.EfficiencyStandard = v));
+                var effStdItems = Enum.GetValues(typeof(HB.EfficiencyStandards)).Cast<HB.EfficiencyStandards>().Select(_ => _.ToString()).ToList();
+                effStdItems.Insert(0, "<None>");
+                var effStdDP = new DropDown();
+                effStdDP.DataStore = effStdItems;
+                effStdDP.SelectedValueBinding.Bind(
+                    Binding.Delegate(() =>
+                    {
+                        var o = param.SizingParameter?.EfficiencyStandard.ToString();
+                        o = o == "0" ? "<None>" : o;
+                        return (object)o;
+                    },
+                    v =>
+                    {
+                        Enum.TryParse<HB.EfficiencyStandards>(v?.ToString(), out var cz);
+                        param.SizingParameter.EfficiencyStandard = cz;
+                    }));
                 effStdDP.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SizingParameter), nameof(param.SizingParameter.EfficiencyStandard)));
 
 
@@ -133,8 +148,22 @@ namespace Honeybee.UI
                 bldnType.TextBinding.Bind(Binding.Delegate(() => param.SizingParameter.BuildingType, v => param.SizingParameter.BuildingType = v));
                 bldnType.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SizingParameter), nameof(param.SizingParameter.BuildingType)));
 
-                var climateZone = new EnumDropDown<HB.ClimateZones>();
-                climateZone.SelectedValueBinding.Bind(Binding.Delegate(() => param.SizingParameter.ClimateZone, v => param.SizingParameter.ClimateZone = v));
+                var climateZoneItems = Enum.GetValues(typeof(HB.ClimateZones)).Cast<HB.ClimateZones>().Select(_=>_.ToString()).ToList();
+                climateZoneItems.Insert(0, "<None>");
+                var climateZone = new DropDown();
+                climateZone.DataStore = climateZoneItems;
+                climateZone.SelectedValueBinding.Bind(
+                    Binding.Delegate(() => 
+                        {
+                            var o = param.SizingParameter?.ClimateZone.ToString();
+                            o = o == "0" ? "<None>" : o;
+                            return (object)o;
+                        }, 
+                        v => 
+                        {
+                            Enum.TryParse<HB.ClimateZones>(v?.ToString(), out var cz);
+                            param.SizingParameter.ClimateZone = cz;
+                        }));
                 climateZone.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SizingParameter), nameof(param.SizingParameter.CoolingFactor)));
 
                 var sizing_GB = new GroupBox();

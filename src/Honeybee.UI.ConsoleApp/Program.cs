@@ -340,7 +340,7 @@ namespace Honeybee.UI.ConsoleApp
                 {
                     var sP = new SimulationParameter();
                     var dialog = new Honeybee.UI.Dialog_SimulationParameter(sP);
-                    dialog.ShowModal(this);
+                    var aa = dialog.ShowModal(this);
 
                 };
 
