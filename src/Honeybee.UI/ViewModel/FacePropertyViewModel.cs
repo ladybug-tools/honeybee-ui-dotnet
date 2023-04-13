@@ -412,6 +412,12 @@ namespace Honeybee.UI.ViewModel
                     Honeybee.UI.Dialog_Message.Show($"Cannot assign WindowConstruction to the {this.FaceTypeText} face!");
                     return;
                 }
+
+                if (this.FaceType != FaceType.AirBoundary && c is HoneybeeSchema.Energy.IAirBoundaryConstruction)
+                {
+                    Honeybee.UI.Dialog_Message.Show($"Cannot assign AirBoundaryConstruction to the {this.FaceTypeText} face!");
+                    return;
+                }
                 this.Construction.SetPropetyObj(c);
             }
         });
