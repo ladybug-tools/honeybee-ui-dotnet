@@ -92,8 +92,8 @@ namespace Honeybee.UI
             var vfs = objs.Select(_ => _?.ViewFactor).Distinct();
             if (vfs.Count() > 1)
             {
-                this.IsViewFactorAutocalculate = false;
                 this.ViewFactor.SetNumberText(ReservedText.Varies);
+                this.IsViewFactorAutocalculate = false;
             }
             else
             {
@@ -102,9 +102,14 @@ namespace Honeybee.UI
                 {
                     var num = _refHBObj.ViewFactor?.Obj is double tt ? tt.ToString() : "0";
                     this.ViewFactor.SetNumberText(num);
+                    this.IsViewFactorAutocalculate = false;
                 }
                 else
+                {
+
                     this.ViewFactor.SetNumberText("0");
+                    this.IsViewFactorAutocalculate = true;
+                }
             }
 
             setAction?.Invoke(this._refHBObj);

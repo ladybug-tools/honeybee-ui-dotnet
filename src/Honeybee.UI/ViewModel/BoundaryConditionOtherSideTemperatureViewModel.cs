@@ -75,8 +75,8 @@ namespace Honeybee.UI
             var tps = objs.Select(_ => _?.Temperature).Distinct();
             if (tps.Count() > 1)
             {
-                this.IsTemperatureAutocalculate = false;
                 this.Temperature.SetNumberText(ReservedText.Varies);
+                this.IsTemperatureAutocalculate = false;
             }
             else
             {
@@ -85,9 +85,13 @@ namespace Honeybee.UI
                 {
                     var t = _refHBObj.Temperature?.Obj is double tt ? tt : 0;
                     this.Temperature.SetBaseUnitNumber(t);
+                    this.IsTemperatureAutocalculate = false;
                 }
                 else
+                {
                     this.Temperature.SetNumberText("0");
+                    this.IsTemperatureAutocalculate = true;
+                }
             }
 
             setAction?.Invoke(this._refHBObj);
