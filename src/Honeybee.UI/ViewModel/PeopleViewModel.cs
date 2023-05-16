@@ -170,8 +170,8 @@ namespace Honeybee.UI
             var latFractions = loads.Select(_ => _?.LatentFraction).Distinct();
             if (latFractions.Count() > 1)
             {
-                this.IsLatentFractionAutocalculate = false;
                 this.LatentFraction.SetNumberText(ReservedText.Varies);
+                this.IsLatentFractionAutocalculate = false;
             }
             else
             {
@@ -180,9 +180,14 @@ namespace Honeybee.UI
                 {
                     var num = _refHBObj.LatentFraction?.Obj is double tt ? tt.ToString() : "0";
                     this.LatentFraction.SetNumberText(num);
+                    this.IsLatentFractionAutocalculate = false;
                 }
-                else 
+                else
+                {
                     this.LatentFraction.SetNumberText("0");
+                    this.IsLatentFractionAutocalculate = true;
+                }
+                    
             }
 
         }
