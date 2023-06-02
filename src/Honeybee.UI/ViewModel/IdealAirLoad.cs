@@ -281,7 +281,7 @@ namespace Honeybee.UI
         }
 
 
-        public IdealAirSystemAbridged GreateHvac(HoneybeeSchema.IdealAirSystemAbridged existing = default)
+        public IdealAirSystemAbridged CreateHvac(HoneybeeSchema.IdealAirSystemAbridged existing = default)
         {
             
             var id = Guid.NewGuid().ToString().Substring(0, 8);
@@ -293,6 +293,9 @@ namespace Honeybee.UI
             obj.DisplayName = this.Name;
             if (Enum.TryParse<EconomizerType>(this.Economizer, out var eco))
                 obj.EconomizerType = eco;
+
+            if (this.HeatingAirTemperature <= this.CoolingAirTemperature)
+                throw new ArgumentException("Heating air temperature must be higher than cooling air temperature!");
 
             obj.CoolingAirTemperature = this.CoolingAirTemperature;
             obj.HeatingAirTemperature = this.HeatingAirTemperature;

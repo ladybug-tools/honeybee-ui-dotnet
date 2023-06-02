@@ -127,13 +127,23 @@ namespace Honeybee.UI
             locked.Checked = lockedMode;
 
             var OKButton = new Button { Text = "OK", Enabled = !lockedMode };
-            OKButton.Click += (sender, e) => OkCommand.Execute(vm.GreateHvac(hvac));
+            OKButton.Click += (sender, e) => OkCommand.Execute(vm.CreateHvac(hvac));
 
             AbortButton = new Button { Text = "Cancel" };
             AbortButton.Click += (sender, e) => Close();
 
             var hbData = new Button { Text = "Schema Data" };
-            hbData.Click += (sender, e) => Dialog_Message.Show(this, vm.GreateHvac(hvac).ToJson(true), "Schema Data");
+            hbData.Click += (sender, e) =>
+            {
+                try
+                {
+                    Dialog_Message.Show(this, vm.CreateHvac(hvac).ToJson(true), "Schema Data");
+                }
+                catch (Exception ex)
+                {
+                    Dialog_Message.Show(this, ex);
+                }
+            };
 
             layout.AddSeparateRow(locked, null, OKButton, this.AbortButton, null, hbData);
             layout.AddRow(null);
