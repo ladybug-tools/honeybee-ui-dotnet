@@ -10,20 +10,6 @@ namespace Honeybee.UI
 {
     internal class MaterialManagerViewModel : ManagerBaseViewModel<MaterialViewData>
     {
-        private bool _useIPUnit;
-        public bool UseIPUnit
-        {
-            get => _useIPUnit;
-            set
-            {
-                if (_useIPUnit != value)
-                    ChangeUnit(value);
-                _useIPUnit = value;
-
-            }
-        }
-
-       
         private HB.ModelEnergyProperties _modelEnergyProperties { get; set; }
 
         private static ManagerItemComparer<MaterialViewData> _viewDataComparer = new ManagerItemComparer<MaterialViewData>();
@@ -32,8 +18,8 @@ namespace Honeybee.UI
         {
             _modelEnergyProperties = libSource;
 
-            this._userData = libSource.MaterialList.Select(_ => new MaterialViewData(_, ShowIPUnit: false)).ToList();
-            this._systemData = SystemEnergyLib.MaterialList.Select(_ => new MaterialViewData(_, ShowIPUnit: false)).ToList();
+            this._userData = libSource.MaterialList.Select(_ => new MaterialViewData(_)).ToList();
+            this._systemData = SystemEnergyLib.MaterialList.Select(_ => new MaterialViewData(_)).ToList();
             this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
 
 
@@ -44,7 +30,7 @@ namespace Honeybee.UI
         private void AddUserData(HB.Energy.IMaterial item)
         {
             var newItem = CheckObjName(item);
-            this._userData.Insert(0, new MaterialViewData(newItem, this.UseIPUnit));
+            this._userData.Insert(0, new MaterialViewData(newItem));
             this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
         }
         private void ReplaceUserData(MaterialViewData oldObj, HB.Energy.IMaterial newObj)
@@ -52,7 +38,7 @@ namespace Honeybee.UI
             var newItem = CheckObjName(newObj, oldObj.Name);
             var index = _userData.IndexOf(oldObj);
             _userData.RemoveAt(index);
-            _userData.Insert(index, new MaterialViewData(newItem, this.UseIPUnit));
+            _userData.Insert(index, new MaterialViewData(newItem));
             this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
         }
         private void DeleteUserData(MaterialViewData item)
@@ -287,15 +273,6 @@ namespace Honeybee.UI
             }
         });
 
-    
-
-        private void ChangeUnit(bool IPUnit)
-        {
-            this._userData = this._userData.Select(_ => new MaterialViewData(_.Material, IPUnit)).ToList();
-            this._systemData = this._systemData.Select(_ => new MaterialViewData(_.Material, IPUnit)).ToList();
-            this._allData = _userData.Concat(_systemData).ToList();
-            ResetDataCollection();
-        }
     }
 
     internal class MaterialViewData: ManagerViewDataBase
@@ -322,7 +299,7 @@ namespace Honeybee.UI
 
         private static IEnumerable<string> LockedLibraryIds = LBTLibraryIds.Concat(NRELLibraryIds).Concat(UserLibIds);
 
-        public MaterialViewData(HB.Energy.IMaterial c, bool ShowIPUnit = false)
+        public MaterialViewData(HB.Energy.IMaterial c)
         {
             this.Name = c.DisplayName ?? c.Identifier;
             this.CType = c.GetType().Name.Replace("EnergyWindowMaterial", "");
@@ -333,8 +310,8 @@ namespace Honeybee.UI
 
             if (c is HB.Energy.IMaterial tc)
             {
-                var r = ShowIPUnit? Math.Round(tc.RValue * 5.678263337, 5): Math.Round(tc.RValue, 5);
-                var u = ShowIPUnit ? Math.Round(tc.UValue / 5.678263337, 5) : Math.Round(tc.UValue, 5);
+                var r = Units.CheckThermalUnit(Units.UnitType.Resistance, tc.RValue);
+                var u = Units.CheckThermalUnit(Units.UnitType.UValue, tc.UValue);
 
                 this.RValue = r < 0 ? "Skylight only" : r.ToString();
                 this.UValue = u < 0 ? "Skylight only" : u.ToString();
@@ -342,7 +319,7 @@ namespace Honeybee.UI
             
             if (c is HB.EnergyWindowMaterialSimpleGlazSys win)
             {
-                this.UFactor = ShowIPUnit ? Math.Round(win.UFactor / 5.678263337, 5).ToString() : Math.Round(win.UFactor, 5).ToString();
+                this.UFactor = Units.CheckThermalUnit(Units.UnitType.UValue, win.UFactor).ToString();
                 this.SHGC = Math.Round(win.Shgc, 5).ToString();
                 this.TSolar = Math.Round(win.SolarTransmittance, 5).ToString();
                 this.TVis = Math.Round(win.Vt, 5).ToString();
