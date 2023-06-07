@@ -62,15 +62,7 @@ namespace Honeybee.UI
             var counts = new Label();
             counts.TextBinding.Bind(_vm, _ => _.Counts);
 
-            // unit switchs
-            var unit = new RadioButtonList();
-            unit.Items.Add("Metric");
-            unit.Items.Add("Imperial");
-            unit.SelectedIndex = 0;
-            unit.Spacing = new Size(5, 0);
-            unit.SelectedIndexChanged += (s, e) => _vm.UseIPUnit = unit.SelectedIndex == 1;
-
-            layout.AddSeparateRow(counts, null, unit);
+            layout.AddSeparateRow(counts, null);
 
             
             var OKButton = new Button { Text = "OK" };

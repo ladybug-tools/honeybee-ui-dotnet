@@ -6,6 +6,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using HoneybeeSchema;
+using LadybugDisplaySchema;
 
 namespace Honeybee.UI
 {
@@ -18,14 +19,12 @@ namespace Honeybee.UI
         private Label _u_value;
         private Label _uf_label;
         private Label _uf_value;
-        const string _r_si = "R Value [m2·K/W]";
-        const string _r_ip = "R Value [ft2·F·h/BTU]";
-        const string _u_si = "U Value [W/m2·K]";
-        const string _u_ip = "U Value [BTU/ft2·F·h]";
-        const string _uf_si = "U Factor [W/m2·K]";
-        const string _uf_ip = "U Factor [BTU/ft2·F·h]";
+        const string _r = "R Value";
+        const string _u = "U Value";
+        const string _uf = "U Factor";
 
-        private bool _showIP = false;
+        private string _rDisplayUnit = Units.GetThermalUnitDisplayAbbreviation(Units.UnitType.Resistance);
+        private string _uDisplayUnit = Units.GetThermalUnitDisplayAbbreviation(Units.UnitType.UValue);
 
         //private List<string> _layers = new List<string>();
         private HB.Energy.IConstruction _hbObj;
@@ -189,7 +188,7 @@ namespace Honeybee.UI
                 Action<int, string> actionWhenItemChanged = (int layerIndex, string newValue) => {
                     _layers.RemoveAt(layerIndex);
                     _layers.Insert(layerIndex, newValue);
-                    CalRValue(_hbObj, _showIP);
+                    CalRValue(_hbObj);
                 };
 
                 _layersPanel = new DynamicLayout();
@@ -203,7 +202,7 @@ namespace Honeybee.UI
 
                       GenMaterialLayersPanel(_layersPanel, actionWhenItemChanged);
                       _layersPanel.Create();
-                      CalRValue(_hbObj, _showIP);
+                      CalRValue(_hbObj);
                   }
                   );
                 groupContent.AddSeparateRow(null, "Outside", null);
@@ -220,25 +219,17 @@ namespace Honeybee.UI
                 var thermGp = new GroupBox() { Text = "Construction Thermal Properties" };
                 var thermProp = new DynamicLayout() { DefaultPadding = new Padding(4)};
                 //thermProp.AddSeparateRow("Construction Thermal Properties", null);
-                _r_label = new Label() { Text = _r_si };
-                _u_label = new Label() { Text = _u_si };
-                _uf_label = new Label() { Text = _uf_si };
+                _r_label = new Label() { Text = _r };
+                _u_label = new Label() { Text = _u };
+                _uf_label = new Label() { Text = _uf };
                 _r_value = new Label() { Text = "Not available" };
                 _u_value = new Label() { Text = "Not available" };
                 _uf_value = new Label() { Text = "Not available" };
                 thermProp.AddSeparateRow(_r_label, ":", _r_value);
                 thermProp.AddSeparateRow(_u_label, ":", _u_value);
                 thermProp.AddSeparateRow(_uf_label, ":", _uf_value);
-                CalRValue(_hbObj, false);
+                CalRValue(_hbObj);
 
-                // unit switchs
-                var unit = new RadioButtonList();
-                unit.Items.Add("Metric");
-                unit.Items.Add("Imperial");
-                unit.SelectedIndex = 0;
-                unit.Spacing = new Size(5, 0);
-                unit.SelectedIndexChanged += (s, e) => CalRValue(_hbObj, unit.SelectedIndex == 1);
-                thermProp.AddSeparateRow("Unit:", unit);
                 thermGp.Content = thermProp;
                 leftLayout.AddRow(thermGp);
                 leftLayout.AddRow(null);
@@ -446,7 +437,7 @@ namespace Honeybee.UI
 
                         //ctrls.AddRow(new TextBox());
                         _layersPanel.Create();
-                        CalRValue(_hbObj, _showIP);
+                        CalRValue(_hbObj);
 
                     });
                 _layersPanel.AddRow(dropin);
@@ -613,7 +604,7 @@ namespace Honeybee.UI
             return layerPanel;
         }
 
-        void CalRValue(HB.Energy.IConstruction c, bool ShowIPUnit)
+        void CalRValue(HB.Energy.IConstruction c)
         {
             if (c is HB.Energy.IThermalConstruction tc)
             {
@@ -642,11 +633,9 @@ namespace Honeybee.UI
 
                 var valid = tc.CalThermalValues(dupLib);
 
-                _showIP = ShowIPUnit;
-
-                var r = ShowIPUnit ? Math.Round(tc.RValue * 5.678263337, 5) : Math.Round(tc.RValue, 5);
-                var u = ShowIPUnit ? Math.Round(tc.UValue / 5.678263337, 5) : Math.Round(tc.UValue, 5);
-                var uf = ShowIPUnit ? Math.Round(tc.UFactor / 5.678263337, 5) : Math.Round(tc.UFactor, 5);
+                var r = Units.CheckThermalUnit(Units.UnitType.Resistance, tc.RValue);
+                var u = Units.CheckThermalUnit(Units.UnitType.UValue, tc.UValue);
+                var uf = Units.CheckThermalUnit(Units.UnitType.UValue, tc.UFactor);
 
                 var rText = valid ? (r < 0 ? "Skylight only" : r.ToString()) : "Invalid";
                 var uText = valid ? (u < 0 ? "Skylight only" : u.ToString()) : "Invalid";
@@ -655,11 +644,12 @@ namespace Honeybee.UI
                 _r_value.Text = rText;
                 _u_value.Text = uText;
                 _uf_value.Text = ufText;
-                _r_label.Text = ShowIPUnit ? _r_ip : _r_si;
-                _u_label.Text = ShowIPUnit ? _u_ip : _u_si;
-                _uf_label.Text = ShowIPUnit ? _uf_ip : _uf_si;
+                
+                _r_label.Text =  $"{_r} [{_rDisplayUnit}]";
+                _u_label.Text = $"{_u} [{_uDisplayUnit}]";
+                _uf_label.Text = $"{_uf} [{_uDisplayUnit}]";
             }
-           
+
         }
     }
 }

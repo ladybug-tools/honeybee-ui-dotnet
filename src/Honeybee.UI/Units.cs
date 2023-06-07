@@ -327,6 +327,42 @@ namespace Honeybee.UI
 
         }
 
+        // helpers
+        private static Dictionary<Units.UnitType, (Enum baseUnit, Enum displayUnit)> _mapThermalUnits => new Dictionary<Units.UnitType, (Enum, Enum)>()
+        {
+            { Units.UnitType.Resistance, (Units.ThermalResistanceUnit.SquareMeterKelvinPerWatt, Units.CustomUnitSettings[Units.UnitType.Resistance])},
+            { Units.UnitType.UValue, (Units.HeatTransferCoefficientUnit.WattPerSquareMeterKelvin, Units.CustomUnitSettings[Units.UnitType.UValue])},
+
+        };
+        internal static double CheckThermalUnit(Units.UnitType unitType, double num, int round = 5)
+        {
+            var displayNum = num;
+            if (!_mapThermalUnits.TryGetValue(unitType, out var units))
+            {
+                // do nothing
+            }
+            else if (!units.baseUnit.Equals(units.displayUnit))
+            {
+                var baseUnit = units.baseUnit.ToUnitsNetEnum();
+                var displayUnit = units.displayUnit.ToUnitsNetEnum();
+                displayNum = Units.ConvertValueWithUnits(num, baseUnit, displayUnit);
+            }
+
+            return Math.Round(displayNum, round);
+        }
+
+
+        internal static string GetThermalUnitDisplayAbbreviation(Units.UnitType unitType)
+        {
+            if (!_mapThermalUnits.TryGetValue(unitType, out var units))
+            {
+                return string.Empty;
+            }
+            else
+            {
+                return units.displayUnit.ToUnitsNetEnum().GetAbbreviation();
+            }
+        }
 
     }
 

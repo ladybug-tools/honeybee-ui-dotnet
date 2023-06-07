@@ -10,19 +10,6 @@ namespace Honeybee.UI
 {
     internal class ConstructionManagerViewModel : ManagerBaseViewModel<ConstructionViewData>
     {
-    
-        private bool _useIPUnit;
-        public bool UseIPUnit
-        {
-            get => _useIPUnit;
-            set
-            {
-                if (_useIPUnit != value)
-                    ChangeUnit(value);
-                _useIPUnit = value;
-            }
-        }
-
         private HB.ModelEnergyProperties _modelEnergyProperties { get; set; }
         private static ManagerItemComparer<ConstructionViewData> _viewDataComparer = new ManagerItemComparer<ConstructionViewData>();
 
@@ -35,8 +22,8 @@ namespace Honeybee.UI
             ConstructionViewData.LibSource.AddMaterials(SystemEnergyLib.MaterialList);
 
 
-            this._userData = libSource.ConstructionList.Select(_ => new ConstructionViewData(_, ShowIPUnit: false)).ToList();
-            this._systemData = SystemEnergyLib.ConstructionList.Select(_ => new ConstructionViewData(_, ShowIPUnit: false)).ToList();
+            this._userData = libSource.ConstructionList.Select(_ => new ConstructionViewData(_)).ToList();
+            this._systemData = SystemEnergyLib.ConstructionList.Select(_ => new ConstructionViewData(_)).ToList();
             this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
 
             ResetDataCollection();
@@ -45,7 +32,7 @@ namespace Honeybee.UI
         private void AddUserData(HB.Energy.IConstruction item)
         {
             var newItem = CheckObjName(item);
-            var newViewData = new ConstructionViewData(newItem, this.UseIPUnit);
+            var newViewData = new ConstructionViewData(newItem);
             if (!this._userData.Contains(newViewData))
             {
                 // add resources to model EnergyProperties
@@ -60,7 +47,7 @@ namespace Honeybee.UI
             var newItem = CheckObjName(newObj, oldObj.Name);
             var index = _userData.IndexOf(oldObj);
             _userData.RemoveAt(index);
-            var newViewData = new ConstructionViewData(newItem, this.UseIPUnit);
+            var newViewData = new ConstructionViewData(newItem);
             if (!this._userData.Contains(newViewData))
             {
                 // add resources to model EnergyProperties
@@ -304,18 +291,11 @@ namespace Honeybee.UI
         });
 
      
-        private void ChangeUnit(bool IPUnit)
-        {
-            this._userData = this._userData.Select(_ => new ConstructionViewData(_.Construction, IPUnit)).ToList();
-            this._systemData = this._systemData.Select(_ => new ConstructionViewData(_.Construction, IPUnit)).ToList();
-            this._allData = _userData.Concat(_systemData).ToList();
-            ResetDataCollection();
-        }
     }
 
 
 
-    internal class ConstructionViewData: ManagerViewDataBase
+    internal class ConstructionViewData : ManagerViewDataBase
     {
         public string CType { get; }
         public string RValue { get; }
@@ -341,18 +321,23 @@ namespace Honeybee.UI
 
         private static IEnumerable<string> SystemLibraryIds = LBTLibraryIds.Concat(NRELLibraryIds).Concat(UserLibIds);
 
-        public ConstructionViewData(HB.Energy.IConstruction c, bool ShowIPUnit)
+        public ConstructionViewData(HB.Energy.IConstruction c)
         {
             this.Name = c.DisplayName ?? c.Identifier;
             this.CType = c.GetType().Name.Replace("Abridged", "").Replace("Construction", "");
             if (c is HB.Energy.IThermalConstruction tc)
             {
                 tc.CalThermalValues(LibSource);
-                this.RValue = ShowIPUnit ? Math.Round(tc.RValue * 5.678263337, 5).ToString(): Math.Round(tc.RValue, 5).ToString();
-                this.UFactor = ShowIPUnit ? Math.Round(tc.UFactor / 5.678263337, 5).ToString(): Math.Round(tc.UFactor, 5).ToString();
-                this.UValue = ShowIPUnit ? Math.Round(tc.UValue / 5.678263337, 5).ToString() : Math.Round(tc.UValue, 5).ToString();
+                var r = Units.CheckThermalUnit(Units.UnitType.Resistance, tc.RValue);
+                var uf = Units.CheckThermalUnit(Units.UnitType.UValue, tc.UFactor);
+                var u = Units.CheckThermalUnit(Units.UnitType.UValue, tc.UValue);
+
+                this.RValue = r < 0 ? "Skylight only" : r.ToString();
+                this.UValue = u < 0 ? "Skylight only" : u.ToString();
+                this.UFactor = uf < 0 ? "Skylight only" : uf.ToString();
+
                 var shgc = Math.Round(tc.SHGC, 5);
-                this.SHGC = shgc == 0 ? null: shgc.ToString();
+                this.SHGC = shgc == 0 ? null : shgc.ToString();
                 var tsolar = Math.Round(tc.SolarTransmittance, 5);
                 this.TSolar = tsolar == 0 ? null : tsolar.ToString();
             }
@@ -382,6 +367,8 @@ namespace Honeybee.UI
             return eng.DuplicateModelEnergyProperties();
           
         }
+
+       
     }
 
 }

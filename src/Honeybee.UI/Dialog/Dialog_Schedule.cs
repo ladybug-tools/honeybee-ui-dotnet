@@ -57,7 +57,7 @@ namespace Honeybee.UI
 
             var hasUnits = _mapUnits.TryGetValue(typeLimit.UnitType, out var units);
             if (!hasUnits) return schedule;
-            if (units.displayUnit == units.baseUnit)
+            if (units.baseUnit.Equals(units.displayUnit))
             {
                 return schedule;
             }
