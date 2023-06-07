@@ -37,12 +37,6 @@ namespace Honeybee.UI
             DefaultButton.Click += (sender, e) =>
             {
                 var item = dropDowns.SelectedValue as ListItem;
-                if (item.Key == ReservedText.Unspecified)
-                {
-                    Close(null);
-                    return;
-                }
-
                 var sel = item?.Tag as ScheduleTypeLimit;
                 if (sel == null)
                 {
@@ -65,7 +59,8 @@ namespace Honeybee.UI
         private static NoLimit _noLimit = new NoLimit();
         private static readonly Dictionary<string, ScheduleTypeLimit> _typeLimitLib = new Dictionary<string, ScheduleTypeLimit>()
             {
-                { ReservedText.Unspecified, null},
+                { ReservedText.Unspecified, 
+                    new ScheduleTypeLimit("Dimensionless 1","Dimensionless", _noLimit, _noLimit, ScheduleNumericType.Continuous, ScheduleUnitType.Dimensionless)},
                 { "Dimensionless 1 [NoLimit ~ NoLimit]",
                     new ScheduleTypeLimit("Dimensionless 1","Dimensionless 1", _noLimit, _noLimit, ScheduleNumericType.Continuous, ScheduleUnitType.Dimensionless)},
                 { "Dimensionless 2 [-1 ~ 1]",
@@ -96,9 +91,9 @@ namespace Honeybee.UI
                     new ScheduleTypeLimit("On-Off","On-Off", 0, 1, ScheduleNumericType.Discrete, ScheduleUnitType.Dimensionless)},
                 { "Power [NoLimit ~ NoLimit]",
                     new ScheduleTypeLimit("Power","Power", _noLimit, _noLimit, ScheduleNumericType.Continuous, ScheduleUnitType.Power)},
-                { "Temperature [-273.15 ~ NoLimit]",
+                { "Temperature [-273.15 C ~ NoLimit]",
                     new ScheduleTypeLimit("Temperature","Temperature", -273.15, _noLimit, ScheduleNumericType.Continuous, ScheduleUnitType.Temperature)},
-                { "Temperature [0 ~ 100]",
+                { "Temperature [0 C ~ 100 C]",
                     new ScheduleTypeLimit("Temperature 2","Temperature 2", 0, 100, ScheduleNumericType.Continuous, ScheduleUnitType.Temperature)},
                 { "Percent [%]",
                     new ScheduleTypeLimit("Percent","Percent", 0, 100, ScheduleNumericType.Continuous, ScheduleUnitType.Percent)},

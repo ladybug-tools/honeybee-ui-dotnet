@@ -127,7 +127,9 @@ namespace Honeybee.UI
         {
             var dialog = new Dialog_ScheduleTypeLimit();
             var typeLimit = dialog.ShowModal(parent);
-            
+            if (typeLimit == null)
+                return null;
+
             var dayId = Guid.NewGuid().ToString().Substring(0, 5);
             var dayName = $"New Schedule Day {dayId}";
             var newDay = new ScheduleDay(
