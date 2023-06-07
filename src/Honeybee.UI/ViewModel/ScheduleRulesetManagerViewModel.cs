@@ -37,7 +37,8 @@ namespace Honeybee.UI
 
         private ScheduleRuleset AbridgedToReal(ScheduleRulesetAbridged obj)
         {
-            var typeLimit = _typeLimits.FirstOrDefault(_ => _.Identifier == obj.ScheduleTypeLimit);
+            var alltypes = _typeLimits.Concat(_modelEnergyProperties?.ScheduleTypeLimits).ToList();
+            var typeLimit = alltypes.FirstOrDefault(_ => _.Identifier == obj.ScheduleTypeLimit);
 
             var realObj = new ScheduleRuleset(obj.Identifier, obj.DaySchedules, obj.DefaultDaySchedule, obj.DisplayName, obj.UserData,
                obj.ScheduleRules, obj.HolidaySchedule, obj.SummerDesigndaySchedule, obj.WinterDesigndaySchedule, typeLimit);
