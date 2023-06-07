@@ -76,6 +76,16 @@ namespace Honeybee.UI
             set => Set(() => _lowerLimit = value, nameof(LowerLimit));
         }
 
+        public string LowerLimitText
+        {
+            get => LowerLimit.ToString();
+            set 
+            {
+                LowerLimit = double.TryParse(value, out var d) ? d : 0;
+            }
+        }
+
+
         private double _upperLimit = 999;
         public double UpperLimit
         {
@@ -105,7 +115,14 @@ namespace Honeybee.UI
             }
             set => Set(() => _upperLimit = value, nameof(UpperLimit));
         }
-
+        public string UpperLimitText
+        {
+            get => UpperLimit.ToString();
+            set
+            {
+                UpperLimit = double.TryParse(value, out var d) ? d : 0;
+            }
+        }
         public double SchTypelength => Math.Abs(this.UpperLimit - this.LowerLimit);
 
         public List<ScheduleDay> DaySchedules

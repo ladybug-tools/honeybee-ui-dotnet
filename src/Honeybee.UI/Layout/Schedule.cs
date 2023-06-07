@@ -81,12 +81,12 @@ namespace Honeybee.UI
             var lowerLimit_TB = new MaskedTextBox() { };
             var lowNumMask = new NumericMaskedTextProvider() { AllowDecimal = true, AllowSign = true };
             lowerLimit_TB.Provider = lowNumMask;
-            lowerLimit_TB.TextBinding.Bind(() => _vm.LowerLimit.ToString(), v => _vm.LowerLimit = double.TryParse(v, out var d) ? d : 0);
+            lowerLimit_TB.TextBinding.Bind(_vm, _=>_.LowerLimitText);
 
             var higherLimit_TB = new MaskedTextBox() { };
             var highNumMask = new NumericMaskedTextProvider() { AllowDecimal = true, AllowSign = true };
             higherLimit_TB.Provider = highNumMask;
-            higherLimit_TB.TextBinding.Bind(() => _vm.UpperLimit.ToString(), v => _vm.UpperLimit = double.TryParse(v, out var d) ? d : 0);
+            higherLimit_TB.TextBinding.Bind(_vm, _ => _.UpperLimitText);
 
             //var label = new Label() { Text = "Mouse over lines" };
             var mouseHoverValue_TB = new NumericMaskedTextStepper<double>() { Height = 20, Font = Fonts.Sans(8) };
@@ -775,127 +775,7 @@ namespace Honeybee.UI
             }
             UpdateScheduleDayPanel();
         }
-        //private void DrawCalendarGrids(Graphics graphic)
-        //{
-        //    //var graphic = e.Graphics;
-        //    var dayW = 25;
-        //    var dayH = 15;
-        //    var monthW = dayW * 7;
-        //    var monthH = dayH * 5;
-        //    // vertical lines
-            
-
-        //    void DrawMonthGrid()
-        //    {
-        //        for (int i = 0; i <= 7; i++)
-        //        {
-        //            var x = i * dayW;
-        //            graphic.DrawLine(Colors.Black, x, 0, x, monthH);
-        //        }
-        //        // horizontal lines
-        //        for (int i = 0; i <= 5; i++)
-        //        {
-        //            var y = i * dayH;
-        //            graphic.DrawLine(Colors.Black, 0, y, monthW, y);
-
-        //        }
-        //    }
-        //}
-
-
-
-        //private void RedrawMonth(int startDay, Graphics graphic)
-        //{
-        //    var daysPerMonth = new[] { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-        //    var weekDays = new[] { "S", "M", "T", "W", "T", "F", "S" };
-        //    var dayW = 25;
-        //    var dayH = 15;
-        //    var defaultColor = Colors.Aqua;
-
-        //    var monthRec = new Rectangle(0, 0, dayW * 7, dayH * 5);
-        //    //// draw grid
-        //    //// fill day cell color
-        //    //for (int j = 0; j < 35; j++)
-        //    //{
-
-        //    //}
-        //    var row = 0;
-        //    var indexInRow = 0;
-
-        //    var font = Fonts.Sans(8);
-        //    var DOY = 0;
-
-        //    var pt = new Point();
-        //    var coloum = 1;
-        //    var month = 0;
-
-        //    var setColor = defaultColor;
-
-        //    foreach (var days in daysPerMonth)
-        //    {
-        //        if (month > 0)
-        //        {
-        //            pt.Y = pt.Y + dayH * 2;
-        //        }
-
-        //        var monthPt = new Point(0, pt.Y);
-        //        graphic.DrawText(font, Colors.Black, monthPt.X, monthPt.Y, (month + 1).ToString());
-        //        pt.Y = pt.Y + dayH;
-        //        monthPt.Y = monthPt.Y + dayH;
-        //        for (int i = 0; i < 7; i++)
-        //        {
-        //            var rec = new Rectangle(i * dayW, monthPt.Y, dayW, dayH);
-
-        //            var date = weekDays[i];
-        //            var size = font.MeasureString(date);
-
-
-        //            graphic.DrawText(font, Colors.Black, rec.Center.X - size.Width / 2, rec.Center.Y - size.Height / 2, date);
-        //            monthPt.X = monthPt.X + dayW;
-        //        }
-
-
-        //        pt.Y = pt.Y + dayH;
-        //        for (int i = 0; i < days; i++)
-        //        {
-        //            var weekOfMonth = (int)Math.Floor((double)i / 7);
-        //            var dayOfWeek = (i - row * 7);
-                    
-                    
-        //            if (pt.X + dayW >= monthRec.Width * coloum)
-        //            {
-        //                pt.Y = pt.Y + dayH;
-        //                pt.X = monthRec.Width * (coloum - 1);
-        //            }
-        //            else if (DOY != 0)
-        //            {
-        //                pt.X = pt.X + dayW;
-        //            }
-
-        //            dayOfWeek = (int)(pt.X / dayW);
-        //            if (_vmSelectedRule.ApplySaturday && dayOfWeek == 6)
-        //            {
-        //                setColor = Colors.Red;
-        //            }
-        //            else
-        //            {
-        //                setColor = defaultColor;
-        //            }
-
-        //            var rec = new Rectangle(pt.X, pt.Y, dayW, dayH);
-        //            graphic.FillRectangle(setColor, rec);
-        //            graphic.DrawRectangle(Colors.Black, rec);
-        //            var date = (i + 1).ToString();
-        //            var size = font.MeasureString(date);
-
-        //            graphic.DrawText(font, Colors.Black, rec.Center.X - size.Width / 2, rec.Center.Y - size.Height / 2, date);
-        //            //row = i == daysPerMonth[month]-1 ? row + 1 : row;
-        //            DOY++;
-        //        }
-
-        //        month++;
-        //    }
-        //}
+       
 
 
         private Control[] AddIntervalButtons()
