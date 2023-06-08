@@ -52,7 +52,12 @@ namespace Honeybee.UI
             var remove = new Button { Text = "Remove" };
             remove.Command = _vm.RemoveCommand;
 
-            layout.AddSeparateRow("Program Types:", null, addNew, duplicate, edit, remove);
+            var export = new Button { Text = "Export" };
+            export.ToolTip = "Export user's resources";
+            export.Command = _vm.ExportCommand;
+
+
+            layout.AddSeparateRow("Program Types:", null, addNew, duplicate, edit, remove, export);
 
             // search bar
             var filter = new TextBox() { PlaceholderText = "Filter" };

@@ -290,7 +290,39 @@ namespace Honeybee.UI
             }
         });
 
-     
+        public RelayCommand ExportCommand => new RelayCommand(() =>
+        {
+            try
+            {
+                var inModelData = this._userData.Where(_ => _.IsInModelUserlib).Select(_ => _.Construction).ToList();
+                if (!inModelData.Any())
+                    throw new ArgumentException("There is no user's custom data found!");
+                var container = new HB.ModelEnergyProperties();
+                container.AddConstructions(inModelData);
+
+                var json = container.ToJson();
+
+                var fd = new Eto.Forms.SaveFileDialog();
+                fd.FileName = $"custom_{System.Guid.NewGuid().ToString().Substring(0,5)}";
+                fd.Filters.Add(new FileFilter("JSON", new[] { "json" }));
+                var rs = fd.ShowDialog(_control);
+                if (rs != DialogResult.Ok)
+                    return;
+                var path = fd.FileName;
+                path = System.IO.Path.ChangeExtension(path, "json");
+
+                System.IO.File.WriteAllText(path, json);
+
+                Dialog_Message.Show(_control, $"{inModelData.Count} custom data were exported!");
+            }
+            catch (Exception ex)
+            {
+                Dialog_Message.Show(_control, ex);
+            }
+
+        });
+
+
     }
 
 
@@ -307,6 +339,7 @@ namespace Honeybee.UI
         public bool Locked { get; }
         public string Source { get; } = "Model";
         public HB.Energy.IConstruction Construction { get; }
+        public bool IsInModelUserlib => this.Source == "Model";
 
         public static HB.ModelEnergyProperties LibSource { get; set; }
 
