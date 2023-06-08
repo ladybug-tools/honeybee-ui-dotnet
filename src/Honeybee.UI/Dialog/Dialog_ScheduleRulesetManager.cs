@@ -53,7 +53,11 @@ namespace Honeybee.UI
             remove.Command = _vm.RemoveCommand;
 
 
-            layout.AddSeparateRow("Schedule Rulesets:", null, addNew, duplicate, edit, remove);
+            var export = new Button { Text = "Export" };
+            export.ToolTip = "Export user's resources";
+            export.Command = _vm.ExportCommand;
+
+            layout.AddSeparateRow("Schedule Rulesets:", null, addNew, duplicate, edit, remove, export);
 
             // search bar
             var filter = new TextBox() { PlaceholderText = "Filter" };

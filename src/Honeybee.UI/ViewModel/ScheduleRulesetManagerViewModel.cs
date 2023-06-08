@@ -201,7 +201,41 @@ namespace Honeybee.UI
                 ResetDataCollection();
             }
         });
+        public RelayCommand ExportCommand => new RelayCommand(() =>
+        {
+            try
+            {
+                var inModelData = this._userData.Where(_ => _.IsInModelUserlib);
+                if (!inModelData.Any())
+                    throw new ArgumentException("There is no user's custom data found!");
 
+                var schs = inModelData.Select(_ => _.ScheduleRuleset).ToList();
+                var typeLimits = inModelData.Select(_ => _.TypeLimitObj).Distinct().Where(_ => _ != null);
+                var container = new HB.ModelEnergyProperties();
+                container.AddSchedules(schs);
+                container.AddScheduleTypeLimits(typeLimits);
+                
+                var json = container.ToJson();
+
+                var fd = new Eto.Forms.SaveFileDialog();
+                fd.FileName = $"custom_{System.Guid.NewGuid().ToString().Substring(0, 5)}";
+                fd.Filters.Add(new FileFilter("JSON", new[] { "json" }));
+                var rs = fd.ShowDialog(_control);
+                if (rs != DialogResult.Ok)
+                    return;
+                var path = fd.FileName;
+                path = System.IO.Path.ChangeExtension(path, "json");
+
+                System.IO.File.WriteAllText(path, json);
+
+                Dialog_Message.Show(_control, $"{inModelData.Count()} custom data were exported!");
+            }
+            catch (Exception ex)
+            {
+                Dialog_Message.Show(_control, ex);
+            }
+
+        });
     }
 
 
@@ -213,6 +247,7 @@ namespace Honeybee.UI
         public bool Locked { get; }
         public HB.Energy.ISchedule ScheduleRuleset { get; }
 
+        public bool IsInModelUserlib => this.Source == "Model";
 
         public ScheduleTypeLimit TypeLimitObj { get; }
         //public static List<ScheduleTypeLimit> TypeLimits;
