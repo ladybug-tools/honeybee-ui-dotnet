@@ -1,15 +1,17 @@
 ﻿using Eto.Forms;
 using HoneybeeSchema;
-using HoneybeeSchema.Helper;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 
 namespace Honeybee.UI
 {
     public class SHWViewModel : ViewModelBase
     {
+        private string _identifier;
+        public string Identifier
+        {
+            get => _identifier;
+            set { this.Set(() => _identifier = value, nameof(Identifier)); }
+        }
 
         private string _name;
         public string Name
@@ -174,6 +176,7 @@ namespace Honeybee.UI
 
 
             // Editing existing obj
+            this.Identifier = hvac.Identifier;
             this.Name = hvac.DisplayName ?? $"SHWSystem {Guid.NewGuid().ToString().Substring(0, 8)}";
             this.EquipType = hvac.EquipmentType;
 
@@ -205,12 +208,11 @@ namespace Honeybee.UI
 
         public SHWSystem GreateSys(HoneybeeSchema.SHWSystem existing = default)
         {
-            
-            var id = Guid.NewGuid().ToString().Substring(0, 8);
-            id = $"SHWSystem_{id}";
-            id = existing == null ? id : existing.Identifier;
+            //var id = Guid.NewGuid().ToString().Substring(0, 8);
+            //id = $"SHWSystem_{id}";
+            //id = existing == null ? id : existing.Identifier;
 
-            var obj = new SHWSystem(id);
+            var obj = new SHWSystem(this.Identifier);
 
             obj.DisplayName = this.Name;
             obj.EquipmentType = this.EquipType;
@@ -237,9 +239,7 @@ namespace Honeybee.UI
             }
 
 
-           
-
-                
+            
             obj.AmbientLossCoefficient = this.AmbientLostCoff;
 
             obj.IsValid(true);

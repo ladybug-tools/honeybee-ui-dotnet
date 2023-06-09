@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using Eto.Drawing;
 using Eto.Forms;
 using HoneybeeSchema;
+using Newtonsoft.Json.Linq;
 
 namespace Honeybee.UI
 {
@@ -191,6 +193,31 @@ namespace Honeybee.UI
             }
 
             return dialog_rc;
+        }
+
+        public static DynamicLayout MakeIDEditor(IIDdBase hbObj)
+        {
+            var idPanel = MakeIDEditor(hbObj.Identifier, hbObj, _ => _.Identifier);
+            return idPanel;
+        }
+
+        public static DynamicLayout MakeIDEditor<T>(string identifier, T _hbObj , Expression<Func<T, string>> propertyExpression)
+        {
+            // Identifier
+            var id = new TextBox();
+            id.TextBinding.Bind(_hbObj, propertyExpression);
+            id.Visible = false;
+
+            var idValue = new Label() { Text = identifier };
+            idValue.ToolTip = "Double click to edit";
+            idValue.MouseDoubleClick += (s, e) =>
+            {
+                id.Visible = true;
+                idValue.Visible = false;
+            };
+            var idPanel = new DynamicLayout(id, idValue);
+            return idPanel;
+
         }
     }
 }

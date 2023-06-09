@@ -86,9 +86,9 @@ namespace Honeybee.UI
 
     
 
-        private void ShowMaterialDialog(HB.Energy.IMaterial material)
+        private void EditNewMaterialDialog(HB.Energy.IMaterial material)
         {
-            var dialog = new Honeybee.UI.Dialog_Material(material);
+            var dialog = new Honeybee.UI.Dialog_Material(material, true);
             var dialog_rc = dialog.ShowModal(_control);
             if (dialog_rc != null)
             {
@@ -102,7 +102,7 @@ namespace Honeybee.UI
             var name = $"New Opaque (No Mass) {id}";
             // R10
             var newObj = new EnergyMaterialNoMass(id, 0.35, name);
-            ShowMaterialDialog(newObj);
+            EditNewMaterialDialog(newObj);
 
         });
 
@@ -111,42 +111,42 @@ namespace Honeybee.UI
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"New Opaque (Concrete) {id}";
             var newObj = new EnergyMaterial(id, 0.1016, 2.3085, 2322.0053, 831.4635, displayName: name);
-            ShowMaterialDialog(newObj);
+            EditNewMaterialDialog(newObj);
         });
 
         public ICommand AddGlassMaterialCommand => new RelayCommand(() => {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"New Glass {id}";
             var newObj = new EnergyWindowMaterialGlazing(id, displayName: name);
-            ShowMaterialDialog(newObj);
+            EditNewMaterialDialog(newObj);
         });
 
         public ICommand AddWindowGapMaterialCommand => new RelayCommand(() => {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"New Window Gap {id}";
             var newObj = new EnergyWindowMaterialGas(id, displayName: name);
-            ShowMaterialDialog(newObj);
+            EditNewMaterialDialog(newObj);
         });
 
         public ICommand AddWindowGapCustomMaterialCommand => new RelayCommand(() => {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"New Window Gap (Custom) {id}";
             var newObj = new EnergyWindowMaterialGasCustom(id, 0, 0, 0, 0, 20, displayName: name);
-            ShowMaterialDialog(newObj);
+            EditNewMaterialDialog(newObj);
         });
 
         public ICommand AddWindowShadeMaterialCommand => new RelayCommand(() => {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"New Window Shade {id}";
             var newObj = new EnergyWindowMaterialShade(id, displayName: name);
-            ShowMaterialDialog(newObj);
+            EditNewMaterialDialog(newObj);
         });
 
         public ICommand AddWindowBlindMaterialCommand => new RelayCommand(() => {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"New Window Blind {id}";
             var newObj = new EnergyWindowMaterialBlind(id, displayName: name);
-            ShowMaterialDialog(newObj);
+            EditNewMaterialDialog(newObj);
         });
 
 
@@ -154,7 +154,7 @@ namespace Honeybee.UI
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"New Simple Window {id}";
             var newObj = new EnergyWindowMaterialSimpleGlazSys(id, 2, 0.55, displayName: name);
-            ShowMaterialDialog(newObj);
+            EditNewMaterialDialog(newObj);
         });
 
   
@@ -219,7 +219,7 @@ namespace Honeybee.UI
             dup.Identifier = Guid.NewGuid().ToString().Substring(0, 5);
             dup.DisplayName = name;
 
-            ShowMaterialDialog(dup);
+            EditNewMaterialDialog(dup);
 
         });
 

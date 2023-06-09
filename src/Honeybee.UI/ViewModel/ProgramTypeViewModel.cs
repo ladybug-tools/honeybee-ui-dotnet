@@ -44,8 +44,11 @@ namespace Honeybee.UI
         }
 
         private ProgramTypeAbridged _refHBObj;
-
-
+        public string Identifier
+        {
+            get => _refHBObj.Identifier;
+            set { this.Set(() => _refHBObj.Identifier = value, nameof(Identifier)); }
+        }
         public string Name
         {
             get => _refHBObj.DisplayName ?? _refHBObj.Identifier;
@@ -124,6 +127,7 @@ namespace Honeybee.UI
             _refHBObj = programType?.DuplicateProgramTypeAbridged() ?? new ProgramTypeAbridged(Guid.NewGuid().ToString());
             _hbObj = _refHBObj.DuplicateProgramTypeAbridged();
 
+            this.Identifier = _refHBObj.Identifier;
             this.Name = _refHBObj.DisplayName ?? _refHBObj.Identifier;
 
             // Lighting
@@ -159,6 +163,7 @@ namespace Honeybee.UI
 
         public ProgramTypeAbridged GetHBObject()
         {
+            _hbObj.Identifier = this.Identifier;
             _hbObj.DisplayName = this.Name;
 
             // loads

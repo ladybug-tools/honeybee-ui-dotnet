@@ -11,6 +11,11 @@ namespace Honeybee.UI
 
     public class ConstructionSetViewModel : ViewModelBase
     {
+        public string Identifier
+        {
+            get => _refHBObj.Identifier;
+            set { this.Set(() => _refHBObj.Identifier = value, nameof(Identifier)); }
+        }
 
         public string Name
         {
@@ -192,6 +197,7 @@ namespace Honeybee.UI
             var cSet = constructionSet?.DuplicateConstructionSetAbridged() ?? new HB.ConstructionSetAbridged(identifier: System.Guid.NewGuid().ToString().Substring(0, 5));
             _refHBObj = cSet;
 
+            this.Identifier = _refHBObj.Identifier;
             this.Name = _refHBObj.DisplayName ?? _refHBObj.Identifier;
 
             //Wall

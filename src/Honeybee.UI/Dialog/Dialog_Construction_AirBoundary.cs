@@ -37,6 +37,16 @@ namespace Honeybee.UI
             layout.DefaultSpacing = new Size(5, 5);
             layout.DefaultPadding = new Padding(10, 5);
 
+            var hbObjType = _hbObj.GetType();
+
+            // Identifier
+            var idPanel = DialogHelper.MakeIDEditor(_hbObj);
+            var idLabel = new Label() { Text = "ID" };
+            var idDescription = HoneybeeSchema.SummaryAttribute.GetSummary(hbObjType, nameof(_hbObj.Identifier));
+            idLabel.ToolTip = Utility.NiceDescription(idDescription);
+            layout.AddRow(idLabel, idPanel);
+
+
             layout.AddRow("Name");
             var name = new TextBox();
             _hbObj.DisplayName = _hbObj.DisplayName ?? _hbObj.Identifier;
