@@ -55,6 +55,18 @@ namespace Honeybee.UI
 
             var rightPanel = new DynamicLayout();
             rightPanel.DefaultSpacing = new Size(5, 5);
+
+
+            var hbObjType = scheduleRuleset.GetType();
+
+            // Identifier
+            var idPanel = DialogHelper.MakeIDEditor(_vm.SchRuleset_hbObj);
+            var idLabel = new Label() { Text = "ID" };
+            var idDescription = HoneybeeSchema.SummaryAttribute.GetSummary(hbObjType, nameof(scheduleRuleset.Identifier));
+            idLabel.ToolTip = Utility.NiceDescription(idDescription);
+
+            rightPanel.AddRow(idLabel);
+            rightPanel.AddRow(idPanel);
             rightPanel.AddRow("Schedule Name:");
             rightPanel.AddRow(schName_Tb);
             rightPanel.AddRow("Special Day Profiles:");

@@ -1,6 +1,8 @@
 ﻿using Eto.Drawing;
 using Eto.Forms;
 using HoneybeeSchema;
+using HoneybeeSchema.Energy;
+using HoneybeeSchema.Radiance;
 using System;
 
 namespace Honeybee.UI
@@ -33,10 +35,26 @@ namespace Honeybee.UI
             //AnyOf< double, string> ambientCondition = null,
             //double ambientLossCoefficient = 6.0
 
-            var nameLabel = new Label() { Text = "Name:" };
-            nameLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(hbType, nameof(sys.DisplayName)));
 
-            var nameText = new TextBox();
+
+            // Identifier
+            var idPanel = DialogHelper.MakeIDEditor(vm.Identifier, vm, _ => _.Identifier);
+            var idLabel = new Label() { Text = "ID: " };
+            var idDescription = HoneybeeSchema.SummaryAttribute.GetSummary(hbType, nameof(sys.Identifier));
+            idLabel.ToolTip = Utility.NiceDescription(idDescription);
+
+
+            var nameLabel = new Label() { Text = "Name: " };
+            nameLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(hbType, nameof(sys.DisplayName)));
+            var nameTbx = new TextBox();
+            nameTbx.Bind(_ => _.Text, vm, _ => _.Name);
+
+
+            var panelName = new DynamicLayout();
+            panelName.DefaultSpacing = new Size(0, 5);
+            panelName.AddRow(idLabel, idPanel);
+            panelName.AddRow(nameLabel, nameTbx);
+
 
             var eqpTypeLabel = new Label() { Text = "Equipment Type:" };
             eqpTypeLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(hbType, nameof(sys.EquipmentType)));
@@ -81,7 +99,6 @@ namespace Honeybee.UI
 
             var ambientLossCoefficient = new NumericStepper() {  MaximumDecimalPlaces = 2 };
 
-            nameText.Bind(_ => _.Text, vm, _ => _.Name);
             eqpType.Bind(_=>_.SelectedValue, vm, _ => _.EquipType);
 
 
@@ -109,8 +126,7 @@ namespace Honeybee.UI
 
             ambientLossCoefficient.Bind(_ => _.Value, vm, _ => _.AmbientLostCoff);
 
-            layout.AddRow(nameLabel);
-            layout.AddRow(nameText);
+            layout.AddRow(panelName);
             layout.AddRow(eqpTypeLabel);
             layout.AddRow(eqpType);
 

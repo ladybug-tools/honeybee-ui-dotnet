@@ -87,6 +87,14 @@ namespace Honeybee.UI
                 panel.BeginScrollable();
             }
 
+            // Identifier
+            var idPanel = DialogHelper.MakeIDEditor(hbObj);
+            var idLabel = new Label() { Text = "ID" };
+            var idDescription = HoneybeeSchema.SummaryAttribute.GetSummary(hbObjType, nameof(hbObj.Identifier));
+            idLabel.ToolTip = Utility.NiceDescription(idDescription);
+            panel.AddRow(idLabel, idPanel);
+
+
             var name = new TextBox();
             hbObj.DisplayName = hbObj.DisplayName ?? hbObj.Identifier;
             name.TextBinding.Bind(() => hbObj.DisplayName, (v) => hbObj.DisplayName = v);
@@ -230,6 +238,8 @@ namespace Honeybee.UI
             return panel;
 
         }
+
+        
 
         private static (Enum baseUnit, Enum displayUnit) _RValueUnit => _propertyUnits["RValue"];
         private static (Enum baseUnit, Enum displayUnit) _UValueUnit => _propertyUnits["UValue"];

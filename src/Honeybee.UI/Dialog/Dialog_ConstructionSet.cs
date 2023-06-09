@@ -2,6 +2,8 @@
 using Eto.Forms;
 using HB = HoneybeeSchema;
 using System;
+using HoneybeeSchema;
+using HoneybeeSchema.Radiance;
 
 namespace Honeybee.UI
 {
@@ -23,8 +25,22 @@ namespace Honeybee.UI
                 this.Icon = DialogHelper.HoneybeeIcon;
 
 
+                var hbObjType = constructionSet.GetType();
+
+                // Identifier
+                var idPanel = DialogHelper.MakeIDEditor(_vm.Identifier, _vm, _ => _.Identifier);
+                var idLabel = new Label() { Text = "ID" };
+                var idDescription = HoneybeeSchema.SummaryAttribute.GetSummary(hbObjType, nameof(constructionSet.Identifier));
+                idLabel.ToolTip = Utility.NiceDescription(idDescription);
+        
                 var nameTbx = new TextBox() { Enabled = !lockedMode };
                 nameTbx.TextBinding.Bind(_vm, _ => _.Name);
+
+                var panelName = new DynamicLayout();
+                panelName.DefaultSpacing = new Size(0, 5);
+                panelName.AddRow(idLabel, idPanel);
+                panelName.AddRow("Name", nameTbx);
+
 
                 var wallGroup = GenWallSetPanel(lockedMode);
                 var floorGroup = GenFloorSetPanel(lockedMode);
@@ -42,9 +58,7 @@ namespace Honeybee.UI
                 panelLeft.BeginScrollable(BorderType.None);
                 panelLeft.Height = 600;
 
-
-                panelLeft.AddRow("Name");
-                panelLeft.AddRow(nameTbx);
+                panelLeft.AddRow(panelName);
                 panelLeft.AddRow(wallGroup);
                 panelLeft.AddRow(floorGroup);
                 panelLeft.AddRow(roofGroup);

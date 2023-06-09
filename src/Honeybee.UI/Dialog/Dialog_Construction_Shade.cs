@@ -1,5 +1,7 @@
 ﻿using Eto.Drawing;
 using Eto.Forms;
+using HoneybeeSchema;
+using HoneybeeSchema.Energy;
 using HB = HoneybeeSchema;
 
 namespace Honeybee.UI
@@ -32,6 +34,17 @@ namespace Honeybee.UI
             var layout = new DynamicLayout();
             layout.DefaultSpacing = new Size(5, 5);
             layout.DefaultPadding = new Padding(10, 5);
+
+           
+            var hbObjType = _hbObj.GetType();
+
+            // Identifier
+            var idPanel = DialogHelper.MakeIDEditor(_hbObj);
+            var idLabel = new Label() { Text = "ID" };
+            var idDescription = HoneybeeSchema.SummaryAttribute.GetSummary(hbObjType, nameof(_hbObj.Identifier));
+            idLabel.ToolTip = Utility.NiceDescription(idDescription);
+            layout.AddRow(idLabel, idPanel);
+
 
             layout.AddRow("Name");
             var name = new TextBox();
@@ -75,6 +88,8 @@ namespace Honeybee.UI
             Content = layout;
 
         }
+
+       
 
         private static double DoubleFromString(string input)
         {
