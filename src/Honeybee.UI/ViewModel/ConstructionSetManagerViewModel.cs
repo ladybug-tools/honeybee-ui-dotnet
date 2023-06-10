@@ -74,7 +74,7 @@ namespace Honeybee.UI
             if (dialog_rc != null)
             {
                 // add program type
-                newItem = CheckObjName(dialog_rc);
+                newItem = CheckObjID(dialog_rc);
                 var newViewData = new ConstructionSetViewData(newItem);
                 this._userData.Insert(0, newViewData);
                 this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
@@ -104,7 +104,7 @@ namespace Honeybee.UI
             var dialog_rc = dialog.ShowModal(_control);
 
             if (dialog_rc == null) return;
-            var newItem = CheckObjName(dialog_rc);
+            var newItem = CheckObjID(dialog_rc);
             var newViewData = new ConstructionSetViewData(newItem);
             if (!this._userData.Contains(newViewData))
             {
@@ -139,7 +139,7 @@ namespace Honeybee.UI
             var dialog_rc = dialog.ShowModal(_control);
 
             if (dialog_rc == null) return;
-            var newItem = CheckObjName(dialog_rc, selected.Name);
+            var newItem = CheckObjID(dialog_rc, selected.Identifier);
             var index = _userData.IndexOf(selected);
             _userData.RemoveAt(index);
             _userData.Insert(index, new ConstructionSetViewData(newItem));
@@ -234,6 +234,7 @@ namespace Honeybee.UI
 
         public ConstructionSetViewData(HB.ConstructionSetAbridged c)
         {
+            this.Identifier = c.Identifier;
             this.Name = c.DisplayName ?? c.Identifier;
           
             this.ConstructionSet = c;

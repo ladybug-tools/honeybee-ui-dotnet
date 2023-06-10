@@ -28,7 +28,7 @@ namespace Honeybee.UI
 
         private void AddUserData(HB.SHWSystem item)
         {
-            var newItem = CheckObjName(item);
+            var newItem = CheckObjID(item);
             var newDataView = new SHWViewData(newItem);
             if (!this._userData.Contains(newDataView))
             {
@@ -40,7 +40,7 @@ namespace Honeybee.UI
         }
         private void ReplaceUserData(SHWViewData oldObj, HB.SHWSystem newObj)
         {
-            var newItem = CheckObjName(newObj, oldObj.Name);
+            var newItem = CheckObjID(newObj, oldObj.Identifier);
             var index = _userData.IndexOf(oldObj);
             _userData.RemoveAt(index);
             _userData.Insert(index, new SHWViewData(newItem));
@@ -212,6 +212,7 @@ namespace Honeybee.UI
 
         public SHWViewData(HB.SHWSystem c)
         {
+            this.Identifier = c.Identifier;
             this.Name = c.DisplayName ?? c.Identifier;
             this.EType = c.EquipmentType.ToString();
             if (c.HeaterEfficiency?.Obj is Autocalculate)

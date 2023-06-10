@@ -26,7 +26,7 @@ namespace Honeybee.UI
 
         private void AddUserData(ProgramTypeAbridged item)
         {
-            var newItem = CheckObjName(item);
+            var newItem = CheckObjID(item);
             var newViewData = new ProgramTypeViewData(newItem);
             if (!this._userData.Contains(newViewData))
             {
@@ -39,7 +39,7 @@ namespace Honeybee.UI
         }
         private void ReplaceUserData(ProgramTypeViewData oldObj, ProgramTypeAbridged newObj)
         {
-            var newItem = CheckObjName(newObj, oldObj.Name);
+            var newItem = CheckObjID(newObj, oldObj.Identifier);
             var index = _userData.IndexOf(oldObj);
             _userData.RemoveAt(index);
             _userData.Insert(index, new ProgramTypeViewData(newItem));
@@ -238,8 +238,9 @@ namespace Honeybee.UI
         private static IEnumerable<string> UserLibIds = HB.Helper.EnergyLibrary.UserProgramtypes.Select(_ => _.Identifier);
         private static IEnumerable<string> LockedLibraryIds = LBTLibraryIds.Concat(UserLibIds).Concat(NRELLibraryIds);
 
-        public ProgramTypeViewData(HB.ProgramTypeAbridged c) 
+        public ProgramTypeViewData(HB.ProgramTypeAbridged c)
         {
+            this.Identifier = c.Identifier;
             this.Name = c.DisplayName ?? c.Identifier;
             //this.CType = c.GetType().Name;
             this.ProgramType = c;

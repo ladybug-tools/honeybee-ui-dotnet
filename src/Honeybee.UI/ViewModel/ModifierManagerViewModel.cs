@@ -69,7 +69,7 @@ namespace Honeybee.UI
         private void AddModifier(HB.Radiance.IModifier newModifier)
         {
             if (newModifier == null) return;
-            var newItem = CheckObjName(newModifier);
+            var newItem = CheckObjID(newModifier);
             this._userData.Insert(0, new ModifierViewData(newItem));
             this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
             ResetDataCollection();
@@ -236,7 +236,7 @@ namespace Honeybee.UI
 
             if (dialog_rc == null) return;
 
-            var newItem = CheckObjName(dialog_rc, selected.Name);
+            var newItem = CheckObjID(dialog_rc, selected.Identifier);
             var index = _userData.IndexOf(selected);
             _userData.RemoveAt(index);
             _userData.Insert(index, new ModifierViewData(newItem));
@@ -328,6 +328,7 @@ namespace Honeybee.UI
 
         public ModifierViewData(HB.Radiance.IModifier c)
         {
+            this.Identifier = c.Identifier;
             this.Name = c.DisplayName ?? c.Identifier;
             this.CType = c.GetType().Name;
           

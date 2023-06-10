@@ -26,7 +26,7 @@ namespace Honeybee.UI
 
         private void AddUserData(HB.Energy.IHvac item)
         {
-            var newItem = CheckObjName(item);
+            var newItem = CheckObjID(item);
             var newDataView = new HVACViewData(newItem);
             if (!this._userData.Contains(newDataView))
             {
@@ -38,7 +38,7 @@ namespace Honeybee.UI
         }
         private void ReplaceUserData(HVACViewData oldObj, HB.Energy.IHvac newObj)
         {
-            var newItem = CheckObjName(newObj, oldObj.Name);
+            var newItem = CheckObjID(newObj, oldObj.Identifier);
             var index = _userData.IndexOf(oldObj);
             _userData.RemoveAt(index);
             _userData.Insert(index, new HVACViewData(newItem));
@@ -252,6 +252,7 @@ namespace Honeybee.UI
 
         public HVACViewData(HB.Energy.IHvac c)
         {
+            this.Identifier = c.Identifier;
             this.Name = c.DisplayName ?? c.Identifier;
             var type = c.GetType().GetProperty("EquipmentType")?.GetValue(c)?.ToString() ?? c.GetType().Name;
             this.CType = OpsHVACsViewModel.HVACUserFriendlyNamesDic.TryGetValue(type, out var userFriendly) ? userFriendly : type;
