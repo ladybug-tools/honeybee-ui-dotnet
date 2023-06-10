@@ -29,13 +29,13 @@ namespace Honeybee.UI
 
         private void AddUserData(HB.Energy.IMaterial item)
         {
-            var newItem = CheckObjName(item);
+            var newItem = CheckObjID(item);
             this._userData.Insert(0, new MaterialViewData(newItem));
             this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
         }
         private void ReplaceUserData(MaterialViewData oldObj, HB.Energy.IMaterial newObj)
         {
-            var newItem = CheckObjName(newObj, oldObj.Name);
+            var newItem = CheckObjID(newObj, oldObj.Identifier);
             var index = _userData.IndexOf(oldObj);
             _userData.RemoveAt(index);
             _userData.Insert(index, new MaterialViewData(newItem));
@@ -334,6 +334,7 @@ namespace Honeybee.UI
 
         public MaterialViewData(HB.Energy.IMaterial c)
         {
+            this.Identifier = c.Identifier;
             this.Name = c.DisplayName ?? c.Identifier;
             this.CType = c.GetType().Name.Replace("EnergyWindowMaterial", "");
             if (c is HB.EnergyMaterial opc)

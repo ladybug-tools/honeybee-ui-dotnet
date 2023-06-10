@@ -5,6 +5,7 @@ namespace Honeybee.UI
 {
     internal abstract class ManagerViewDataBase : IEquatable<ManagerViewDataBase>
     {
+        public string Identifier { get; protected set; }
         public string Name { get; protected set; }
         public string SearchableText { get; protected set; }
         public bool Equals(ManagerViewDataBase other)
@@ -14,7 +15,7 @@ namespace Honeybee.UI
             if (Object.ReferenceEquals(this, null) || Object.ReferenceEquals(other, null))
                 return false;
 
-            return this.Name == other.Name;
+            return this.Name == other.Name && this.Identifier == other.Identifier;
         }
 
         public override int GetHashCode()
@@ -35,7 +36,7 @@ namespace Honeybee.UI
             if (Object.ReferenceEquals(x, null) || Object.ReferenceEquals(y, null))
                 return false;
 
-            return x.Name == y.Name;
+            return x.Name == y.Name && x.Identifier == y.Identifier;
         }
 
 

@@ -85,19 +85,25 @@ namespace Honeybee.UI
             ResetDataCollection();
         }
 
-        protected K CheckObjName<K>(K obj, string exceptionName = "") where K: HB.IIDdBase
+        protected K CheckObjID<K>(K obj, string exceptionID = "") where K: HB.IIDdBase
         {
-            var name = obj.DisplayName ?? obj.Identifier;
+            var id = obj.Identifier;
+            if (string.IsNullOrEmpty(id))
+            {
+                id = Guid.NewGuid().ToString().Substring(0, 5); 
+                obj.Identifier = id;
+                return obj;
+            }
 
             IEnumerable<T> alldata = _allData;
-            if (!string.IsNullOrEmpty(exceptionName))
-                alldata = alldata.Where(_ => _.Name != exceptionName);
-            if (alldata.Any(_ => _.Name == name))
+            if (!string.IsNullOrEmpty(exceptionID))
+                alldata = alldata.Where(_ => _.Identifier != exceptionID);
+            if (alldata.Any(_ => _.Identifier == id))
             {
-                name = $"{name} {Guid.NewGuid().ToString().Substring(0, 5)}";
-                MessageBox.Show(_control, $"Name [{obj.DisplayName}] is conflicting with an existing item, and now it is changed to [{name}].");
+                id = $"{id}_{Guid.NewGuid().ToString().Substring(0, 5)}";
+                MessageBox.Show(_control, $"ID [{obj.Identifier}] is conflicting with an existing item, and now it is changed to [{id}].");
             }
-            obj.DisplayName = name;
+            obj.Identifier = id;
             return obj;
         }
 

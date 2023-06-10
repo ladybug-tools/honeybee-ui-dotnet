@@ -72,7 +72,7 @@ namespace Honeybee.UI
             var dialog_rc = dialog.ShowModal(_control);
 
             if (dialog_rc == null) return;
-            var newItem = CheckObjName(dialog_rc);
+            var newItem = CheckObjID(dialog_rc);
             this._userData.Insert(0, new ModifierSetViewData(newItem));
             this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
             ResetDataCollection();
@@ -98,7 +98,7 @@ namespace Honeybee.UI
             var dialog_rc = dialog.ShowModal(_control);
 
             if (dialog_rc == null) return;
-            var newItem = CheckObjName(dialog_rc);
+            var newItem = CheckObjID(dialog_rc);
             this._userData.Insert(0, new ModifierSetViewData(newItem));
             this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
             ResetDataCollection();
@@ -125,7 +125,7 @@ namespace Honeybee.UI
             var dialog_rc = dialog.ShowModal(_control);
 
             if (dialog_rc == null) return;
-            var newItem = CheckObjName(dialog_rc, selected.Name);
+            var newItem = CheckObjID(dialog_rc, selected.Identifier);
             var index = _userData.IndexOf(selected);
             _userData.RemoveAt(index);
             _userData.Insert(index, new ModifierSetViewData(newItem));
@@ -222,6 +222,7 @@ namespace Honeybee.UI
 
         public ModifierSetViewData(HB.ModifierSetAbridged c)
         {
+            this.Identifier = c.Identifier;
             this.Name = c.DisplayName ?? c.Identifier;
           
             this.ModifierSet = c;

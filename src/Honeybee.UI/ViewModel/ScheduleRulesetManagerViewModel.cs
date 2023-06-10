@@ -97,7 +97,7 @@ namespace Honeybee.UI
             var sch = DialogHelper.CreateSchedule(_control);
             if (sch == null) return;
 
-            var newItem = CheckObjName(sch);
+            var newItem = CheckObjID(sch);
 
             var newViewdata = new ScheduleRulesetViewData(newItem);
             if (!this._userData.Contains(newViewdata))
@@ -133,7 +133,7 @@ namespace Honeybee.UI
 
             if (dialog_rc == null) return;
 
-            var newItem = CheckObjName(dialog_rc);
+            var newItem = CheckObjID(dialog_rc);
             var newViewdata = new ScheduleRulesetViewData(newItem);
             if (!this._userData.Contains(newViewdata))
             {
@@ -168,7 +168,7 @@ namespace Honeybee.UI
             var dialog_rc = dialog.ShowModal(_control);
        
             if (dialog_rc == null) return;
-            var newItem = CheckObjName(dialog_rc, selected.Name);
+            var newItem = CheckObjID(dialog_rc, selected.Identifier);
             var index = _userData.IndexOf(selected);
             _userData.RemoveAt(index);
             _userData.Insert(index, new ScheduleRulesetViewData(newItem));
@@ -263,6 +263,7 @@ namespace Honeybee.UI
 
         public ScheduleRulesetViewData(HB.ScheduleRulesetAbridged c, ref List<ScheduleTypeLimit> libSource)
         {
+            this.Identifier = c.Identifier;
             this.Name = c.DisplayName ?? c.Identifier;
           
             this.ScheduleRuleset = c;

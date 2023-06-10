@@ -31,7 +31,7 @@ namespace Honeybee.UI
 
         private void AddUserData(HB.Energy.IConstruction item)
         {
-            var newItem = CheckObjName(item);
+            var newItem = CheckObjID(item);
             var newViewData = new ConstructionViewData(newItem);
             if (!this._userData.Contains(newViewData))
             {
@@ -44,7 +44,7 @@ namespace Honeybee.UI
         }
         private void ReplaceUserData(ConstructionViewData oldObj, HB.Energy.IConstruction newObj)
         {
-            var newItem = CheckObjName(newObj, oldObj.Name);
+            var newItem = CheckObjID(newObj, oldObj.Identifier);
             var index = _userData.IndexOf(oldObj);
             _userData.RemoveAt(index);
             var newViewData = new ConstructionViewData(newItem);
@@ -356,6 +356,7 @@ namespace Honeybee.UI
 
         public ConstructionViewData(HB.Energy.IConstruction c)
         {
+            this.Identifier = c.Identifier;
             this.Name = c.DisplayName ?? c.Identifier;
             this.CType = c.GetType().Name.Replace("Abridged", "").Replace("Construction", "");
             if (c is HB.Energy.IThermalConstruction tc)
