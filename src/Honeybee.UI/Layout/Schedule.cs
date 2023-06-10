@@ -61,14 +61,17 @@ namespace Honeybee.UI
 
             // Identifier
             var idPanel = DialogHelper.MakeIDEditor(_vm.SchRuleset_hbObj);
-            var idLabel = new Label() { Text = "ID" };
+            var idLabel = new Label() { Text = "ID " };
             var idDescription = HoneybeeSchema.SummaryAttribute.GetSummary(hbObjType, nameof(scheduleRuleset.Identifier));
             idLabel.ToolTip = Utility.NiceDescription(idDescription);
 
-            rightPanel.AddRow(idLabel);
-            rightPanel.AddRow(idPanel);
-            rightPanel.AddRow("Schedule Name:");
-            rightPanel.AddRow(schName_Tb);
+
+            var panelName = new DynamicLayout();
+            panelName.DefaultSpacing = new Size(0, 5);
+            panelName.AddRow(idLabel, idPanel);
+            panelName.AddRow("Name ", schName_Tb);
+
+            rightPanel.AddRow(panelName);
             rightPanel.AddRow("Special Day Profiles:");
             rightPanel.AddRow(summerbtn);
             rightPanel.AddRow(winterbtn);
