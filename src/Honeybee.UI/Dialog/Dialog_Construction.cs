@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using HoneybeeSchema;
 using LadybugDisplaySchema;
+using System.Xml;
 
 namespace Honeybee.UI
 {
@@ -179,20 +180,20 @@ namespace Honeybee.UI
 
                 // Identifier
                 var idPanel = DialogHelper.MakeIDEditor(_hbObj);
-                var idLabel = new Label() { Text = "ID" };
+                var idLabel = new Label() { Text = "ID " };
                 var idDescription = HoneybeeSchema.SummaryAttribute.GetSummary(hbObjType, nameof(_hbObj.Identifier));
                 idLabel.ToolTip = Utility.NiceDescription(idDescription);
-                leftLayout.AddRow(idLabel, idPanel);
-
-
-
-                leftLayout.AddRow("Name");
+           
                 var name = new TextBox();
                 _hbObj.DisplayName = _hbObj.DisplayName ?? _hbObj.Identifier;
                 name.TextBinding.Bind(() => _hbObj.DisplayName, v => _hbObj.DisplayName = v);
-                leftLayout.AddRow(name);
+           
 
-                
+                var panelName = new DynamicLayout();
+                panelName.DefaultSpacing = new Size(0, 5);
+                panelName.AddRow(idLabel, idPanel);
+                panelName.AddRow("Name ", name);
+                leftLayout.AddRow(panelName);
 
                 var groupContent = new DynamicLayout();
                 groupContent.DefaultSpacing = new Size(5, 5);

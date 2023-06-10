@@ -14,7 +14,7 @@ namespace Honeybee.UI
         {
             Padding = new Padding(5);
             Resizable = true;
-            Title = $"ModifierSet Manager - {DialogHelper.PluginName}";
+            Title = $"Modifier Set Manager - {DialogHelper.PluginName}";
             WindowStyle = WindowStyle.Default;
             MinimumSize = new Size(800, 300);
             this.Icon = DialogHelper.HoneybeeIcon;
@@ -54,7 +54,7 @@ namespace Honeybee.UI
             export.ToolTip = "Export user's resources";
             export.Command = _vm.ExportCommand;
 
-            layout.AddSeparateRow("Construction Sets:", null, addNew, duplicate, edit, remove, export);
+            layout.AddSeparateRow("Modifier Sets:", null, addNew, duplicate, edit, remove, export);
 
             // search bar
             var filter = new TextBox() { PlaceholderText = "Filter" };
