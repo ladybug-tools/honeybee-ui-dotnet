@@ -88,7 +88,7 @@ namespace Honeybee.UI
 
         private void EditNewMaterialDialog(HB.Energy.IMaterial material)
         {
-            var dialog = new Honeybee.UI.Dialog_Material(material, true);
+            var dialog = new Honeybee.UI.Dialog_Material(material);
             var dialog_rc = dialog.ShowModal(_control);
             if (dialog_rc != null)
             {
