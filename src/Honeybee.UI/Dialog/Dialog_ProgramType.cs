@@ -33,7 +33,7 @@ namespace Honeybee.UI
 
                 // Identifier
                 var idPanel = DialogHelper.MakeIDEditor(_vm.Identifier, _vm, _ => _.Identifier);
-                var idLabel = new Label() { Text = "ID" };
+                var idLabel = new Label() { Text = "ID " };
                 var idDescription = HoneybeeSchema.SummaryAttribute.GetSummary(hbObjType, nameof(programType.Identifier));
                 idLabel.ToolTip = Utility.NiceDescription(idDescription);
 
@@ -43,7 +43,7 @@ namespace Honeybee.UI
                 var panelName = new DynamicLayout();
                 panelName.DefaultSpacing = new Size(0, 5);
                 panelName.AddRow(idLabel, idPanel);
-                panelName.AddRow("Name", nameTbx);
+                panelName.AddRow("Name ", nameTbx);
 
 
 

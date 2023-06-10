@@ -19,12 +19,13 @@ namespace Honeybee.UI
             //Padding = new Padding(4);
             Title = $"Service Hot Water - {DialogHelper.PluginName}";
             WindowStyle = WindowStyle.Default;
-            Width = 450;
+            Width = 450; 
+            Padding = new Padding(5);
             this.Icon = DialogHelper.HoneybeeIcon;
 
             var layout = new DynamicLayout();
             layout.DefaultSpacing = new Size(5, 5);
-            layout.Padding = new Padding(10);
+            layout.DefaultPadding = new Padding(5);
 
             var hbType = sys.GetType();
             //string identifier,
@@ -73,6 +74,12 @@ namespace Honeybee.UI
             var heaterEffAuto = new RadioButton() { Text = "Autocalculate" };
             var heaterEffNumber = new RadioButton();
             var heaterEff = new NumericStepper() { MaximumDecimalPlaces = 2};
+
+            var heaterEffLayout = new DynamicLayout();
+            heaterEffLayout.DefaultSpacing = new Size(5, 5);
+            heaterEffLayout.AddRow(heaterEffLabel);
+            heaterEffLayout.AddRow(heaterEffAuto);
+            heaterEffLayout.AddSeparateRow(heaterEffNumber, heaterEff);
 
             // ambientCoffCondition
             var ambientLayout = new DynamicLayout();
@@ -130,9 +137,7 @@ namespace Honeybee.UI
             layout.AddRow(eqpTypeLabel);
             layout.AddRow(eqpType);
 
-            layout.AddRow(heaterEffLabel);
-            layout.AddRow(heaterEffAuto);
-            layout.AddSeparateRow(heaterEffNumber, heaterEff);
+            layout.AddRow(heaterEffLayout);
 
             layout.AddRow(ambientLayout);
 
