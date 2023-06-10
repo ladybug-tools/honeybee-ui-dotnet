@@ -74,8 +74,16 @@ namespace Honeybee.UI
                 var OkButton = new Button { Text = "OK" , Enabled = !lockedMode };
                 OkButton.Click += (sender, e) => 
                 {
-                    var obj = _vm.GetHBObject();
-                    OkCommand.Execute(obj);
+                    try
+                    {
+                        var obj = _vm.GetHBObject();
+                        OkCommand.Execute(obj);
+                    }
+                    catch (Exception ex)
+                    {
+                        Dialog_Message.Show(this, ex);
+                    }
+              
                 };
 
                 AbortButton = new Button { Text = "Cancel" };
@@ -109,7 +117,7 @@ namespace Honeybee.UI
             }
             catch (Exception e)
             {
-                Dialog_Message.ShowFullMessage(e.ToString());
+                Dialog_Message.Show(this, e);
                 //throw e;
             }
 
