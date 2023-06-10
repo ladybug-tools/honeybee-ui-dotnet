@@ -152,16 +152,24 @@ namespace Honeybee.UI
                 var OkButton = new Button { Text = "OK" , Enabled = !lockedMode};
                 OkButton.Click += (sender, e) =>
                 {
-                    // add new material to library source
-                    foreach (var layer in _layers)
+                    try
                     {
-                        var m = OpaqueMaterials.FirstOrDefault(_ => _.Identifier == layer);
-                        m = m ?? WindowMaterials.FirstOrDefault(_ => _.Identifier == layer);
-                        var dup = m.Duplicate() as HB.Energy.IMaterial;
-                        dup.DisplayName = m.DisplayName ?? m.Identifier;
-                        libSource.AddMaterial(dup);
+                        // add new material to library source
+                        foreach (var layer in _layers)
+                        {
+                            var m = OpaqueMaterials.FirstOrDefault(_ => _.Identifier == layer);
+                            m = m ?? WindowMaterials.FirstOrDefault(_ => _.Identifier == layer);
+                            var dup = m.Duplicate() as HB.Energy.IMaterial;
+                            dup.DisplayName = m.DisplayName ?? m.Identifier;
+                            libSource.AddMaterial(dup);
+                        }
+                        OkCommand.Execute(_hbObj);
                     }
-                    OkCommand.Execute(_hbObj);
+                    catch (Exception ex)
+                    {
+                        Dialog_Message.Show(this, ex);
+                    }
+                  
                 };
 
                 AbortButton = new Button { Text = "Cancel" };
@@ -422,8 +430,7 @@ namespace Honeybee.UI
             }
             catch (Exception e)
             {
-
-                throw e;
+                Dialog_Message.Show(this, e);
             }
             
             
