@@ -9,9 +9,13 @@ namespace Honeybee.UI
 
     public class Dialog_Modifier<T> : Dialog_ResourceEditor<T> where T : HB.ModifierBase
     {
-        public Dialog_Modifier(T modifier, bool lockedMode = false)
+        private bool _isIDEditable;
+
+        public Dialog_Modifier(T modifier, bool lockedMode = false, bool editID = false)
         {
             var _hbObj = modifier;
+            _isIDEditable = editID;
+
             Title = $"Modifier - {DialogHelper.PluginName}";
             WindowStyle = WindowStyle.Default;
             Width = 450;
@@ -75,7 +79,7 @@ namespace Honeybee.UI
 
 
             // Identifier
-            var idPanel = DialogHelper.MakeIDEditor(hbObj);
+            var idPanel = DialogHelper.MakeIDEditor(hbObj, _isIDEditable);
             var idLabel = new Label() { Text = "ID" };
             var idDescription = HoneybeeSchema.SummaryAttribute.GetSummary(hbObjType, nameof(hbObj.Identifier));
             idLabel.ToolTip = Utility.NiceDescription(idDescription);

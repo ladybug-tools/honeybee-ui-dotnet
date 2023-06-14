@@ -94,7 +94,7 @@ namespace Honeybee.UI
             var id = System.Guid.NewGuid().ToString().Substring(0, 5);
             var newItem = new ProgramTypeAbridged(id, $"New program type {id}");
             var lib = this._modelProperties;
-            var dialog = new Honeybee.UI.Dialog_ProgramType(ref lib, newItem);
+            var dialog = new Honeybee.UI.Dialog_ProgramType(ref lib, newItem, editID: true);
             var dialog_rc = dialog.ShowModal(_control);
             //var newItem = new ProgramTypeAbridged($"{}");
 
@@ -116,12 +116,12 @@ namespace Honeybee.UI
             }
            
             var dup = selected.ProgramType.Duplicate() as HB.ProgramTypeAbridged;
-            var name = $"{dup.Identifier}_dup";
+            var name = $"{dup.DisplayName ?? dup.Identifier}_dup";
             dup.Identifier = System.Guid.NewGuid().ToString().Substring(0, 5);
             dup.DisplayName = name;
 
             var lib = this._modelProperties;
-            var dialog = new Honeybee.UI.Dialog_ProgramType(ref lib, dup);
+            var dialog = new Honeybee.UI.Dialog_ProgramType(ref lib, dup, editID: true);
             var dialog_rc = dialog.ShowModal(_control);
           
             if (dialog_rc != null)

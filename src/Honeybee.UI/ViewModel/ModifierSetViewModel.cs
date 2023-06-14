@@ -218,6 +218,7 @@ namespace Honeybee.UI
             this.DoorOverheadSet = new SubModifierSetViewModel(ref libSource, _refHBObj.DoorSet.OverheadModifier, (s) => _refHBObj.DoorSet.OverheadModifier = s?.Identifier);
 
             //Shade 
+            _refHBObj.ShadeSet = _refHBObj.ShadeSet ?? new ShadeModifierSetAbridged();
             this.ShadeExtSet = new SubModifierSetViewModel(ref libSource, _refHBObj.ShadeSet.ExteriorModifier, (s) => _refHBObj.ShadeSet.ExteriorModifier = s?.Identifier);
             this.ShadeIntSet = new SubModifierSetViewModel(ref libSource, _refHBObj.ShadeSet.InteriorModifier, (s) => _refHBObj.ShadeSet.InteriorModifier = s?.Identifier);
 

@@ -66,10 +66,13 @@ namespace Honeybee.UI
         }
 
 
-        private void AddModifier(HB.Radiance.IModifier newModifier)
+        private void AddModifier<T>(T newModifier) where T : HB.ModifierBase
         {
-            if (newModifier == null) return;
-            var newItem = CheckObjID(newModifier);
+            var dialog = new Honeybee.UI.Dialog_Modifier<T>(newModifier, editID: true);
+            var dialog_rc = dialog.ShowModal(_control);
+
+            if (dialog_rc == null) return;
+            var newItem = CheckObjID(dialog_rc);
             this._userData.Insert(0, new ModifierViewData(newItem));
             this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
             ResetDataCollection();
@@ -80,72 +83,56 @@ namespace Honeybee.UI
             var name = $"Plastic_{id}";
             var newModifier = obj as Plastic ?? new Plastic(id, displayName: name);
 
-            var dialog = new Honeybee.UI.Dialog_Modifier<Plastic>(newModifier);
-            var dialog_rc = dialog.ShowModal(_control);
-            AddModifier(dialog_rc);
+            AddModifier(newModifier);
         });
-        public ICommand AddGlassCommand => new RelayCommand(() => {
+        public ICommand AddGlassCommand => new RelayCommand<HB.Radiance.IModifier>((obj) => {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"Glass_{id}";
-            var newModifier = new Glass(id, displayName: name);
+            var newModifier = obj as Glass ?? new Glass(id, displayName: name);
 
-            var dialog = new Honeybee.UI.Dialog_Modifier<Glass>(newModifier);
-            var dialog_rc = dialog.ShowModal(_control);
-            AddModifier(dialog_rc);
+            AddModifier(newModifier);
         });
-        public ICommand AddBSDFCommand => new RelayCommand(() => {
+        public ICommand AddBSDFCommand => new RelayCommand<HB.Radiance.IModifier>((obj) => {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"BSDF_{id}";
-            var newModifier = new BSDF(id, "Replace with your BSDF data", displayName: name); 
+            var newModifier = obj as BSDF ?? new BSDF(id, "Replace with your BSDF data", displayName: name); 
 
-            var dialog = new Honeybee.UI.Dialog_Modifier<BSDF>(newModifier);
-            var dialog_rc = dialog.ShowModal(_control);
-            AddModifier(dialog_rc);
+            AddModifier(newModifier);
         });
-        public ICommand AddGlowCommand => new RelayCommand(() => {
+        public ICommand AddGlowCommand => new RelayCommand<HB.Radiance.IModifier>((obj) => {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"Glow_{id}";
-            var newModifier = new Glow(id, displayName: name); ;
+            var newModifier = obj as Glow ?? new Glow(id, displayName: name);
 
-            var dialog = new Honeybee.UI.Dialog_Modifier<Glow>(newModifier);
-            var dialog_rc = dialog.ShowModal(_control);
-            AddModifier(dialog_rc);
+            AddModifier(newModifier);
         });
-        public ICommand AddLightCommand => new RelayCommand(() => {
+        public ICommand AddLightCommand => new RelayCommand<HB.Radiance.IModifier>((obj) => {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"Light_{id}";
-            var newModifier = new Light(id,  displayName: name); 
+            var newModifier = obj as Light ?? new Light(id,  displayName: name); 
 
-            var dialog = new Honeybee.UI.Dialog_Modifier<Light>(newModifier);
-            var dialog_rc = dialog.ShowModal(_control);
-            AddModifier(dialog_rc);
+            AddModifier(newModifier);
         });
-        public ICommand AddTransCommand => new RelayCommand(() => {
+        public ICommand AddTransCommand => new RelayCommand<HB.Radiance.IModifier>((obj) => {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"Trans_{id}";
-            var newModifier = new Trans(id, displayName: name); ;
+            var newModifier = obj as Trans ?? new Trans(id, displayName: name);
 
-            var dialog = new Honeybee.UI.Dialog_Modifier<Trans>(newModifier);
-            var dialog_rc = dialog.ShowModal(_control);
-            AddModifier(dialog_rc);
+            AddModifier(newModifier);
         });
-        public ICommand AddMetalCommand => new RelayCommand(() => {
+        public ICommand AddMetalCommand => new RelayCommand<HB.Radiance.IModifier>((obj) => {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"Metal_{id}";
-            var newModifier = new Metal(id, displayName: name); ;
+            var newModifier = obj as Metal ?? new Metal(id, displayName: name);
 
-            var dialog = new Honeybee.UI.Dialog_Modifier<Metal>(newModifier);
-            var dialog_rc = dialog.ShowModal(_control);
-            AddModifier(dialog_rc);
+            AddModifier(newModifier);
         });
-        public ICommand AddMirrorCommand => new RelayCommand(() => {
+        public ICommand AddMirrorCommand => new RelayCommand<HB.Radiance.IModifier>((obj) => {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"Mirror_{id}";
-            var newModifier = new Mirror(id, displayName: name); ;
+            var newModifier = obj as Mirror ?? new Mirror(id, displayName: name);
 
-            var dialog = new Honeybee.UI.Dialog_Modifier<Mirror>(newModifier);
-            var dialog_rc = dialog.ShowModal(_control);
-            AddModifier(dialog_rc);
+            AddModifier(newModifier);
         });
 
         public RelayCommand AddCommand => new RelayCommand(() =>

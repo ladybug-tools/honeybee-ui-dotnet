@@ -68,7 +68,7 @@ namespace Honeybee.UI
             var name = $"New Construction Set {id}";
             var newItem = new ConstructionSetAbridged(id, name);
             var lib = this._modelEnergyProperties;
-            var dialog = new Honeybee.UI.Dialog_ConstructionSet(ref lib, newItem);
+            var dialog = new Honeybee.UI.Dialog_ConstructionSet(ref lib, newItem, editID:true);
             var dialog_rc = dialog.ShowModal(_control);
 
             if (dialog_rc != null)
@@ -100,7 +100,7 @@ namespace Honeybee.UI
             dup.Identifier = Guid.NewGuid().ToString().Substring(0, 5);
             dup.DisplayName = name;
             var lib = this._modelEnergyProperties;
-            var dialog = new Honeybee.UI.Dialog_ConstructionSet(ref lib, dup);
+            var dialog = new Honeybee.UI.Dialog_ConstructionSet(ref lib, dup, editID: true);
             var dialog_rc = dialog.ShowModal(_control);
 
             if (dialog_rc == null) return;

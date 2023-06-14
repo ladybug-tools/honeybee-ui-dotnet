@@ -152,7 +152,7 @@ namespace Honeybee.UI
 
             newSch.ScheduleTypeLimit = typeLimit;
 
-            var dialog_sch = new Honeybee.UI.Dialog_Schedule(newSch);
+            var dialog_sch = new Honeybee.UI.Dialog_Schedule(newSch, editID: true);
             var dialog_sch_rc = dialog_sch.ShowModal(parent);
 
             return dialog_sch_rc;
@@ -195,28 +195,21 @@ namespace Honeybee.UI
             return dialog_rc;
         }
 
-        public static DynamicLayout MakeIDEditor(IIDdBase hbObj)
+        public static TextBox MakeIDEditor(IIDdBase hbObj, bool editable)
         {
-            var idPanel = MakeIDEditor(hbObj.Identifier, hbObj, _ => _.Identifier);
+            var idPanel = MakeIDEditor(hbObj.Identifier, hbObj, _ => _.Identifier, editable);
             return idPanel;
         }
 
-        public static DynamicLayout MakeIDEditor<T>(string identifier, T _hbObj , Expression<Func<T, string>> propertyExpression)
+        public static TextBox MakeIDEditor<T>(string identifier, T _hbObj, Expression<Func<T, string>> propertyExpression, bool editable)
         {
             // Identifier
             var id = new TextBox();
             id.TextBinding.Bind(_hbObj, propertyExpression);
-            id.Visible = false;
+            id.Enabled = editable;
 
-            var idValue = new Label() { Text = identifier };
-            idValue.ToolTip = "Double click to edit";
-            idValue.MouseDoubleClick += (s, e) =>
-            {
-                id.Visible = true;
-                idValue.Visible = false;
-            };
-            var idPanel = new DynamicLayout(id, idValue);
-            return idPanel;
+            return id;
+
 
         }
     }

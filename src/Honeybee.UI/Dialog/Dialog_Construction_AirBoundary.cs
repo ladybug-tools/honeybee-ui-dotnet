@@ -10,11 +10,12 @@ namespace Honeybee.UI
         private HB.ModelEnergyProperties _lib;
         private Button _airMixSch;
         private HB.AirBoundaryConstructionAbridged _hbObj;
-
-        public Dialog_Construction_AirBoundary(HB.ModelEnergyProperties libSource, HB.AirBoundaryConstructionAbridged airBoundaryConst, bool lockedMode = false)
+        private bool _isIDEditable;
+        public Dialog_Construction_AirBoundary(HB.ModelEnergyProperties libSource, HB.AirBoundaryConstructionAbridged airBoundaryConst, bool lockedMode = false, bool editID = false)
         {
             _lib = libSource;
             _hbObj = airBoundaryConst;
+            _isIDEditable = editID;
 
             Padding = new Padding(10);
             Resizable = true;
@@ -40,7 +41,7 @@ namespace Honeybee.UI
             var hbObjType = _hbObj.GetType();
 
             // Identifier
-            var idPanel = DialogHelper.MakeIDEditor(_hbObj);
+            var idPanel = DialogHelper.MakeIDEditor(_hbObj, _isIDEditable);
             var idLabel = new Label() { Text = "ID" };
             var idDescription = HoneybeeSchema.SummaryAttribute.GetSummary(hbObjType, nameof(_hbObj.Identifier));
             idLabel.ToolTip = Utility.NiceDescription(idDescription);

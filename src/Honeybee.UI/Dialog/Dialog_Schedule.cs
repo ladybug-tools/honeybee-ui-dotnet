@@ -9,8 +9,8 @@ namespace Honeybee.UI
 {
     public class Dialog_Schedule : Dialog_ResourceEditor<ScheduleRuleset>
     {
-        
-        public Dialog_Schedule(ScheduleRuleset scheduleRuleset, bool lockedMode = false)
+
+        public Dialog_Schedule(ScheduleRuleset scheduleRuleset, bool lockedMode = false, bool editID = false)
         {
             Padding = new Padding(10);
             Title = $"Schedule - {DialogHelper.PluginName}";
@@ -43,7 +43,7 @@ namespace Honeybee.UI
             AbortButton.Click += (sender, e) => Close();
 
 
-            var sche = new Panel_Schedule(schDup);
+            var sche = new Panel_Schedule(schDup, editID);
             var panel = new DynamicLayout() { DefaultSpacing = new Size(5, 5) };
             panel.AddRow(sche);
             panel.AddSeparateRow(locked, OkButton, AbortButton, null);

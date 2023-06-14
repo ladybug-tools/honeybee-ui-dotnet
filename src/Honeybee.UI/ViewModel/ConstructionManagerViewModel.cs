@@ -103,29 +103,28 @@ namespace Honeybee.UI
 
 
      
-        private void ShowConstructionDialog(HB.Energy.IConstruction c)
+        private void ShowConstructionDialog(HB.Energy.IConstruction c, bool isIDEditable)
         {
            
-
             var selectedObj = c;
             HB.Energy.IConstruction dialog_rc;
             if (selectedObj is HB.ShadeConstruction shd)
             {
                 var dup = shd.DuplicateShadeConstruction();
-                var dialog = new Honeybee.UI.Dialog_Construction_Shade(dup);
+                var dialog = new Honeybee.UI.Dialog_Construction_Shade(dup, editID: isIDEditable);
                 dialog_rc = dialog.ShowModal(_control);
             }
             else if (selectedObj is HB.AirBoundaryConstructionAbridged airBoundary)
             {
                 var dup = airBoundary.DuplicateAirBoundaryConstructionAbridged();
-                var dialog = new Honeybee.UI.Dialog_Construction_AirBoundary(this._modelEnergyProperties, dup);
+                var dialog = new Honeybee.UI.Dialog_Construction_AirBoundary(this._modelEnergyProperties, dup, editID: isIDEditable);
                 dialog_rc = dialog.ShowModal(_control);
             }
             else
             {
                 // Opaque Construction or Window Construciton
                 var dup = selectedObj.Duplicate() as HB.Energy.IConstruction;
-                var dialog = new Honeybee.UI.Dialog_Construction(this._modelEnergyProperties, dup);
+                var dialog = new Honeybee.UI.Dialog_Construction(this._modelEnergyProperties, dup, editID: isIDEditable);
                 dialog_rc = dialog.ShowModal(_control);
             }
 
@@ -142,7 +141,7 @@ namespace Honeybee.UI
             var name = $"New Opaque Construction {id}";
             var newConstrucion = new HB.OpaqueConstructionAbridged(id, new List<string>(), name);
 
-            ShowConstructionDialog(newConstrucion);
+            ShowConstructionDialog(newConstrucion, true);
         });
 
 
@@ -152,14 +151,14 @@ namespace Honeybee.UI
             var name = $"New Window Construction {id}";
             var newConstrucion = new HB.WindowConstructionAbridged(id, new List<string>(), name);
 
-            ShowConstructionDialog(newConstrucion);
+            ShowConstructionDialog(newConstrucion, true);
         });
         public ICommand AddShadeConstructionCommand => new RelayCommand(() => {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"New Shade Construction {id}";
             var newConstrucion = new HB.ShadeConstruction(id, name);
 
-            ShowConstructionDialog(newConstrucion);
+            ShowConstructionDialog(newConstrucion, true);
         });
 
         public ICommand AddAirBoundaryConstructionCommand => new RelayCommand(() => {
@@ -167,7 +166,7 @@ namespace Honeybee.UI
             var name = $"New AirBoundary Construction {id}";
             var newConstrucion = new HB.AirBoundaryConstructionAbridged(id, name);
 
-            ShowConstructionDialog(newConstrucion);
+            ShowConstructionDialog(newConstrucion, true);
         });
 
         public ICommand AddWindowConstructionShadeCommand => new RelayCommand(() => {
@@ -220,7 +219,7 @@ namespace Honeybee.UI
             var name = $"{dup.Identifier}_dup";
             dup.Identifier = Guid.NewGuid().ToString().Substring(0, 5);
             dup.DisplayName = name;
-            ShowConstructionDialog(dup);
+            ShowConstructionDialog(dup, true);
         });
 
         public RelayCommand EditCommand => new RelayCommand(() =>
