@@ -135,6 +135,55 @@ namespace Honeybee.UI
             }
         }
 
+        public ICommand AddSimpleOpaqueConstructionCommand => new RelayCommand(() => {
+            // new simple material
+            var id = Guid.NewGuid().ToString().Substring(0, 5);
+            var name = $"Opaque (No Mass) {id}";
+            // R10
+            var material = new EnergyMaterialNoMass(id, 0.35, name);
+            var dialog = new Honeybee.UI.Dialog_Material(material, editID: false);
+            var dialog_rc = dialog.ShowModal(_control);
+            if (dialog_rc == null)
+                return;
+
+            // add to current lib
+            this._modelEnergyProperties.AddMaterial(dialog_rc);
+            ConstructionViewData.LibSource.AddMaterial(dialog_rc);
+
+            // new construction
+            var idC = Guid.NewGuid().ToString().Substring(0, 5);
+            var nameC = $"Construction {dialog_rc.DisplayName ?? dialog_rc.Identifier}";
+            var newConstrucion = new HB.OpaqueConstructionAbridged(idC, new List<string>() { dialog_rc.Identifier }, nameC);
+
+            AddUserData(newConstrucion);
+            ResetDataCollection();
+
+        });
+
+
+        public ICommand AddSimpleWindowConstructionCommand => new RelayCommand(() => {
+
+            var id = Guid.NewGuid().ToString().Substring(0, 5);
+            var name = $"Simple Window {id}";
+            var material = new EnergyWindowMaterialSimpleGlazSys(id, 2, 0.55, displayName: name);
+            var dialog = new Honeybee.UI.Dialog_Material(material, editID: false);
+            var dialog_rc = dialog.ShowModal(_control);
+            if (dialog_rc == null)
+                return;
+
+            // add to current lib
+            this._modelEnergyProperties.AddMaterial(dialog_rc);
+            ConstructionViewData.LibSource.AddMaterial(dialog_rc);
+
+            // new construction
+            var idC = Guid.NewGuid().ToString().Substring(0, 5);
+            var nameC = $"Construction {dialog_rc.DisplayName ?? dialog_rc.Identifier}";
+            var newConstrucion = new HB.WindowConstructionAbridged(idC, new List<string>() { dialog_rc.Identifier }, nameC);
+
+            AddUserData(newConstrucion);
+            ResetDataCollection();
+        });
+
 
         public ICommand AddOpaqueConstructionCommand => new RelayCommand(() => {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
@@ -144,7 +193,7 @@ namespace Honeybee.UI
             ShowConstructionDialog(newConstrucion, true);
         });
 
-
+     
 
         public ICommand AddWindowConstructionCommand => new RelayCommand(() => {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
@@ -194,6 +243,23 @@ namespace Honeybee.UI
             };
 
             var contextMenu = new ContextMenu();
+
+            // quick construction with simple material
+            contextMenu.Items.Add(
+                  new Eto.Forms.ButtonMenuItem()
+                  {
+                      Text = "Simple Opaque with No Mass Material",
+                      Command = AddSimpleOpaqueConstructionCommand
+                  });
+            contextMenu.Items.Add(
+                new Eto.Forms.ButtonMenuItem()
+                {
+                    Text = "Simple Window",
+                    Command = AddSimpleWindowConstructionCommand
+                });
+
+            contextMenu.Items.AddSeparator();
+
             foreach (var item in menuDic)
             {
                 contextMenu.Items.Add(
