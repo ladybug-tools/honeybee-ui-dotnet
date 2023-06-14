@@ -9,9 +9,11 @@ namespace Honeybee.UI
 
     public class Dialog_Construction_Shade : Dialog_ResourceEditor<HB.ShadeConstruction>
     {
-        public Dialog_Construction_Shade(HB.ShadeConstruction shadeConstruction, bool lockedMode = false)
+        private bool _isIDEditable;
+        public Dialog_Construction_Shade(HB.ShadeConstruction shadeConstruction, bool lockedMode = false, bool editID = false)
         {
             var _hbObj = shadeConstruction;
+            _isIDEditable = editID;
 
             Padding = new Padding(10);
             Resizable = true;
@@ -39,7 +41,7 @@ namespace Honeybee.UI
             var hbObjType = _hbObj.GetType();
 
             // Identifier
-            var idPanel = DialogHelper.MakeIDEditor(_hbObj);
+            var idPanel = DialogHelper.MakeIDEditor(_hbObj, _isIDEditable);
             var idLabel = new Label() { Text = "ID" };
             var idDescription = HoneybeeSchema.SummaryAttribute.GetSummary(hbObjType, nameof(_hbObj.Identifier));
             idLabel.ToolTip = Utility.NiceDescription(idDescription);

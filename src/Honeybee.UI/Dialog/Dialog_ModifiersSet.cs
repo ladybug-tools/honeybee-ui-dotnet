@@ -11,11 +11,13 @@ namespace Honeybee.UI
     {
 
         private ModifierSetViewModel _vm;
-        public Dialog_ModifierSet(ref HB.ModelRadianceProperties libSource, HB.ModifierSetAbridged modifierSet, bool lockedMode = false)
+        private bool _isIDEditable;
+        public Dialog_ModifierSet(ref HB.ModelRadianceProperties libSource, HB.ModifierSetAbridged modifierSet, bool lockedMode = false, bool editID = false)
         {
             try
             {
                 _vm = new ModifierSetViewModel(this, ref libSource, modifierSet);
+                _isIDEditable = editID;
 
                 Padding = new Padding(5);
                 Resizable = true;
@@ -28,7 +30,7 @@ namespace Honeybee.UI
                 var hbObjType = modifierSet.GetType();
 
                 // Identifier
-                var idPanel = DialogHelper.MakeIDEditor(_vm.Identifier, _vm, _ => _.Identifier);
+                var idPanel = DialogHelper.MakeIDEditor(_vm.Identifier, _vm, _ => _.Identifier, _isIDEditable);
                 var idLabel = new Label() { Text = "ID " };
                 var idDescription = HoneybeeSchema.SummaryAttribute.GetSummary(hbObjType, nameof(modifierSet.Identifier));
                 idLabel.ToolTip = Utility.NiceDescription(idDescription);

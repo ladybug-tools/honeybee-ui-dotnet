@@ -10,8 +10,11 @@ namespace Honeybee.UI
     public class Dialog_SHW : DialogForm<SHWSystem>
     {
         //private ModelEnergyProperties ModelEnergyProperties { get; set; }
-        public Dialog_SHW(HoneybeeSchema.SHWSystem shw = default, bool lockedMode = false, Func<string> roomIDPicker = default)
+        private bool _isIDEditable;
+        public Dialog_SHW(HoneybeeSchema.SHWSystem shw = default, bool lockedMode = false, Func<string> roomIDPicker = default, bool editID = false)
         {
+            _isIDEditable = editID;
+
             var sys = shw ?? new SHWSystem($"SHWSystem_{Guid.NewGuid().ToString().Substring(0, 8)}");
             var vm = new SHWViewModel(sys, this);
             vm.SetAmbientCoffConditionRoomPicker(roomIDPicker);
@@ -39,7 +42,7 @@ namespace Honeybee.UI
 
 
             // Identifier
-            var idPanel = DialogHelper.MakeIDEditor(vm.Identifier, vm, _ => _.Identifier);
+            var idPanel = DialogHelper.MakeIDEditor(vm.Identifier, vm, _ => _.Identifier, _isIDEditable);
             var idLabel = new Label() { Text = "ID: " };
             var idDescription = HoneybeeSchema.SummaryAttribute.GetSummary(hbType, nameof(sys.Identifier));
             idLabel.ToolTip = Utility.NiceDescription(idDescription);

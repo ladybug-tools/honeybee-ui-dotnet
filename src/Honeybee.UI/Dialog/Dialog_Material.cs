@@ -13,15 +13,17 @@ namespace Honeybee.UI
         private TextBox _r_value;
         private TextBox _u_value;
 
-        const string _r_si = "RValue";
-        const string _u_si = "UValue";
+        //const string _r_si = "RValue";
+        //const string _u_si = "UValue";
 
-        public Dialog_Material(HB.Energy.IMaterial material, bool lockedMode = false)
+        private bool _isIDEditable;
+        public Dialog_Material(HB.Energy.IMaterial material, bool lockedMode = false, bool editID = false)
         {
             try
             {
                 //_hbObj = HB.ModelEnergyProperties.Default.Materials.First(_ => _.Obj is HB.EnergyWindowMaterialGas).Obj as HB.EnergyWindowMaterialGas;
                 var _hbObj = material;
+                _isIDEditable = editID;
 
                 Padding = new Padding(5);
                 Resizable = true;
@@ -88,7 +90,7 @@ namespace Honeybee.UI
             }
 
             // Identifier
-            var idPanel = DialogHelper.MakeIDEditor(hbObj);
+            var idPanel = DialogHelper.MakeIDEditor(hbObj, _isIDEditable);
             var idLabel = new Label() { Text = "ID" };
             var idDescription = HoneybeeSchema.SummaryAttribute.GetSummary(hbObjType, nameof(hbObj.Identifier));
             idLabel.ToolTip = Utility.NiceDescription(idDescription);

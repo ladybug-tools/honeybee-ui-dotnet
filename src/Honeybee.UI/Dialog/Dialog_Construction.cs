@@ -131,16 +131,16 @@ namespace Honeybee.UI
             }
         }
 
-        //private bool _primMousePressed = false;
         private HB.ModelEnergyProperties ModelEnergyProperties { get; set; }
-
-        public Dialog_Construction(HB.ModelEnergyProperties libSource, HB.Energy.IConstruction construction, bool lockedMode = false)
+        private bool _isIDEditable;
+        public Dialog_Construction(HB.ModelEnergyProperties libSource, HB.Energy.IConstruction construction, bool lockedMode = false, bool editID = false)
         {
             try
             {
                 this.ModelEnergyProperties = libSource;
 
                 _hbObj = construction;
+                _isIDEditable = editID;
                 
                 Padding = new Padding(5);
                 Resizable = true;
@@ -187,7 +187,7 @@ namespace Honeybee.UI
                 var hbObjType = _hbObj.GetType();
 
                 // Identifier
-                var idPanel = DialogHelper.MakeIDEditor(_hbObj);
+                var idPanel = DialogHelper.MakeIDEditor(_hbObj, _isIDEditable);
                 var idLabel = new Label() { Text = "ID " };
                 var idDescription = HoneybeeSchema.SummaryAttribute.GetSummary(hbObjType, nameof(_hbObj.Identifier));
                 idLabel.ToolTip = Utility.NiceDescription(idDescription);

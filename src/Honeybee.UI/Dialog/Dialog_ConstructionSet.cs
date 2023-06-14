@@ -9,13 +9,14 @@ namespace Honeybee.UI
 {
     public class Dialog_ConstructionSet: Dialog_ResourceEditor<HB.ConstructionSetAbridged>
     {
-
+        private bool _isIDEditable;
         private ConstructionSetViewModel _vm;
-        public Dialog_ConstructionSet(ref HB.ModelEnergyProperties libSource, HB.ConstructionSetAbridged constructionSet, bool lockedMode = false)
+        public Dialog_ConstructionSet(ref HB.ModelEnergyProperties libSource, HB.ConstructionSetAbridged constructionSet, bool lockedMode = false, bool editID = false)
         {
             try
             {
                 _vm = new ConstructionSetViewModel(this, ref libSource, constructionSet);
+                _isIDEditable = editID;
 
                 Padding = new Padding(5);
                 Resizable = true;
@@ -28,7 +29,7 @@ namespace Honeybee.UI
                 var hbObjType = constructionSet.GetType();
 
                 // Identifier
-                var idPanel = DialogHelper.MakeIDEditor(_vm.Identifier, _vm, _ => _.Identifier);
+                var idPanel = DialogHelper.MakeIDEditor(_vm.Identifier, _vm, _ => _.Identifier, _isIDEditable);
                 var idLabel = new Label() { Text = "ID " };
                 var idDescription = HoneybeeSchema.SummaryAttribute.GetSummary(hbObjType, nameof(constructionSet.Identifier));
                 idLabel.ToolTip = Utility.NiceDescription(idDescription);

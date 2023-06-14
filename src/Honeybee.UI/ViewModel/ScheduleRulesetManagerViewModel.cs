@@ -128,7 +128,7 @@ namespace Honeybee.UI
             dup.Identifier = System.Guid.NewGuid().ToString().Substring(0, 5);
             dup.DisplayName = name;
             var realObj = AbridgedToReal(dup);
-            var dialog = new Honeybee.UI.Dialog_Schedule(realObj);
+            var dialog = new Honeybee.UI.Dialog_Schedule(realObj, editID: true);
             var dialog_rc = dialog.ShowModal(_control);
 
             if (dialog_rc == null) return;

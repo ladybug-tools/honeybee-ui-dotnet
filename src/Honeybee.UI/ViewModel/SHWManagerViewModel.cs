@@ -91,10 +91,10 @@ namespace Honeybee.UI
 
     
 
-        private void ShowSHWDialog(HB.SHWSystem system, Action<SHWSystem> doneAction = default)
+        private void ShowSHWDialog(HB.SHWSystem system, Action<SHWSystem> doneAction = default, bool editID = false)
         {
 
-            var dialog = new Dialog_SHW(system, roomIDPicker: AmbientCoffConditionRoomPicker);
+            var dialog = new Dialog_SHW(system, roomIDPicker: AmbientCoffConditionRoomPicker, editID: editID );
             System.Action<SHWSystem> f = (SHWSystem s) =>
             {
                 if (s != null)
@@ -114,7 +114,7 @@ namespace Honeybee.UI
     
         public RelayCommand AddCommand => new RelayCommand(() =>
         {
-            ShowSHWDialog(null);
+            ShowSHWDialog(null, editID: true);
         });
 
         public RelayCommand DuplicateCommand => new RelayCommand(() =>
@@ -131,7 +131,7 @@ namespace Honeybee.UI
             dup.Identifier = Guid.NewGuid().ToString().Substring(0, 5);
             dup.DisplayName = name;
 
-            ShowSHWDialog(dup);
+            ShowSHWDialog(dup, editID: true);
 
         });
 
@@ -159,7 +159,7 @@ namespace Honeybee.UI
                 ReplaceUserData(selected, s);
             };
 
-            ShowSHWDialog(dup, f);
+            ShowSHWDialog(dup, f, editID: false);
 
 
         });

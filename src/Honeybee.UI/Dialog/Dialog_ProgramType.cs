@@ -12,14 +12,15 @@ namespace Honeybee.UI
     {
         private ProgramTypeViewModel _vm;
 
-     
-        public Dialog_ProgramType(ref HB.ModelProperties libSource, HB.ProgramTypeAbridged programType, bool lockedMode = false)
+        private bool _isIDEditable;
+        public Dialog_ProgramType(ref HB.ModelProperties libSource, HB.ProgramTypeAbridged programType, bool lockedMode = false, bool editID = false)
         {
             try
             {
                 libSource.FillNulls();
 
                 _vm = new ProgramTypeViewModel(this, ref libSource, programType);
+                _isIDEditable = editID;
 
                 Title = $"Program Type - {DialogHelper.PluginName}";
                 WindowStyle = WindowStyle.Default;
@@ -32,7 +33,7 @@ namespace Honeybee.UI
                 //Generate ProgramType Panel
 
                 // Identifier
-                var idPanel = DialogHelper.MakeIDEditor(_vm.Identifier, _vm, _ => _.Identifier);
+                var idPanel = DialogHelper.MakeIDEditor(_vm.Identifier, _vm, _ => _.Identifier, _isIDEditable);
                 var idLabel = new Label() { Text = "ID " };
                 var idDescription = HoneybeeSchema.SummaryAttribute.GetSummary(hbObjType, nameof(programType.Identifier));
                 idLabel.ToolTip = Utility.NiceDescription(idDescription);

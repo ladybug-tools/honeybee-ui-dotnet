@@ -16,8 +16,8 @@ namespace Honeybee.UI
         private Drawable _scheduleDaydrawable;
         private Drawable _calendarPanel;
         private Size _calendarSize = new Size(200, 1550);
-
-        public Panel_Schedule(HB.ScheduleRuleset scheduleRuleset)
+        private bool isIDEditable;
+        public Panel_Schedule(HB.ScheduleRuleset scheduleRuleset, bool editID)
         {
             _vm = new ScheduleRulesetViewModel(scheduleRuleset);
             this.DataContext = _vm;
@@ -60,7 +60,7 @@ namespace Honeybee.UI
             var hbObjType = scheduleRuleset.GetType();
 
             // Identifier
-            var idPanel = DialogHelper.MakeIDEditor(_vm.SchRuleset_hbObj);
+            var idPanel = DialogHelper.MakeIDEditor(_vm.SchRuleset_hbObj, editID);
             var idLabel = new Label() { Text = "ID " };
             var idDescription = HoneybeeSchema.SummaryAttribute.GetSummary(hbObjType, nameof(scheduleRuleset.Identifier));
             idLabel.ToolTip = Utility.NiceDescription(idDescription);
