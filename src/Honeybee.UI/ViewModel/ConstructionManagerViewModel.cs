@@ -248,13 +248,15 @@ namespace Honeybee.UI
             contextMenu.Items.Add(
                   new Eto.Forms.ButtonMenuItem()
                   {
-                      Text = "Simple Opaque with No Mass Material",
+                      Text = "Simple Opaque",
+                      ToolTip = "Add a construction with a no-mass material",
                       Command = AddSimpleOpaqueConstructionCommand
                   });
             contextMenu.Items.Add(
                 new Eto.Forms.ButtonMenuItem()
                 {
                     Text = "Simple Window",
+                    ToolTip = "Add a construction with a single window material",
                     Command = AddSimpleWindowConstructionCommand
                 });
 
