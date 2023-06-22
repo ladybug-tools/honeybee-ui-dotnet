@@ -3,6 +3,7 @@ using Eto.Forms;
 using HB = HoneybeeSchema;
 using System.Collections.Generic;
 using HoneybeeSchema;
+using System;
 
 namespace Honeybee.UI
 {
@@ -170,6 +171,41 @@ namespace Honeybee.UI
         });
 
 
+        private bool DisableDetailedHVAC()
+        {
+            var disable = this._returnSelectedOnly;
+            if (disable)
+            {
+                Dialog_Message.Show(this, "DetailedHVAC cannot be used under the current selecting mode! Use the HVAC Manager to enable DetailedHVAC editor!");
+            }
+            return disable;
+        }
 
+        public void SetAddDetailedHVACFunc(Action func)
+        {
+            if (DisableDetailedHVAC())
+                return;
+            this.Close();
+            _vm.AddDetailedHVAC = func;
+        }
+        public void SetEditDetailedHVACFunc(Action<Guid> func)
+        {
+            if (DisableDetailedHVAC())
+                return;
+            this.Close();
+            _vm.EditDetailedHVAC = func;
+        }
+
+        public void SetRemoveDetailedHVACFunc(Action<Guid> func)
+        {
+            _vm.RemoveDetailedHVAC = func;
+        }
+        public void SetDuplicateDetailedHVACFunc(Action<Guid> func)
+        {
+            if (DisableDetailedHVAC())
+                return;
+            this.Close();
+            _vm.DuplicateDetailedHVAC = func;
+        }
     }
 }

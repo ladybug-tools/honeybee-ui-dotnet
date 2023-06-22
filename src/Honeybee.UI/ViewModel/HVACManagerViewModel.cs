@@ -89,26 +89,35 @@ namespace Honeybee.UI
 
     
 
-        private void ShowHVACDialog(HB.Energy.IHvac HVAC)
+        private void ShowHVACDialog(HB.Energy.IHvac hvac)
         {
-            HB.Energy.IHvac dialog_rc = null;
-            var lib = _modelEnergyProperties;
-            if (HVAC is IdealAirSystemAbridged obj)
+            try
             {
-                var dialog = new Dialog_IdealAirLoad(ref lib, obj);
-                dialog_rc = dialog.ShowModal(_control);
-            }
-            else
-            {
-                var dialog = new Dialog_OpsHVACs(ref lib, HVAC);
-                dialog_rc = dialog.ShowModal(_control);
-            }
+                HB.Energy.IHvac dialog_rc = null;
+                var lib = _modelEnergyProperties;
+                if (hvac is IdealAirSystemAbridged obj)
+                {
+                    var dialog = new Dialog_IdealAirLoad(ref lib, obj);
+                    dialog_rc = dialog.ShowModal(_control);
+                }
+                else
+                {
+                    var dialog = new Dialog_OpsHVACs(ref lib, hvac);
+                    dialog_rc = dialog.ShowModal(_control);
+                }
 
-            if (dialog_rc != null)
-            {
-                AddUserData(dialog_rc);
-                ResetDataCollection();
+                if (dialog_rc != null)
+                {
+                    AddUserData(dialog_rc);
+                    ResetDataCollection();
+                }
             }
+            catch (Exception e)
+            {
+                Dialog_Message.Show(e);
+                //throw;
+            }
+         
 
         }
     
@@ -122,8 +131,11 @@ namespace Honeybee.UI
         public ICommand AddOpsHVACCommand => new RelayCommand<HoneybeeSchema.Energy.IHvac>((obj) => {
             ShowHVACDialog(obj);
         });
+        public ICommand AddDetailedHVACCommand => new RelayCommand<HoneybeeSchema.Energy.IHvac>((obj) => 
+        {
+            AddDetailedHVAC?.Invoke();
+        });
 
-     
         public RelayCommand AddCommand => new RelayCommand(() =>
         {
 
@@ -132,7 +144,8 @@ namespace Honeybee.UI
             var AddHvacsDic = new Dictionary<string, ICommand>()
                 {
                     { "Ideal Air Load", AddIdealAirLoadCommand},
-                    { "From OpenStudio library", AddOpsHVACCommand}
+                    { "From OpenStudio library", AddOpsHVACCommand},
+                    { "Detailed HVAC System", AddDetailedHVACCommand}
                 };
 
             foreach (var item in AddHvacsDic)
@@ -156,6 +169,25 @@ namespace Honeybee.UI
                 return;
             }
            
+            if (selected.HVAC is DetailedHVAC dt)
+            {
+                // Identifier of DetailedHVAC should always match the GHDoc GUID so that the plugin could find the correct GHDoc to open and edit.
+                var id = dt.Identifier;
+                var isGUID = Guid.TryParse(id, out var docID);
+                if (isGUID)
+                {
+                    (_control as Dialog)?.Close();
+                    DuplicateDetailedHVAC?.Invoke(docID);
+                }
+                else
+                {
+                    Dialog_Message.Show(_control, $"Non-editable DetailedHVAC [{id}]!");
+                }
+
+                return;
+            }
+
+
             var dup = selected.HVAC.Duplicate() as HB.Energy.IHvac;
             var name = $"{dup.DisplayName ?? dup.Identifier}_dup";
             dup.Identifier = Guid.NewGuid().ToString().Substring(0, 5);
@@ -192,7 +224,18 @@ namespace Honeybee.UI
             }
             else if (dup is DetailedHVAC dt)
             {
-                MessageBox.Show(_control, "Detailed HVAC cannot be edited at here!");
+                // Identifier of DetailedHVAC should always match the GHDoc GUID so that the plugin could find the correct GHDoc to open and edit.
+                var id = dt.Identifier;
+                var isGUID = Guid.TryParse(id, out var docID);
+                if (isGUID)
+                {
+                    (_control as Dialog)?.Close();
+                    EditDetailedHVAC?.Invoke(docID);
+                }
+                else
+                {
+                    Dialog_Message.Show(_control, $"Non-editable DetailedHVAC [{id}]!");
+                }
                 return;
             }
             else
@@ -224,15 +267,31 @@ namespace Honeybee.UI
             }
 
             var res = MessageBox.Show(_control, $"Are you sure you want to delete:\n {selected.Name}", MessageBoxButtons.YesNo);
-            if (res == DialogResult.Yes)
+            if (res != DialogResult.Yes)
+                return;
+
+            if (selected.HVAC is DetailedHVAC dt)
             {
-                DeleteUserData(selected);
-                ResetDataCollection();
+                // Identifier of DetailedHVAC should always match the GHDoc GUID so that the plugin could find the correct GHDoc to open and edit.
+                var id = dt.Identifier;
+                var isGUID = Guid.TryParse(id, out var docID);
+                if (isGUID)
+                {
+                    RemoveDetailedHVAC?.Invoke(docID);
+                }
             }
+
+            DeleteUserData(selected);
+            ResetDataCollection();
 
         });
 
+        public Action AddDetailedHVAC { get; set; }
+        public Action<Guid> EditDetailedHVAC { get; set; }
+        public Action<Guid> RemoveDetailedHVAC { get; set; }
+        public Action<Guid> DuplicateDetailedHVAC { get; set; }
 
+       
     }
 
 
