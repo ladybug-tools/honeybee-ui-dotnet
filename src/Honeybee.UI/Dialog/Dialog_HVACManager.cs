@@ -185,14 +185,12 @@ namespace Honeybee.UI
         {
             if (DisableDetailedHVAC())
                 return;
-            this.Close();
             _vm.AddDetailedHVAC = func;
         }
         public void SetEditDetailedHVACFunc(Action<Guid> func)
         {
             if (DisableDetailedHVAC())
                 return;
-            this.Close();
             _vm.EditDetailedHVAC = func;
         }
 
@@ -204,7 +202,6 @@ namespace Honeybee.UI
         {
             if (DisableDetailedHVAC())
                 return;
-            this.Close();
             _vm.DuplicateDetailedHVAC = func;
         }
     }

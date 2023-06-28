@@ -133,6 +133,7 @@ namespace Honeybee.UI
         });
         public ICommand AddDetailedHVACCommand => new RelayCommand<HoneybeeSchema.Energy.IHvac>((obj) => 
         {
+            (_control as Dialog)?.Close();
             AddDetailedHVAC?.Invoke();
         });
 
