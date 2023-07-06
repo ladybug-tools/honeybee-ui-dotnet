@@ -53,6 +53,9 @@ namespace Honeybee.UI
             var remove = new Button { Text = "Remove" };
             remove.Command = _vm.RemoveCommand;
 
+            var editT = new Button { Text = "Open Template" };
+            editT.Command = _vm.EditDetailHVACTemplateCommand;
+
             layout.AddSeparateRow("HVACs:", null, addNew, duplicate, edit, remove);
 
             // search bar
@@ -77,7 +80,7 @@ namespace Honeybee.UI
 
             AbortButton = new Button { Text = "Cancel" };
             AbortButton.Click += (sender, e) => Close();
-            layout.AddSeparateRow(null, DefaultButton, AbortButton, null);
+            layout.AddSeparateRow(editT, null, DefaultButton, AbortButton);
 
             return layout;
         }
@@ -181,17 +184,24 @@ namespace Honeybee.UI
             return disable;
         }
 
-        public void SetAddDetailedHVACFunc(Action func)
+        public void SetGetDetailedHVACItemsFunc(Func<Action,ButtonMenuItem> func)
         {
             if (DisableDetailedHVAC())
                 return;
-            _vm.AddDetailedHVAC = func;
+            _vm.GetDetailedHVACItems = func;
         }
         public void SetEditDetailedHVACFunc(Action<Guid> func)
         {
             if (DisableDetailedHVAC())
                 return;
             _vm.EditDetailedHVAC = func;
+        }
+
+        public void SetEditDetailedHVACTemplateFunc(Action<Guid> func)
+        {
+            if (DisableDetailedHVAC())
+                return;
+            _vm.EditDetailedHVACTemplate = func;
         }
 
         public void SetRemoveDetailedHVACFunc(Action<Guid> func)
