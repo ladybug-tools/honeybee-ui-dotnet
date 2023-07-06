@@ -131,11 +131,7 @@ namespace Honeybee.UI
         public ICommand AddOpsHVACCommand => new RelayCommand<HoneybeeSchema.Energy.IHvac>((obj) => {
             ShowHVACDialog(obj);
         });
-        public ICommand AddDetailedHVACCommand => new RelayCommand<HoneybeeSchema.Energy.IHvac>((obj) => 
-        {
-            (_control as Dialog)?.Close();
-            AddDetailedHVAC?.Invoke();
-        });
+      
 
         public RelayCommand AddCommand => new RelayCommand(() =>
         {
@@ -146,7 +142,6 @@ namespace Honeybee.UI
                 {
                     { "Ideal Air Load", AddIdealAirLoadCommand},
                     { "From OpenStudio library", AddOpsHVACCommand},
-                    { "Detailed HVAC System", AddDetailedHVACCommand}
                 };
 
             foreach (var item in AddHvacsDic)
@@ -156,8 +151,21 @@ namespace Honeybee.UI
                   {
                       Text = item.Key,
                       Command = item.Value
+
                   });
             }
+
+            if (GetDetailedHVACItems != null)
+            {
+                Action endOfMenuClick = () =>
+                {
+                    (_control as Dialog)?.Close();
+                };
+                var tps = GetDetailedHVACItems(endOfMenuClick);
+       
+                contextMenu.Items.Add(tps);
+            }
+            
             contextMenu.Show();
         });
 
@@ -287,8 +295,41 @@ namespace Honeybee.UI
 
         });
 
-        public Action AddDetailedHVAC { get; set; }
+
+        public RelayCommand EditDetailHVACTemplateCommand => new RelayCommand(() =>
+        {
+            var selected = this.SelectedData;
+            if (selected == null)
+            {
+                MessageBox.Show(_control, "Nothing is selected to edit!");
+                return;
+            }
+
+            var selectedObj = selected.HVAC;
+            var dup = selectedObj.Duplicate() as HB.Energy.IHvac;
+            HB.Energy.IHvac dialog_rc = null;
+
+            var lib = _modelEnergyProperties;
+            if (dup is DetailedHVAC dt)
+            {
+                // Identifier of DetailedHVAC should always match the GHDoc GUID so that the plugin could find the correct GHDoc to open and edit.
+                var id = dt.Identifier;
+                var isGUID = Guid.TryParse(id, out var docID);
+                if (isGUID)
+                {
+                    (_control as Dialog)?.Close();
+                    EditDetailedHVACTemplate?.Invoke(docID);
+                    return;
+                }
+            }
+
+            Dialog_Message.Show(_control, $"Non-editable HVAC [{selectedObj.DisplayName ?? selectedObj.Identifier}]!");
+
+        });
+
+        public Func<Action,ButtonMenuItem> GetDetailedHVACItems { get; set; }
         public Action<Guid> EditDetailedHVAC { get; set; }
+        public Action<Guid> EditDetailedHVACTemplate { get; set; }
         public Action<Guid> RemoveDetailedHVAC { get; set; }
         public Action<Guid> DuplicateDetailedHVAC { get; set; }
 
