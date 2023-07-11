@@ -53,8 +53,10 @@ namespace Honeybee.UI
             var remove = new Button { Text = "Remove" };
             remove.Command = _vm.RemoveCommand;
 
+           
             var editT = new Button { Text = "Open Template" };
             editT.Command = _vm.EditDetailHVACTemplateCommand;
+            editT.Visible = !_returnSelectedOnly;
 
             layout.AddSeparateRow("HVACs:", null, addNew, duplicate, edit, remove);
 
