@@ -562,12 +562,6 @@ namespace Honeybee.UI.ViewModel
             var dialog_rc = dialog.ShowModal(this._control);
             if (dialog_rc != null)
             {
-                if (dialog_rc is DetailedHVAC)
-                {
-                    Dialog_Message.Show("Cann't set room's HVAC to a DetailedHVAC. Please use a dedicated command to apply the DetailedHVAC to associaated rooms!");
-                    return;
-                }
-
                 this.HVAC.SetPropetyObj(dialog_rc[0]);
             }
         });
