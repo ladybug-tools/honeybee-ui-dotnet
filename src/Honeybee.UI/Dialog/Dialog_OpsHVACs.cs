@@ -17,49 +17,12 @@ namespace Honeybee.UI
             Width = 450;
             this.Icon = DialogHelper.HoneybeeIcon;
 
-            if (hvac == null) // add a new system
-                _vm = new OpsHVACsViewModel(libSource, this);
-            else  // edit existing system
-                _vm = new OpsHVACsViewModel(libSource, hvac, this);
+            _vm = new OpsHVACsViewModel(libSource, hvac, this);
 
             var layout = new DynamicLayout() { DataContext = _vm };
             layout.DefaultSpacing = new Size(5, 5);
             layout.DefaultPadding = new Padding(5);
-
-
-            // add a new system from lib
-            if (hvac == null)
-            {
-                // UI for system groups
-                var hvacGroups = new DropDown();
-
-                hvacGroups.BindDataContext(c => c.DataStore, (OpsHVACsViewModel m) => m.HvacGroups);
-                hvacGroups.SelectedKeyBinding.BindDataContext((OpsHVACsViewModel m) => m.HvacGroup);
-
-                layout.AddRow("HVAC Groups:");
-                layout.AddRow(hvacGroups);
-           
-            }
-
-            var hvacTypes = new DropDown();
-            var hvacEquipments = new DropDown();
-            hvacTypes.BindDataContext(c => c.DataStore, (OpsHVACsViewModel m) => m.HvacTypes);
-            hvacTypes.ItemTextBinding = Binding.Delegate<Type, string>(t => _vm.HVACTypesDic[t]);
-            hvacTypes.SelectedValueBinding.BindDataContext((OpsHVACsViewModel m) => m.HvacType);
-
-            var hvacSummary = new TextArea() { Height = 70};
-            hvacSummary.Bind(c => c.Text, _vm, _ => _.HvacTypeSummary);
-
-
-            hvacEquipments.BindDataContext(c => c.DataStore, (OpsHVACsViewModel m) => m.HvacEquipmentTypes);
-            hvacEquipments.ItemTextBinding = Binding.Delegate<string, string>(t => _vm.HVACsDic[t]);
-            hvacEquipments.SelectedKeyBinding.BindDataContext((OpsHVACsViewModel m) => m.HvacEquipmentType);
-            layout.AddRow("HVAC Types:");
-            layout.AddRow(hvacTypes);
-            layout.AddRow(hvacSummary);
-            layout.AddRow("HVAC Equipment Types:");
-            layout.AddRow(hvacEquipments);
-            layout.AddRow(null);
+      
 
             var yearTitle = new Label() { Text = "Vintage:" };
             yearTitle.Bind(_ => _.ToolTip, _vm, _ => _.VintageTip);
@@ -76,6 +39,13 @@ namespace Honeybee.UI
 
             year.BindDataContext(c => c.DataStore, (OpsHVACsViewModel m) => m.Vintages);
             year.SelectedKeyBinding.BindDataContext((OpsHVACsViewModel m) => m.Vintage);
+
+
+            var hvacEquipments = new DropDown();
+            hvacEquipments.BindDataContext(c => c.DataStore, (OpsHVACsViewModel m) => m.HvacEquipmentTypes);
+            hvacEquipments.ItemTextBinding = Binding.Delegate<string, string>(t => _vm.HVACsDic[t]);
+            hvacEquipments.SelectedKeyBinding.BindDataContext((OpsHVACsViewModel m) => m.HvacEquipmentType);
+
 
             var economizerTitle = new Label() { Text = "Economizer:" };
             economizer.BindDataContext(c => c.DataStore, (OpsHVACsViewModel m) => m.Economizers);
@@ -103,6 +73,7 @@ namespace Honeybee.UI
             dcv.Bind(_ => _.Checked, _vm, _ => _.DcvChecked);
             dcv.Bind(c => c.Visible, _vm, _ => _.DcvVisable);
             dcvTitle.Bind(_ => _.ToolTip, _vm, _ => _.DCVTip);
+            dcvTitle.Bind(_ => _.Visible, _vm, _ => _.DcvVisable);
 
             var availabilityTitle = new Label() { Text = "DOAS Availability Schedule:" };
             availabilityTitle.Bind(c => c.Visible, _vm, _ => _.AvaliabilityVisable);
@@ -116,22 +87,24 @@ namespace Honeybee.UI
 
             var radSettings = GenRadSettingsPanel();
 
-            var gp = new GroupBox() { Text = "HVAC System settings" };
-            var gpLayout = new DynamicLayout();
-            gpLayout.DefaultPadding = new Padding(5);
+            //var gp = new GroupBox() { Text = "HVAC System settings" };
+            //var gpLayout = new DynamicLayout();
+            //gpLayout.DefaultPadding = new Padding(5);
 
-            gpLayout.Height = 250;
-            gpLayout.BeginScrollable(BorderType.None);
+            //gpLayout.Height = 250;
+            //gpLayout.BeginScrollable(BorderType.None);
 
             var gpGeneralLayout = new DynamicLayout();
             //gpLayout.BeginGroup("HVAC System settings", new Padding(5), new Size(5, 0));
             gpGeneralLayout.Spacing = new Size(5, 2);
 
-
+         
             gpGeneralLayout.AddRow(nameTitle);
             gpGeneralLayout.AddRow(nameText);
             gpGeneralLayout.AddRow(yearTitle);
             gpGeneralLayout.AddRow(year);
+            gpGeneralLayout.AddRow("HVAC Equipment Types:");
+            gpGeneralLayout.AddRow(hvacEquipments);
             gpGeneralLayout.AddRow(economizerTitle);
             gpGeneralLayout.AddRow(economizer);
             gpGeneralLayout.AddRow(sensibleTitle);
@@ -143,13 +116,9 @@ namespace Honeybee.UI
             gpGeneralLayout.AddRow(availability);
             gpGeneralLayout.AddSeparateRow(dcvTitle, dcv);
 
-            gpLayout.AddRow(gpGeneralLayout);
-            gpLayout.AddRow(radSettings);
-            //gpLayout.EndGroup();
-            gp.Content = gpLayout;
-
-            layout.AddRow(gp);
-
+            layout.AddRow(gpGeneralLayout);
+            layout.AddRow(radSettings);
+         
             var locked = new CheckBox() { Text = "Locked", Enabled = false };
             locked.Checked = lockedMode;
 
@@ -158,7 +127,7 @@ namespace Honeybee.UI
             {
                 try
                 {
-                    var obj = _vm.GreateHvac(hvac); 
+                    var obj = _vm.GreateHvac(); 
                     OkCommand.Execute(obj);
                 }
                 catch (Exception ex)

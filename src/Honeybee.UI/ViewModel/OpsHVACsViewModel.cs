@@ -5,15 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UnitsNet;
 
 namespace Honeybee.UI
 {
     public class OpsHVACsViewModel : ViewModelBase
     {
-
-        //private IEnumerable<string> VintageJsonPaths => EnergyLibrary.BuildingVintages;
-        //public IEnumerable<string> VintageNames => VintageJsonPaths.Select(_ => System.IO.Path.GetFileNameWithoutExtension(_).Replace("_registry", ""));
-        //private string DefaultVintageName => VintageNames.First(_ => _.Contains("2013"));
 
         public IEnumerable<string> _vintages = Enum.GetNames(typeof(HoneybeeSchema.Vintages)).ToList();
         public IEnumerable<string> Vintages
@@ -47,76 +44,12 @@ namespace Honeybee.UI
             set => Set(() => _VintageTip = value, nameof(VintageTip));
         }
 
-        public List<string> HvacGroups => new List<string>() { "All Air (non DOAS)", "Heating Cooling with DOAS", "Heating Cooling Only" };
-
-
-        private string _hvacGroup;
-        public string HvacGroup
-        {
-            get => _hvacGroup ?? HvacGroups.First();
-            set
-            {
-                if (string.IsNullOrEmpty(value))
-                    return;
-                Set(() => _hvacGroup = value, nameof(HvacGroup));
-
-                UpdateUI_Group();
-            }
-        }
-
-        private IEnumerable<Type> _hvacTypes;
-        public IEnumerable<Type> HvacTypes
-        {
-            get => _hvacTypes ?? GetAllAirTypes();
-            set
-            {
-                if (value == null)
-                    return;
-                Set(() => _hvacTypes = value, nameof(HvacTypes));
-                HvacType = HvacTypes.FirstOrDefault();
-            }
-        }
-
-        private Type _hvacType;
-        public Type HvacType
-        {
-            get => _hvacType ?? HvacTypes.First();
-            set
-            {
-                if (value == null)
-                    return;
-                Set(() => _hvacType = value, nameof(HvacType));
-                HvacEquipmentTypes = GetHVACTypes(value);
-                this.Name = $"{HVACTypesDic[value]} {Guid.NewGuid().ToString().Substring(0, 5)}";
-                UpdateUI_Rad();
-                UpdateUI_PTAC();
-
-                try
-                {
-                    HvacTypeSummary = "";
-                    HvacTypeSummary = HoneybeeSchema.SummaryAttribute.GetSummary(HVACTypeMapper[value]);
-                }
-                catch (Exception)
-                {
-                    // do nothing
-                }
-              
-            }
-        }
-
-        private string _hvacTypeSummary;
-
-        public string HvacTypeSummary
-        {
-            get => _hvacTypeSummary;
-            set => Set(() => _hvacTypeSummary = value, nameof(HvacTypeSummary));
-        }
-
+    
 
         private IEnumerable<string> _hvacEquipmentTypes;
         public IEnumerable<string> HvacEquipmentTypes
         {
-            get => _hvacEquipmentTypes ?? GetHVACTypes(HvacType);
+            get => _hvacEquipmentTypes;
             set
             {
                 if (value == null)
@@ -319,6 +252,7 @@ namespace Honeybee.UI
             set => Set(() => _SwitchTimeTip = value, nameof(SwitchTimeTip));
         }
 
+        private HoneybeeSchema.Energy.IHvac _hvac;
         private static VAV dummy = new VAV("dummy");
         private static FCUwithDOASAbridged dummyDoas = new FCUwithDOASAbridged("doas");
         private static RadiantwithDOASAbridged dummyRad = new RadiantwithDOASAbridged("rad");
@@ -327,20 +261,17 @@ namespace Honeybee.UI
         private ModelEnergyProperties _libSource;
         private Dialog_OpsHVACs _control;
 
-        // create a new system
-        public OpsHVACsViewModel(ModelEnergyProperties libSource, Dialog_OpsHVACs control): 
-            this(libSource, new HoneybeeSchema.VAV($"VAV {Guid.NewGuid().ToString().Substring(0, 5)}"), control)
-        {
-            UpdateUI_Group();
-        }
-        // edit an existing system
+       
         public OpsHVACsViewModel(ModelEnergyProperties libSource, HoneybeeSchema.Energy.IHvac hvac, Dialog_OpsHVACs control)
         {
             if (hvac == null)
                 throw new ArgumentNullException(nameof(hvac));
 
+            _hvac = hvac;
             _libSource = libSource;
             _control = control;
+            UpdateUI_Group();
+
 
             var hvacClassType = hvac.GetType();
 
@@ -350,29 +281,10 @@ namespace Honeybee.UI
                 this.Vintage = v.ToString();
             this.VintageTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(hvacClassType, nameof(dummy.Vintage)));
 
-            if (this.IsAllAirGroup(hvac))
-            {
-                HvacGroup = HvacGroups[0];
-            }
-            else if (this.IsDOASGroup(hvac))
-            {
-                HvacGroup = HvacGroups[1];
-            }
-            else if (this.IsOtherGroup(hvac))
-            {
-                HvacGroup = HvacGroups[2];
-            }
-            else
-            {
-                throw new ArgumentException($"{hvacClassType} is not a supported HVAC system, please contact developers!");
-            }
-
-
-            // type
-            this.HvacType = HVACTypeMapper.First(_=>_.Value == hvacClassType).Key;
-
+         
             // equipment type
             var eqpType = hvacClassType.GetProperty(nameof(dummy.EquipmentType))?.GetValue(hvac);
+            this.HvacEquipmentTypes = GetHVACEquipmentTypes(eqpType.GetType());
             this.HvacEquipmentType = eqpType.ToString();
 
 
@@ -424,14 +336,17 @@ namespace Honeybee.UI
 
             //Radiant system
             var hasRad = Enum.TryParse<RadiantFaceTypes>(hvacClassType.GetProperty(nameof(dummyRad.RadiantFaceType))?.GetValue(hvac)?.ToString(), out var radFaceType); 
-            var radType = dummyRad.GetType();
+        
             if (hasRad)
             {
+                var radType = hvac.GetType();
+
                 //RadiantFaceType
                 this.RadiantFaceType = radFaceType;
 
                 //SwitchOverTime
-                var sot = radType.GetProperty(nameof(dummyRad.SwitchOverTime))?.GetValue(hvac)?.ToString();
+                var sotProp = radType.GetProperty(nameof(dummyRad.SwitchOverTime));
+                var sot = sotProp?.GetValue(hvac)?.ToString();
                 double.TryParse(sot, out var switchTime);
                 this.SwitchTime = switchTime;
 
@@ -439,58 +354,52 @@ namespace Honeybee.UI
                 var mot = radType.GetProperty(nameof(dummyRad.MinimumOperationTime))?.GetValue(hvac)?.ToString();
                 double.TryParse(mot, out var mintime);
                 this.MinOptTime = mintime;
+
+                this.RadiantFaceTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(radType, nameof(dummyRad.RadiantFaceType)));
+                this.SwitchTimeTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(radType, nameof(dummyRad.SwitchOverTime)));
+                this.MinOptTimeTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(radType, nameof(dummyRad.MinimumOperationTime)));
             }
-            this.RadiantFaceTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(radType, nameof(dummyRad.RadiantFaceType)));
-            this.SwitchTimeTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(radType, nameof(dummyRad.SwitchOverTime)));
-            this.MinOptTimeTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(radType, nameof(dummyRad.MinimumOperationTime)));
+
             this.RadiantVisable = hasRad;
         }
 
 
         private void UpdateUI_Group()
         {
-            var group = HvacGroup;
-            if (group == HvacGroups[0])
+            this.RadiantVisable = this.IsRadiantSystem(_hvac);
+
+            if (this.IsAllAirGroup(_hvac))
             {
-                HvacTypes = GetAllAirTypes();
                 EconomizerVisable = true;
                 LatentHRVisable = true;
                 SensibleHRVisable = true;
                 DcvVisable = true;
                 AvaliabilityVisable = false;
             }
-            else if (group == HvacGroups[1])
+            else if (this.IsDOASGroup(_hvac))
             {
-                HvacTypes = GetDOASTypes();
                 EconomizerVisable = false;
                 LatentHRVisable = true;
                 SensibleHRVisable = true;
                 DcvVisable = true;
                 AvaliabilityVisable = true;
             }
-            else if (group == HvacGroups[2])
+            else if ( this.IsAllAirZoneGroup(_hvac) || this.IsOtherGroup(_hvac))
             {
-                HvacTypes = GetOtherTypes();
                 EconomizerVisable = false;
                 LatentHRVisable = false;
                 SensibleHRVisable = false;
                 DcvVisable = false;
                 AvaliabilityVisable = false;
             }
+            else
+            {
+                throw new ArgumentException($"{_hvac.GetType().Name} is not a supported HVAC system, please contact developers!");
+            }
+
         }
 
-        private void UpdateUI_Rad()
-        {
-            this.RadiantVisable = HvacType == typeof(RadiantwithDOASEquipmentType) || HvacType == typeof(RadiantEquipmentType);
-        }
-        private void UpdateUI_PTAC()
-        {
-            var isPTAC = HvacType == typeof(PTACEquipmentType);
-            EconomizerVisable = !isPTAC;
-            LatentHRVisable = !isPTAC;
-            SensibleHRVisable = !isPTAC;
-            DcvVisable = !isPTAC;
-        }
+
         private bool IsRadiantSystem(HoneybeeSchema.Energy.IHvac hvac)
         {
             var isGroup = hvac is RadiantwithDOASAbridged;
@@ -498,56 +407,23 @@ namespace Honeybee.UI
             return isGroup;
         }
 
-        private IEnumerable<Type> GetAllAirTypes()
-        {
-            
-            var types = new List<Type>() 
-            {
-                typeof(VAVEquipmentType),
-                typeof(PVAVEquipmentType),
-                typeof(PSZEquipmentType),
-                typeof(PTACEquipmentType),
-                typeof(FurnaceEquipmentType),
-            };
-
-            return types;
-        }
-
+      
         private bool IsAllAirGroup(HoneybeeSchema.Energy.IHvac hvac)
         {
             var isGroup = hvac is VAV;
             isGroup |= hvac is PVAV;
             isGroup |= hvac is PSZ;
-            isGroup |= hvac is PTAC;
+            return isGroup;
+        }
+
+        private bool IsAllAirZoneGroup(HoneybeeSchema.Energy.IHvac hvac)
+        {
+            var isGroup = hvac is PTAC;
             isGroup |= hvac is ForcedAirFurnace;
             return isGroup;
         }
 
-        //private IEnumerable<string> GetAllAir()
-        //{
-        //    var names = new List<string>();
 
-        //    // All air
-        //    names.AddRange(Enum.GetNames(typeof(VAVEquipmentType)));
-        //    names.AddRange(Enum.GetNames(typeof(PVAVEquipmentType)));
-        //    names.AddRange(Enum.GetNames(typeof(PSZEquipmentType)));
-        //    names.AddRange(Enum.GetNames(typeof(PTACEquipmentType)));
-        //    names.AddRange(Enum.GetNames(typeof(FurnaceEquipmentType)));
-
-        //    return names;
-        //}
-        private IEnumerable<Type> GetDOASTypes()
-        {
-            var types = new List<Type>()
-            {
-                typeof(FCUwithDOASEquipmentType),
-                typeof(VRFwithDOASEquipmentType),
-                typeof(WSHPwithDOASEquipmentType),
-                typeof(RadiantwithDOASEquipmentType)
-            };
-
-            return types;
-        }
 
         private bool IsDOASGroup(HoneybeeSchema.Energy.IHvac hvac)
         {
@@ -557,23 +433,7 @@ namespace Honeybee.UI
             isDoas |= hvac is RadiantwithDOASAbridged;
             return isDoas;
         }
-        private IEnumerable<Type> GetOtherTypes()
-        {
-            var types = new List<Type>()
-            {
-                typeof(BaseboardEquipmentType),
-                typeof(EvaporativeCoolerEquipmentType),
-                typeof(FCUEquipmentType),
-                typeof(GasUnitHeaterEquipmentType),
-                typeof(ResidentialEquipmentType),
-                typeof(VRFEquipmentType),
-                typeof(WSHPEquipmentType),
-                typeof(WindowACEquipmentType),
-                typeof(RadiantEquipmentType),
-            };
-
-            return types;
-        }
+      
 
         private bool IsOtherGroup(HoneybeeSchema.Energy.IHvac hvac)
         {
@@ -589,53 +449,31 @@ namespace Honeybee.UI
             return isGroup;
         }
 
-        public Dictionary<Type, string> HVACTypesDic
-            = new Dictionary<Type, string>()
-            {
-                {  typeof(VAVEquipmentType), "Variable air volume (VAV)"},
-                {  typeof(PVAVEquipmentType), "Packaged variable air volume (PVAV)"},
-                {  typeof(PSZEquipmentType), "Packaged rooftop air conditioner (PSZ-AC)"},
-                {  typeof(PTACEquipmentType), "Packaged terminal air conditioner (PTAC) or heat pump (PTHP)"},
-                {  typeof(FurnaceEquipmentType), "Forced air furnace"},
-                {  typeof(FCUwithDOASEquipmentType), "DOAS with fan coil unit"},
-                {  typeof(VRFwithDOASEquipmentType), "DOAS with VRF"},
-                {  typeof(WSHPwithDOASEquipmentType), "DOAS with water source heat pumps"},
-                {  typeof(RadiantwithDOASEquipmentType), "DOAS with radiant systems"},
-                {  typeof(BaseboardEquipmentType), "Baseboard"},
-                {  typeof(EvaporativeCoolerEquipmentType), "Direct evaporative coolers"},
-                {  typeof(FCUEquipmentType),"Fan coil systems"},
-                {  typeof(GasUnitHeaterEquipmentType), "Gas unit heaters"},
-                {  typeof(ResidentialEquipmentType), "Residential equipments"},
-                {  typeof(VRFEquipmentType), "Variable refrigerant flow (VRF)"},
-                {  typeof(WSHPEquipmentType), "Water source heat pumps"},
-                {  typeof(WindowACEquipmentType), "Window AC"},
-                {  typeof(RadiantEquipmentType), "Radiant equipments"},
+      
 
-            };
+        //private Dictionary<Type, Type> HVACEquipmentTypeMapper
+        //  = new Dictionary<Type, Type>()
+        //  {
+        //        {  typeof(VAVEquipmentType), typeof(VAV)},
+        //        {  typeof(PVAVEquipmentType),typeof(PVAV)},
+        //        {  typeof(PSZEquipmentType), typeof(PSZ)},
+        //        {  typeof(PTACEquipmentType), typeof(PTAC)},
+        //        {  typeof(FurnaceEquipmentType), typeof(ForcedAirFurnace)},
+        //        {  typeof(FCUwithDOASEquipmentType), typeof(FCUwithDOASAbridged)},
+        //        {  typeof(VRFwithDOASEquipmentType), typeof(VRFwithDOASAbridged)},
+        //        {  typeof(WSHPwithDOASEquipmentType), typeof(WSHPwithDOASAbridged)},
+        //        {  typeof(RadiantwithDOASEquipmentType), typeof(RadiantwithDOASAbridged)},
+        //        {  typeof(BaseboardEquipmentType), typeof(Baseboard)},
+        //        {  typeof(EvaporativeCoolerEquipmentType), typeof(EvaporativeCooler)},
+        //        {  typeof(FCUEquipmentType),typeof(FCU)},
+        //        {  typeof(GasUnitHeaterEquipmentType), typeof(GasUnitHeater)},
+        //        {  typeof(ResidentialEquipmentType), typeof(Residential)},
+        //        {  typeof(VRFEquipmentType), typeof(VRF)},
+        //        {  typeof(WSHPEquipmentType), typeof(WSHP)},
+        //        {  typeof(WindowACEquipmentType), typeof(WindowAC)},
+        //        {  typeof(RadiantEquipmentType), typeof(Radiant)},
 
-        private Dictionary<Type, Type> HVACTypeMapper
-          = new Dictionary<Type, Type>()
-          {
-                {  typeof(VAVEquipmentType), typeof(VAV)},
-                {  typeof(PVAVEquipmentType),typeof(PVAV)},
-                {  typeof(PSZEquipmentType), typeof(PSZ)},
-                {  typeof(PTACEquipmentType), typeof(PTAC)},
-                {  typeof(FurnaceEquipmentType), typeof(ForcedAirFurnace)},
-                {  typeof(FCUwithDOASEquipmentType), typeof(FCUwithDOASAbridged)},
-                {  typeof(VRFwithDOASEquipmentType), typeof(VRFwithDOASAbridged)},
-                {  typeof(WSHPwithDOASEquipmentType), typeof(WSHPwithDOASAbridged)},
-                {  typeof(RadiantwithDOASEquipmentType), typeof(RadiantwithDOASAbridged)},
-                {  typeof(BaseboardEquipmentType), typeof(Baseboard)},
-                {  typeof(EvaporativeCoolerEquipmentType), typeof(EvaporativeCooler)},
-                {  typeof(FCUEquipmentType),typeof(FCU)},
-                {  typeof(GasUnitHeaterEquipmentType), typeof(GasUnitHeater)},
-                {  typeof(ResidentialEquipmentType), typeof(Residential)},
-                {  typeof(VRFEquipmentType), typeof(VRF)},
-                {  typeof(WSHPEquipmentType), typeof(WSHP)},
-                {  typeof(WindowACEquipmentType), typeof(WindowAC)},
-                {  typeof(RadiantEquipmentType), typeof(Radiant)},
-
-          };
+        //  };
 
         public Dictionary<string, string> HVACsDic => HVACUserFriendlyNamesDic;
 
@@ -696,6 +534,7 @@ namespace Honeybee.UI
                 { "PTAC","PTAC with no heat"},
                 { "PTHP","Packaged terminal heat pump (PTHP)"},
                 { "Furnace","Forced air furnace"},
+                { "Furnace_Electric", "Forced air electric furnace"  },
 
                 { "DOAS_FCU_Chiller_Boiler","DOAS with fan coil chiller with boiler"},
                 { "DOAS_FCU_Chiller_ASHP","DOAS with fan coil chiller with central air source heat pump"},
@@ -794,7 +633,7 @@ namespace Honeybee.UI
 
             };
 
-        private IEnumerable<string> GetHVACTypes(Type HVACType)
+        private IEnumerable<string> GetHVACEquipmentTypes(Type HVACType)
         {
             //var assem = typeof(VAVEquipmentType).Assembly;
             //var enumType = assem.GetType(HVACTypeName, false);
@@ -805,34 +644,21 @@ namespace Honeybee.UI
         }
 
 
-        public HoneybeeSchema.Energy.IHvac GreateHvac(HoneybeeSchema.Energy.IHvac existing = default)
+        public HoneybeeSchema.Energy.IHvac GreateHvac()
         {
-            
-            var sysType = this.HvacType;
-            var sysName = this.HvacEquipmentType;
             var vintage = Enum.Parse( typeof(Vintages), this.Vintage);
 
-            var hvacType = HVACTypeMapper[sysType];
-            //hvacType = existing == null ? hvacType : existing.GetType();
-            var id = Guid.NewGuid().ToString().Substring(0, 8);
-            id = $"{hvacType.Name}_{id}";
-            id = existing == null ? id : existing.Identifier;
-
-
-            var constructor = hvacType.GetConstructors().FirstOrDefault();
-            var parameters = constructor.GetParameters().Select(_ => _.HasDefaultValue ? _.DefaultValue : default).ToArray();
-            parameters[0] = id;
-            var obj = constructor.Invoke(parameters);
-            var sys = obj as HoneybeeSchema.Energy.IHvac;
+            var sys = _hvac;
+            var tp = sys.GetType();
 
             // assign Name
-            hvacType.GetProperty(nameof(dummy.DisplayName)).SetValue(sys, this.Name);
+            tp.GetProperty(nameof(dummy.DisplayName)).SetValue(sys, this.Name);
 
             // assign Vintage
-            hvacType.GetProperty(nameof(dummy.Vintage)).SetValue(sys, vintage);
+            tp.GetProperty(nameof(dummy.Vintage)).SetValue(sys, vintage);
 
             // equipment type 
-            var prop = hvacType.GetProperty(nameof(dummy.EquipmentType));
+            var prop = tp.GetProperty(nameof(dummy.EquipmentType));
             var hvacSysType = Enum.Parse(prop.PropertyType, this.HvacEquipmentType);
             prop.SetValue(sys, hvacSysType);
 
@@ -841,47 +667,45 @@ namespace Honeybee.UI
             // LatentHeatRecovery
             var lat = this.LatentHR;
 
-            if (HvacGroup == HvacGroups[0] && hvacType != typeof(PTAC))     // All air 
+            if (this.IsAllAirGroup(_hvac))     // All air 
             {
-                // PTAC doesn't have these settings
-
                 // economizer
                 var economizer = Enum.Parse(typeof(AllAirEconomizerType), this.Economizer);
-                hvacType.GetProperty(nameof(dummy.EconomizerType)).SetValue(sys, economizer);
+                tp.GetProperty(nameof(dummy.EconomizerType)).SetValue(sys, economizer);
 
                 // SensibleHeatRecovery
-                hvacType.GetProperty(nameof(dummy.SensibleHeatRecovery)).SetValue(sys, sen);
+                tp.GetProperty(nameof(dummy.SensibleHeatRecovery)).SetValue(sys, sen);
                 // LatentHeatRecovery
-                hvacType.GetProperty(nameof(dummy.LatentHeatRecovery)).SetValue(sys, lat);
+                tp.GetProperty(nameof(dummy.LatentHeatRecovery)).SetValue(sys, lat);
 
                 // DCV
-                hvacType.GetProperty(nameof(dummy.DemandControlledVentilation)).SetValue(sys, this.DcvChecked);
+                tp.GetProperty(nameof(dummy.DemandControlledVentilation)).SetValue(sys, this.DcvChecked);
 
             }
-            else if (HvacGroup == HvacGroups[1])      // DOAS
+            else if (this.IsDOASGroup(_hvac))      // DOAS
             {
                 // SensibleHeatRecovery
-                hvacType.GetProperty(nameof(dummy.SensibleHeatRecovery)).SetValue(sys, sen);
+                tp.GetProperty(nameof(dummy.SensibleHeatRecovery)).SetValue(sys, sen);
                 // LatentHeatRecovery
-                hvacType.GetProperty(nameof(dummy.LatentHeatRecovery)).SetValue(sys, lat);
+                tp.GetProperty(nameof(dummy.LatentHeatRecovery)).SetValue(sys, lat);
 
                 // DCV
-                hvacType.GetProperty(nameof(dummy.DemandControlledVentilation)).SetValue(sys, this.DcvChecked);
+                tp.GetProperty(nameof(dummy.DemandControlledVentilation)).SetValue(sys, this.DcvChecked);
 
                 //AvaliabilitySchedule
-                hvacType.GetProperty(nameof(dummyDoas.DoasAvailabilitySchedule)).SetValue(sys, this._scheduleID);
+                tp.GetProperty(nameof(dummyDoas.DoasAvailabilitySchedule)).SetValue(sys, this._scheduleID);
 
             }
             else if (IsRadiantSystem(sys))
             {
                 //RadiantFaceType
-                hvacType.GetProperty(nameof(dummyRad.RadiantFaceType)).SetValue(sys, this.RadiantFaceType);
+                tp.GetProperty(nameof(dummyRad.RadiantFaceType)).SetValue(sys, this.RadiantFaceType);
 
                 //SwitchOverTime
-                hvacType.GetProperty(nameof(dummyRad.SwitchOverTime)).SetValue(sys, this.SwitchTime);
+                tp.GetProperty(nameof(dummyRad.SwitchOverTime)).SetValue(sys, this.SwitchTime);
 
                 //MinimumOperationTime
-                hvacType.GetProperty(nameof(dummyRad.MinimumOperationTime)).SetValue(sys, this.MinOptTime);
+                tp.GetProperty(nameof(dummyRad.MinimumOperationTime)).SetValue(sys, this.MinOptTime);
 
             }
 
