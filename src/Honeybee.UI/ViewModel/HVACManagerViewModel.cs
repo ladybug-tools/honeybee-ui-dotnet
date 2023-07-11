@@ -128,9 +128,16 @@ namespace Honeybee.UI
             obj = obj ?? new IdealAirSystemAbridged(id, displayName: name);
             ShowHVACDialog(obj);
         });
-        public ICommand AddOpsHVACCommand => new RelayCommand<HoneybeeSchema.Energy.IHvac>((obj) => {
-            ShowHVACDialog(obj);
-        });
+        public ICommand AddOpsHVACCommand => new RelayCommand(
+            () => {
+                var dialog = new Dialog_OpsHVACSelector();
+                var sysType = dialog.ShowModal(_control);
+                if (sysType == null)
+                    return;
+          
+                ShowHVACDialog(sysType);
+            }
+            );
       
 
         public RelayCommand AddCommand => new RelayCommand(() =>
