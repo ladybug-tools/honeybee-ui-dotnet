@@ -54,7 +54,7 @@ namespace Honeybee.UI
             remove.Command = _vm.RemoveCommand;
 
            
-            var editT = new Button { Text = "Open Template" };
+            var editT = new Button { Text = "Edit IB" };
             editT.Command = _vm.EditDetailHVACTemplateCommand;
             editT.Visible = !_returnSelectedOnly;
 
@@ -96,12 +96,7 @@ namespace Honeybee.UI
             };
 
             gd.Height = 250;
-            gd.Columns.Add(new GridColumn
-            {
-                DataCell = new CheckBoxCell { Binding = Binding.Delegate<HVACViewData, bool?>(r => r.Editable) },
-                HeaderText = "Editable",
-                Sortable = true
-            });
+         
             gd.Columns.Add(new GridColumn
             {
                 DataCell = new TextBoxCell { Binding = Binding.Delegate<HVACViewData, string>(r => r.Name) },
@@ -118,7 +113,13 @@ namespace Honeybee.UI
                 Width = 250
             });
 
-           
+            gd.Columns.Add(new GridColumn
+            {
+                DataCell = new CheckBoxCell { Binding = Binding.Delegate<HVACViewData, bool?>(r => r.HasIB) },
+                HeaderText = "IB",
+                Sortable = true
+            });
+
             gd.Columns.Add(new GridColumn
             {
                 DataCell = new CheckBoxCell { Binding = Binding.Delegate<HVACViewData, bool?>(r => r.Locked) },
@@ -148,8 +149,8 @@ namespace Honeybee.UI
             var isNumber = false;
             switch (colName)
             {
-                case "Editable":
-                    sortFunc = (HVACViewData _) => _.Editable.ToString();
+                case "IB":
+                    sortFunc = (HVACViewData _) => _.HasIB.ToString();
                     break;
                 case "Name":
                     sortFunc = (HVACViewData _) => _.Name;

@@ -348,7 +348,7 @@ namespace Honeybee.UI
     internal class HVACViewData: ManagerViewDataBase
     {
         public string CType { get; }
-        public bool Editable { get; }
+        public bool HasIB { get; }
         public string Source { get; } = "Model";
         public bool Locked { get; }
         public HB.Energy.IHvac HVAC { get; }
@@ -371,17 +371,17 @@ namespace Honeybee.UI
             {
                 if (dHVAC.Specification == null)
                 {
-                    this.Editable = false;
+                    this.HasIB = false;
                 }
                 else
                 {
-                    this.Editable = dHVAC.Specification.ToString().Substring(0, 100).Contains("IsPlaceHolder");
+                    this.HasIB = dHVAC.Specification.ToString().Substring(0, 100).Contains("IsPlaceHolder");
                 }
                 
             }
             else
             {
-                this.Editable = true;
+                this.HasIB = false;
             }
 
             this.SearchableText = $"{this.Name}_{this.CType}";
