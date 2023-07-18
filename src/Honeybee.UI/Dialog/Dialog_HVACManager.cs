@@ -27,8 +27,12 @@ namespace Honeybee.UI
         {
             libSource.FillNulls();
 
-
             this._returnSelectedOnly = returnSelectedOnly;
+            if (this._returnSelectedOnly )
+            {
+                Title = $"Select a system - {DialogHelper.PluginName}";
+            }
+
             this._vm = new HVACManagerViewModel(libSource, this);
             Content = Init(out var gd);
             this._vm.GridControl = gd;
@@ -43,17 +47,20 @@ namespace Honeybee.UI
 
             var addNew = new Button { Text = "Add" };
             addNew.Command = _vm.AddCommand;
+            addNew.Visible = !this._returnSelectedOnly;
 
             var duplicate = new Button { Text = "Duplicate" };
             duplicate.Command = _vm.DuplicateCommand;
+            duplicate.Visible = !this._returnSelectedOnly;
 
             var edit = new Button { Text = "Edit" };
             edit.Command = _vm.EditCommand;
+            edit.Visible = !this._returnSelectedOnly;
 
             var remove = new Button { Text = "Remove" };
             remove.Command = _vm.RemoveCommand;
+            remove.Visible = !this._returnSelectedOnly;
 
-           
             var editT = new Button { Text = "Edit IB" };
             editT.Command = _vm.EditDetailHVACTemplateCommand;
             editT.Visible = !_returnSelectedOnly;
