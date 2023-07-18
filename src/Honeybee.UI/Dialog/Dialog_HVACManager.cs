@@ -98,6 +98,12 @@ namespace Honeybee.UI
             gd.Height = 250;
             gd.Columns.Add(new GridColumn
             {
+                DataCell = new CheckBoxCell { Binding = Binding.Delegate<HVACViewData, bool?>(r => r.Editable) },
+                HeaderText = "Editable",
+                Sortable = true
+            });
+            gd.Columns.Add(new GridColumn
+            {
                 DataCell = new TextBoxCell { Binding = Binding.Delegate<HVACViewData, string>(r => r.Name) },
                 HeaderText = "Name",
                 Sortable = true,
@@ -142,7 +148,9 @@ namespace Honeybee.UI
             var isNumber = false;
             switch (colName)
             {
-
+                case "Editable":
+                    sortFunc = (HVACViewData _) => _.Editable.ToString();
+                    break;
                 case "Name":
                     sortFunc = (HVACViewData _) => _.Name;
                     break;

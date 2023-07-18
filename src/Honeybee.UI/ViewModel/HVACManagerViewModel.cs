@@ -348,6 +348,7 @@ namespace Honeybee.UI
     internal class HVACViewData: ManagerViewDataBase
     {
         public string CType { get; }
+        public bool Editable { get; }
         public string Source { get; } = "Model";
         public bool Locked { get; }
         public HB.Energy.IHvac HVAC { get; }
@@ -365,6 +366,23 @@ namespace Honeybee.UI
             var type = c.GetType().GetProperty("EquipmentType")?.GetValue(c)?.ToString() ?? c.GetType().Name;
             this.CType = OpsHVACsViewModel.HVACUserFriendlyNamesDic.TryGetValue(type, out var userFriendly) ? userFriendly : type;
             this.HVAC = c;
+
+            if (c is HB.DetailedHVAC dHVAC )
+            {
+                if (dHVAC.Specification == null)
+                {
+                    this.Editable = false;
+                }
+                else
+                {
+                    this.Editable = dHVAC.Specification.ToString().Substring(0, 100).Contains("IsPlaceHolder");
+                }
+                
+            }
+            else
+            {
+                this.Editable = true;
+            }
 
             this.SearchableText = $"{this.Name}_{this.CType}";
 
