@@ -197,7 +197,7 @@ namespace Honeybee.UI
                 }
                 else
                 {
-                    Dialog_Message.Show(_control, $"Non-editable DetailedHVAC [{id}]!");
+                    Dialog_Message.Show(_control, $"Non-Ironbug DetailedHVAC [{id}]!");
                 }
 
                 return;
@@ -250,7 +250,7 @@ namespace Honeybee.UI
                 }
                 else
                 {
-                    Dialog_Message.Show(_control, $"Non-editable DetailedHVAC [{id}]!");
+                    Dialog_Message.Show(_control, $"Non-Ironbug DetailedHVAC [{id}]!");
                 }
                 return;
             }
@@ -330,7 +330,7 @@ namespace Honeybee.UI
                 }
             }
 
-            Dialog_Message.Show(_control, $"Non-editable HVAC [{selectedObj.DisplayName ?? selectedObj.Identifier}]!");
+            Dialog_Message.Show(_control, $"Non-Ironbug DetailedHVAC [{selectedObj.DisplayName ?? selectedObj.Identifier}]!");
 
         });
 
