@@ -198,17 +198,15 @@ namespace Honeybee.UI
 
                 return;
             }
+
+
             var dup = selected.HVAC.Duplicate() as HB.Energy.IHvac;
             var name = $"{dup.DisplayName ?? dup.Identifier}_dup";
             dup.Identifier = Guid.NewGuid().ToString().Substring(0, 5);
             dup.DisplayName = name;
 
-            
-            else
-            {
-                ShowHVACDialog(dup);
-            }
-     
+            ShowHVACDialog(dup);
+
 
         });
 
