@@ -184,32 +184,31 @@ namespace Honeybee.UI
                 MessageBox.Show(_control, "Nothing is selected to duplicate!");
                 return;
             }
-           
+
             if (selected.HVAC is DetailedHVAC dt)
             {
-                // Identifier of DetailedHVAC should always match the GHDoc GUID so that the plugin could find the correct GHDoc to open and edit.
-                var id = dt.Identifier;
-                var isGUID = Guid.TryParse(id, out var docID);
-                if (isGUID)
+                if (ValidatePlaceholder(dt))
                 {
                     (_control as Dialog)?.Close();
-                    DuplicateDetailedHVAC?.Invoke(docID);
-                }
-                else
+                    DuplicateIBDoc?.Invoke(dt);
+                }else
                 {
-                    Dialog_Message.Show(_control, $"Non-Ironbug DetailedHVAC [{id}]!");
+                    Dialog_Message.Show(_control, $"Non-Ironbug DetailedHVAC [{dt.Identifier}]!");
                 }
 
                 return;
             }
-
-
             var dup = selected.HVAC.Duplicate() as HB.Energy.IHvac;
             var name = $"{dup.DisplayName ?? dup.Identifier}_dup";
             dup.Identifier = Guid.NewGuid().ToString().Substring(0, 5);
             dup.DisplayName = name;
 
-            ShowHVACDialog(dup);
+            
+            else
+            {
+                ShowHVACDialog(dup);
+            }
+     
 
         });
 
@@ -240,17 +239,14 @@ namespace Honeybee.UI
             }
             else if (dup is DetailedHVAC dt)
             {
-                // Identifier of DetailedHVAC should always match the GHDoc GUID so that the plugin could find the correct GHDoc to open and edit.
-                var id = dt.Identifier;
-                var isGUID = Guid.TryParse(id, out var docID);
-                if (isGUID)
+                if (ValidatePlaceholder(dt))
                 {
                     (_control as Dialog)?.Close();
-                    EditDetailedHVAC?.Invoke(docID);
+                    EditDetailedHVAC?.Invoke(dt);
                 }
                 else
                 {
-                    Dialog_Message.Show(_control, $"Non-Ironbug DetailedHVAC [{id}]!");
+                    Dialog_Message.Show(_control, $"Non-Ironbug DetailedHVAC [{dt.Identifier}]!");
                 }
                 return;
             }
@@ -286,24 +282,13 @@ namespace Honeybee.UI
             if (res != DialogResult.Yes)
                 return;
 
-            if (selected.HVAC is DetailedHVAC dt)
-            {
-                // Identifier of DetailedHVAC should always match the GHDoc GUID so that the plugin could find the correct GHDoc to open and edit.
-                var id = dt.Identifier;
-                var isGUID = Guid.TryParse(id, out var docID);
-                if (isGUID)
-                {
-                    RemoveDetailedHVAC?.Invoke(docID);
-                }
-            }
-
             DeleteUserData(selected);
             ResetDataCollection();
 
         });
 
 
-        public RelayCommand EditDetailHVACTemplateCommand => new RelayCommand(() =>
+        public RelayCommand EditIBSystemCommand => new RelayCommand(() =>
         {
             var selected = this.SelectedData;
             if (selected == null)
@@ -319,13 +304,10 @@ namespace Honeybee.UI
             var lib = _modelEnergyProperties;
             if (dup is DetailedHVAC dt)
             {
-                // Identifier of DetailedHVAC should always match the GHDoc GUID so that the plugin could find the correct GHDoc to open and edit.
-                var id = dt.Identifier;
-                var isGUID = Guid.TryParse(id, out var docID);
-                if (isGUID)
+                if (ValidatePlaceholder(dt))
                 {
                     (_control as Dialog)?.Close();
-                    EditDetailedHVACTemplate?.Invoke(docID);
+                    EditIBDoc?.Invoke(dt);
                     return;
                 }
             }
@@ -334,13 +316,12 @@ namespace Honeybee.UI
 
         });
 
-        public Func<Action,ButtonMenuItem> GetDetailedHVACItems { get; set; }
-        public Action<Guid> EditDetailedHVAC { get; set; }
-        public Action<Guid> EditDetailedHVACTemplate { get; set; }
-        public Action<Guid> RemoveDetailedHVAC { get; set; }
-        public Action<Guid> DuplicateDetailedHVAC { get; set; }
-
-       
+        
+        public static Func<Action,ButtonMenuItem> GetDetailedHVACItems { get; set; }
+        public static Func<DetailedHVAC, bool> ValidatePlaceholder { get; set; }
+        public static Action<DetailedHVAC> EditDetailedHVAC { get; set; }
+        public static Action<DetailedHVAC> EditIBDoc { get; set; }
+        public static Action<DetailedHVAC> DuplicateIBDoc { get; set; }
     }
 
 
@@ -367,21 +348,11 @@ namespace Honeybee.UI
             this.CType = OpsHVACsViewModel.HVACUserFriendlyNamesDic.TryGetValue(type, out var userFriendly) ? userFriendly : type;
             this.HVAC = c;
 
+            this.HasIB = false;
             if (c is HB.DetailedHVAC dHVAC )
             {
-                if (dHVAC.Specification == null)
-                {
-                    this.HasIB = false;
-                }
-                else
-                {
-                    this.HasIB = dHVAC.Specification.ToString().Substring(0, 100).Contains("IsPlaceHolder");
-                }
-                
-            }
-            else
-            {
-                this.HasIB = false;
+                if (HVACManagerViewModel.ValidatePlaceholder != null)
+                    this.HasIB = HVACManagerViewModel.ValidatePlaceholder.Invoke(dHVAC);
             }
 
             this.SearchableText = $"{this.Name}_{this.CType}";
