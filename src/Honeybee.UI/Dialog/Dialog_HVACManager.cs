@@ -77,8 +77,7 @@ namespace Honeybee.UI
             gd = GenGridView();
             layout.AddSeparateRow(controls: new[] { gd }, xscale: true, yscale: true);
 
-            gd.CellDoubleClick += (s, e) => _vm.EditCommand.Execute(null);
-
+            
             // counts
             var counts = new Label();
             counts.TextBinding.Bind(_vm, _ => _.Counts);
@@ -100,14 +99,21 @@ namespace Honeybee.UI
         {
             var gd = new GridView();
             gd.Bind(_ => _.DataStore, _vm, _ => _.GridViewDataCollection);
+           
             gd.SelectedItemsChanged += (s, e) => {
                 var sd = gd.SelectedItem as HVACViewData;
                 _vm.SelectedData = sd;
-                if (_editT != null && sd != null) 
+                if (_editT != null && sd != null)
                     _editT.Enabled = sd.HasIB;
-                else 
+                else
                     _editT.Enabled = false;
             };
+
+            if (!this._returnSelectedOnly)
+            {
+                gd.CellDoubleClick += (s, e) => _vm.EditCommand.Execute(null);
+            }
+          
 
             gd.Height = 250;
          
@@ -211,35 +217,25 @@ namespace Honeybee.UI
 
         public void SetGetDetailedHVACItemsFunc(Func<Action,ButtonMenuItem> func)
         {
-            if (DisableDetailedHVAC())
-                return;
             HVACManagerViewModel.GetDetailedHVACItems = func;
         }
 
         public void SetValidatePlaceholderFunc(Func<DetailedHVAC, bool> func)
         {
-            if (DisableDetailedHVAC())
-                return;
             HVACManagerViewModel.ValidatePlaceholder = func;
         }
 
         public void SetEditDetailedHVACFunc(Action<DetailedHVAC> func)
         {
-            if (DisableDetailedHVAC())
-                return;
             HVACManagerViewModel.EditDetailedHVAC = func;
         }
 
         public void SetEditIBFunc(Action<DetailedHVAC> func)
         {
-            if (DisableDetailedHVAC())
-                return;
             HVACManagerViewModel.EditIBDoc = func;
         }
         public void SetDuplicateIBFunc(Action<DetailedHVAC> func)
         {
-            if (DisableDetailedHVAC())
-                return;
             HVACManagerViewModel.DuplicateIBDoc = func;
         }
 
