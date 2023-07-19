@@ -11,6 +11,7 @@ namespace Honeybee.UI
     {
         private bool _returnSelectedOnly;
         private HVACManagerViewModel _vm { get; set; }
+        private Button _editT;
 
         private Dialog_HVACManager()
         {
@@ -61,9 +62,10 @@ namespace Honeybee.UI
             remove.Command = _vm.RemoveCommand;
             remove.Visible = !this._returnSelectedOnly;
 
-            var editT = new Button { Text = "Edit IB" };
-            editT.Command = _vm.EditDetailHVACTemplateCommand;
-            editT.Visible = !_returnSelectedOnly;
+            _editT = new Button { Text = "Edit IB" };
+            _editT.Command = _vm.EditIBSystemCommand;
+            _editT.Visible = !_returnSelectedOnly;
+            _editT.Enabled = false;
 
             layout.AddSeparateRow("HVACs:", null, addNew, duplicate, edit, remove);
 
@@ -89,7 +91,7 @@ namespace Honeybee.UI
 
             AbortButton = new Button { Text = "Cancel" };
             AbortButton.Click += (sender, e) => Close();
-            layout.AddSeparateRow(editT, null, DefaultButton, AbortButton);
+            layout.AddSeparateRow(_editT, null, DefaultButton, AbortButton);
 
             return layout;
         }
@@ -99,7 +101,12 @@ namespace Honeybee.UI
             var gd = new GridView();
             gd.Bind(_ => _.DataStore, _vm, _ => _.GridViewDataCollection);
             gd.SelectedItemsChanged += (s, e) => {
-                _vm.SelectedData = gd.SelectedItem as HVACViewData;
+                var sd = gd.SelectedItem as HVACViewData;
+                _vm.SelectedData = sd;
+                if (_editT != null && sd != null) 
+                    _editT.Enabled = sd.HasIB;
+                else 
+                    _editT.Enabled = false;
             };
 
             gd.Height = 250;
@@ -206,31 +213,35 @@ namespace Honeybee.UI
         {
             if (DisableDetailedHVAC())
                 return;
-            _vm.GetDetailedHVACItems = func;
-        }
-        public void SetEditDetailedHVACFunc(Action<Guid> func)
-        {
-            if (DisableDetailedHVAC())
-                return;
-            _vm.EditDetailedHVAC = func;
+            HVACManagerViewModel.GetDetailedHVACItems = func;
         }
 
-        public void SetEditDetailedHVACTemplateFunc(Action<Guid> func)
+        public void SetValidatePlaceholderFunc(Func<DetailedHVAC, bool> func)
         {
             if (DisableDetailedHVAC())
                 return;
-            _vm.EditDetailedHVACTemplate = func;
+            HVACManagerViewModel.ValidatePlaceholder = func;
         }
 
-        public void SetRemoveDetailedHVACFunc(Action<Guid> func)
-        {
-            _vm.RemoveDetailedHVAC = func;
-        }
-        public void SetDuplicateDetailedHVACFunc(Action<Guid> func)
+        public void SetEditDetailedHVACFunc(Action<DetailedHVAC> func)
         {
             if (DisableDetailedHVAC())
                 return;
-            _vm.DuplicateDetailedHVAC = func;
+            HVACManagerViewModel.EditDetailedHVAC = func;
         }
+
+        public void SetEditIBFunc(Action<DetailedHVAC> func)
+        {
+            if (DisableDetailedHVAC())
+                return;
+            HVACManagerViewModel.EditIBDoc = func;
+        }
+        public void SetDuplicateIBFunc(Action<DetailedHVAC> func)
+        {
+            if (DisableDetailedHVAC())
+                return;
+            HVACManagerViewModel.DuplicateIBDoc = func;
+        }
+
     }
 }
