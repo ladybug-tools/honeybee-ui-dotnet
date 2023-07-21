@@ -219,11 +219,6 @@ namespace Honeybee.UI
                 return;
             }
 
-            //if (selected.Locked)
-            //{
-            //    MessageBox.Show(_control, "You cannot edit an item of system library! Try to duplicate it first!");
-            //    return;
-            //}
 
             var selectedObj = selected.HVAC;
             var dup = selectedObj.Duplicate() as HB.Energy.IHvac;
@@ -239,14 +234,13 @@ namespace Honeybee.UI
             {
                 if (ValidatePlaceholder(dt))
                 {
-                    (_control as Dialog)?.Close();
-                    EditDetailedHVAC?.Invoke(dt);
+                    dialog_rc = EditDetailedHVAC?.Invoke(dt);
                 }
                 else
                 {
                     Dialog_Message.Show(_control, $"Non-Ironbug DetailedHVAC [{dt.Identifier}]!");
+                    return;
                 }
-                return;
             }
             else
             {
@@ -297,7 +291,6 @@ namespace Honeybee.UI
 
             var selectedObj = selected.HVAC;
             var dup = selectedObj.Duplicate() as HB.Energy.IHvac;
-            HB.Energy.IHvac dialog_rc = null;
 
             var lib = _modelEnergyProperties;
             if (dup is DetailedHVAC dt)
@@ -317,7 +310,7 @@ namespace Honeybee.UI
         
         public static Func<Action,ButtonMenuItem> GetDetailedHVACItems { get; set; }
         public static Func<DetailedHVAC, bool> ValidatePlaceholder { get; set; }
-        public static Action<DetailedHVAC> EditDetailedHVAC { get; set; }
+        public static Func<DetailedHVAC, DetailedHVAC> EditDetailedHVAC { get; set; }
         public static Action<DetailedHVAC> EditIBDoc { get; set; }
         public static Action<DetailedHVAC> DuplicateIBDoc { get; set; }
     }
