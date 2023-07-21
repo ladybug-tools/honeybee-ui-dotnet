@@ -205,36 +205,27 @@ namespace Honeybee.UI
         });
 
 
-        private bool DisableDetailedHVAC()
-        {
-            var disable = this._returnSelectedOnly;
-            if (disable)
-            {
-                Dialog_Message.Show(this, "DetailedHVAC cannot be used under the current selecting mode! Use the HVAC Manager to enable DetailedHVAC editor!");
-            }
-            return disable;
-        }
 
-        public void SetGetDetailedHVACItemsFunc(Func<Action,ButtonMenuItem> func)
+        public static void SetGetDetailedHVACItemsFunc(Func<Action,ButtonMenuItem> func)
         {
             HVACManagerViewModel.GetDetailedHVACItems = func;
         }
 
-        public void SetValidatePlaceholderFunc(Func<DetailedHVAC, bool> func)
+        public static void SetValidatePlaceholderFunc(Func<DetailedHVAC, bool> func)
         {
             HVACManagerViewModel.ValidatePlaceholder = func;
         }
 
-        public void SetEditDetailedHVACFunc(Action<DetailedHVAC> func)
+        public static void SetEditDetailedHVACFunc(Func<DetailedHVAC, DetailedHVAC> func)
         {
             HVACManagerViewModel.EditDetailedHVAC = func;
         }
 
-        public void SetEditIBFunc(Action<DetailedHVAC> func)
+        public static void SetEditIBFunc(Action<DetailedHVAC> func)
         {
             HVACManagerViewModel.EditIBDoc = func;
         }
-        public void SetDuplicateIBFunc(Action<DetailedHVAC> func)
+        public static void SetDuplicateIBFunc(Action<DetailedHVAC> func)
         {
             HVACManagerViewModel.DuplicateIBDoc = func;
         }
