@@ -1,4 +1,5 @@
 ﻿using Eto.Forms;
+using LadybugDisplaySchema;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace Honeybee.UI
         public string DisplayMessage { get; set; }
         public string DisplayFullMessage { get; set; }
         public bool IsParent { get; set; }
-        public bool IsGeometry { get; set; }
+        public bool HasGeometry { get; set; }
         public bool HasParentGeometry { get; set; }
 
         public HoneybeeSchema.ValidationError Error { get; }
@@ -22,18 +23,51 @@ namespace Honeybee.UI
             this.Error = error;
             this.ErrorCode = error.Code;
 
-            this.IsGeometry = !string.IsNullOrEmpty(error?.ElementId);
 
-            var parent = error?.TopParents?.FirstOrDefault() ?? error?.Parents?.FirstOrDefault();
-            this.HasParentGeometry = parent != null;
+            var parentChildMatch = error?.ElementId?.Select(
+                (_, i)
+                =>
+                {
+                    if (string.IsNullOrEmpty(_))
+                        return null;
 
-            var elemName = error?.ElementName ?? error?.ElementId;
-            this.DisplayMessage = $"{error.ElementType} ({elemName})";
-            if (this.HasParentGeometry)
+                    var m = new
+                    {
+                        eID = _,
+                        eName = error?.ElementName?.ElementAtOrDefault(i),
+                        topParent = error?.TopParents?.ElementAtOrDefault(i),
+                        parents = error?.Parents?.ElementAtOrDefault(i)
+                    };
+                    return m;
+                })
+                ?.Where(_ => _ != null)
+                ?.ToList();
+
+      
+            if (parentChildMatch!= null && parentChildMatch.Any())
             {
-                var pName = parent?.Name ?? parent.Id;
-                this.DisplayMessage = $"{parent.ParentType} ({pName}) --> {this.DisplayMessage}";
+                this.HasGeometry = true;
+
+                //create display message
+                var msgs = parentChildMatch.Select(_ =>
+                {
+                    var parent = _?.topParent ?? _?.parents?.FirstOrDefault();
+                    var hasParent = parent != null;
+                    var elemName = _.eName ?? _.eID;
+                    var msg = $"{error.ElementType} ({elemName})";
+                    if (hasParent) 
+                    {
+                    
+                        var pName = parent?.Name ?? parent.Id;
+                        msg = $"{parent.ParentType} ({pName}) --> {msg}";
+                    }
+                    return msg;
+                });
+                this.DisplayMessage = string.Join(System.Environment.NewLine, msgs);
+
+                this.HasParentGeometry = parentChildMatch.Any(_=>_.topParent != null || (_.parents?.Any()).GetValueOrDefault());
             }
+
            
             this.DisplayFullMessage = $"Error Code: {error?.Code} - {error?.ElementType}({error?.ExtensionType}){Environment.NewLine}{error?.Message}";
 
@@ -41,7 +75,7 @@ namespace Honeybee.UI
 
         public ErrorData(string fatalErrorMessage)
         {
-            var fatalError = new HoneybeeSchema.ValidationError("000000", "Fatal Error", HoneybeeSchema.ExtensionTypes.Core, HoneybeeSchema.ObjectTypes.Room, "FatalElementID", fatalErrorMessage);
+            var fatalError = new HoneybeeSchema.ValidationError("000000", "Fatal Error", HoneybeeSchema.ExtensionTypes.Core, HoneybeeSchema.ObjectTypes.Room, new List<string> { "FatalElementID" }, fatalErrorMessage);
             this.Error = fatalError;
             this.ErrorCode = fatalError.Code;
             this.DisplayMessage = fatalErrorMessage;
@@ -280,7 +314,7 @@ namespace Honeybee.UI
 
             if (this.SelectedError != null)
             {
-                this.ShowBtnEnabled = SelectedError.IsGeometry && _showAction != null;
+                this.ShowBtnEnabled = SelectedError.HasGeometry && _showAction != null;
                 this.ShowParentBtnEnabled = SelectedError.HasParentGeometry && _showAction != null;
                 this.MoreBtnEnabled = true;
             }
