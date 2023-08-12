@@ -45,8 +45,8 @@ namespace Honeybee.UI
             var idLabel = new Label() { Text = "ID" };
             var idDescription = HoneybeeSchema.SummaryAttribute.GetSummary(hbObjType, nameof(_hbObj.Identifier));
             idLabel.ToolTip = Utility.NiceDescription(idDescription);
-            layout.AddRow(idLabel, idPanel);
-
+            layout.AddRow(idLabel);
+            layout.AddRow(idPanel);
 
             layout.AddRow("Name");
             var name = new TextBox();
