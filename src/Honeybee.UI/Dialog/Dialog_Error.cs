@@ -33,7 +33,7 @@ namespace Honeybee.UI
 
         private Dialog_Error(HoneybeeSchema.ValidationReport report)
         {
-            this.Title = $"Validation Report - {DialogHelper.PluginName}";
+            this.Title = $"Error - {DialogHelper.PluginName}";
             this.Width = 800;
             this.Icon = DialogHelper.HoneybeeIcon;
 
