@@ -67,6 +67,20 @@ namespace Honeybee.UI
 
                 this.HasParentGeometry = parentChildMatch.Any(_=>_.topParent != null || (_.parents?.Any()).GetValueOrDefault());
             }
+            else
+            {
+                this.HasGeometry = (error.HelperGeometry?.Any()).GetValueOrDefault();
+                this.HasParentGeometry = error.TopParents?.FirstOrDefault() != null;
+                this.DisplayMessage = error.ErrorType;
+                if (this.HasParentGeometry)
+                {
+                    var parent = error.TopParents?.FirstOrDefault();
+                    var elemName = parent.Name ?? parent.Id;
+                    var msg = $"{parent.ParentType} ({elemName})";
+                    this.DisplayMessage = msg;
+                }
+                
+            }
 
            
             this.DisplayFullMessage = $"Error Code: {error?.Code} - {error?.ElementType}({error?.ExtensionType}){Environment.NewLine}{error?.Message}";
