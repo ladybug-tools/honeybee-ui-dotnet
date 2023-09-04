@@ -479,8 +479,12 @@ namespace Honeybee.UI
                             var newUserInput = mouseHoverValue_TB.Value;
                             var oldValue = _vm.SchDayValues[valueIndex];
 
-                            //preRec.Top = (float) Math.Max(newUserInput, oldValue);
-                            //preRec.Bottom = (float)Math.Min(newUserInput, oldValue);
+                            // reset the max of the current type limit
+                            if (newUserInput > _vm.UpperLimit)
+                                newUserInput = _vm.UpperLimit;
+                            else if (newUserInput < _vm.LowerLimit)
+                                newUserInput = _vm.LowerLimit;
+
                             _vm.SchDayValues[valueIndex] = newUserInput;
 
                             _scheduleDaydrawable.Update(canvas);
