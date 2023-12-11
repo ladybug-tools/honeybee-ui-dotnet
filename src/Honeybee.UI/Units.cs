@@ -26,8 +26,8 @@ namespace Honeybee.UI
             UValue,
             Density,
             SpecificEntropy,
-            Dimensionless
-
+            Dimensionless,
+            Pressure
         }
 
         public static Dictionary<UnitType, Enum> _customUnitSettings;
@@ -75,6 +75,7 @@ namespace Honeybee.UI
             { UnitType.UValue, HeatTransferCoefficientUnit.WattPerSquareMeterKelvin },
             { UnitType.Density, DensityUnit.KilogramPerCubicMeter },
             { UnitType.SpecificEntropy, SpecificEntropyUnit.JoulePerKilogramKelvin },
+            { UnitType.Pressure, PressureUnit.Pascal },
         };
 
         public static Dictionary<UnitType, Enum> IPUnits = new Dictionary<UnitType, Enum>() {
@@ -96,15 +97,8 @@ namespace Honeybee.UI
             { UnitType.UValue, HeatTransferCoefficientUnit.BtuPerSquareFootDegreeFahrenheit },
             { UnitType.Density, DensityUnit.PoundPerCubicFoot },
             { UnitType.SpecificEntropy, SpecificEntropyUnit.BtuPerPoundFahrenheit },
+            { UnitType.Pressure, PressureUnit.InchOfWaterColumn },
         };
-
-        //public static Dictionary<LengthUnit, HoneybeeSchema.Units> LengthMapper = new Dictionary<LengthUnit, HoneybeeSchema.Units>() { 
-        //    { LengthUnit.Foot, HoneybeeSchema.Units.Feet },
-        //    { LengthUnit.Inch, HoneybeeSchema.Units.Inches },
-        //    { LengthUnit.Meter, HoneybeeSchema.Units.Meters },
-        //    { LengthUnit.Centimeter, HoneybeeSchema.Units.Centimeters },
-        //    { LengthUnit.Millimeter, HoneybeeSchema.Units.Millimeters }
-        //};
 
         #region Units
 
@@ -232,14 +226,14 @@ namespace Honeybee.UI
             KilojoulePerKilogramKelvin,
         }
 
+        public enum PressureUnit
+        {
+            Pascal,
+            InchOfWaterColumn
+        }
+
         #endregion
 
-
-        //public static void U()
-        //{
-        //    //var a2 = UnitsNet.VolumeFlow.FromCubicFeetPerMinute(100) * UnitsNet.ReciprocalArea.FromInverseSquareFeet(20);
-        //    UnitsNet.Units.HeatTransferCoefficientUnit.WattPerSquareMeterKelvin.ThermalResistanceUnit.SquareMeterKelvinPerWatt.BtuPerSquareFootDegreeFahrenheit
-        //}
 
         public static void TryAddValue(this Dictionary<UnitType, Enum> CustomUnitSettings, UnitType unitType, Enum value)
         {

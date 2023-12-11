@@ -422,6 +422,29 @@ namespace Honeybee.UI
 
         #endregion
 
+        #region Pressure
+        private Units.PressureUnit _Pressure;
+        public Units.PressureUnit Pressure
+        {
+            get => _Pressure;
+            set { Set(() => _Pressure = value, nameof(Pressure)); PressureAbbv = GetAbbr(value); }
+        }
+
+        private bool _PressureEnabled = true;
+        public bool PressureEnabled
+        {
+            get => _PressureEnabled;
+            set => Set(() => _PressureEnabled = value, nameof(PressureEnabled));
+        }
+
+        private string _PressureAbbv;
+        public string PressureAbbv
+        {
+            get => _PressureAbbv;
+            set => Set(() => _PressureAbbv = value, nameof(PressureAbbv));
+        }
+
+        #endregion
 
         public UnitSettingViewModel(Dictionary<Units.UnitType, Enum> hardcodedUnits)
         {
@@ -465,7 +488,11 @@ namespace Honeybee.UI
             Density = DensityV;
             SpecificHeatEnabled = !GetUnitOrDefault<Units.SpecificEntropyUnit>(hardcodedUnits, Units.UnitType.SpecificEntropy, out var SpecificHeatV);
             SpecificHeat = SpecificHeatV;
-          
+
+
+            PressureEnabled = !GetUnitOrDefault<Units.PressureUnit>(hardcodedUnits, Units.UnitType.Pressure, out var pressureV);
+            Pressure = pressureV;
+
         }
 
         public void ApplySetting()
@@ -490,6 +517,7 @@ namespace Honeybee.UI
             Units.CustomUnitSettings.TryAddValue(Units.UnitType.Density, this.Density);
             Units.CustomUnitSettings.TryAddValue(Units.UnitType.SpecificEntropy, this.SpecificHeat);
 
+            Units.CustomUnitSettings.TryAddValue(Units.UnitType.Pressure, this.Pressure);
             Units.SaveUnits();
 
         }
@@ -589,6 +617,9 @@ namespace Honeybee.UI
                 Density = DensityV;
             if (this.SpecificHeatEnabled && dic[Units.UnitType.SpecificEntropy] is Units.SpecificEntropyUnit SpecificHeatV)
                 SpecificHeat = SpecificHeatV;
+
+            if (this.PressureEnabled && dic[Units.UnitType.Pressure] is Units.PressureUnit pV)
+                Pressure = pV;
         });
 
        
