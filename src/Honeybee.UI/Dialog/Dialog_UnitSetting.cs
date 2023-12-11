@@ -166,6 +166,13 @@ namespace Honeybee.UI
             SpecificHeatAbbr.TextBinding.Bind(vm, m => m.SpecificHeatAbbv);
             layout.AddSeparateRow("SpecificHeat:", SpecificHeatAbbr, null, SpecificHeat);
 
+            var Pressure = new EnumDropDown<Units.PressureUnit>() { Width = 170 };
+            Pressure.SelectedValueBinding.Bind(vm, m => m.Pressure);
+            Pressure.Bind(_ => _.Enabled, vm, m => m.PressureEnabled);
+            var PressureAbbr = new Label();
+            PressureAbbr.TextBinding.Bind(vm, m => m.PressureAbbv);
+            layout.AddSeparateRow("Pressure:", PressureAbbr, null, Pressure);
+
             //layout.EndGroup();
             //layout.DefaultPadding = new Padding(10);
             layout.DefaultSpacing = new Size(4, 4);
