@@ -13,6 +13,7 @@
         public readonly static string ByProgramType = "By Room Program Type";
         public readonly static string ByGlobalModifierSet = "By Global Modifier Set";
         public readonly static string NoControl = "No Control";
+        public readonly static string AlwaysOn = "Always On";
         public readonly static string NoSystem = "No System";
         public readonly static string ByGlobalSetting = "By Global Setting";
         public readonly static string ByParentSetting = "By Parent Setting";

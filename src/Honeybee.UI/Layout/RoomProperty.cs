@@ -316,8 +316,9 @@ namespace Honeybee.UI.View
             layout.DefaultPadding = new Padding(4);
             layout.BeginScrollable(BorderType.None);
 
-            layout.AddRow(GenVentCtrlPanel());
-            layout.AddRow(GenDlightCtrlPanel());
+            layout.AddRow(GenVentCtrlPanel("Window Ventilation Controls", _vm));
+            layout.AddRow(GenDlightCtrlPanel(_vm));
+            layout.AddRow(GenVentFanPanel(_vm));
             layout.AddRow(null);
 
             layout.EndScrollable();
@@ -1197,9 +1198,8 @@ namespace Honeybee.UI.View
             return gp;
         }
 
-        private GroupBox GenVentCtrlPanel()
+        private static GroupBox GenVentCtrlPanel(string gpTitle, RoomPropertyViewModel vm)
         {
-            var vm = this._vm;
 
             var layout = new DynamicLayout();
             layout.Bind((t) => t.Enabled, vm, v => v.VentilationControl.IsPanelEnabled);
@@ -1215,7 +1215,7 @@ namespace Honeybee.UI.View
             var wPerArea = new DoubleText();
             wPerArea.Width = 250;
             wPerArea.ReservedText = ReservedText.Varies;
-            wPerArea.SetDefault(_vm.VentilationControl.Default.MinIndoorTemperature);
+            wPerArea.SetDefault(vm.VentilationControl.Default.MinIndoorTemperature);
             wPerArea.TextBinding.Bind(vm, _ => _.VentilationControl.MinIndoorTemperature.NumberText);
             layout.AddRow(wPerAreaLabel);
             var unit = new Label();
@@ -1227,7 +1227,7 @@ namespace Honeybee.UI.View
 
             var radFraction = new DoubleText() { Width = 250 };
             radFraction.ReservedText = ReservedText.Varies;
-            radFraction.SetDefault(_vm.VentilationControl.Default.MaxIndoorTemperature);
+            radFraction.SetDefault(vm.VentilationControl.Default.MaxIndoorTemperature);
             radFraction.TextBinding.Bind(vm, _ => _.VentilationControl.MaxIndoorTemperature.NumberText);
             layout.AddRow(radFractionLabel);
             var unit2 = new Label();
@@ -1239,7 +1239,7 @@ namespace Honeybee.UI.View
 
             var visFraction = new DoubleText() { Width = 250 };
             visFraction.ReservedText = ReservedText.Varies;
-            visFraction.SetDefault(_vm.VentilationControl.Default.MinOutdoorTemperature);
+            visFraction.SetDefault(vm.VentilationControl.Default.MinOutdoorTemperature);
             visFraction.TextBinding.Bind(vm, _ => _.VentilationControl.MinOutdoorTemperature.NumberText);
             layout.AddRow(visFractionLabel);
             var unit3 = new Label();
@@ -1251,7 +1251,7 @@ namespace Honeybee.UI.View
 
             var airFraction = new DoubleText() { Width = 250 };
             airFraction.ReservedText = ReservedText.Varies;
-            airFraction.SetDefault(_vm.VentilationControl.Default.MaxOutdoorTemperature);
+            airFraction.SetDefault(vm.VentilationControl.Default.MaxOutdoorTemperature);
             airFraction.TextBinding.Bind(vm, _ => _.VentilationControl.MaxOutdoorTemperature.NumberText);
             layout.AddRow(airFractionLabel);
             var unit4 = new Label();
@@ -1263,7 +1263,7 @@ namespace Honeybee.UI.View
 
             var delta = new DoubleText() { Width = 250 };
             delta.ReservedText = ReservedText.Varies;
-            delta.SetDefault(_vm.VentilationControl.Default.DeltaTemperature);
+            delta.SetDefault(vm.VentilationControl.Default.DeltaTemperature);
             delta.TextBinding.Bind(vm, _ => _.VentilationControl.DeltaTemperature.NumberText);
             layout.AddRow(deltaLabel);
             var unit5 = new Label();
@@ -1281,20 +1281,19 @@ namespace Honeybee.UI.View
 
             layout.AddRow(null);
 
-
             var ltnByProgram = new CheckBox() { Text = ReservedText.NoControl };
             ltnByProgram.CheckedBinding.Bind(vm, _ => _.VentilationControl.IsCheckboxChecked);
 
-            var gp = new GroupBox() { Text = "Window Ventilation Controls" };
+            var gp = new GroupBox() { Text = gpTitle };
             gp.Content = new StackLayout(ltnByProgram, layout) { Spacing = 4, Padding = new Padding(4) };
 
             return gp;
         }
 
 
-        private GroupBox GenDlightCtrlPanel()
+        private static GroupBox GenDlightCtrlPanel(RoomPropertyViewModel vm)
         {
-            var vm = this._vm;
+            //var vm = this._vm;
 
             var layout = new DynamicLayout();
             layout.Bind((t) => t.Enabled, vm, v => v.DaylightingControl.IsPanelEnabled);
@@ -1321,7 +1320,7 @@ namespace Honeybee.UI.View
             var wPerArea = new DoubleText();
             wPerArea.Width = 250;
             wPerArea.ReservedText = ReservedText.Varies;
-            wPerArea.SetDefault(_vm.DaylightingControl.Default.IlluminanceSetpoint);
+            wPerArea.SetDefault(vm.DaylightingControl.Default.IlluminanceSetpoint);
             wPerArea.TextBinding.Bind(vm, _ => _.DaylightingControl.IlluminanceSetpoint.NumberText);
             layout.AddRow(wPerAreaLabel);
             var unit = new Label();
@@ -1333,7 +1332,7 @@ namespace Honeybee.UI.View
 
             var visFraction = new DoubleText();
             visFraction.ReservedText = ReservedText.Varies;
-            visFraction.SetDefault(_vm.DaylightingControl.Default.ControlFraction);
+            visFraction.SetDefault(vm.DaylightingControl.Default.ControlFraction);
             visFraction.TextBinding.Bind(vm, _ => _.DaylightingControl.ControlFraction.NumberText);
             layout.AddRow(visFractionLabel);
             layout.AddRow(visFraction);
@@ -1343,7 +1342,7 @@ namespace Honeybee.UI.View
 
             var airFraction = new DoubleText() { Width = 250 };
             airFraction.ReservedText = ReservedText.Varies;
-            airFraction.SetDefault(_vm.DaylightingControl.Default.MinPowerInput);
+            airFraction.SetDefault(vm.DaylightingControl.Default.MinPowerInput);
             airFraction.TextBinding.Bind(vm, _ => _.DaylightingControl.MinPowerInput.NumberText);
             layout.AddRow(airFractionLabel);
             var unit2 = new Label();
@@ -1355,7 +1354,7 @@ namespace Honeybee.UI.View
 
             var delta = new DoubleText();
             delta.ReservedText = ReservedText.Varies;
-            delta.SetDefault(_vm.DaylightingControl.Default.MinLightOutput);
+            delta.SetDefault(vm.DaylightingControl.Default.MinLightOutput);
             delta.TextBinding.Bind(vm, _ => _.DaylightingControl.MinLightOutput.NumberText);
             layout.AddRow(deltaLabel);
             layout.AddRow( delta);
@@ -1378,6 +1377,176 @@ namespace Honeybee.UI.View
 
             return gp;
         }
+
+
+        private static GroupBox GenVentFanPanel(RoomPropertyViewModel vm)
+        {
+            //var vm = this._vm;
+
+            var layout = new DynamicLayout();
+            layout.Bind((t) => t.Enabled, vm, v => v.VentilationFan.IsPanelEnabled);
+            layout.Bind((t) => t.Visible, vm, v => v.VentilationFan.IsPanelVisible);
+
+
+            layout.DefaultSpacing = new Size(4, 4);
+            //layout.DefaultPadding = new Padding(4);
+
+
+            var ventTypeLabel = new Label() { Text = "Ventilation Type:" };
+            ventTypeLabel.ToolTip = vm.VentilationFan.VentilationTypeDescription;
+
+            var VentilationTypeDP = new EnumDropDown<HB.VentilationType>() { Height = 24 };
+            VentilationTypeDP.SelectedValueBinding.Bind(vm, (_) => _.VentilationFan.VentilationType);
+            layout.AddRow(ventTypeLabel);
+            layout.AddRow(VentilationTypeDP);
+
+
+            var wPerAreaLabel = new Label() { Text = "Flow Rate:" };
+            wPerAreaLabel.ToolTip = vm.VentilationFan.FlowRateDescription;
+
+            var wPerArea = new DoubleText();
+            wPerArea.Width = 250;
+            wPerArea.ReservedText = ReservedText.Varies;
+            wPerArea.SetDefault(vm.VentilationFan.Default.FlowRate);
+            wPerArea.TextBinding.Bind(vm, _ => _.VentilationFan.FlowRate.NumberText);
+            layout.AddRow(wPerAreaLabel);
+            var unit = new Label();
+            unit.TextBinding.Bind(vm, _ => _.VentilationFan.FlowRate.DisplayUnitAbbreviation);
+            layout.AddSeparateRow(wPerArea, unit);
+
+
+            var radFractionLabel = new Label() { Text = "Pressure Rise:" };
+            radFractionLabel.ToolTip = vm.VentilationFan.PressureRiseDescription;
+
+            var radFraction = new DoubleText() { Width = 250 };
+            radFraction.ReservedText = ReservedText.Varies;
+            radFraction.SetDefault(vm.VentilationFan.Default.PressureRise);
+            radFraction.TextBinding.Bind(vm, _ => _.VentilationFan.PressureRise.NumberText);
+            layout.AddRow(radFractionLabel);
+            var unit2 = new Label();
+            unit2.TextBinding.Bind(vm, _ => _.VentilationFan.PressureRise.DisplayUnitAbbreviation);
+            layout.AddSeparateRow(radFraction, unit2);
+
+
+            var visFractionLabel = new Label() { Text = "Efficiency:" };
+            visFractionLabel.ToolTip = vm.VentilationFan.EfficiencyDescription;
+
+            var visFraction = new DoubleText() { Width = 250 };
+            visFraction.ReservedText = ReservedText.Varies;
+            visFraction.SetDefault(vm.VentilationFan.Default.Efficiency);
+            visFraction.TextBinding.Bind(vm, _ => _.VentilationFan.Efficiency.NumberText);
+            layout.AddRow(visFractionLabel);
+            layout.AddRow(visFraction);
+
+            var controlGp = GenVentFanCtrlPanel("Controls", vm);
+            layout.AddRow(controlGp);
+
+
+            layout.AddRow(null);
+
+
+            var ltnByProgram = new CheckBox() { Text = ReservedText.NoControl };
+            ltnByProgram.CheckedBinding.Bind(vm, _ => _.VentilationFan.IsCheckboxChecked);
+
+            var gp = new GroupBox() { Text = "Fan Ventilation Controls" };
+            gp.Content = new StackLayout(ltnByProgram, layout) { Spacing = 4, Padding = new Padding(4) };
+
+            return gp;
+        }
+
+        private static GroupBox GenVentFanCtrlPanel(string gpTitle, RoomPropertyViewModel vm)
+        {
+
+            var layout = new DynamicLayout();
+            layout.Bind((t) => t.Enabled, vm, v => v.VentilationFan.Control.IsPanelEnabled);
+            layout.Bind((t) => t.Visible, vm, v => v.VentilationFan.Control.IsPanelVisible);
+
+
+            layout.DefaultSpacing = new Size(4, 4);
+            //layout.DefaultPadding = new Padding(4);
+
+            var wPerAreaLabel = new Label() { Text = "MinIndoorTemperature:" };
+            wPerAreaLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.VentilationControlAbridged), nameof(_dummy.Properties.Energy.WindowVentControl.MinIndoorTemperature)));
+
+            var wPerArea = new DoubleText();
+            wPerArea.Width = 250;
+            wPerArea.ReservedText = ReservedText.Varies;
+            wPerArea.SetDefault(vm.VentilationFan.Control.Default.MinIndoorTemperature);
+            wPerArea.TextBinding.Bind(vm, _ => _.VentilationFan.Control.MinIndoorTemperature.NumberText);
+            layout.AddRow(wPerAreaLabel);
+            var unit = new Label();
+            unit.TextBinding.Bind(vm, _ => _.VentilationFan.Control.MinIndoorTemperature.DisplayUnitAbbreviation);
+            layout.AddSeparateRow(wPerArea, unit);
+
+            var radFractionLabel = new Label() { Text = "MaxIndoorTemperature:" };
+            radFractionLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.VentilationControlAbridged), nameof(_dummy.Properties.Energy.WindowVentControl.MaxIndoorTemperature)));
+
+            var radFraction = new DoubleText() { Width = 250 };
+            radFraction.ReservedText = ReservedText.Varies;
+            radFraction.SetDefault(vm.VentilationFan.Control.Default.MaxIndoorTemperature);
+            radFraction.TextBinding.Bind(vm, _ => _.VentilationFan.Control.MaxIndoorTemperature.NumberText);
+            layout.AddRow(radFractionLabel);
+            var unit2 = new Label();
+            unit2.TextBinding.Bind(vm, _ => _.VentilationFan.Control.MaxIndoorTemperature.DisplayUnitAbbreviation);
+            layout.AddSeparateRow(radFraction, unit2);
+
+            var visFractionLabel = new Label() { Text = "MinOutdoorTemperature:" };
+            visFractionLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.VentilationControlAbridged), nameof(_dummy.Properties.Energy.WindowVentControl.MinOutdoorTemperature)));
+
+            var visFraction = new DoubleText() { Width = 250 };
+            visFraction.ReservedText = ReservedText.Varies;
+            visFraction.SetDefault(vm.VentilationFan.Control.Default.MinOutdoorTemperature);
+            visFraction.TextBinding.Bind(vm, _ => _.VentilationFan.Control.MinOutdoorTemperature.NumberText);
+            layout.AddRow(visFractionLabel);
+            var unit3 = new Label();
+            unit3.TextBinding.Bind(vm, _ => _.VentilationFan.Control.MinOutdoorTemperature.DisplayUnitAbbreviation);
+            layout.AddSeparateRow(visFraction, unit3);
+
+            var airFractionLabel = new Label() { Text = "MaxOutdoorTemperature:" };
+            airFractionLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.VentilationControlAbridged), nameof(_dummy.Properties.Energy.WindowVentControl.MaxOutdoorTemperature)));
+
+            var airFraction = new DoubleText() { Width = 250 };
+            airFraction.ReservedText = ReservedText.Varies;
+            airFraction.SetDefault(vm.VentilationFan.Control.Default.MaxOutdoorTemperature);
+            airFraction.TextBinding.Bind(vm, _ => _.VentilationFan.Control.MaxOutdoorTemperature.NumberText);
+            layout.AddRow(airFractionLabel);
+            var unit4 = new Label();
+            unit4.TextBinding.Bind(vm, _ => _.VentilationFan.Control.MaxOutdoorTemperature.DisplayUnitAbbreviation);
+            layout.AddSeparateRow(airFraction, unit4);
+
+            var deltaLabel = new Label() { Text = "Delta Temperature:" };
+            deltaLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.VentilationControlAbridged), nameof(_dummy.Properties.Energy.WindowVentControl.DeltaTemperature)));
+
+            var delta = new DoubleText() { Width = 250 };
+            delta.ReservedText = ReservedText.Varies;
+            delta.SetDefault(vm.VentilationFan.Control.Default.DeltaTemperature);
+            delta.TextBinding.Bind(vm, _ => _.VentilationFan.Control.DeltaTemperature.NumberText);
+            layout.AddRow(deltaLabel);
+            var unit5 = new Label();
+            unit5.TextBinding.Bind(vm, _ => _.VentilationFan.Control.DeltaTemperature.DisplayUnitAbbreviation);
+            layout.AddSeparateRow(delta, unit5);
+
+            var schLabel = new Label() { Text = "Schedule:" };
+            schLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.VentilationControlAbridged), nameof(_dummy.Properties.Energy.WindowVentControl.Schedule)));
+
+            var sch = new Button();
+            sch.TextBinding.Bind(vm, _ => _.VentilationFan.Control.Schedule.BtnName);
+            sch.Bind(_ => _.Command, vm, _ => _.VentilationFan.Control.ScheduleCommand);
+            layout.AddRow(schLabel);
+            layout.AddRow(sch);
+
+            layout.AddRow(null);
+
+            var ltnByProgram = new CheckBox() { Text = ReservedText.AlwaysOn };
+            ltnByProgram.CheckedBinding.Bind(vm, _ => _.VentilationFan.Control.IsCheckboxChecked);
+
+            var gp = new GroupBox() { Text = gpTitle };
+            gp.Content = new StackLayout(ltnByProgram, layout) { Spacing = 4, Padding = new Padding(4) };
+
+            return gp;
+        }
+
+
 
         private GroupBox GenUserDataPanel()
         {
