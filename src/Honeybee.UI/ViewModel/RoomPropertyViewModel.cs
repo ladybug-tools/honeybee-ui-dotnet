@@ -227,6 +227,12 @@ namespace Honeybee.UI.ViewModel
             set { this.Set(() => _daylightingControl = value, nameof(DaylightingControl)); }
         }
 
+        private VentilationFanViewModel _ventilationFan;
+        public VentilationFanViewModel VentilationFan
+        {
+            get => _ventilationFan;
+            set { this.Set(() => _ventilationFan = value, nameof(VentilationFan)); }
+        }
 
         #endregion
 
@@ -436,7 +442,6 @@ namespace Honeybee.UI.ViewModel
             var allInMasses = rooms.Select(_ => _.Properties.Energy?.InternalMasses?.FirstOrDefault()).ToList();
             this.InternalMass = new InternalMassViewModel(libSource, allInMasses, (s) => _refHBObj.Properties.Energy.InternalMasses = new List<InternalMassAbridged>() { s as InternalMassAbridged });
 
-
         }
 
         public void UpdateControls(ModelProperties libSource, List<Room> rooms)
@@ -449,6 +454,9 @@ namespace Honeybee.UI.ViewModel
             var allDltCtrls = rooms.Select(_ => _.Properties.Energy?.DaylightingControl).Distinct().ToList();
             this.DaylightingControl = new DaylightingControlViewModel(libSource, allDltCtrls, (s) => _refHBObj.Properties.Energy.DaylightingControl = s);
 
+            // FanVentilation
+            var allFans = rooms.Select(_ => _.Properties.Energy?.Fans?.FirstOrDefault()).Distinct().ToList();
+            this.VentilationFan = new VentilationFanViewModel(libSource, allFans, (s) => _refHBObj.Properties.Energy.Fans = new List<VentilationFan>() { s });
         }
 
         public void UpdateUserData(List<Room> rooms)
@@ -520,6 +528,11 @@ namespace Honeybee.UI.ViewModel
                 // controls
                 item.Properties.Energy.WindowVentControl = this.VentilationControl.MatchObj(item.Properties.Energy.WindowVentControl);
                 item.Properties.Energy.DaylightingControl = this.DaylightingControl.MatchObj(item.Properties.Energy.DaylightingControl);
+                var fanCtrl = this.VentilationFan.MatchObj(item.Properties.Energy.Fans?.FirstOrDefault());
+                if (fanCtrl == null)
+                    item.Properties.Energy.Fans = null;
+                else
+                    item.Properties.Energy.Fans = new List<VentilationFan> { fanCtrl };
 
                 // User data
                 item.UserData = this.UserData.MatchObj(item.UserData);
