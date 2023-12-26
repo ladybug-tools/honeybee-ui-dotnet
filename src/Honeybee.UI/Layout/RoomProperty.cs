@@ -5,6 +5,8 @@ using HB = HoneybeeSchema;
 using Honeybee.UI.ViewModel;
 using System.Collections.Generic;
 using System;
+using HoneybeeSchema;
+using HoneybeeSchema.Energy;
 
 namespace Honeybee.UI.View
 {
@@ -58,7 +60,11 @@ namespace Honeybee.UI.View
         {
             this._vm.AmbientCoffConditionRoomPicker = RoomIDPicker;
         }
-      
+
+        public void SetDetailedHVACChecker(Func<DetailedHVAC, IHvac> systemChecker)
+        {
+            this._vm.DetailedHvacChecker = systemChecker;
+        }
         private void Init()
         {
             var vm = this._vm;
