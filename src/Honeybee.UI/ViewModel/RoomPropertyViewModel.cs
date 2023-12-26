@@ -1,8 +1,10 @@
 ﻿using Eto.Forms;
 using HoneybeeSchema;
+using HoneybeeSchema.Energy;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Windows.Input;
 
 
@@ -12,8 +14,10 @@ namespace Honeybee.UI.ViewModel
 
     public class RoomPropertyViewModel : ViewModelBase
     {
-      
-        
+
+        private static string _subSystemKey => "__SubHVAC__";
+        private static string _subSystemMapKey => "RoomInputMap";
+
 
         private Room _refHBObj;
   
@@ -323,17 +327,30 @@ namespace Honeybee.UI.ViewModel
             else
                 this.PropgramType.SetPropetyObj(pType);
 
-
+            var refHvacId = _refHBObj.Properties.Energy.Hvac;
             var hvac = _libSource.Energy.Hvacs?
                 .OfType<HoneybeeSchema.Energy.IHvac>()?
-                .FirstOrDefault(_ => _.Identifier == _refHBObj.Properties.Energy.Hvac); 
+                .FirstOrDefault(_ => _.Identifier == refHvacId); 
             this.HVAC = new CheckboxButtonViewModel((s) => _refHBObj.Properties.Energy.Hvac = s?.Identifier);
 
             // hvac
             if (rooms.Select(_ => _.Properties.Energy?.Hvac).Distinct().Count() > 1)
                 this.HVAC.SetBtnName(ReservedText.Varies);
             else
+            {
                 this.HVAC.SetPropetyObj(hvac);
+
+                // show custom HVAC display name with subsystem in DetailedHVAC-Ironbug template
+                var roomUserData = _refHBObj.UserDictionary;
+                if (hvac is DetailedHVAC dhvac && roomUserData.TryGetValue(_subSystemKey, out var subHvac))
+                {
+                    var subName = GetSubHVACName(dhvac, subHvac?.ToString());
+                    var displayName = string.IsNullOrEmpty(subName) ? $"{this.HVAC.BtnName} (*)" : $"{this.HVAC.BtnName} ({subName})";
+                    this.HVAC.SetBtnName(displayName);
+                }
+               
+            }
+              
 
 
             var shw = _libSource.Energy.Shws?
@@ -495,9 +512,6 @@ namespace Honeybee.UI.ViewModel
                 if (!this.PropgramType.IsVaries)
                     item.Properties.Energy.ProgramType = refObj.Properties.Energy.ProgramType;
 
-                if (!this.HVAC.IsVaries)
-                    item.Properties.Energy.Hvac = refObj.Properties.Energy.Hvac;
-
                 if (!this.SHW.IsVaries)
                     item.Properties.Energy.Shw = refObj.Properties.Energy.Shw;
 
@@ -538,6 +552,16 @@ namespace Honeybee.UI.ViewModel
                 item.UserData = this.UserData.MatchObj(item.UserData);
 
 
+                // keep HVAC here after User data, in case needs to assign sub-system to user data
+                if (!this.HVAC.IsVaries)
+                {
+                    item.Properties.Energy.Hvac = refObj.Properties.Energy.Hvac;
+                    if (refObj.UserDictionary.TryGetValue(_subSystemKey, out var subsys))
+                    {
+                        item.AddUserData(_subSystemKey, subsys);
+                    }
+                }
+
                 // validate
                 item.IsValid(true);
 
@@ -575,9 +599,51 @@ namespace Honeybee.UI.ViewModel
             var dialog_rc = dialog.ShowModal(this._control);
             if (dialog_rc != null)
             {
-                this.HVAC.SetPropetyObj(dialog_rc[0]);
+                var hvac = dialog_rc[0];
+                this.HVAC.SetPropetyObj(hvac);
+
+                if (DetailedHvacChecker!= null && hvac != null &&  hvac is DetailedHVAC dHvac)
+                {
+                    var subSys = DetailedHvacChecker?.Invoke(dHvac);
+                    if (subSys is IdealAirSystemAbridged)
+                    {
+                        // assign sub system Id to room's user data
+                        _refHBObj.AddUserData(_subSystemKey, subSys.Identifier);
+                        this.HVAC.SetBtnName(subSys.DisplayName);
+                    }
+                 
+                }
+               
             }
         });
+
+        private string GetSubHVACName(DetailedHVAC dhvac, string subSystemId)
+        {
+            var displayName = string.Empty;
+
+            if (!dhvac.UserDictionary.TryGetValue(_subSystemMapKey, out var subSystemMapDic))
+                return displayName;
+
+            var subId = string.Empty;
+            if (!string.IsNullOrEmpty(subSystemId))
+            {
+                var ids = subSystemId.Split('@');
+                if (dhvac.Identifier != ids[0])
+                    return displayName;
+
+                subId = ids[1];
+            }
+
+            var mapDic = HoneybeeSchema.Extension.ToDictionary(subSystemMapDic).ToDictionary(_ => _.Key, _ => _.Value.ToString());
+            displayName = mapDic.TryGetValue(subId, out var subName) ? subName : displayName;
+
+            return displayName;
+        }
+
+        public Func<DetailedHVAC, IHvac> DetailedHvacChecker { get; set; }
+
+
+
 
         public ICommand RoomSHWCommand => new RelayCommand(() =>
         {
