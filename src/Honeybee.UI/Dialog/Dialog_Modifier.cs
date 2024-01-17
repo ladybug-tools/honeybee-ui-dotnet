@@ -114,7 +114,15 @@ namespace Honeybee.UI
                 {
                     var numberTB = new MaskedTextBox();
                     numberTB.Provider = new NumericMaskedTextProvider() { AllowDecimal = true };
-                    numberTB.TextBinding.Bind(() => numberValue.ToString(), (v) => item.SetValue(hbObj, Convert.ChangeType(v, type)));
+                    numberTB.TextBinding.Bind(
+                        () => numberValue.ToString(),
+                        (v) => {
+                            if (v.StartsWith("."))
+                                v = $"0{v}";
+                            double.TryParse(v, out var num);
+                            item.SetValue(hbObj, num);
+                        } 
+                    );
                     panel.AddRow(label, numberTB);
                 }
                 else if (value is int intValue)
