@@ -7,7 +7,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>UI library build with Eto Forms for editing Honeybee Schema (DotNet) on both Windows and Mac system.</Description>
     <PackageLicenseExpression>AGPL-3.0-only</PackageLicenseExpression>
-    <Copyright>Copyright © 2023 Ladybug Tools LLC</Copyright>
+    <Copyright>Copyright © 2024 Ladybug Tools LLC</Copyright>
     <PackageProjectUrl>https://github.com/ladybug-tools/honeybee-ui-dotnet</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ladybug-tools/honeybee-ui-dotnet</RepositoryUrl>
     <Version>0.0.0.1</Version>
@@ -24,8 +24,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="HoneybeeSchema" Version="1.55.0.1" />
-    <PackageReference Include="LadybugDisplaySchema" Version="0.0.2.27" />
+    <PackageReference Include="LBT.Newtonsoft.Json" Version="12.0.3.23910" PrivateAssets="all"/>
+		<PackageReference Include="HoneybeeSchema" Version="1.55.0.2" />
+    <PackageReference Include="LadybugDisplaySchema" Version="0.0.2.28" />
     <PackageReference Include="Eto.Forms" Version="2.7.3" />
     <PackageReference Include="UnitsNet" Version="5.18.0" />
   </ItemGroup>
