@@ -5,7 +5,6 @@ using System.Linq.Expressions;
 using Eto.Drawing;
 using Eto.Forms;
 using HoneybeeSchema;
-using Newtonsoft.Json.Linq;
 
 namespace Honeybee.UI
 {
