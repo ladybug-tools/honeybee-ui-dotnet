@@ -34,7 +34,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="LBT.Newtonsoft.Json" Version="12.0.3.23910" PrivateAssets="all" />
-		<PackageReference Include="HoneybeeSchema" Version="1.55.0.2" />
+		<PackageReference Include="HoneybeeSchema" Version="1.55.0.3" />
 		<PackageReference Include="UnitsNet" Version="5.18.0" />
 		<PackageReference Include="RhinoCommon" Version="6.23.20055.13111" IncludeAssets="compile; build;" />
 	</ItemGroup>
