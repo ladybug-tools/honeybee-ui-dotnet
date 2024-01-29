@@ -541,6 +541,15 @@ namespace Honeybee.UI.ConsoleApp
                     dia.Show();
                 };
 
+
+                var projInfo = new Button() { Text = "Project Info" };
+                var pi = new HoneybeeSchema.ProjectInfo();
+                projInfo.Click += (s, e) =>
+                {
+                    var dia = new Dialog_ProjectInfo(pi);
+                    var rs = dia.ShowModal();
+                };
+
                 panel.AddSeparateRow(RoomPropertybtn, RoomPropertybtn2, null);
                 panel.AddSeparateRow(facePropertybtn, facePropertybtn2, null);
                 panel.AddSeparateRow(aptPropertybtn, aptPropertybtn2, null);
@@ -563,6 +572,7 @@ namespace Honeybee.UI.ConsoleApp
                 panel.AddSeparateRow(matchRooms_btn);
                 panel.AddSeparateRow(unit_btn, legend_btn);
                 panel.AddSeparateRow(errors_btn);
+                panel.AddSeparateRow(projInfo);
                 panel.AddSeparateRow(null);
                 Content = panel;
             }
