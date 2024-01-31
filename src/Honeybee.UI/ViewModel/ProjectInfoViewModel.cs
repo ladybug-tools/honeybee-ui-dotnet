@@ -255,7 +255,7 @@ namespace Honeybee.UI
             _hbObj = projectInfo;
             this.North = _hbObj.North;
             this.ClimateZone = _hbObj.AshraeClimateZone == 0 ? null : _hbObj.AshraeClimateZone.ToString();
-
+      
             _hbObj.WeatherUrls = _hbObj.WeatherUrls ?? new System.Collections.Generic.List<string>();
             _hbObj.WeatherUrls = _hbObj.WeatherUrls?.Distinct()?.ToList();
             this.WeatherFiles.Clear();
@@ -328,6 +328,11 @@ namespace Honeybee.UI
                 // add original weather files back
                 updatedObj.WeatherUrls = oldWeatherFiles;
                 Update(updatedObj);
+
+
+                var loc = updatedObj.Location;
+                var msg = $"Updated Location:{Environment.NewLine}{loc.City} (lat: {loc.Latitude}; loc: {loc.Longitude})";
+                Dialog_Message.ShowFullMessage(_control, msg);
             }
             catch (Exception e)
             {
