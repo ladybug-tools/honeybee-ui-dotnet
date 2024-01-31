@@ -159,23 +159,10 @@ namespace Honeybee.UI
 
                 
                 // Climate Zone
-                var climateZoneItems = Enum.GetValues(typeof(HB.ClimateZones)).Cast<HB.ClimateZones>().Select(_ => _.ToString()).ToList();
-                climateZoneItems.Insert(0, "<None>");
                 var climateZone = new DropDown();
-                climateZone.DataStore = climateZoneItems;
-                climateZone.SelectedValueBinding.Bind(
-                    Binding.Delegate(() =>
-                    {
-                        var o = _vm.ClimateZone.ToString();
-                        o = o == "0" ? "<None>" : o;
-                        return (object)o;
-                    },
-                    v =>
-                    {
-                        Enum.TryParse<HB.ClimateZones>(v?.ToString(), out var cz);
-                        _vm.ClimateZone = cz;
-                    }));
-
+                climateZone.SelectedValueBinding.Bind(_vm, _ => _.ClimateZone);
+                climateZone.Bind(_ => _.DataStore, _vm, _ => _.ClimateZones);
+                
                 var czl = new Label() { Text = "Climate Zone" };
                 czl.Bind(_ => _.ToolTip, _vm, _ => _.ClimateZoneTip);
                 gpPanel.AddSeparateRow(czl);
