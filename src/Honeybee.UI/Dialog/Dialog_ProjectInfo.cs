@@ -160,8 +160,8 @@ namespace Honeybee.UI
                 
                 // Climate Zone
                 var climateZone = new DropDown();
-                climateZone.SelectedValueBinding.Bind(_vm, _ => _.ClimateZone);
                 climateZone.Bind(_ => _.DataStore, _vm, _ => _.ClimateZones);
+                climateZone.SelectedValueBinding.Bind(_vm, _ => _.ClimateZone);
                 
                 var czl = new Label() { Text = "Climate Zone" };
                 czl.Bind(_ => _.ToolTip, _vm, _ => _.ClimateZoneTip);
