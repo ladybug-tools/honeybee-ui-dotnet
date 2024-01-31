@@ -92,10 +92,13 @@ namespace Honeybee.UI
         }
 
 
-        public ClimateZones ClimateZone
+        private IEnumerable<string> _ClimateZoneNames = Enum.GetNames(typeof(ClimateZones)).ToList();
+        public IEnumerable<string> ClimateZones => _ClimateZoneNames;
+        private string _climateZone;
+        public string ClimateZone
         {
-            get => _hbObj.AshraeClimateZone;
-            set => Set(() => _hbObj.AshraeClimateZone = value, nameof(ClimateZone));
+            get => _climateZone ?? ClimateZones.FirstOrDefault();
+            set => Set(() => _climateZone = value, nameof(ClimateZone));
         }
             
         private string _ClimateZoneTip;
@@ -250,17 +253,24 @@ namespace Honeybee.UI
         public void Update(HB.ProjectInfo projectInfo)
         {
             _hbObj = projectInfo;
+            this.North = _hbObj.North;
+            this.ClimateZone = _hbObj.AshraeClimateZone == 0 ? null : _hbObj.AshraeClimateZone.ToString();
+
             _hbObj.WeatherUrls = _hbObj.WeatherUrls ?? new System.Collections.Generic.List<string>();
             _hbObj.WeatherUrls = _hbObj.WeatherUrls?.Distinct()?.ToList();
+            this.WeatherFiles.Clear();
             this.WeatherFiles.AddRange(_hbObj.WeatherUrls);
 
             _hbObj.BuildingType = _hbObj.BuildingType ?? new System.Collections.Generic.List<BuildingTypes>();
             _hbObj.BuildingType = _hbObj.BuildingType?.Distinct()?.ToList();
+            this.BuildingTypes.Clear();
             this.BuildingTypes.AddRange(_hbObj.BuildingType.Select(_ => _.ToString()));
 
             _hbObj.Vintage = _hbObj.Vintage ?? new System.Collections.Generic.List<EfficiencyStandards>();
             _hbObj.Vintage = _hbObj.Vintage?.Distinct()?.ToList();
+            this.Vintages.Clear();
             this.Vintages.AddRange(_hbObj.Vintage.Select(_ => _.ToString()));
+
 
             _hbObj.Location = _hbObj.Location ?? new Location();
             var location = _hbObj.Location;
@@ -272,12 +282,13 @@ namespace Honeybee.UI
             location.TimeZone = location.TimeZone ?? new Autocalculate();
 
             if (location.TimeZone.Obj is double d)
-                this.TimeZone = d;
-            else
             {
-                this.IsTimeZoneAutoCalculate = true;
+                this.TimeZone = d;
+                this.IsTimeZoneAutoCalculate = false;
             }
-              
+            else 
+                this.IsTimeZoneAutoCalculate = true;
+
 
             this.Elevation = location.Elevation;
             this.StationId = location.StationId;
@@ -287,7 +298,7 @@ namespace Honeybee.UI
         public ProjectInfo GetHBObj()
         {
             var hbObj = _hbObj.DuplicateProjectInfo();
-
+            hbObj.AshraeClimateZone = Enum.TryParse<HB.ClimateZones>(this.ClimateZone, out var cz) ? cz : 0;
             hbObj.WeatherUrls = this.WeatherFiles.OfType<string>().ToList();
             hbObj.BuildingType = this.BuildingTypes.Select(_=>(BuildingTypes)Enum.Parse(typeof(BuildingTypes), _)).ToList();
             hbObj.Vintage = this.Vintages.Select(_ => (EfficiencyStandards)Enum.Parse(typeof(EfficiencyStandards), _)).ToList();
@@ -305,6 +316,8 @@ namespace Honeybee.UI
 
                 // only one weather file for getting location information
                 var dummy = this.GetHBObj();
+                dummy.AshraeClimateZone = 0;
+                dummy.Location = null;
                 var oldWeatherFiles = dummy.WeatherUrls;
                 dummy.WeatherUrls = new List<string> { sel };
 
@@ -318,7 +331,7 @@ namespace Honeybee.UI
             }
             catch (Exception e)
             {
-                Dialog_Message.Show(e);
+                Dialog_Message.Show(_control, e);
             }
            
         });
@@ -336,7 +349,7 @@ namespace Honeybee.UI
             }
             catch (Exception e)
             {
-                Dialog_Message.Show(e);
+                Dialog_Message.Show(_control, e);
             }
         });
 
@@ -352,7 +365,7 @@ namespace Honeybee.UI
             }
             catch (Exception e)
             {
-                Dialog_Message.Show(e);
+                Dialog_Message.Show(_control, e);
             }
         });
 
@@ -370,7 +383,7 @@ namespace Honeybee.UI
             }
             catch (Exception e)
             {
-                Dialog_Message.Show(e);
+                Dialog_Message.Show(_control, e);
             }
         });
 
@@ -386,7 +399,7 @@ namespace Honeybee.UI
             }
             catch (Exception e)
             {
-                Dialog_Message.Show(e);
+                Dialog_Message.Show(_control, e);
             }
         });
 
@@ -404,7 +417,7 @@ namespace Honeybee.UI
             }
             catch (Exception e)
             {
-                Dialog_Message.Show(e);
+                Dialog_Message.Show(_control, e);
             }
         });
 
@@ -420,7 +433,7 @@ namespace Honeybee.UI
             }
             catch (Exception e)
             {
-                Dialog_Message.Show(e);
+                Dialog_Message.Show(_control, e);
             }
         });
 
