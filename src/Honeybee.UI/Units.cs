@@ -27,7 +27,8 @@ namespace Honeybee.UI
             Density,
             SpecificEntropy,
             Dimensionless,
-            Pressure
+            Pressure,
+            EnergyDensity
         }
 
         public static Dictionary<UnitType, Enum> _customUnitSettings;
@@ -76,6 +77,7 @@ namespace Honeybee.UI
             { UnitType.Density, DensityUnit.KilogramPerCubicMeter },
             { UnitType.SpecificEntropy, SpecificEntropyUnit.JoulePerKilogramKelvin },
             { UnitType.Pressure, PressureUnit.Pascal },
+            { UnitType.EnergyDensity, EnergyDensityUnit.KilowattHourPerSquareMeter}
         };
 
         public static Dictionary<UnitType, Enum> IPUnits = new Dictionary<UnitType, Enum>() {
@@ -98,6 +100,7 @@ namespace Honeybee.UI
             { UnitType.Density, DensityUnit.PoundPerCubicFoot },
             { UnitType.SpecificEntropy, SpecificEntropyUnit.BtuPerPoundFahrenheit },
             { UnitType.Pressure, PressureUnit.InchOfWaterColumn },
+            { UnitType.EnergyDensity, EnergyDensityUnit.KilowattHourPerSquareMeter }
         };
 
         #region Units
@@ -169,7 +172,15 @@ namespace Honeybee.UI
         {
             KilowattPerSquareMeter,
             WattPerSquareFoot,
-            WattPerSquareMeter
+            WattPerSquareMeter,
+            BtuPerHourSquareFoot
+        }
+
+        public enum EnergyDensityUnit
+        {
+            WattHourPerSquareMeter,
+            KilowattHourPerSquareMeter,
+
         }
 
         public enum ReciprocalAreaUnit
@@ -187,7 +198,9 @@ namespace Honeybee.UI
         public enum SpeedUnit
         {
             FootPerMinute,
+            MilePerHour,
             MeterPerSecond,
+            KilometerPerHour,
         }
 
         public enum IlluminanceUnit
@@ -234,6 +247,12 @@ namespace Honeybee.UI
 
         #endregion
 
+        //private static void Test()
+        //{
+        //    //Honeybee.UI.Units.CustomUnitSettings
+        //    UnitsNet.Units.IrradiationUnit.KilowattHourPerSquareMeter
+        //    UnitsNet.HeatFlux.FromBtusPerHourSquareFoot
+        //}
 
         public static void TryAddValue(this Dictionary<UnitType, Enum> CustomUnitSettings, UnitType unitType, Enum value)
         {
