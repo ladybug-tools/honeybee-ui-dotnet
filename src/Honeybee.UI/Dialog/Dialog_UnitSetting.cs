@@ -94,6 +94,12 @@ namespace Honeybee.UI
             powerDensityAbbr.TextBinding.Bind(vm, m => m.PowerDensityAbbv);
             layout.AddSeparateRow("Power Density:", powerDensityAbbr, null, powerDensity);
 
+            var energyIntensity = new EnumDropDown<Units.IrradiationUnit>() { Width = 170 };
+            energyIntensity.SelectedValueBinding.Bind(vm, m => m.EnergyIntensity);
+            energyIntensity.Bind(_ => _.Enabled, vm, m => m.EnergyIntensityEnabled);
+            var energyIntensityAbbr = new Label();
+            energyIntensityAbbr.TextBinding.Bind(vm, m => m.EnergyIntensityAbbv);
+            layout.AddSeparateRow("Energy Intensity:", energyIntensityAbbr, null, energyIntensity);
 
             var PeopleDensity = new EnumDropDown<Units.ReciprocalAreaUnit>() { Width = 170 };
             PeopleDensity.SelectedValueBinding.Bind(vm, m => m.PeopleDensity);

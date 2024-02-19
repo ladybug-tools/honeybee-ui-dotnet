@@ -28,7 +28,7 @@ namespace Honeybee.UI
             SpecificEntropy,
             Dimensionless,
             Pressure,
-            EnergyDensity
+            EnergyIntensity
         }
 
         public static Dictionary<UnitType, Enum> _customUnitSettings;
@@ -77,7 +77,7 @@ namespace Honeybee.UI
             { UnitType.Density, DensityUnit.KilogramPerCubicMeter },
             { UnitType.SpecificEntropy, SpecificEntropyUnit.JoulePerKilogramKelvin },
             { UnitType.Pressure, PressureUnit.Pascal },
-            { UnitType.EnergyDensity, EnergyDensityUnit.KilowattHourPerSquareMeter}
+            { UnitType.EnergyIntensity, IrradiationUnit.KilowattHourPerSquareMeter}
         };
 
         public static Dictionary<UnitType, Enum> IPUnits = new Dictionary<UnitType, Enum>() {
@@ -100,7 +100,7 @@ namespace Honeybee.UI
             { UnitType.Density, DensityUnit.PoundPerCubicFoot },
             { UnitType.SpecificEntropy, SpecificEntropyUnit.BtuPerPoundFahrenheit },
             { UnitType.Pressure, PressureUnit.InchOfWaterColumn },
-            { UnitType.EnergyDensity, EnergyDensityUnit.KilowattHourPerSquareMeter }
+            { UnitType.EnergyIntensity, IrradiationUnit.KilowattHourPerSquareMeter }
         };
 
         #region Units
@@ -176,7 +176,7 @@ namespace Honeybee.UI
             BtuPerHourSquareFoot
         }
 
-        public enum EnergyDensityUnit
+        public enum IrradiationUnit
         {
             WattHourPerSquareMeter,
             KilowattHourPerSquareMeter,
