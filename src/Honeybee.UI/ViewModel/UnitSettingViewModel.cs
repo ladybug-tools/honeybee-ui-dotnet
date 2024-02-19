@@ -181,6 +181,29 @@ namespace Honeybee.UI
         }
         #endregion
 
+        #region EnergyIntensity
+        private Units.IrradiationUnit _EnergyIntensity = Units.IrradiationUnit.KilowattHourPerSquareMeter;
+        public Units.IrradiationUnit EnergyIntensity
+        {
+            get => _EnergyIntensity;
+            set { Set(() => _EnergyIntensity = value, nameof(EnergyIntensity)); EnergyIntensityAbbv = GetAbbr(value); }
+        }
+
+        private bool _EnergyIntensityEnabled = true;
+        public bool EnergyIntensityEnabled
+        {
+            get => _EnergyIntensityEnabled;
+            set => Set(() => _EnergyIntensityEnabled = value, nameof(EnergyIntensityEnabled));
+        }
+
+        private string _EnergyIntensityAbbv;
+        public string EnergyIntensityAbbv
+        {
+            get => _EnergyIntensityAbbv;
+            set => Set(() => _EnergyIntensityAbbv = value, nameof(EnergyIntensityAbbv));
+        }
+        #endregion
+
         #region AirFlowRate
         private Units.VolumeFlowUnit _AirFlowRate = Units.VolumeFlowUnit.CubicMeterPerSecond;
         public Units.VolumeFlowUnit AirFlowRate
@@ -465,6 +488,8 @@ namespace Honeybee.UI
             Energy = e;
             PowerDensityEnabled = !GetUnitOrDefault<Units.HeatFluxUnit>(hardcodedUnits, Units.UnitType.PowerDensity, out var pd);
             PowerDensity = pd;
+            EnergyIntensityEnabled = !GetUnitOrDefault<Units.IrradiationUnit>(hardcodedUnits, Units.UnitType.EnergyIntensity, out var ei);
+            EnergyIntensity = ei;
             AirFlowRateEnabled = !GetUnitOrDefault<Units.VolumeFlowUnit>(hardcodedUnits, Units.UnitType.AirFlowRate, out var af);
             AirFlowRate = af;
             PeopleDensityEnabled = !GetUnitOrDefault<Units.ReciprocalAreaUnit>(hardcodedUnits, Units.UnitType.PeopleDensity, out var pp);
@@ -505,6 +530,7 @@ namespace Honeybee.UI
             Units.CustomUnitSettings.TryAddValue(Units.UnitType.Power, this.Power);
             Units.CustomUnitSettings.TryAddValue(Units.UnitType.Energy, this.Energy);
             Units.CustomUnitSettings.TryAddValue(Units.UnitType.PowerDensity, this.PowerDensity);
+            Units.CustomUnitSettings.TryAddValue(Units.UnitType.EnergyIntensity, this.EnergyIntensity);
             Units.CustomUnitSettings.TryAddValue(Units.UnitType.AirFlowRate, this.AirFlowRate);
             Units.CustomUnitSettings.TryAddValue(Units.UnitType.PeopleDensity, this.PeopleDensity);
             Units.CustomUnitSettings.TryAddValue(Units.UnitType.AirFlowRateArea, this.AirFlowRateArea);
@@ -595,6 +621,8 @@ namespace Honeybee.UI
                 Energy = EnergyV;
             if (this.PowerDensityEnabled && dic[Units.UnitType.PowerDensity] is Units.HeatFluxUnit PowerDensityV)
                 PowerDensity = PowerDensityV;
+            if (this.EnergyIntensityEnabled && dic[Units.UnitType.EnergyIntensity] is Units.IrradiationUnit EnergyIntensityV)
+                EnergyIntensity = EnergyIntensityV;
             if (this.AirFlowRateEnabled && dic[Units.UnitType.AirFlowRate] is Units.VolumeFlowUnit AirFlowRateV)
                 AirFlowRate = AirFlowRateV;
             if (this.PeopleDensityEnabled && dic[Units.UnitType.PeopleDensity] is Units.ReciprocalAreaUnit PeopleDensityV)
