@@ -314,28 +314,34 @@ namespace Honeybee.UI
         internal static Dictionary<UnitType, Enum> LoadUnits()
         {
             var refDic = SIUnits;
+            var units = new Dictionary<UnitType, Enum>();
 
             if (System.IO.File.Exists(UnitSettingFile))
             {
                 var json = System.IO.File.ReadAllText(UnitSettingFile);
                 var objs = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<UnitType, int>>(json);
-                var units = new Dictionary<UnitType, Enum>();
 
-                foreach (var item in objs)
+                foreach (var item in refDic)
                 {
-                    var old = refDic[item.Key];
-                    var saved = Enum.ToObject(old.GetType(), item.Value) as Enum;
-                    units.Add(item.Key, saved);
+                    if(objs.TryGetValue(item.Key, out var userV))
+                    {
+                        var saved = Enum.ToObject(item.Value.GetType(), userV) as Enum;
+                        units.Add(item.Key, saved);
+                    }
+                    else
+                    {
+                        units.Add(item.Key, item.Value);
+                    }
                 }
 
-                return units;
             }
             else
             {
-
-                return refDic.ToDictionary(_ => _.Key, _ => _.Value);
+                units =  refDic.ToDictionary(_ => _.Key, _ => _.Value);
             }
-           
+
+          
+            return units;
 
 
         }
