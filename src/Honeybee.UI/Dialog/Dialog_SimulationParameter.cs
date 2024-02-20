@@ -39,9 +39,10 @@ namespace Honeybee.UI
 
 
                 //NorthAngle
-                var northNum = new NumericStepper() { };
+                var northNum = new NumericStepper() { Enabled = false};
                 northNum.ValueBinding.Bind( Binding.Delegate(() => param.NorthAngle, v => param.NorthAngle = v));
-                northNum.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SimulationParameter), nameof(param.NorthAngle)));
+                //northNum.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SimulationParameter), nameof(param.NorthAngle)));
+                northNum.ToolTip = "Edit this property via project information dialog";
 
 
                 //TerrainType
@@ -96,7 +97,7 @@ namespace Honeybee.UI
                 //topPanel.DefaultPadding = new Padding(5);
                 //var subLayout = new DynamicLayout();
                 //subLayout.Spacing = new Size(5, 5);
-                //topPanel.AddSeparateRow(new Label() { Text = "North:", Width = 150 }, northNum);
+                topPanel.AddSeparateRow(new Label() { Text = "North:", Width = 150 }, northNum);
                 topPanel.AddSeparateRow(new Label() { Text = "Terrain Type:", Width = 150 }, terrainTypeDP);
                 topPanel.AddSeparateRow(new Label() { Text = "Run Period:", Width = 150 }, d1, new Label() { Text = "To:" }, d2, null);
                 topPanel.AddSeparateRow(new Label() { Text = "Timesteps per Hour:", Width = 150 }, timeSteps_NS);
@@ -125,46 +126,53 @@ namespace Honeybee.UI
                     );
                 heating_NS.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SizingParameter), nameof(param.SizingParameter.HeatingFactor)));
 
-                //var effStdItems = Enum.GetValues(typeof(HB.EfficiencyStandards)).Cast<HB.EfficiencyStandards>().Select(_ => _.ToString()).ToList();
-                //effStdItems.Insert(0, "<None>");
-                //var effStdDP = new DropDown();
-                //effStdDP.DataStore = effStdItems;
-                //effStdDP.SelectedValueBinding.Bind(
-                //    Binding.Delegate(() =>
-                //    {
-                //        var o = param.SizingParameter?.EfficiencyStandard.ToString();
-                //        o = o == "0" ? "<None>" : o;
-                //        return (object)o;
-                //    },
-                //    v =>
-                //    {
-                //        Enum.TryParse<HB.EfficiencyStandards>(v?.ToString(), out var cz);
-                //        param.SizingParameter.EfficiencyStandard = cz;
-                //    }));
+                var effStdItems = Enum.GetValues(typeof(HB.EfficiencyStandards)).Cast<HB.EfficiencyStandards>().Select(_ => _.ToString()).ToList();
+                effStdItems.Insert(0, "<None>");
+                var effStdDP = new DropDown() { Enabled = false};
+                effStdDP.DataStore = effStdItems;
+                effStdDP.SelectedValueBinding.Bind(
+                    Binding.Delegate(() =>
+                    {
+                        var o = param.SizingParameter?.EfficiencyStandard.ToString();
+                        o = o == "0" ? "<None>" : o;
+                        return (object)o;
+                    },
+                    v =>
+                    {
+                        Enum.TryParse<HB.EfficiencyStandards>(v?.ToString(), out var cz);
+                        param.SizingParameter.EfficiencyStandard = cz;
+                    }));
                 //effStdDP.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SizingParameter), nameof(param.SizingParameter.EfficiencyStandard)));
+                effStdDP.ToolTip = "Edit this property via project information dialog";
 
+                var bldnType = new TextBox();
+                bldnType.TextBinding.Bind(Binding.Delegate(() => param.SizingParameter.BuildingType, v => param.SizingParameter.BuildingType = v));
+                bldnType.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SizingParameter), nameof(param.SizingParameter.BuildingType)));
 
-                //var bldnType = new TextBox();
-                //bldnType.TextBinding.Bind(Binding.Delegate(() => param.SizingParameter.BuildingType, v => param.SizingParameter.BuildingType = v));
-                //bldnType.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SizingParameter), nameof(param.SizingParameter.BuildingType)));
-
-                //var climateZoneItems = Enum.GetValues(typeof(HB.ClimateZones)).Cast<HB.ClimateZones>().Select(_=>_.ToString()).ToList();
-                //climateZoneItems.Insert(0, "<None>");
-                //var climateZone = new DropDown();
-                //climateZone.DataStore = climateZoneItems;
-                //climateZone.SelectedValueBinding.Bind(
-                //    Binding.Delegate(() => 
-                //        {
-                //            var o = param.SizingParameter?.ClimateZone.ToString();
-                //            o = o == "0" ? "<None>" : o;
-                //            return (object)o;
-                //        }, 
-                //        v => 
-                //        {
-                //            Enum.TryParse<HB.ClimateZones>(v?.ToString(), out var cz);
-                //            param.SizingParameter.ClimateZone = cz;
-                //        }));
+                var climateZoneItems = Enum.GetValues(typeof(HB.ClimateZones)).Cast<HB.ClimateZones>().Select(_ => _.ToString()).ToList();
+                climateZoneItems.Insert(0, "<None>");
+                var climateZone = new DropDown() { Enabled = false };
+                climateZone.DataStore = climateZoneItems;
+                climateZone.SelectedValueBinding.Bind(
+                    Binding.Delegate(() =>
+                        {
+                            var o = param.SizingParameter?.ClimateZone.ToString();
+                            o = o == "0" ? "<None>" : o;
+                            return (object)o;
+                        },
+                        v =>
+                        {
+                            Enum.TryParse<HB.ClimateZones>(v?.ToString(), out var cz);
+                            param.SizingParameter.ClimateZone = cz;
+                        }));
                 //climateZone.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SizingParameter), nameof(param.SizingParameter.CoolingFactor)));
+                climateZone.ToolTip = "Edit this property via project information dialog";
+
+                var applyES_CB = new CheckBox() { Enabled = false };
+                //plantSz_CB.CheckedBinding.Bind(simuCtrl, v => v.DoPlantSizing);
+                //applyES_CB.Text = "Apply Efficiency Standard (WIP)";
+                applyES_CB.ToolTip = "Have the building vintage specified in Project Information applied as an efficiency standard for all HVAC equipment in the model. Selecting this option will cause the OpenStudio translation process to perform an additional sizing calculation with EnergyPlus, which is needed since the default efficiencies of equipment vary depending on their size. THIS WILL SIGNIFICANTLY INCREASE TRANSLATION TIME TO OPENSTUDIO/ENERGYPLUS.";
+
 
                 var sizing_GB = new GroupBox();
                 sizing_GB.Font = new Font(sizing_GB.Font.Family, sizing_GB.Font.Size, FontStyle.Bold);
@@ -174,9 +182,10 @@ namespace Honeybee.UI
                 sizingLayout.Spacing = new Size(5, 5);
                 sizingLayout.AddRow(new Label() { Text = "Cooling Sizing Factor:", Width = 145 }, cooling_NS);
                 sizingLayout.AddRow("Heating Sizing Factor:", heating_NS);
-                //sizingLayout.AddRow("Efficiency Standards:", effStdDP);
-                //sizingLayout.AddRow("Bilding Type:", bldnType);
-                //sizingLayout.AddRow("Climate Zone:", climateZone);
+                sizingLayout.AddRow("Efficiency Standards:", effStdDP);
+                sizingLayout.AddRow("Bilding Type:", bldnType);
+                sizingLayout.AddRow("Climate Zone:", climateZone);
+                sizingLayout.AddRow("Apply Efficiency Standard (WIP)", applyES_CB);
                 sizing_GB.Content = sizingLayout;
                 layout.AddSeparateRow(sizing_GB);
 
