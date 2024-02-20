@@ -143,7 +143,7 @@ namespace Honeybee.UI
                 var removeVtg = new Button() { Text = "-", Width = 20, Height = 20 };
                 removeVtg.Command = _vm.RemoveVintageCommand;
 
-                var effl = new Label() { Text = "Efficiency Standards" };
+                var effl = new Label() { Text = "Building Vintage" };
                 effl.Bind(_ => _.ToolTip, _vm, _ => _.VintageTip);
                 infoLayout.AddSeparateRow(effl, null, addVtg, removeVtg);
                 infoLayout.AddSeparateRow(vtg);
