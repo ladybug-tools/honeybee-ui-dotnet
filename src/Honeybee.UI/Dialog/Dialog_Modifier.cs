@@ -2,6 +2,7 @@
 using Eto.Forms;
 using System;
 using System.Linq;
+using System.Reflection;
 using HB = HoneybeeSchema;
 
 namespace Honeybee.UI
@@ -70,7 +71,7 @@ namespace Honeybee.UI
             panel.DefaultPadding = new Padding(5);
 
             var hbObjType = hbObj.GetType();
-            var properties = hbObjType.GetProperties().Where(_ => _.CanWrite);
+            var properties = hbObjType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).Where(_ => _.CanWrite);
             if (properties.Count() > 15)
             {
                 panel.Height = 360;
@@ -91,6 +92,22 @@ namespace Honeybee.UI
 
             panel.AddRow("Name", name);
 
+
+            // add auto cal properties
+            var rProp = new TextBox() { Enabled = false };
+            rProp.Text = modifier.Reflectance.ToString();
+            panel.AddRow("Reflectance", rProp);
+
+            var tProp = new TextBox() { Enabled = false };
+            tProp.Text = modifier.Transmittance.ToString();
+            panel.AddRow("Transmittance", tProp);
+
+            var eProp = new TextBox() { Enabled = false };
+            eProp.Text = modifier.Emittance.ToString();
+            panel.AddRow("Emittance", eProp);
+
+          
+            // add editable properties
             foreach (var item in properties)
             {
                 if (item.Name == "Identifier" || item.Name == "Type" || item.Name == "DisplayName")
@@ -106,7 +123,6 @@ namespace Honeybee.UI
                 if (value is string stringvalue)
                 {
                     var textBox = new TextBox();
-                    //textBox.Text = stringvalue;
                     textBox.TextBinding.Bind(() => stringvalue, (v) => item.SetValue(hbObj, v));
                     panel.AddRow(label, textBox);
                 }
@@ -121,6 +137,7 @@ namespace Honeybee.UI
                                 v = $"0{v}";
                             double.TryParse(v, out var num);
                             item.SetValue(hbObj, num);
+                            UpdateAutoCalProps(hbObj);
                         } 
                     );
                     panel.AddRow(label, numberTB);
@@ -129,7 +146,12 @@ namespace Honeybee.UI
                 {
                     var numberTB = new NumericStepper();
                     numberTB.DecimalPlaces = 0;
-                    numberTB.Value = intValue;
+                    numberTB.ValueBinding.Bind(
+                        () => intValue, 
+                        (v) => { 
+                            item.SetValue(hbObj, v);
+                            UpdateAutoCalProps(hbObj);
+                        });
                     panel.AddRow(label, numberTB);
                 }
                 else if (Nullable.GetUnderlyingType(type) != null)
@@ -171,8 +193,19 @@ namespace Honeybee.UI
 
                 }
             }
+            
+            
             panel.AddRow(null, null);
             return panel;
+
+            void UpdateAutoCalProps(HB.ModifierBase md)
+            {
+                md.CalVisualValues();
+                rProp.Text = md.Reflectance >= 0 ? md.Reflectance.ToString() : "Not applicable";
+                tProp.Text = md.Transmittance >= 0 ? md.Transmittance.ToString() : "Not applicable";
+                eProp.Text = md.Emittance >= 0 ? md.Emittance.ToString() : "Not applicable";
+
+            }
         }
 
     }
