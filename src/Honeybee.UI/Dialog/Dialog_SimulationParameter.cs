@@ -38,14 +38,13 @@ namespace Honeybee.UI
                 AbortButton.Click += (sender, e) => Close();
 
 
-                var editViaProjInfo = "Overridden by project information";
 
                 //NorthAngle
                 //var northNum = new NumericStepper() { Enabled = false};
                 //northNum.ValueBinding.Bind( Binding.Delegate(() => param.NorthAngle, v => param.NorthAngle = v));
                 //northNum.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SimulationParameter), nameof(param.NorthAngle)));
-                var northNum = new Label() { Text = editViaProjInfo };
-                northNum.ToolTip = "Edit this property via project information dialog";
+                var northNum = new Label() { Text = param.NorthAngle.ToString() };
+                northNum.ToolTip = "North can be updated from project information";
 
 
                 //TerrainType
@@ -144,16 +143,18 @@ namespace Honeybee.UI
                 //        param.SizingParameter.EfficiencyStandard = cz;
                 //    }));
                 ////effStdDP.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SizingParameter), nameof(param.SizingParameter.EfficiencyStandard)));
-                
-                var effStdDP = new Label() { Text = editViaProjInfo };
-                effStdDP.ToolTip = "Edit this property via project information dialog";
+                var effstd = param.SizingParameter?.EfficiencyStandard.ToString();
+                effstd = effstd == "0" ? "None" : effstd;
+                var effStdDP = new Label() { Text = effstd };
+                effStdDP.ToolTip = "Efficiency standard can be updated from project information";
 
                 //var bldnType = new TextBox();
                 //bldnType.TextBinding.Bind(Binding.Delegate(() => param.SizingParameter.BuildingType, v => param.SizingParameter.BuildingType = v));
                 //bldnType.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SizingParameter), nameof(param.SizingParameter.BuildingType)));
-
-                var bldnType = new Label() { Text = editViaProjInfo };
-                bldnType.ToolTip = "Edit this property via project information dialog";
+                var bType = param.SizingParameter?.BuildingType;
+                bType = bType ?? "None";
+                var bldnType = new Label() { Text = bType };
+                bldnType.ToolTip = "Building type can be updated from project information";
 
                 //var climateZoneItems = Enum.GetValues(typeof(HB.ClimateZones)).Cast<HB.ClimateZones>().Select(_ => _.ToString()).ToList();
                 //climateZoneItems.Insert(0, "<None>");
@@ -173,13 +174,19 @@ namespace Honeybee.UI
                 //        }));
                 ////climateZone.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SizingParameter), nameof(param.SizingParameter.CoolingFactor)));
 
-                var climateZone = new Label() { Text = editViaProjInfo };
-                climateZone.ToolTip = "Edit this property via project information dialog";
+                var czone = param.SizingParameter?.ClimateZone.ToString();
+                czone = czone == "0" ? "None" : czone;
+                var climateZone = new Label() { Text = czone };
+                climateZone.ToolTip = "Climate zone can be updated from project information";
 
                 var applyES_CB = new CheckBox() { };
                 applyES_CB.CheckedBinding.Bind(param.SizingParameter, v => v.BypassEfficiencySizing);
                 //applyES_CB.Text = "Apply Efficiency Standard (WIP)";
-                applyES_CB.ToolTip = "Have the building vintage specified in Project Information applied as an efficiency standard for all HVAC equipment in the model. Selecting this option will cause the OpenStudio translation process to perform an additional sizing calculation with EnergyPlus, which is needed since the default efficiencies of equipment vary depending on their size. THIS WILL SIGNIFICANTLY INCREASE TRANSLATION TIME TO OPENSTUDIO/ENERGYPLUS.";
+                applyES_CB.ToolTip = "Have the building vintage specified in Project Information applied as an efficiency standard \n" +
+                    "for all HVAC equipment in the model. Selecting this option will cause the OpenStudio translation process to \n" +
+                    "perform an additional sizing calculation with EnergyPlus, which is needed since the default efficiencies of \n" +
+                    "equipment vary depending on their size. \n" +
+                    "THIS WILL SIGNIFICANTLY INCREASE TRANSLATION TIME TO OPENSTUDIO/ENERGYPLUS.";
 
 
                 var sizing_GB = new GroupBox();
@@ -193,7 +200,7 @@ namespace Honeybee.UI
                 sizingLayout.AddRow("Efficiency Standards:", effStdDP);
                 sizingLayout.AddRow("Building Type:", bldnType);
                 sizingLayout.AddRow("Climate Zone:", climateZone);
-                sizingLayout.AddRow("Bypass Efficiency Sizing:", applyES_CB);
+                sizingLayout.AddRow("Apply Efficiency Standard:", applyES_CB);
                 sizing_GB.Content = sizingLayout;
                 layout.AddSeparateRow(sizing_GB);
 
