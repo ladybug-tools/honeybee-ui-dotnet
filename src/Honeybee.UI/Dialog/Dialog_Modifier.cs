@@ -95,18 +95,16 @@ namespace Honeybee.UI
 
             // add auto cal properties
             var rProp = new TextBox() { Enabled = false };
-            rProp.Text = modifier.Reflectance.ToString();
             panel.AddRow("Reflectance", rProp);
 
             var tProp = new TextBox() { Enabled = false };
-            tProp.Text = modifier.Transmittance.ToString();
             panel.AddRow("Transmittance", tProp);
 
             var eProp = new TextBox() { Enabled = false };
-            eProp.Text = modifier.Emittance.ToString();
             panel.AddRow("Emittance", eProp);
 
-          
+            UpdateAutoCalProps(hbObj);
+
             // add editable properties
             foreach (var item in properties)
             {
