@@ -321,39 +321,11 @@ namespace Honeybee.UI
           
             this.Modifier = c;
             c.CalVisualValues();
-            switch (c)
-            {
-                case HB.Plastic p:
-                    this.Reflectance = Math.Round(p.Reflectance, 5).ToString();
-                    break;
-                case HB.Glass g:
-                    this.Transmittance = Math.Round(g.Transmittance, 5).ToString();
-                    this.Reflectance = Math.Round(g.Reflectance, 5).ToString();
-                    break;
-                case HB.BSDF b:
-                    this.Reflectance = Math.Round(b.Reflectance, 5).ToString();
-                    this.Transmittance = Math.Round(b.Transmittance, 5).ToString();
-                    break;
-                case HB.Glow glow:
-                    this.Emittance = Math.Round(glow.Emittance, 5).ToString();
-                    break;
-                case HB.Light l:
-                    this.Emittance = Math.Round(l.Emittance, 5).ToString();
-                    break;
-                case HB.Trans t:
-                    this.Transmittance = Math.Round(t.Transmittance, 5).ToString();
-                    this.Reflectance = Math.Round(t.Reflectance, 5).ToString();
-                    break;
-                case HB.Metal m:
-                    this.Reflectance = Math.Round(m.Reflectance, 5).ToString();
-                    break;
-                case HB.Mirror mr:
-                    this.Reflectance = Math.Round(mr.Reflectance, 5).ToString();
-                    break;
-                default:
-                    break;
-            }
-           
+
+            this.Reflectance = c.Reflectance >= 0 ? Math.Round(c.Reflectance, 5).ToString(): string.Empty;
+            this.Transmittance = c.Transmittance >=0 ? Math.Round(c.Transmittance, 5).ToString(): string.Empty;
+            this.Emittance = c.Emittance >= 0 ? Math.Round(c.Emittance, 5).ToString() : string.Empty;
+
             this.SearchableText = $"{this.Name}_{this.CType}";
 
             //check if system library
