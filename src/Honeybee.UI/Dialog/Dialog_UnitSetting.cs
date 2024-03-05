@@ -137,6 +137,14 @@ namespace Honeybee.UI
             IlluminanceAbbr.TextBinding.Bind(vm, m => m.IlluminanceAbbv);
             layout.AddSeparateRow("Illuminance:", IlluminanceAbbr, null, Illuminance);
 
+            var Luminance = new EnumDropDown<Units.LuminanceUnit>() { Width = 170 };
+            Luminance.SelectedValueBinding.Bind(vm, m => m.Luminance);
+            Luminance.Bind(_ => _.Enabled, vm, m => m.LuminanceEnabled);
+            var LuminanceAbbr = new Label();
+            LuminanceAbbr.TextBinding.Bind(vm, m => m.LuminanceAbbv);
+            layout.AddSeparateRow("Luminance:", LuminanceAbbr, null, Luminance);
+
+
             var Conductivity = new EnumDropDown<Units.ThermalConductivityUnit>() { Width = 170 };
             Conductivity.SelectedValueBinding.Bind(vm, m => m.Conductivity);
             Conductivity.Bind(_ => _.Enabled, vm, m => m.ConductivityEnabled);
@@ -178,6 +186,20 @@ namespace Honeybee.UI
             var PressureAbbr = new Label();
             PressureAbbr.TextBinding.Bind(vm, m => m.PressureAbbv);
             layout.AddSeparateRow("Pressure:", PressureAbbr, null, Pressure);
+
+            var Mass = new EnumDropDown<Units.MassUnit>() { Width = 170 };
+            Mass.SelectedValueBinding.Bind(vm, m => m.Mass);
+            Mass.Bind(_ => _.Enabled, vm, m => m.MassEnabled);
+            var MassAbbr = new Label();
+            MassAbbr.TextBinding.Bind(vm, m => m.MassAbbv);
+            layout.AddSeparateRow("Mass:", MassAbbr, null, Mass);
+
+            var MassFlow = new EnumDropDown<Units.MassFlowUnit>() { Width = 170 };
+            MassFlow.SelectedValueBinding.Bind(vm, m => m.MassFlow);
+            MassFlow.Bind(_ => _.Enabled, vm, m => m.MassFlowEnabled);
+            var MassFlowAbbr = new Label();
+            MassFlowAbbr.TextBinding.Bind(vm, m => m.MassFlowAbbv);
+            layout.AddSeparateRow("MassFlow:", MassFlowAbbr, null, MassFlow);
 
             //layout.EndGroup();
             //layout.DefaultPadding = new Padding(10);
