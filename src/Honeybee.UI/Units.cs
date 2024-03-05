@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnitsNet;
 
 namespace Honeybee.UI
 {
@@ -28,7 +29,10 @@ namespace Honeybee.UI
             SpecificEntropy,
             Dimensionless,
             Pressure,
-            EnergyIntensity
+            EnergyIntensity,
+            Mass,
+            MassFlow,
+            Luminance
         }
 
         public static Dictionary<UnitType, Enum> _customUnitSettings;
@@ -77,7 +81,10 @@ namespace Honeybee.UI
             { UnitType.Density, DensityUnit.KilogramPerCubicMeter },
             { UnitType.SpecificEntropy, SpecificEntropyUnit.JoulePerKilogramKelvin },
             { UnitType.Pressure, PressureUnit.Pascal },
-            { UnitType.EnergyIntensity, IrradiationUnit.KilowattHourPerSquareMeter}
+            { UnitType.EnergyIntensity, IrradiationUnit.KilowattHourPerSquareMeter},
+            { UnitType.Mass, MassUnit.Kilogram },
+            { UnitType.MassFlow, MassFlowUnit.KilogramPerSecond },
+            { UnitType.Luminance, LuminanceUnit.CandelaPerSquareMeter},
         };
 
         public static Dictionary<UnitType, Enum> IPUnits = new Dictionary<UnitType, Enum>() {
@@ -100,7 +107,10 @@ namespace Honeybee.UI
             { UnitType.Density, DensityUnit.PoundPerCubicFoot },
             { UnitType.SpecificEntropy, SpecificEntropyUnit.BtuPerPoundFahrenheit },
             { UnitType.Pressure, PressureUnit.InchOfWaterColumn },
-            { UnitType.EnergyIntensity, IrradiationUnit.KilowattHourPerSquareMeter }
+            { UnitType.EnergyIntensity, IrradiationUnit.KilobtuPerSquareFoot },
+            { UnitType.Mass, MassUnit.Pound },
+            { UnitType.MassFlow, MassFlowUnit.PoundPerSecond },
+            { UnitType.Luminance, LuminanceUnit.CandelaPerSquareFoot},
         };
 
         #region Units
@@ -142,7 +152,8 @@ namespace Honeybee.UI
           
             DegreeCelsius,
             DegreeFahrenheit,
-          
+            Kelvin
+
         }
         public enum PowerUnit
         {
@@ -150,7 +161,9 @@ namespace Honeybee.UI
             JoulePerHour,
             GigajoulePerHour,
             Kilowatt,
-            Watt
+            Watt,
+            KilobritishThermalUnitPerHour,
+            MechanicalHorsepower
         }
 
         public enum EnergyUnit
@@ -159,13 +172,27 @@ namespace Honeybee.UI
             BritishThermalUnit,
             Joule,
             KilowattHour,
-            WattHour
+            WattHour,
+            Kilojoule,
+            Megajoule,
+            Gigajoule,
+            MegabritishThermalUnit,
+            ThermImperial,
+            Calorie,
+            Kilocalorie
+
         }
 
         public enum VolumeFlowUnit
         {
             CubicFootPerMinute,
             CubicMeterPerSecond,
+            CubicFootPerSecond,
+            LiterPerSecond,
+            LiterPerHour,
+            UsGallonPerSecond,
+            UsGallonPerHour
+
         }
 
         public enum HeatFluxUnit
@@ -180,6 +207,8 @@ namespace Honeybee.UI
         {
             WattHourPerSquareMeter,
             KilowattHourPerSquareMeter,
+            KilobtuPerSquareFoot,
+            BtuPerSquareFoot
 
         }
 
@@ -201,6 +230,8 @@ namespace Honeybee.UI
             MilePerHour,
             MeterPerSecond,
             KilometerPerHour,
+            FootPerSecond,
+            Knot
         }
 
         public enum IlluminanceUnit
@@ -242,15 +273,43 @@ namespace Honeybee.UI
         public enum PressureUnit
         {
             Pascal,
-            InchOfWaterColumn
+            InchOfWaterColumn,
+            InchOfMercury,
+            Bar,
+            Atmosphere,
+            PoundForcePerSquareInch,
+            Torr
         }
+
+        public enum MassFlowUnit
+        {
+            KilogramPerSecond,
+            PoundPerSecond,
+            GramPerSecond
+        }
+
+        public enum MassUnit
+        {
+            Kilogram,
+            Pound,
+            Gram,
+            Tonne,
+            ShortTon
+        }
+
+        public enum LuminanceUnit
+        {
+            CandelaPerSquareMeter,
+            CandelaPerSquareFoot,
+        }
+
 
         #endregion
 
         //private static void Test()
         //{
         //    //Honeybee.UI.Units.CustomUnitSettings
-        //    UnitsNet.Units.IrradiationUnit.KilowattHourPerSquareMeter
+        //    UnitsNet.Units.VolumeFlowPerAreaUnit.cu
         //    UnitsNet.HeatFlux.FromBtusPerHourSquareFoot
         //}
 
@@ -291,11 +350,11 @@ namespace Honeybee.UI
             return quantity.As(toUnit);
         }
 
-        public static string GetAbbreviation(this Enum unit)
+        public static string GetAbbreviation(this Enum unitsNetEnum)
         {
-            var v = Convert.ToInt32(unit);
-            var t = unit.GetType();
-            return UnitsNet.UnitAbbreviationsCache.Default.GetDefaultAbbreviation(t, v);
+            var v = Convert.ToInt32(unitsNetEnum);
+            var t = unitsNetEnum.GetType();
+            return UnitsNetSetup.Default.UnitAbbreviations.GetDefaultAbbreviation(t, v);
         }
 
 

@@ -324,6 +324,31 @@ namespace Honeybee.UI
 
         #endregion
 
+        #region Luminance
+        private Units.LuminanceUnit _Luminance = Units.LuminanceUnit.CandelaPerSquareMeter;
+        public Units.LuminanceUnit Luminance
+        {
+            get => _Luminance;
+            set { Set(() => _Luminance = value, nameof(Luminance)); LuminanceAbbv = GetAbbr(value); }
+        }
+
+        private bool _LuminanceEnabled = true;
+        public bool LuminanceEnabled
+        {
+            get => _LuminanceEnabled;
+            set => Set(() => _LuminanceEnabled = value, nameof(LuminanceEnabled));
+        }
+
+        private string _LuminanceAbbv;
+        public string LuminanceAbbv
+        {
+            get => _LuminanceAbbv;
+            set => Set(() => _LuminanceAbbv = value, nameof(LuminanceAbbv));
+        }
+
+        #endregion
+
+
         #region Conductivity
         private Units.ThermalConductivityUnit _Conductivity;
         public Units.ThermalConductivityUnit Conductivity
@@ -469,6 +494,54 @@ namespace Honeybee.UI
 
         #endregion
 
+        #region Mass
+        private Units.MassUnit _Mass;
+        public Units.MassUnit Mass
+        {
+            get => _Mass;
+            set { Set(() => _Mass = value, nameof(Mass)); MassAbbv = GetAbbr(value); }
+        }
+
+        private bool _MassEnabled = true;
+        public bool MassEnabled
+        {
+            get => _MassEnabled;
+            set => Set(() => _MassEnabled = value, nameof(MassEnabled));
+        }
+
+        private string _MassAbbv;
+        public string MassAbbv
+        {
+            get => _MassAbbv;
+            set => Set(() => _MassAbbv = value, nameof(MassAbbv));
+        }
+
+        #endregion
+
+        #region MassFlow
+        private Units.MassFlowUnit _MassFlow;
+        public Units.MassFlowUnit MassFlow
+        {
+            get => _MassFlow;
+            set { Set(() => _MassFlow = value, nameof(MassFlow)); MassFlowAbbv = GetAbbr(value); }
+        }
+
+        private bool _MassFlowEnabled = true;
+        public bool MassFlowEnabled
+        {
+            get => _MassFlowEnabled;
+            set => Set(() => _MassFlowEnabled = value, nameof(MassFlowEnabled));
+        }
+
+        private string _MassFlowAbbv;
+        public string MassFlowAbbv
+        {
+            get => _MassFlowAbbv;
+            set => Set(() => _MassFlowAbbv = value, nameof(MassFlowAbbv));
+        }
+
+        #endregion
+
         public UnitSettingViewModel(Dictionary<Units.UnitType, Enum> hardcodedUnits)
         {
             LengthEnabled = !GetUnitOrDefault<Units.LengthUnit>(hardcodedUnits, Units.UnitType.Length, out var l);
@@ -517,6 +590,12 @@ namespace Honeybee.UI
 
             PressureEnabled = !GetUnitOrDefault<Units.PressureUnit>(hardcodedUnits, Units.UnitType.Pressure, out var pressureV);
             Pressure = pressureV;
+            LuminanceEnabled = !GetUnitOrDefault<Units.LuminanceUnit>(hardcodedUnits, Units.UnitType.Luminance, out var LuminanceV);
+            Luminance = LuminanceV;
+            MassEnabled = !GetUnitOrDefault<Units.MassUnit>(hardcodedUnits, Units.UnitType.Mass, out var MassV);
+            Mass = MassV;
+            MassFlowEnabled = !GetUnitOrDefault<Units.MassFlowUnit>(hardcodedUnits, Units.UnitType.MassFlow, out var MassFlowV);
+            MassFlow = MassFlowV;
 
         }
 
@@ -544,6 +623,9 @@ namespace Honeybee.UI
             Units.CustomUnitSettings.TryAddValue(Units.UnitType.SpecificEntropy, this.SpecificHeat);
 
             Units.CustomUnitSettings.TryAddValue(Units.UnitType.Pressure, this.Pressure);
+            Units.CustomUnitSettings.TryAddValue(Units.UnitType.Mass, this.Mass);
+            Units.CustomUnitSettings.TryAddValue(Units.UnitType.MassFlow, this.MassFlow);
+            Units.CustomUnitSettings.TryAddValue(Units.UnitType.Luminance, this.Luminance);
             Units.SaveUnits();
 
         }
@@ -551,9 +633,7 @@ namespace Honeybee.UI
         private static string GetAbbr(Enum u)
         {
             var unitsNetUnit = Units.ToUnitsNetEnum(u);
-            var v = Convert.ToInt32(unitsNetUnit);
-            var t = unitsNetUnit.GetType();
-            var abb = UnitsNet.UnitAbbreviationsCache.Default.GetDefaultAbbreviation(t, v);
+            var abb = Units.GetAbbreviation(unitsNetUnit);
             return $"[{abb}]";
         }
 
@@ -648,6 +728,12 @@ namespace Honeybee.UI
 
             if (this.PressureEnabled && dic[Units.UnitType.Pressure] is Units.PressureUnit pV)
                 Pressure = pV;
+            if (this.LuminanceEnabled && dic[Units.UnitType.Luminance] is Units.LuminanceUnit lm)
+                Luminance = lm; 
+            if (this.MassEnabled && dic[Units.UnitType.Mass] is Units.MassUnit ms)
+                Mass = ms;
+            if (this.MassFlowEnabled && dic[Units.UnitType.MassFlow] is Units.MassFlowUnit mf)
+                MassFlow = mf;
         });
 
        
