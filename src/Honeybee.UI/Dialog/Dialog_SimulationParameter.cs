@@ -126,62 +126,37 @@ namespace Honeybee.UI
                     );
                 heating_NS.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SizingParameter), nameof(param.SizingParameter.HeatingFactor)));
 
-                //var effStdItems = Enum.GetValues(typeof(HB.EfficiencyStandards)).Cast<HB.EfficiencyStandards>().Select(_ => _.ToString()).ToList();
-                //effStdItems.Insert(0, "<None>");
-                //var effStdDP = new DropDown() { Enabled = false};
-                //effStdDP.DataStore = effStdItems;
-                //effStdDP.SelectedValueBinding.Bind(
-                //    Binding.Delegate(() =>
-                //    {
-                //        var o = param.SizingParameter?.EfficiencyStandard.ToString();
-                //        o = o == "0" ? "<None>" : o;
-                //        return (object)o;
-                //    },
-                //    v =>
-                //    {
-                //        Enum.TryParse<HB.EfficiencyStandards>(v?.ToString(), out var cz);
-                //        param.SizingParameter.EfficiencyStandard = cz;
-                //    }));
-                ////effStdDP.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SizingParameter), nameof(param.SizingParameter.EfficiencyStandard)));
-                var effstd = param.SizingParameter?.EfficiencyStandard.ToString();
+              
+                var effstd = param.SizingParameter.EfficiencyStandard.ToString();
                 effstd = effstd == "0" ? "None" : effstd;
                 var effStdDP = new Label() { Text = effstd };
                 effStdDP.ToolTip = "Efficiency standard can be updated from project information";
 
-                //var bldnType = new TextBox();
-                //bldnType.TextBinding.Bind(Binding.Delegate(() => param.SizingParameter.BuildingType, v => param.SizingParameter.BuildingType = v));
-                //bldnType.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SizingParameter), nameof(param.SizingParameter.BuildingType)));
-                var bType = param.SizingParameter?.BuildingType;
+                var bType = param.SizingParameter.BuildingType;
                 bType = bType ?? "None";
                 var bldnType = new Label() { Text = bType };
                 bldnType.ToolTip = "Building type can be updated from project information";
 
-                //var climateZoneItems = Enum.GetValues(typeof(HB.ClimateZones)).Cast<HB.ClimateZones>().Select(_ => _.ToString()).ToList();
-                //climateZoneItems.Insert(0, "<None>");
-                //var climateZone = new DropDown() { Enabled = false };
-                //climateZone.DataStore = climateZoneItems;
-                //climateZone.SelectedValueBinding.Bind(
-                //    Binding.Delegate(() =>
-                //        {
-                //            var o = param.SizingParameter?.ClimateZone.ToString();
-                //            o = o == "0" ? "<None>" : o;
-                //            return (object)o;
-                //        },
-                //        v =>
-                //        {
-                //            Enum.TryParse<HB.ClimateZones>(v?.ToString(), out var cz);
-                //            param.SizingParameter.ClimateZone = cz;
-                //        }));
-                ////climateZone.ToolTip = Utility.NiceDescription(HB.SummaryAttribute.GetSummary(typeof(HB.SizingParameter), nameof(param.SizingParameter.CoolingFactor)));
-
-                var czone = param.SizingParameter?.ClimateZone.ToString();
+              
+                var czone = param.SizingParameter.ClimateZone.ToString();
                 czone = czone == "0" ? "None" : czone;
                 var climateZone = new Label() { Text = czone };
                 climateZone.ToolTip = "Climate zone can be updated from project information";
 
                 var applyES_CB = new CheckBox() { };
-                applyES_CB.CheckedBinding.Bind(param.SizingParameter, v => v.BypassEfficiencySizing);
-                //applyES_CB.Text = "Apply Efficiency Standard (WIP)";
+                applyES_CB.Enabled = effstd != "None";
+                applyES_CB.CheckedBinding.Bind(
+                    Binding.Delegate(() =>
+                        {
+                            var applyEs = !param.SizingParameter?.BypassEfficiencySizing;
+                            return effstd != "None" ? applyEs : false;
+                        },
+                        v =>
+                        {
+                            var applyEs = v.GetValueOrDefault();
+                            param.SizingParameter.BypassEfficiencySizing = !applyEs;
+                        }));
+
                 applyES_CB.ToolTip = "Have the building vintage specified in Project Information applied as an efficiency standard \n" +
                     "for all HVAC equipment in the model. Selecting this option will cause the OpenStudio translation process to \n" +
                     "perform an additional sizing calculation with EnergyPlus, which is needed since the default efficiencies of \n" +
@@ -197,9 +172,9 @@ namespace Honeybee.UI
                 sizingLayout.Spacing = new Size(5, 5);
                 sizingLayout.AddRow(new Label() { Text = "Cooling Sizing Factor:", Width = 145 }, cooling_NS);
                 sizingLayout.AddRow("Heating Sizing Factor:", heating_NS);
-                sizingLayout.AddRow("Efficiency Standards:", effStdDP);
                 sizingLayout.AddRow("Building Type:", bldnType);
                 sizingLayout.AddRow("Climate Zone:", climateZone);
+                sizingLayout.AddRow("Efficiency Standards:", effStdDP);
                 sizingLayout.AddRow("Apply Efficiency Standard:", applyES_CB);
                 sizing_GB.Content = sizingLayout;
                 layout.AddSeparateRow(sizing_GB);
