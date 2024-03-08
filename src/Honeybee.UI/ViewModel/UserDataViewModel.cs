@@ -95,7 +95,7 @@ namespace Honeybee.UI
             this.refObjProperty = UserDataItem.FromJObject(allUserData.FirstOrDefault()) ?? new List<UserDataItem>();
             
 
-            if (allUserData.Distinct().Count() == 1 && allUserData.FirstOrDefault() == null)
+            if (this.refObjProperty.Count() == 0 || this.refObjProperty.FirstOrDefault() == null)
             {
                 this.IsCheckboxChecked = true;
             }
@@ -116,10 +116,14 @@ namespace Honeybee.UI
             if (this.IsCheckboxChecked)
                 return null;
 
-            if (this.refObjProperty.Any(_=> _?.Key == ReservedText.Varies))
-                return obj;
+       
+            var dic = HoneybeeSchema.Extension.ToDictionary(obj);
 
-            var dic = UserItemsToDic(this.refObjProperty);
+            // filter <varies>
+            var refObj = this.refObjProperty.Where(_ => _?.Key != ReservedText.Varies);
+            foreach (var item in refObj)
+                dic.TryAddUpdate(item.Key, item.Value);
+
             return dic;
         }
 
