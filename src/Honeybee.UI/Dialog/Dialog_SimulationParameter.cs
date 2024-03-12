@@ -105,7 +105,7 @@ namespace Honeybee.UI
 
 
                 // SizingParameter
-                param.SizingParameter = param.SizingParameter ?? new HB.SizingParameter();
+                param.SizingParameter = param.SizingParameter ?? new HB.SizingParameter() { BypassEfficiencySizing = true };
                 // CoolingFactor
                 var cooling_NS = new NumericStepper();
                 cooling_NS.DecimalPlaces = 2;
