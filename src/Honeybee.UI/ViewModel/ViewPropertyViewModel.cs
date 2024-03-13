@@ -369,6 +369,9 @@ namespace Honeybee.UI.ViewModel
                 if (!this._isDisplayNameVaries)
                     item.DisplayName = refObj.DisplayName;
 
+                if (!this._isViewTypeVaries)
+                    item.ViewType = refObj.ViewType;
+
                 if (!this.Px.IsVaries)
                     item.Position[0] = refObj.Position[0];
 
