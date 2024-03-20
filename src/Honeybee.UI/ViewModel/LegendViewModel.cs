@@ -46,6 +46,22 @@ namespace Honeybee.UI
             set => Set(() => _legend2D.TextHeight = SetPxValue( value), nameof(TextHeight2D));
         }
 
+        private bool _noneColorEnabled;
+
+        public bool NoneColorEnabled
+        {
+            get { return _noneColorEnabled; }
+            set { _noneColorEnabled = value; }
+        }
+
+        private Eto.Drawing.Color _noneColor = new Eto.Drawing.Color(50,50,50);
+        public Eto.Drawing.Color NoneColor
+        {
+            get => _noneColor;
+            set => Set(() => _noneColor = value, nameof(NoneColor));
+        }
+
+
         #endregion
 
         #region 3D properties
@@ -189,6 +205,11 @@ namespace Honeybee.UI
         {
             _control = control;
             _legendParameter = parameter ?? new LB.LegendParameters(50, 100);
+
+            _noneColorEnabled = _legendParameter.HasNoneColor(out var nC);
+            if (_noneColorEnabled)
+                _noneColor = Eto.Drawing.Color.FromArgb(nC.R, nC.G, nC.B);
+
             var colors = _legendParameter.ColorsWithDefault.Select(_ => Eto.Drawing.Color.FromArgb(_.R, _.G, _.B));
             colors = colors.Reverse();
             var vd = colors.Select(_ => new ColorDataItem(_));
@@ -240,6 +261,13 @@ namespace Honeybee.UI
             var valid = Max >= Min;
             if (!valid)
                 Eto.Forms.MessageBox.Show(_control, "Max value has to be smaller than Min value");
+         
+
+            if (Max.Equals(Min) && NumSeg >= 2)
+            {
+                Eto.Forms.MessageBox.Show(_control, "Max equals min value, cannot draw a legend with multiple segment count. Change it to 1!");
+                return false;
+            }
             return valid;
         }
         private List<LB.Color> GetColors()
@@ -254,6 +282,8 @@ namespace Honeybee.UI
         {
             var lg = this._legendParameter;
             lg.Colors = GetColors();
+            if (_noneColorEnabled)
+                lg = lg.SetNoneColor(new Color(_noneColor.Rb, _noneColor.Gb, _noneColor.Bb));
             return lg;
 
         }
@@ -317,19 +347,38 @@ namespace Honeybee.UI
             contextMenu.Show();
         });
 
+        public void UpdateNoneColor()
+        {
+            var oldC = this.NoneColor;
+            var newC = EditColor(oldC);
+            if (newC == oldC)
+                return;
+            this.NoneColor = newC;
+
+        }
+
+        private Eto.Drawing.Color EditColor(Eto.Drawing.Color cs)
+        {
+            var dia = new Eto.Forms.ColorDialog();
+            dia.Color = cs;
+            dia.AllowAlpha = false;
+            var res = dia.ShowDialog(_control);
+            if (res != DialogResult.Ok)
+                return cs;
+            return dia.Color;
+        }
+
+
         public System.Windows.Input.ICommand EditColorsCommand => new RelayCommand<ColorDataItem>((cs) => {
             if (cs == null)
                 return;
 
-            var dia = new Eto.Forms.ColorDialog();
-            dia.Color = cs.Color;
-            dia.AllowAlpha = false;
-            var res = dia.ShowDialog(_control);
-            if (res != DialogResult.Ok)
+            var diaColor = EditColor(cs.Color);
+            if (diaColor == cs.Color)
                 return;
-        
+
             var row = GridViewDataCollection.IndexOf(cs);
-            var updatedItem = new ColorDataItem(dia.Color);
+            var updatedItem = new ColorDataItem(diaColor);
             GridViewDataCollection[row] = updatedItem;
             SelectedRow = row;
             

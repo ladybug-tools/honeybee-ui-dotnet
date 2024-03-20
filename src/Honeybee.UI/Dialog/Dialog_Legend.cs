@@ -8,7 +8,7 @@ namespace Honeybee.UI
     {
         private LegendViewModel _vm;
 
-        public Dialog_Legend(LB.LegendParameters parameter, Action<LB.LegendParameters> previewAction = default)
+        public Dialog_Legend(LB.LegendParameters parameter, Action<LB.LegendParameters> previewAction = default, Action resetAction = default)
         {
             this.Title = $"Legend Parameters - {DialogHelper.PluginName}";
             this.Width = 400;
@@ -22,7 +22,6 @@ namespace Honeybee.UI
             var w = new Eto.Forms.NumericStepper() { MinValue = 1 };
             var h = new Eto.Forms.NumericStepper() { MinValue = 1 };
             var fontH = new Eto.Forms.NumericStepper() { MinValue = 1 };
-            //var fontColor = new Button();
             var decimalPlaces = new Eto.Forms.NumericStepper() { DecimalPlaces = 0, MinValue = 0 };
             
 
@@ -32,9 +31,16 @@ namespace Honeybee.UI
             w.ValueBinding.Bind(_vm, _ => _.W2D);
             h.ValueBinding.Bind(_vm, _ => _.H2D);
             fontH.ValueBinding.Bind(_vm, _ => _.TextHeight2D);
-            //fontColor.Bind(_=>_.BackgroundColor, _vm, _ => _.FontColor);
-            //fontColor.Command = _vm.FontColorCommand;
+      
+
             decimalPlaces.ValueBinding.Bind(_vm, _ => _.DecimalPlaces);
+            var nonColor = new Eto.Forms.Drawable();
+            nonColor.Bind(_ => _.Visible, _vm, _ => _.NoneColorEnabled);
+            nonColor.Bind(_ => _.BackgroundColor, _vm, _ => _.NoneColor);
+            nonColor.MouseUp += (s, e) =>
+            {
+                _vm.UpdateNoneColor();
+            };
 
             var minNum = new Eto.Forms.NumericStepper() { MaximumDecimalPlaces = 5 };
             var maxNum = new Eto.Forms.NumericStepper() { MaximumDecimalPlaces = 5 };
@@ -68,6 +74,8 @@ namespace Honeybee.UI
             general.AddRow("Width:", w);
             general.AddRow("Height:", h);
             general.AddRow("Decimal places:", decimalPlaces);
+            if (_vm.NoneColorEnabled)
+                general.AddRow("Color for N/A:", nonColor);
             general.AddRow(null, null);
             tb.Pages.Add(new TabPage(general) { Text = "Settings" });
 
@@ -84,6 +92,7 @@ namespace Honeybee.UI
             this.AbortButton.Click += (s, e) => { this.Close(); };
 
             var preview = new Button() { Text = "Preview", Visible = previewAction != default };
+            preview.Width = 50;
             preview.Click += (s, e) =>
             {
                 if (_vm.Validate())
@@ -94,21 +103,30 @@ namespace Honeybee.UI
                
             };
 
-            var layout = new Eto.Forms.DynamicLayout();
-            layout.DefaultSpacing = new Eto.Drawing.Size(5, 2);
-            layout.DefaultPadding = new Eto.Drawing.Padding(4);
-            layout.AddSeparateRow("Legend title:", title);
-            layout.AddSeparateRow("Maximum:", maxNum);
-            layout.AddSeparateRow("Minimum:", minNum);
-            layout.AddSeparateRow("Number of segment:", numSeg);
-            layout.AddSeparateRow("Continuous colors:", continuous);
-            layout.AddSeparateRow("Horizontal:", horizontal);
+            var reSet = new Button() { Text = "Reset", Visible = resetAction != default };
+            reSet.Width = 50;
+            reSet.Click += (s, e) =>
+            {
+                this.Close(null);
+                resetAction?.Invoke();
+            };
 
+            var layout = new Eto.Forms.DynamicLayout();
+            layout.DefaultSpacing = new Eto.Drawing.Size(5, 5);
+            layout.DefaultPadding = new Eto.Drawing.Padding(5);
+            var topLayout = new DynamicLayout();
+            topLayout.DefaultSpacing = new Eto.Drawing.Size(5,5);
+            topLayout.AddRow("Legend title:", title);
+            topLayout.AddRow("Maximum:", maxNum);
+            topLayout.AddRow("Minimum:", minNum);
+            topLayout.AddRow("Number of segment:", numSeg);
+            topLayout.AddRow("Continuous colors:", continuous);
+            topLayout.AddRow("Horizontal:", horizontal);
+
+            layout.AddSeparateRow(topLayout);
             layout.AddSeparateRow(tb);
       
-            //layout.AddSeparateRow("Font height:", fontH, null, "Font color:", fontColor);
-            //layout.AddSeparateRow("X:", x, "Y:", y, "W", w, "H", h); 
-            layout.AddSeparateRow(null, OkBtn, this.AbortButton, null, preview);
+            layout.AddSeparateRow(preview, reSet, null, OkBtn, this.AbortButton);
             layout.AddRow(null);
             this.Content = layout;
 
