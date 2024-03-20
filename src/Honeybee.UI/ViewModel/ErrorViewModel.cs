@@ -391,7 +391,7 @@ namespace Honeybee.UI
             var url = @"https://docs.pollination.cloud/user-manual/get-started/troubleshooting/help-with-modeling-error-codes";
             if (SelectedError != null)
                 url = $"{url}#{SelectedError.ErrorCode}";
-            System.Diagnostics.Process.Start(url);
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true });
         });
 
     }
