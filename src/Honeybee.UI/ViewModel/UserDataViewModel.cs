@@ -24,6 +24,10 @@ namespace Honeybee.UI
                 jObj = Newtonsoft.Json.Linq.JObject.Parse(obj?.ToString());
             else if (obj is Newtonsoft.Json.Linq.JObject j)
                 jObj = j;
+            else if (obj is Dictionary<string, object> dic)
+            {
+                return dic.Select(_ => new UserDataItem(_.Key, _.Value.ToString())).ToList();
+            }
 
             if (jObj != null)
             {
@@ -91,7 +95,6 @@ namespace Honeybee.UI
         {
             this.control = control;
             this.SetHBProperty = setAction;
-
             this.refObjProperty = UserDataItem.FromJObject(allUserData.FirstOrDefault()) ?? new List<UserDataItem>();
             
 
@@ -99,8 +102,10 @@ namespace Honeybee.UI
             {
                 this.IsCheckboxChecked = true;
             }
+            
+            var allDataList = allUserData.Select(_ => _ is null ? null: Newtonsoft.Json.Linq.JObject.FromObject(_)?.ToString()).Distinct()?.ToList();
 
-            if (allUserData.Distinct().Count() > 1)
+            if (allDataList.Count() > 1)
             {
                 //multiple objects
                 // set refObj to varies
