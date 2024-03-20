@@ -45,7 +45,7 @@ namespace Honeybee.UI
             docLink.Click += (s, e) =>
             {
                 var url = $"https://www.ladybug.tools/honeybee-schema/model.html#tag/{typeof(T).Name.ToLower()}_model";
-                System.Diagnostics.Process.Start(url);
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true });
             };
 
             var buttonSource = new Button { Text = "Schema Data" };

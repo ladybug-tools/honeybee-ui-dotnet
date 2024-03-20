@@ -40,7 +40,8 @@ namespace Honeybee.UI
             docLink.ToolTip = @"https://www.ladybug.tools/epwmap";
             docLink.Click += (s, e) =>
             {
-                System.Diagnostics.Process.Start("https://www.ladybug.tools/epwmap");
+                var epw = "https://www.ladybug.tools/epwmap";
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(epw) { UseShellExecute = true });
             };
 
             layout.AddRow("Weather Url/File Path:");
