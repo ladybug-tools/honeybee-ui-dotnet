@@ -14,13 +14,10 @@
 		<Version>0.0.0.64-dev</Version>
 		<Platforms>x64</Platforms>
 	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
-		<OutputPath>bin\Debug_Rhino</OutputPath>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)'=='Release'">
-		<OutputPath>bin\Release_Rhino</OutputPath>
+	
+	<PropertyGroup Condition="$(Configuration.StartsWith(`Release`))">
+		<DebugType>None</DebugType>
+		<DebugSymbols>False</DebugSymbols>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -34,16 +31,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="RhinoCommon" Version="6.23.20055.13111" IncludeAssets="compile; build;" />
-	</ItemGroup>
-
-	<ItemGroup Condition="'$(Configuration)'!='Debug'">
-		<PackageReference Include="LadybugDisplaySchema" Version="0.0.2.33" />
-	</ItemGroup>
-
-	<ItemGroup Condition="'$(Configuration)'=='Debug'">
+		<PackageReference Include="RhinoCommon" Version="*" IncludeAssets="compile; build;"/>
 		<ProjectReference Include="..\..\..\ladybug-display-schema-dotnet\src\LadybugDisplaySchema\LadybugDisplaySchema.csproj" />
 	</ItemGroup>
 
-</Project>
 
+</Project>
