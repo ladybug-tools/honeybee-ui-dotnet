@@ -8,7 +8,6 @@
 		<Description>UI library build with Eto Forms for editing Honeybee Schema (DotNet) on both Windows and Mac system.</Description>
 		<Copyright>Copyright © 2024 Ladybug Tools LLC</Copyright>
 		<Version>0.0.0.64-dev</Version>
-		<Configurations>Debug_RH6;Debug_RH7;Debug_RH8;Release_RH6;Release_RH7;Release_RH8</Configurations>
 		<Platforms>x64</Platforms>
 	</PropertyGroup>
 
