@@ -14,12 +14,12 @@
 		<Version>0.0.0.64-dev</Version>
 		<Platforms>x64</Platforms>
 	</PropertyGroup>
-	
+
 	<PropertyGroup Condition="$(Configuration.StartsWith(`Release`))">
 		<DebugType>None</DebugType>
 		<DebugSymbols>False</DebugSymbols>
 	</PropertyGroup>
-
+	
 	<ItemGroup>
 		<None Remove="EmbeddedResources\honeybee.ico" />
 		<None Remove="EmbeddedResources\ladybug.ico" />
