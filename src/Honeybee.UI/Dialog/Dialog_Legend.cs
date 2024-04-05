@@ -23,7 +23,7 @@ namespace Honeybee.UI
             var h = new Eto.Forms.NumericStepper() { MinValue = 1 };
             var fontH = new Eto.Forms.NumericStepper() { MinValue = 1 };
             var decimalPlaces = new Eto.Forms.NumericStepper() { DecimalPlaces = 0, MinValue = 0 };
-            
+            var embed = new Eto.Forms.CheckBox();
 
             title.TextBinding.Bind(_vm, _=>_.Title);
             x.ValueBinding.Bind(_vm, _=>_.X2D);
@@ -31,6 +31,7 @@ namespace Honeybee.UI
             w.ValueBinding.Bind(_vm, _ => _.W2D);
             h.ValueBinding.Bind(_vm, _ => _.H2D);
             fontH.ValueBinding.Bind(_vm, _ => _.TextHeight2D);
+            embed.CheckedBinding.Bind(_vm, _=>_.Embed);
       
 
             decimalPlaces.ValueBinding.Bind(_vm, _ => _.DecimalPlaces);
@@ -71,11 +72,12 @@ namespace Honeybee.UI
             //general.AddRow("Font color:", fontColor);
             general.AddRow("Location X:", x);
             general.AddRow("Location Y:", y);
-            general.AddRow("Width:", w);
-            general.AddRow("Height:", h);
+            general.AddRow("Segment width:", w);
+            general.AddRow("Segment height:", h);
             general.AddRow("Decimal places:", decimalPlaces);
             if (_vm.NoneColorEnabled)
                 general.AddRow("Color for N/A:", nonColor);
+            general.AddRow("Embed legend:", embed);
             general.AddRow(null, null);
             tb.Pages.Add(new TabPage(general) { Text = "Settings" });
 
