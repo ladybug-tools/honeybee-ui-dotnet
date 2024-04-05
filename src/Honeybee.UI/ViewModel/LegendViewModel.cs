@@ -54,6 +54,14 @@ namespace Honeybee.UI
             set { _noneColorEnabled = value; }
         }
 
+        public bool Embed
+        {
+            get => _legendParameter.IsEmbedded();
+            set => Set(() => _legendParameter.SetEmbed(value), nameof(Embed));
+        }
+
+
+
         private Eto.Drawing.Color _noneColor = new Eto.Drawing.Color(50,50,50);
         public Eto.Drawing.Color NoneColor
         {
