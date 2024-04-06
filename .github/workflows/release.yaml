@@ -42,6 +42,6 @@ jobs:
           rm -r -fo bin
          
           echo "Rebuilding Honeybee.UI with the new version......"
-          dotnet pack Honeybee.UI.csproj -p:Version=${{ steps.semantic.outputs.new_release_version }} --configuration Release
+          dotnet build Honeybee.UI.csproj -p:Version=${{ steps.semantic.outputs.new_release_version }} --configuration Release --force
           echo "Deploying Honeybee.UI......"
           dotnet nuget push bin\Release\Honeybee.UI.*.nupkg -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json
