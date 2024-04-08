@@ -123,7 +123,12 @@ namespace Honeybee.UI
 
        
             var dic = HoneybeeSchema.Extension.ToDictionary(obj);
-
+            if (this.refObjProperty.All(_ => _?.Key != ReservedText.Varies))
+            {
+                // remove non-reserved user data
+                dic = dic.Where(_ => _.Key.StartsWith("__") && _.Key.EndsWith("__")).ToDictionary(_ => _.Key, _ => _.Value);
+            }
+            
             // filter <varies>
             var refObj = this.refObjProperty.Where(_ => _?.Key != ReservedText.Varies);
             foreach (var item in refObj)
