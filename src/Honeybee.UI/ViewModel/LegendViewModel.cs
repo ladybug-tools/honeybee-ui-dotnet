@@ -214,7 +214,7 @@ namespace Honeybee.UI
             _control = control;
             _legendParameter = parameter ?? new LB.LegendParameters(50, 100);
 
-            _noneColorEnabled = _legendParameter.HasNoneColor(out var nC);
+            _noneColorEnabled = _legendParameter.HasNaNColor(out var nC);
             if (_noneColorEnabled)
                 _noneColor = Eto.Drawing.Color.FromArgb(nC.R, nC.G, nC.B);
 
@@ -291,7 +291,7 @@ namespace Honeybee.UI
             var lg = this._legendParameter;
             lg.Colors = GetColors();
             if (_noneColorEnabled)
-                lg = lg.SetNoneColor(new Color(_noneColor.Rb, _noneColor.Gb, _noneColor.Bb));
+                lg = lg.SetNaNColor(new Color(_noneColor.Rb, _noneColor.Gb, _noneColor.Bb));
             return lg;
 
         }
