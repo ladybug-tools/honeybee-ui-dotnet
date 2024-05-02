@@ -9,6 +9,8 @@
 		<Copyright>Copyright © 2024 Ladybug Tools LLC</Copyright>
 		<Version>0.0.0.64-dev</Version>
 		<Platforms>x64</Platforms>
+		<!-- Ensure only displaying English units in UnitsNet -->
+		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="$(Configuration.StartsWith(`Release`))">
