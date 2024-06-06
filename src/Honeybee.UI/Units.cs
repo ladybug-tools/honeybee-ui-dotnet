@@ -378,18 +378,20 @@ namespace Honeybee.UI
             if (System.IO.File.Exists(UnitSettingFile))
             {
                 var json = System.IO.File.ReadAllText(UnitSettingFile);
-                var objs = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<UnitType, int>>(json);
+                var objs = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, int>>(json);
 
                 foreach (var item in refDic)
                 {
-                    if(objs.TryGetValue(item.Key, out var userV))
+                    var unitKey = item.Key;
+                    
+                    if(objs.TryGetValue(unitKey.ToString(), out var userV))
                     {
                         var saved = Enum.ToObject(item.Value.GetType(), userV) as Enum;
-                        units.Add(item.Key, saved);
+                        units.Add(unitKey, saved);
                     }
                     else
                     {
-                        units.Add(item.Key, item.Value);
+                        units.Add(unitKey, item.Value);
                     }
                 }
 
