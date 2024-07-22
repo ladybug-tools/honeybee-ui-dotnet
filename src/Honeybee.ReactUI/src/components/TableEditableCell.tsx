@@ -133,10 +133,10 @@ const TableEditableCell: React.FC<{
     onChange(newData.map((_) => _.url));
   };
 
-  const truncateMiddle = (text:string, maxLength:number) => {
+  const truncateMiddle = (text: string, maxLength: number) => {
     if (text.length <= maxLength) return text;
     const half = Math.floor(maxLength / 4);
-    return text.slice(0, half) + ' ... ' + text.slice(-half*3);
+    return text.slice(0, half) + " ... " + text.slice(-half * 3);
   };
 
   const EllipsisMiddle: React.FC<{ suffixCount: number; children: string }> = ({
@@ -146,7 +146,11 @@ const TableEditableCell: React.FC<{
     const start = children.slice(0, children.length - suffixCount);
     const suffix = children.slice(-suffixCount).trim();
     return (
-      <Paragraph style={{ maxWidth: '100%' }} ellipsis={{ suffix }} title="Click to edit">
+      <Paragraph
+        style={{ maxWidth: "100%" }}
+        ellipsis={{ suffix }}
+        title="Click to edit"
+      >
         {start}
       </Paragraph>
     );
@@ -163,8 +167,7 @@ const TableEditableCell: React.FC<{
     {
       dataIndex: "url",
       editable: true,
-      render: (_, r) =>
-        <EllipsisMiddle suffixCount={40}>{_}</EllipsisMiddle>
+      render: (_, r) => <EllipsisMiddle suffixCount={40}>{_}</EllipsisMiddle>,
     },
     {
       dataIndex: "operation",
@@ -250,33 +253,34 @@ const TableEditableCell: React.FC<{
 
   return (
     <Table
-        components={components}
-        // rowClassName={() => "editable-row"}
-        // bordered
-        dataSource={dataSource}
-        columns={columns as ColumnTypes}
-        pagination={false}
-        showHeader={false}
-        footer={() => (
-          // <Button
-          //   onClick={handleAdd}
-          //   type="primary"
-          //   // style={{ marginBottom: 16 }}
-          // >
-          //   Add a row
-          // </Button>
-          <Flex justify="flex-end">
-            <Tooltip title="Add a new weather" placement="left">
-              <Button
-                shape="circle"
-                icon={<PlusOutlined />}
-                onClick={handleAdd}
-              />
-            </Tooltip>
-          </Flex>
-        )}
-        onChange={handleTableChange}
-      />
+      style={{ border: "1px solid rgba(0, 0, 0, 0.08)" }}
+      components={components}
+      // rowClassName={() => "editable-row"}
+      // bordered
+      dataSource={dataSource}
+      columns={columns as ColumnTypes}
+      pagination={false}
+      showHeader={false}
+      footer={() => (
+        // <Button
+        //   onClick={handleAdd}
+        //   type="primary"
+        //   // style={{ marginBottom: 16 }}
+        // >
+        //   Add a row
+        // </Button>
+        <Flex justify="flex-end">
+          <Tooltip title="Add a new weather" placement="left">
+            <Button
+              shape="circle"
+              icon={<PlusOutlined />}
+              onClick={handleAdd}
+            />
+          </Tooltip>
+        </Flex>
+      )}
+      onChange={handleTableChange}
+    />
   );
 };
 
