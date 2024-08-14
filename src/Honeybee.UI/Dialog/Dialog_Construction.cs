@@ -378,7 +378,7 @@ namespace Honeybee.UI
                     materialDetail.Text = null;
 
                     //Check current selected item from library
-                    var selItem = lib.SelectedItem as HB.HoneybeeObject;
+                    var selItem = lib.SelectedItem as HB.IHoneybeeObject;
                     if (selItem == null)
                         return;
 

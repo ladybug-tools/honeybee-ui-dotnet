@@ -168,9 +168,9 @@ namespace Honeybee.UI
             set => Set(() => _TimeZoneEnabled = value, nameof(TimeZoneEnabled));
         }
 
-        public double TimeZone
+        public int TimeZone
         {
-            get => _hbObj.Location.TimeZone?.Obj is double dd ? dd : 0;
+            get => _hbObj.Location.TimeZone?.Obj is int dd ? dd : 0;
             set => Set(() => _hbObj.Location.TimeZone = value, nameof(TimeZone));
         }
         private string _TimeZoneTip;
@@ -281,7 +281,7 @@ namespace Honeybee.UI
 
             location.TimeZone = location.TimeZone ?? new Autocalculate();
 
-            if (location.TimeZone.Obj is double d)
+            if (location.TimeZone.Obj is int d)
             {
                 this.TimeZone = d;
                 this.IsTimeZoneAutoCalculate = false;
