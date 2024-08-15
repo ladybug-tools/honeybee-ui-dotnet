@@ -153,8 +153,6 @@ namespace Honeybee.UI
             {
                 if (value)
                     _hbObj.Location.TimeZone = new Autocalculate();
-                else
-                    TimeZone = 0;
 
                 TimeZoneEnabled = !value;
             }
@@ -283,8 +281,8 @@ namespace Honeybee.UI
 
             if (location.TimeZone.Obj is int d)
             {
-                this.TimeZone = d;
                 this.IsTimeZoneAutoCalculate = false;
+                this.TimeZone = d;
             }
             else 
                 this.IsTimeZoneAutoCalculate = true;

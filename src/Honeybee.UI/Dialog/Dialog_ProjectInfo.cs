@@ -200,6 +200,7 @@ namespace Honeybee.UI
                 gpPanel.AddSeparateRow(Elevation);
 
                 var TimeZone = new NumericStepper() { };
+                TimeZone.DecimalPlaces = 0;
                 var timeZoneAuto = new CheckBox() { Text = "Auto Calculate" };
                 timeZoneAuto.Bind(_ => _.Checked, _vm, _ => _.IsTimeZoneAutoCalculate);
 
