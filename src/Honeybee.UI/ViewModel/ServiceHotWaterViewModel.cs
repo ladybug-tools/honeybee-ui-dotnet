@@ -11,6 +11,17 @@ namespace Honeybee.UI
         private ServiceHotWaterAbridged _refHBObj => this.refObjProperty as ServiceHotWaterAbridged;
         // double flowPerArea, string schedule, string displayName = null, double targetTemperature = 60, double sensibleFraction = 0.2, double latentFraction = 0.05
 
+        private bool _isDisplayNameVaries;
+        public string DisplayName
+        {
+            get => _refHBObj.DisplayName;
+            set
+            {
+                _isDisplayNameVaries = value == ReservedText.Varies;
+                this.Set(() => _refHBObj.DisplayName = value, nameof(DisplayName));
+            }
+        }
+
         // FlowPerArea
         private DoubleViewModel _isFlowPerArea;
 
@@ -98,6 +109,14 @@ namespace Honeybee.UI
                 this.IsCheckboxVaries();
 
 
+
+            //DisplayName
+            if (loads.Select(_ => _?.DisplayName).Distinct().Count() > 1)
+                this.DisplayName = ReservedText.Varies;
+            else
+                this.DisplayName = this._refHBObj.DisplayName;
+
+
             //WattsPerArea
             this.FlowPerArea = new DoubleViewModel((n) => _refHBObj.FlowPerArea = n);
             //this.FlowPerArea.SetUnits(Units.VolumeFlowPerAreaUnit.CubicMeterPerSecondPerSquareMeter, Units.UnitType.AirFlowRateArea);
@@ -175,6 +194,10 @@ namespace Honeybee.UI
                 return obj?.DuplicateServiceHotWaterAbridged();
 
             obj = obj?.DuplicateServiceHotWaterAbridged() ?? new ServiceHotWaterAbridged(Guid.NewGuid().ToString().Substring(0, 5), 0, ReservedText.NotSet);
+
+
+            if (!this._isDisplayNameVaries)
+                obj.DisplayName = this._refHBObj.DisplayName;
 
             if (!this.FlowPerArea.IsVaries)
                 obj.FlowPerArea = this._refHBObj.FlowPerArea;

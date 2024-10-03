@@ -11,6 +11,17 @@ namespace Honeybee.UI
         private InfiltrationAbridged _refHBObj => this.refObjProperty as InfiltrationAbridged;
         // double flowPerExteriorArea, string schedule,  double constantCoefficient = 1, double temperatureCoefficient = 0, double velocityCoefficient = 0
 
+        private bool _isDisplayNameVaries;
+        public string DisplayName
+        {
+            get => _refHBObj.DisplayName;
+            set
+            {
+                _isDisplayNameVaries = value == ReservedText.Varies;
+                this.Set(() => _refHBObj.DisplayName = value, nameof(DisplayName));
+            }
+        }
+
         // FlowPerExteriorArea
         private DoubleViewModel _flowPerExteriorArea;
 
@@ -73,6 +84,12 @@ namespace Honeybee.UI
                 this.IsCheckboxVaries();
 
 
+            //DisplayName
+            if (loads.Select(_ => _?.DisplayName).Distinct().Count() > 1)
+                this.DisplayName = ReservedText.Varies;
+            else
+                this.DisplayName = this._refHBObj.DisplayName;
+
             //FlowPerExteriorArea
             this.FlowPerExteriorArea = new DoubleViewModel((n) => _refHBObj.FlowPerExteriorArea = n);
             this.FlowPerExteriorArea.SetUnits(Units.VolumeFlowPerAreaUnit.CubicMeterPerSecondPerSquareMeter, Units.UnitType.AirFlowRateArea);
@@ -126,6 +143,10 @@ namespace Honeybee.UI
                 return obj?.DuplicateInfiltrationAbridged();
 
             obj = obj?.DuplicateInfiltrationAbridged() ?? new InfiltrationAbridged(Guid.NewGuid().ToString().Substring(0, 5), 0, ReservedText.NotSet);
+
+
+            if (!this._isDisplayNameVaries)
+                obj.DisplayName = this._refHBObj.DisplayName;
 
             if (!this.FlowPerExteriorArea.IsVaries)
                 obj.FlowPerExteriorArea = this._refHBObj.FlowPerExteriorArea;

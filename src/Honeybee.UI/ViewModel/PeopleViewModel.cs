@@ -11,6 +11,17 @@ namespace Honeybee.UI
         private PeopleAbridged _refHBObj => this.refObjProperty as PeopleAbridged;
         // double peoplePerArea, string occupancySchedule, string activitySchedule, string displayName = null, double radiantFraction = 0.3, AnyOf<Autocalculate, double> latentFraction = null
 
+        private bool _isDisplayNameVaries;
+        public string DisplayName
+        {
+            get => _refHBObj.DisplayName;
+            set
+            {
+                _isDisplayNameVaries = value == ReservedText.Varies;
+                this.Set(() => _refHBObj.DisplayName = value, nameof(DisplayName));
+            }
+        }
+
         // WattsPerArea
         private bool _peoplePerAreaEnabled = true;
         public bool PeoplePerAreaEnabled
@@ -126,6 +137,12 @@ namespace Honeybee.UI
             else
                 this.IsCheckboxVaries();
 
+            //DisplayName
+            if (loads.Select(_ => _?.DisplayName).Distinct().Count() > 1)
+                this.DisplayName = ReservedText.Varies;
+            else
+                this.DisplayName = this._refHBObj.DisplayName;
+
 
             //WattsPerArea
             this.PeoplePerArea = new DoubleViewModel((n) => _refHBObj.PeoplePerArea = n);
@@ -225,6 +242,10 @@ namespace Honeybee.UI
                 return obj?.DuplicatePeopleAbridged();
 
             obj = obj?.DuplicatePeopleAbridged() ?? new PeopleAbridged(Guid.NewGuid().ToString().Substring(0, 5), 0, ReservedText.NotSet);
+
+
+            if (!this._isDisplayNameVaries)
+                obj.DisplayName = this._refHBObj.DisplayName;
 
             if (!this.PeoplePerArea.IsVaries)
                 obj.PeoplePerArea = this._refHBObj.PeoplePerArea;

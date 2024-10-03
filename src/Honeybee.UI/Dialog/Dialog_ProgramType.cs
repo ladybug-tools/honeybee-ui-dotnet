@@ -362,6 +362,13 @@ namespace Honeybee.UI
             layout.DefaultSpacing = new Size(4, 4);
             //layout.DefaultPadding = new Padding(4);
 
+            // DisplayName
+            var NameLabel = new Label() { Text = "Name:" };
+            var nameTB = new StringText();
+            nameTB.TextBinding.Bind(_vm, _ => _.People.DisplayName);
+            layout.AddRow(NameLabel);
+            layout.AddRow(nameTB);
+
             var wPerArea = new DoubleText();
             wPerArea.Width = 250;
             wPerArea.ReservedText = ReservedText.Varies;
@@ -427,6 +434,13 @@ namespace Honeybee.UI
             layout.DefaultSpacing = new Size(4, 4);
             //layout.DefaultPadding = new Padding(4);
 
+            // DisplayName
+            var NameLabel = new Label() { Text = "Name:" };
+            var nameTB = new StringText();
+            nameTB.TextBinding.Bind(_vm, _ => _.Infiltration.DisplayName);
+            layout.AddRow(NameLabel);
+            layout.AddRow(nameTB);
+
             var wPerArea = new DoubleText();
             wPerArea.Width = 250;
             wPerArea.ReservedText = ReservedText.Varies;
@@ -486,6 +500,13 @@ namespace Honeybee.UI
 
             layout.DefaultSpacing = new Size(4, 4);
             //layout.DefaultPadding = new Padding(4);
+
+            // DisplayName
+            var NameLabel = new Label() { Text = "Name:" };
+            var nameTB = new StringText();
+            nameTB.TextBinding.Bind(_vm, _ => _.Ventilation.DisplayName);
+            layout.AddRow(NameLabel);
+            layout.AddRow(nameTB);
 
             var wPerArea = new DoubleText();
             wPerArea.Width = 250;
@@ -555,6 +576,13 @@ namespace Honeybee.UI
             layout.DefaultSpacing = new Size(4, 4);
             //layout.DefaultPadding = new Padding(4);
 
+            // DisplayName
+            var NameLabel = new Label() { Text = "Name:" };
+            var nameTB = new StringText();
+            nameTB.TextBinding.Bind(_vm, _ => _.Setpoint.DisplayName);
+            layout.AddRow(NameLabel);
+            layout.AddRow(nameTB);
+
 
             var sch = new Button();
             sch.Width = 250;
@@ -607,6 +635,13 @@ namespace Honeybee.UI
 
             layout.DefaultSpacing = new Size(4, 4);
             //layout.DefaultPadding = new Padding(4);
+
+            // DisplayName
+            var NameLabel = new Label() { Text = "Name:" };
+            var nameTB = new StringText();
+            nameTB.TextBinding.Bind(_vm, _ => _.ServiceHotWater.DisplayName);
+            layout.AddRow(NameLabel);
+            layout.AddRow(nameTB);
 
             var wPerArea = new DoubleText();
             wPerArea.Width = 250;
