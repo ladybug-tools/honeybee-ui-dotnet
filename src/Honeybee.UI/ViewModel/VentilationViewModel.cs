@@ -11,6 +11,17 @@ namespace Honeybee.UI
         private VentilationAbridged _refHBObj => this.refObjProperty as VentilationAbridged;
         // double flowPerPerson = 0, double flowPerArea = 0, double airChangesPerHour = 0, double flowPerZone = 0, string schedule = null
 
+        private bool _isDisplayNameVaries;
+        public string DisplayName
+        {
+            get => _refHBObj.DisplayName;
+            set
+            {
+                _isDisplayNameVaries = value == ReservedText.Varies;
+                this.Set(() => _refHBObj.DisplayName = value, nameof(DisplayName));
+            }
+        }
+
         // FlowPerPerson
         private DoubleViewModel _flowPerPerson;
 
@@ -73,6 +84,12 @@ namespace Honeybee.UI
                 this.IsCheckboxVaries();
 
 
+            //DisplayName
+            if (loads.Select(_ => _?.DisplayName).Distinct().Count() > 1)
+                this.DisplayName = ReservedText.Varies;
+            else
+                this.DisplayName = this._refHBObj.DisplayName;
+
             //FlowPerPerson
             this.FlowPerPerson = new DoubleViewModel((n) => _refHBObj.FlowPerPerson = n);
             this.FlowPerPerson.SetUnits(Units.VolumeFlowUnit.CubicMeterPerSecond, Units.UnitType.AirFlowRate);
@@ -129,6 +146,10 @@ namespace Honeybee.UI
                 return obj?.DuplicateVentilationAbridged();
 
             obj = obj?.DuplicateVentilationAbridged() ?? new VentilationAbridged(Guid.NewGuid().ToString());
+
+
+            if (!this._isDisplayNameVaries)
+                obj.DisplayName = this._refHBObj.DisplayName;
 
             if (!this.FlowPerPerson.IsVaries)
                 obj.FlowPerPerson = this._refHBObj.FlowPerPerson;

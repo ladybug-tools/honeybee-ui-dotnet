@@ -11,6 +11,17 @@ namespace Honeybee.UI
         private SetpointAbridged _refHBObj => this.refObjProperty as SetpointAbridged;
         // string coolingSchedule, string heatingSchedule, string displayName = null, string humidifyingSchedule = null, string dehumidifyingSchedule = null
 
+        private bool _isDisplayNameVaries;
+        public string DisplayName
+        {
+            get => _refHBObj.DisplayName;
+            set
+            {
+                _isDisplayNameVaries = value == ReservedText.Varies;
+                this.Set(() => _refHBObj.DisplayName = value, nameof(DisplayName));
+            }
+        }
+
         // CoolingSchedule
         private ButtonViewModel _coolingSchedule;
 
@@ -61,6 +72,13 @@ namespace Honeybee.UI
                 this.IsCheckboxChecked = loads.FirstOrDefault() == null;
             else
                 this.IsCheckboxVaries();
+
+
+            //DisplayName
+            if (loads.Select(_ => _?.DisplayName).Distinct().Count() > 1)
+                this.DisplayName = ReservedText.Varies;
+            else
+                this.DisplayName = this._refHBObj.DisplayName;
 
 
             //CoolingSchedule
@@ -116,6 +134,10 @@ namespace Honeybee.UI
                 return obj?.DuplicateSetpointAbridged();
 
             obj = obj?.DuplicateSetpointAbridged() ?? new SetpointAbridged(Guid.NewGuid().ToString().Substring(0, 5), ReservedText.NotSet, ReservedText.NotSet);
+
+
+            if (!this._isDisplayNameVaries)
+                obj.DisplayName = this._refHBObj.DisplayName;
 
             if (!this.CoolingSchedule.IsVaries)
             {
