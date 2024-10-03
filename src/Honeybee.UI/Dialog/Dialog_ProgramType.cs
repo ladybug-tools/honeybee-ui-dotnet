@@ -229,6 +229,13 @@ namespace Honeybee.UI
             layout.DefaultSpacing = new Size(4, 4);
             //layout.DefaultPadding = new Padding(4);
 
+            // DisplayName
+            var NameLabel = new Label() { Text = "Name:" };
+            var nameTB = new StringText();
+            nameTB.TextBinding.Bind(_vm, _ => _.ElecEquipment.DisplayName);
+            layout.AddRow(NameLabel);
+            layout.AddRow(nameTB);
+
             var wPerArea = new DoubleText();
             wPerArea.Width = 250;
             wPerArea.ReservedText = ReservedText.Varies;
