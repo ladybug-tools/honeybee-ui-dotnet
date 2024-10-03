@@ -11,6 +11,17 @@ namespace Honeybee.UI
         private ElectricEquipmentAbridged _refHBObj => this.refObjProperty as ElectricEquipmentAbridged;
         // double wattsPerArea, string schedule, double radiantFraction = 0, double latentFraction = 0, double lostFraction = 0
 
+        private bool _isDisplayNameVaries;
+        public string DisplayName
+        {
+            get => _refHBObj.DisplayName;
+            set
+            {
+                _isDisplayNameVaries = value == ReservedText.Varies;
+                this.Set(() => _refHBObj.DisplayName = value, nameof(DisplayName));
+            }
+        }
+
         // WattsPerArea
         private bool _wattsPerAreaEnabled = true;
         public bool WattsPerAreaEnabled
@@ -98,6 +109,12 @@ namespace Honeybee.UI
             else
                 this.IsCheckboxVaries();
 
+            //DisplayName
+            if (loads.Select(_ => _?.DisplayName).Distinct().Count() > 1)
+                this.DisplayName = ReservedText.Varies;
+            else
+                this.DisplayName = this._refHBObj.DisplayName;
+
 
             //WattsPerArea
             this.WattsPerArea = new DoubleViewModel((n) => _refHBObj.WattsPerArea = n);
@@ -175,6 +192,9 @@ namespace Honeybee.UI
                 return obj?.DuplicateElectricEquipmentAbridged();
 
             obj = obj?.DuplicateElectricEquipmentAbridged() ?? new ElectricEquipmentAbridged(Guid.NewGuid().ToString().Substring(0, 5), 0, ReservedText.NotSet);
+
+            if (!this._isDisplayNameVaries)
+                obj.DisplayName = this._refHBObj.DisplayName;
 
             if (!this.WattsPerArea.IsVaries)
                 obj.WattsPerArea = this._refHBObj.WattsPerArea;
