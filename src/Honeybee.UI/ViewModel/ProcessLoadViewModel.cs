@@ -11,6 +11,17 @@ namespace Honeybee.UI
         private ProcessAbridged _refHBObj => this.refObjProperty as ProcessAbridged;
         // double watts, string schedule, FuelTypes fuelType, object userData = null, string endUseCategory = "Process", double radiantFraction = 0, double latentFraction = 0, double lostFraction = 0
 
+        private bool _isDisplayNameVaries;
+        public string DisplayName
+        {
+            get => _refHBObj.DisplayName;
+            set
+            {
+                _isDisplayNameVaries = value == ReservedText.Varies;
+                this.Set(() => _refHBObj.DisplayName = value, nameof(DisplayName));
+            }
+        }
+
         // fuel type 
         public FuelTypes FuelType
         {
@@ -109,6 +120,12 @@ namespace Honeybee.UI
             else
                 this.IsCheckboxVaries();
 
+            //DisplayName
+            if (loads.Select(_ => _?.DisplayName).Distinct().Count() > 1)
+                this.DisplayName = ReservedText.Varies;
+            else
+                this.DisplayName = this._refHBObj.DisplayName;
+
             // EndUseCategory
             if (loads.Select(_ => _?.EndUseCategory).Distinct().Count() > 1)
                 this.EndUseCategory = ReservedText.Varies;
@@ -177,6 +194,9 @@ namespace Honeybee.UI
 
             obj = obj?.DuplicateProcessAbridged() ?? new ProcessAbridged(Guid.NewGuid().ToString(), 0, ReservedText.NotSet, FuelTypes.Electricity);
 
+
+            if (!this._isDisplayNameVaries)
+                obj.DisplayName = this._refHBObj.DisplayName;
 
             if (!this._isEndUseCategoryVaries)
                 obj.EndUseCategory = this._refHBObj.EndUseCategory;

@@ -11,6 +11,17 @@ namespace Honeybee.UI
         private InternalMassAbridged _refHBObj => this.refObjProperty as InternalMassAbridged;
         // string identifier, string construction, double area, string displayName = null
 
+        private bool _isDisplayNameVaries;
+        public string DisplayName
+        {
+            get => _refHBObj.DisplayName;
+            set
+            {
+                _isDisplayNameVaries = value == ReservedText.Varies;
+                this.Set(() => _refHBObj.DisplayName = value, nameof(DisplayName));
+            }
+        }
+
         // FlowPerArea
         private DoubleViewModel _area;
 
@@ -51,6 +62,12 @@ namespace Honeybee.UI
                 this.IsCheckboxVaries();
 
 
+            //DisplayName
+            if (loads.Select(_ => _?.DisplayName).Distinct().Count() > 1)
+                this.DisplayName = ReservedText.Varies;
+            else
+                this.DisplayName = this._refHBObj.DisplayName;
+
             //Area
             this.Area = new DoubleViewModel((n) => _refHBObj.Area = n);
             this.Area.SetUnits(Units.AreaUnit.SquareMeter, Units.UnitType.Area);
@@ -81,6 +98,9 @@ namespace Honeybee.UI
                 return obj?.DuplicateInternalMassAbridged();
 
             obj = obj?.DuplicateInternalMassAbridged() ?? new InternalMassAbridged(Guid.NewGuid().ToString().Substring(0, 5), ReservedText.NotSet, 0);
+
+            if (!this._isDisplayNameVaries)
+                obj.DisplayName = this._refHBObj.DisplayName;
 
             if (!this.Area.IsVaries)
                 obj.Area = this._refHBObj.Area;

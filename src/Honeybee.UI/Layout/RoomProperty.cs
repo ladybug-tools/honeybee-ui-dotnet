@@ -342,6 +342,13 @@ namespace Honeybee.UI.View
             layout.DefaultSpacing = new Size(4, 4);
             //layout.DefaultPadding = new Padding(0);
 
+            // DisplayName
+            var NameLabel = new Label() { Text = "Name:" };
+            var nameTB = new StringText();
+            nameTB.TextBinding.Bind(_vm, _ => _.Lighting.DisplayName);
+            layout.AddRow(NameLabel);
+            layout.AddRow(nameTB);
+
             var wPerAreaLabel = new Label() { Text = "Watts/Area:" };
             wPerAreaLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.LightingAbridged), nameof(_dummy.Properties.Energy.Lighting.WattsPerArea)));
 
@@ -447,6 +454,13 @@ namespace Honeybee.UI.View
             layout.DefaultSpacing = new Size(4, 4);
             //layout.DefaultPadding = new Padding(4);
 
+            // DisplayName
+            var NameLabel = new Label() { Text = "Name:" };
+            var nameTB = new StringText();
+            nameTB.TextBinding.Bind(_vm, _ => _.ElecEquipment.DisplayName);
+            layout.AddRow(NameLabel);
+            layout.AddRow(nameTB);
+
             var wPerAreaLabel = new Label() { Text = "Watts/Area:" };
             wPerAreaLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.EquipmentBase), nameof(_dummy.Properties.Energy.ElectricEquipment.WattsPerArea)));
 
@@ -539,6 +553,13 @@ namespace Honeybee.UI.View
             layout.DefaultSpacing = new Size(4, 4);
             //layout.DefaultPadding = new Padding(4);
 
+            // DisplayName
+            var NameLabel = new Label() { Text = "Name:" };
+            var nameTB = new StringText();
+            nameTB.TextBinding.Bind(_vm, _ => _.Gas.DisplayName);
+            layout.AddRow(NameLabel);
+            layout.AddRow(nameTB);
+
             var wPerAreaLabel = new Label() { Text = "Watts/Area:" };
             wPerAreaLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.EquipmentBase), nameof(_dummy.Properties.Energy.GasEquipment.WattsPerArea)));
 
@@ -630,6 +651,13 @@ namespace Honeybee.UI.View
 
             layout.DefaultSpacing = new Size(4, 4);
             //layout.DefaultPadding = new Padding(4);
+
+            // DisplayName
+            var NameLabel = new Label() { Text = "Name:" };
+            var nameTB = new StringText();
+            nameTB.TextBinding.Bind(_vm, _ => _.People.DisplayName);
+            layout.AddRow(NameLabel);
+            layout.AddRow(nameTB);
 
             var wPerAreaLabel = new Label() { Text = "People/Area:" };
             wPerAreaLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.PeopleAbridged), nameof(_dummy.Properties.Energy.People.PeoplePerArea)));
@@ -726,6 +754,12 @@ namespace Honeybee.UI.View
             layout.DefaultSpacing = new Size(4, 4);
             //layout.DefaultPadding = new Padding(4);
 
+            // DisplayName
+            var NameLabel = new Label() { Text = "Name:" };
+            var nameTB = new StringText();
+            nameTB.TextBinding.Bind(_vm, _ => _.Infiltration.DisplayName);
+            layout.AddRow(NameLabel);
+            layout.AddRow(nameTB);
 
             var wPerAreaLabel = new Label() { Text = "Flow/Area (exterior area):" };
             wPerAreaLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.InfiltrationAbridged), nameof(_dummy.Properties.Energy.Infiltration.FlowPerExteriorArea)));
@@ -808,6 +842,13 @@ namespace Honeybee.UI.View
             layout.DefaultSpacing = new Size(4, 4);
             //layout.DefaultPadding = new Padding(4);
 
+
+            // DisplayName
+            var NameLabel = new Label() { Text = "Name:" };
+            var nameTB = new StringText();
+            nameTB.TextBinding.Bind(_vm, _ => _.Ventilation.DisplayName);
+            layout.AddRow(NameLabel);
+            layout.AddRow(nameTB);
 
             var wPerAreaLabel = new Label() { Text = "Flow/Area:" };
             wPerAreaLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.VentilationAbridged), nameof(_dummy.Properties.Energy.Ventilation.FlowPerArea)));
@@ -895,6 +936,14 @@ namespace Honeybee.UI.View
             layout.DefaultSpacing = new Size(4, 4);
             //layout.DefaultPadding = new Padding(4);
 
+
+            // DisplayName
+            var NameLabel = new Label() { Text = "Name:" };
+            var nameTB = new StringText();
+            nameTB.TextBinding.Bind(_vm, _ => _.Setpoint.DisplayName);
+            layout.AddRow(NameLabel);
+            layout.AddRow(nameTB);
+
             var schLabel = new Label() { Text = "Cooling Schedule:" };
             schLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.SetpointAbridged), nameof(_dummy.Properties.Energy.Setpoint.CoolingSchedule)));
 
@@ -959,6 +1008,13 @@ namespace Honeybee.UI.View
 
             layout.DefaultSpacing = new Size(4, 4);
             //layout.DefaultPadding = new Padding(4);
+
+            // DisplayName
+            var NameLabel = new Label() { Text = "Name:" };
+            var nameTB = new StringText();
+            nameTB.TextBinding.Bind(_vm, _ => _.ServiceHotWater.DisplayName);
+            layout.AddRow(NameLabel);
+            layout.AddRow(nameTB);
 
             var wPerAreaLabel = new Label() { Text = "Flow/Area:" };
             wPerAreaLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.ServiceHotWaterAbridged), nameof(_dummy.Properties.Energy.ServiceHotWater.FlowPerArea)));
@@ -1057,6 +1113,12 @@ namespace Honeybee.UI.View
             layout.DefaultSpacing = new Size(4, 4);
             //layout.DefaultPadding = new Padding(4);
 
+            // DisplayName
+            var NameLabel = new Label() { Text = "Name:" };
+            var nameTB = new StringText();
+            nameTB.TextBinding.Bind(_vm, _ => _.InternalMass.DisplayName);
+            layout.AddRow(NameLabel);
+            layout.AddRow(nameTB);
 
             var wPerAreaLabel = new Label() { Text = "Area:" };
             wPerAreaLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.InternalMassAbridged), "Area"));
@@ -1106,6 +1168,13 @@ namespace Honeybee.UI.View
 
             layout.DefaultSpacing = new Size(4, 4);
             //layout.DefaultPadding = new Padding(4);
+
+            // DisplayName
+            var NameLabel = new Label() { Text = "Name:" };
+            var nameTB = new StringText();
+            nameTB.TextBinding.Bind(_vm, _ => _.ProcessLoad.DisplayName);
+            layout.AddRow(NameLabel);
+            layout.AddRow(nameTB);
 
             var dummy = new HB.ProcessAbridged("test", 1, "sch", HB.FuelTypes.Electricity);
 
