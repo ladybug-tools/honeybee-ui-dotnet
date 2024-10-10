@@ -387,8 +387,8 @@ namespace Honeybee.UI
 
         public Eto.Forms.RelayCommand ErrorLinkCommand => new Eto.Forms.RelayCommand(() =>
         {
-            //https://docs.pollination.cloud/user-manual/get-started/troubleshooting/help-with-modeling-error-codes#000204
-            var url = @"https://docs.pollination.cloud/user-manual/get-started/troubleshooting/help-with-modeling-error-codes";
+            //https://docs.pollination.solutions/user-manual/get-started/troubleshooting/help-with-modeling-error-codes#000204
+            var url = @"https://docs.pollination.solutions/user-manual/get-started/troubleshooting/help-with-modeling-error-codes";
             if (SelectedError != null)
                 url = $"{url}#{SelectedError.ErrorCode}";
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true });

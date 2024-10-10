@@ -74,7 +74,7 @@ namespace Honeybee.UI
                 //weatherFiles.Bind(_ => _.selected, _vm, _ => _.WeatherFile);
                 weatherFiles.Columns.Add(new GridColumn
                 {
-                    DataCell = new TextBoxCell { Binding = Binding.Delegate<string, string>(r => System.IO.Path.GetFileName( r)) },
+                    DataCell = new TextBoxCell { Binding = Binding.Delegate<string, string>(r => System.IO.Path.GetFileName(r)) },
                     HeaderText = "Name",
                     Width = 200
                 }); 
