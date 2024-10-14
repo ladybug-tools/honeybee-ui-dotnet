@@ -1,8 +1,8 @@
 name: CD
 
-on: 
+on:
   push:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   build:
@@ -11,9 +11,9 @@ jobs:
 
     steps:
       - name: "Checkout Master Branch"
-        uses: actions/checkout@v2
-  
-      - name: Compile  
+        uses: actions/checkout@v4
+
+      - name: Compile
         working-directory: src/Honeybee.UI
         run: |
           dotnet build Honeybee.UI.csproj --configuration Release /nowarn:CS0472,CS0108 --force --no-incremental
@@ -23,16 +23,11 @@ jobs:
         run: |
           Compress-Archive -U -Path src\Honeybee.UI\bin\Release\* -DestinationPath HoneybeeUI
 
-      # this is for fixing semantic-release-action
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 14
-
-      - uses: cycjimmy/semantic-release-action@v3
+      - uses: cycjimmy/semantic-release-action@v4
         id: semantic
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      
+
       - name: Deploy
         if: steps.semantic.outputs.new_release_published == 'true'
         working-directory: src/Honeybee.UI
@@ -40,7 +35,7 @@ jobs:
           echo "Removing existing builds"
           dotnet clean Honeybee.UI.csproj -c Release
           rm -r -fo bin
-         
+
           echo "Rebuilding Honeybee.UI with the new version......"
           dotnet build Honeybee.UI.csproj -p:Version=${{ steps.semantic.outputs.new_release_version }} --configuration Release --force
           echo "Deploying Honeybee.UI......"
