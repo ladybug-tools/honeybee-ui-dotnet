@@ -14,10 +14,6 @@
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="$(Configuration.StartsWith(`Release`))">
-		<DebugType>None</DebugType>
-		<DebugSymbols>False</DebugSymbols>
-	</PropertyGroup>
 	
 	<ItemGroup>
 		<None Remove="EmbeddedResources\honeybee.ico" />
