@@ -1,5 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+	<PropertyGroup Condition="$(Configuration.StartsWith(`Release`))">
+		<Optimization>true</Optimization>
+		<DebugSymbols>false</DebugSymbols>
+		<DebugType>none</DebugType>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<PackageReference Include="LBT.Newtonsoft.Json" Version="12.0.3.23910"/>
 		<PackageReference Include="HoneybeeSchema" Version="*" />
