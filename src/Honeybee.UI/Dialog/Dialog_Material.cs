@@ -36,7 +36,32 @@ namespace Honeybee.UI
                 locked.Checked = lockedMode;
 
                 var OkButton = new Button { Text = "OK", Enabled = !lockedMode };
-                OkButton.Click += (sender, e) => OkCommand.Execute(_hbObj);
+                OkButton.Click += (sender, e) => 
+                { 
+                    if (_hbObj is HoneybeeSchema.EnergyMaterial em)
+                    {
+                        try
+                        {
+                            if (em.Thickness == 0)
+                            {
+                                Dialog_Message.Show(this, $"Material layer \"{em.Identifier}\" cannot have zero thickness.");
+                                return;
+                            }
+                            if (em.Conductivity/em.Thickness <= 200000)
+                            {
+                                Dialog_Message.Show(this, $"Material layer \"{em.Identifier}\" does not have sufficient thermal resistance. Either increase the thickness or remove it from the construction.");
+                                return;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Dialog_Message.Show(this, ex);
+                            return;
+                            //throw;
+                        }
+                    }
+                    OkCommand.Execute(_hbObj); 
+                };
 
                 AbortButton = new Button { Text = "Cancel" };
                 AbortButton.Click += (sender, e) => Close();
