@@ -4,25 +4,26 @@ using HB = HoneybeeSchema;
 using System.Collections.Generic;
 using System.Linq;
 using HoneybeeSchema;
+using System.IO;
 
 namespace Honeybee.UI
 {
     internal class ScheduleRulesetManagerViewModel : ManagerBaseViewModel<ScheduleRulesetViewData>
     {
-      
+
         private HB.ModelEnergyProperties _modelEnergyProperties { get; set; }
         private List<ScheduleTypeLimit> _typeLimits;
         private static ManagerItemComparer<ScheduleRulesetViewData> _viewDataComparer = new ManagerItemComparer<ScheduleRulesetViewData>();
 
-        public ScheduleRulesetManagerViewModel(HB.ModelEnergyProperties libSource, Control control = default):base(control)
+        public ScheduleRulesetManagerViewModel(HB.ModelEnergyProperties libSource, Control control = default) : base(control)
         {
             _modelEnergyProperties = libSource;
 
-            libSource.AddScheduleTypeLimits(HB.Helper.EnergyLibrary.UserScheduleTypeLimits); 
+            libSource.AddScheduleTypeLimits(HB.Helper.EnergyLibrary.UserScheduleTypeLimits);
             libSource.AddScheduleTypeLimits(ModelEnergyProperties.Default.ScheduleTypeLimits);
             var schTypes = libSource.ScheduleTypeLimits;
             _typeLimits = schTypes.Select(_ => _.DuplicateScheduleTypeLimit()).ToList();
-            
+
 
 
             this._userData = libSource.ScheduleList.OfType<ScheduleRulesetAbridged>().Select(_ => new ScheduleRulesetViewData(_, ref _typeLimits)).ToList();
@@ -30,7 +31,7 @@ namespace Honeybee.UI
                 .Concat(ModelEnergyProperties.Default.Schedules.OfType<ScheduleRulesetAbridged>().Select(_ => new ScheduleRulesetViewData(_, ref _typeLimits))).ToList();
             this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
 
-         
+
             ResetDataCollection();
 
         }
@@ -45,7 +46,7 @@ namespace Honeybee.UI
 
             return realObj;
         }
-        
+
 
         public void UpdateLibSource()
         {
@@ -91,7 +92,7 @@ namespace Honeybee.UI
             return itemsToReturn;
         }
 
-      
+
         public RelayCommand AddCommand => new RelayCommand(() =>
         {
             var sch = DialogHelper.CreateSchedule(_control);
@@ -166,7 +167,7 @@ namespace Honeybee.UI
             var realObj = AbridgedToReal(dup);
             var dialog = new Honeybee.UI.Dialog_Schedule(realObj, selected.Locked);
             var dialog_rc = dialog.ShowModal(_control);
-       
+
             if (dialog_rc == null) return;
             var newItem = CheckObjID(dialog_rc, selected.Identifier);
             var index = _userData.IndexOf(selected);
@@ -201,7 +202,39 @@ namespace Honeybee.UI
                 ResetDataCollection();
             }
         });
+
         public RelayCommand ExportCommand => new RelayCommand(() =>
+        {
+            try
+            {
+                var contextMenu = new ContextMenu();
+
+                // quick construction with simple material
+                contextMenu.Items.Add(
+                      new Eto.Forms.ButtonMenuItem()
+                      {
+                          Text = "Save as a JSON file",
+                          Command = ExportToFileCommand
+                      });
+                contextMenu.Items.Add(
+                    new Eto.Forms.ButtonMenuItem()
+                    {
+                        Text = "Save to User Folder",
+                        ToolTip = "Save to %appdata%\\ladybug_tools\\standards",
+                        Command = ExportToUserFolderCommand
+                    });
+
+                contextMenu.Show();
+
+            }
+            catch (Exception ex)
+            {
+                Dialog_Message.Show(_control, ex);
+            }
+
+        });
+
+        public RelayCommand ExportToFileCommand => new RelayCommand(() =>
         {
             try
             {
@@ -214,7 +247,7 @@ namespace Honeybee.UI
                 var container = new HB.ModelEnergyProperties();
                 container.AddSchedules(schs);
                 container.AddScheduleTypeLimits(typeLimits);
-                
+
                 var json = container.ToJson();
 
                 var fd = new Eto.Forms.SaveFileDialog();
@@ -236,11 +269,41 @@ namespace Honeybee.UI
             }
 
         });
+
+        public RelayCommand ExportToUserFolderCommand => new RelayCommand(() =>
+        {
+            try
+            {
+                var inModelData = this._userData.Where(_ => _.IsInModelUserlib);
+                if (!inModelData.Any())
+                    throw new ArgumentException("There is no user's custom data found!");
+
+                var schs = inModelData.Select(_ => _.ScheduleRuleset).ToList();
+                var typeLimits = inModelData.Select(_ => _.TypeLimitObj).Distinct().Where(_ => _ != null);
+                var container = new HB.ModelEnergyProperties();
+                container.AddSchedules(schs);
+                container.AddScheduleTypeLimits(typeLimits);
+
+                var engfile = System.IO.Path.Combine(Path.GetTempPath(), "PO_CustomEnergyResources.json");
+                if (File.Exists(engfile))
+                    File.Delete(engfile);
+                System.IO.File.WriteAllText(engfile, container.ToJson());
+
+                var done = HoneybeeSchema.Helper.EnergyLibrary.AddEnergyCustomLib(engfile, out var log);
+                Dialog_Message.Show(_control, log);
+
+            }
+            catch (Exception ex)
+            {
+                Dialog_Message.Show(_control, ex);
+            }
+
+        });
     }
 
 
 
-    internal class ScheduleRulesetViewData: ManagerViewDataBase
+    internal class ScheduleRulesetViewData : ManagerViewDataBase
     {
         public string TypeLimit { get; }
         public string Source { get; } = "Model";
@@ -265,11 +328,11 @@ namespace Honeybee.UI
         {
             this.Identifier = c.Identifier;
             this.Name = c.DisplayName ?? c.Identifier;
-          
+
             this.ScheduleRuleset = c;
 
             var typeLimit = libSource.FirstOrDefault(_ => _.Identifier == c.ScheduleTypeLimit);
-            this.TypeLimit =  (typeLimit?.DisplayName ?? typeLimit?.Identifier) ?? ReservedText.Unspecified;
+            this.TypeLimit = (typeLimit?.DisplayName ?? typeLimit?.Identifier) ?? ReservedText.Unspecified;
             this.TypeLimitObj = typeLimit;
             this.SearchableText = $"{this.Name}_{this.TypeLimit}";
 
@@ -288,7 +351,7 @@ namespace Honeybee.UI
 
             this.TypeLimitObj = c.ScheduleTypeLimit;
             this.TypeLimit = (TypeLimitObj?.DisplayName ?? TypeLimitObj?.Identifier) ?? ReservedText.Unspecified;
-        
+
             this.SearchableText = $"{this.Name}_{this.TypeLimit}";
 
             //check if system library
@@ -308,7 +371,7 @@ namespace Honeybee.UI
 
         internal HB.ModelEnergyProperties CheckResources()
         {
-            
+
             var eng = new ModelEnergyProperties();
             eng.AddSchedule(this.ScheduleRuleset);
             if (this.TypeLimitObj != null)

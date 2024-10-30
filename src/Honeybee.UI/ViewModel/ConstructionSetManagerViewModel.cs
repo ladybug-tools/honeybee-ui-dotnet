@@ -4,6 +4,7 @@ using HB = HoneybeeSchema;
 using System.Collections.Generic;
 using System.Linq;
 using HoneybeeSchema;
+using System.IO;
 
 namespace Honeybee.UI
 {
@@ -12,7 +13,7 @@ namespace Honeybee.UI
         private HB.ModelEnergyProperties _modelEnergyProperties { get; set; }
 
         private static ManagerItemComparer<ConstructionSetViewData> _viewDataComparer = new ManagerItemComparer<ConstructionSetViewData>();
-        public ConstructionSetManagerViewModel(HB.ModelEnergyProperties libSource, Control control = default):base(control)
+        public ConstructionSetManagerViewModel(HB.ModelEnergyProperties libSource, Control control = default) : base(control)
         {
             _modelEnergyProperties = libSource;
 
@@ -20,7 +21,7 @@ namespace Honeybee.UI
             this._systemData = SystemEnergyLib.ConstructionSetList.OfType<ConstructionSetAbridged>().Select(_ => new ConstructionSetViewData(_)).ToList();
             this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
 
-         
+
             ResetDataCollection();
         }
 
@@ -68,7 +69,7 @@ namespace Honeybee.UI
             var name = $"New Construction Set {id}";
             var newItem = new ConstructionSetAbridged(id, name);
             var lib = this._modelEnergyProperties;
-            var dialog = new Honeybee.UI.Dialog_ConstructionSet(ref lib, newItem, editID:true);
+            var dialog = new Honeybee.UI.Dialog_ConstructionSet(ref lib, newItem, editID: true);
             var dialog_rc = dialog.ShowModal(_control);
 
             if (dialog_rc != null)
@@ -177,6 +178,37 @@ namespace Honeybee.UI
         {
             try
             {
+                var contextMenu = new ContextMenu();
+
+                // quick construction with simple material
+                contextMenu.Items.Add(
+                      new Eto.Forms.ButtonMenuItem()
+                      {
+                          Text = "Save as a JSON file",
+                          Command = ExportToFileCommand
+                      });
+                contextMenu.Items.Add(
+                    new Eto.Forms.ButtonMenuItem()
+                    {
+                        Text = "Save to User Folder",
+                        ToolTip = "Save to %appdata%\\ladybug_tools\\standards",
+                        Command = ExportToUserFolderCommand
+                    });
+
+                contextMenu.Show();
+
+            }
+            catch (Exception ex)
+            {
+                Dialog_Message.Show(_control, ex);
+            }
+
+        });
+
+        public RelayCommand ExportToFileCommand => new RelayCommand(() =>
+        {
+            try
+            {
                 var inModelData = this._userData.Where(_ => _.IsInModelUserlib).Select(_ => _.ConstructionSet).ToList();
                 if (!inModelData.Any())
                     throw new ArgumentException("There is no user's custom data found!");
@@ -205,11 +237,36 @@ namespace Honeybee.UI
 
         });
 
+        public RelayCommand ExportToUserFolderCommand => new RelayCommand(() =>
+        {
+            try
+            {
+                var inModelData = this._userData.Where(_ => _.IsInModelUserlib).Select(_ => _.ConstructionSet).ToList();
+                if (!inModelData.Any())
+                    throw new ArgumentException("There is no user's custom data found!");
+                var container = new HB.ModelEnergyProperties();
+                container.AddConstructionSets(inModelData);
+
+                var engfile = System.IO.Path.Combine(Path.GetTempPath(), "PO_CustomEnergyResources.json");
+                if (File.Exists(engfile))
+                    File.Delete(engfile);
+                System.IO.File.WriteAllText(engfile, container.ToJson());
+
+                var done = HoneybeeSchema.Helper.EnergyLibrary.AddEnergyCustomLib(engfile, out var log);
+                Dialog_Message.Show(_control, log);
+
+            }
+            catch (Exception ex)
+            {
+                Dialog_Message.Show(_control, ex);
+            }
+
+        });
     }
 
 
 
-    internal class ConstructionSetViewData: ManagerViewDataBase
+    internal class ConstructionSetViewData : ManagerViewDataBase
     {
         public bool HasWallSet { get; }
         public bool HasApertureSet { get; }
@@ -236,7 +293,7 @@ namespace Honeybee.UI
         {
             this.Identifier = c.Identifier;
             this.Name = c.DisplayName ?? c.Identifier;
-          
+
             this.ConstructionSet = c;
             this.HasWallSet = c.WallSet != null;
             this.HasApertureSet = c.ApertureSet != null;
@@ -265,13 +322,13 @@ namespace Honeybee.UI
             var cSet = this.ConstructionSet;
             // get constructions
             var cNames = cSet.GetAllConstructions();
-            var cons = cNames.Select(_ => systemLibSource.ConstructionList.FirstOrDefault(c => c.Identifier == _)).Where(_=> _ != null);
+            var cons = cNames.Select(_ => systemLibSource.ConstructionList.FirstOrDefault(c => c.Identifier == _)).Where(_ => _ != null);
             eng.AddConstructions(cons);
 
             // get all materials
             var mats = cons
                 .SelectMany(_ => _.GetAbridgedConstructionMaterials())
-                .Select(_ => systemLibSource.MaterialList.FirstOrDefault(m => m.Identifier == _)).Where(_=> _ != null);
+                .Select(_ => systemLibSource.MaterialList.FirstOrDefault(m => m.Identifier == _)).Where(_ => _ != null);
 
             eng.AddMaterials(mats);
 

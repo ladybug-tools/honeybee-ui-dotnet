@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
 using HoneybeeSchema;
+using System.IO;
 
 namespace Honeybee.UI
 {
@@ -14,7 +15,7 @@ namespace Honeybee.UI
 
         private static ManagerItemComparer<MaterialViewData> _viewDataComparer = new ManagerItemComparer<MaterialViewData>();
 
-        public MaterialManagerViewModel(HB.ModelEnergyProperties libSource, Control control = default):base(control)
+        public MaterialManagerViewModel(HB.ModelEnergyProperties libSource, Control control = default) : base(control)
         {
             _modelEnergyProperties = libSource;
 
@@ -84,7 +85,7 @@ namespace Honeybee.UI
             return itemsToReturn;
         }
 
-    
+
 
         private void EditNewMaterialDialog(HB.Energy.IMaterial material)
         {
@@ -97,7 +98,8 @@ namespace Honeybee.UI
             }
 
         }
-        public ICommand AddNoMassMaterialCommand => new RelayCommand(() => {
+        public ICommand AddNoMassMaterialCommand => new RelayCommand(() =>
+        {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"New Opaque (No Mass) {id}";
             // R10
@@ -107,42 +109,48 @@ namespace Honeybee.UI
         });
 
 
-        public ICommand AddOpaqueMaterialCommand => new RelayCommand(() => {
+        public ICommand AddOpaqueMaterialCommand => new RelayCommand(() =>
+        {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"New Opaque (Concrete) {id}";
             var newObj = new EnergyMaterial(id, 0.1016, 2.3085, 2322.0053, 831.4635, displayName: name);
             EditNewMaterialDialog(newObj);
         });
 
-        public ICommand AddGlassMaterialCommand => new RelayCommand(() => {
+        public ICommand AddGlassMaterialCommand => new RelayCommand(() =>
+        {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"New Glass {id}";
             var newObj = new EnergyWindowMaterialGlazing(id, displayName: name);
             EditNewMaterialDialog(newObj);
         });
 
-        public ICommand AddWindowGapMaterialCommand => new RelayCommand(() => {
+        public ICommand AddWindowGapMaterialCommand => new RelayCommand(() =>
+        {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"New Window Gap {id}";
             var newObj = new EnergyWindowMaterialGas(id, displayName: name);
             EditNewMaterialDialog(newObj);
         });
 
-        public ICommand AddWindowGapCustomMaterialCommand => new RelayCommand(() => {
+        public ICommand AddWindowGapCustomMaterialCommand => new RelayCommand(() =>
+        {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"New Window Gap (Custom) {id}";
             var newObj = new EnergyWindowMaterialGasCustom(id, 0, 0, 0, 0, 20, displayName: name);
             EditNewMaterialDialog(newObj);
         });
 
-        public ICommand AddWindowShadeMaterialCommand => new RelayCommand(() => {
+        public ICommand AddWindowShadeMaterialCommand => new RelayCommand(() =>
+        {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"New Window Shade {id}";
             var newObj = new EnergyWindowMaterialShade(id, displayName: name);
             EditNewMaterialDialog(newObj);
         });
 
-        public ICommand AddWindowBlindMaterialCommand => new RelayCommand(() => {
+        public ICommand AddWindowBlindMaterialCommand => new RelayCommand(() =>
+        {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"New Window Blind {id}";
             var newObj = new EnergyWindowMaterialBlind(id, displayName: name);
@@ -150,15 +158,17 @@ namespace Honeybee.UI
         });
 
 
-        public ICommand AddSimpleWindowMaterialCommand => new RelayCommand(() => {
+        public ICommand AddSimpleWindowMaterialCommand => new RelayCommand(() =>
+        {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"New Simple Window {id}";
             var newObj = new EnergyWindowMaterialSimpleGlazSys(id, 2, 0.55, displayName: name);
             EditNewMaterialDialog(newObj);
         });
 
-  
-        public ICommand AddWindowGasMixtureMaterialShadeCommand => new RelayCommand(() => {
+
+        public ICommand AddWindowGasMixtureMaterialShadeCommand => new RelayCommand(() =>
+        {
             MessageBox.Show(_control, $"Working in progress.");
             //var id = Guid.NewGuid().ToString();
             //var name = $"New Simple Window {id.Substring(0, 5)}";
@@ -200,7 +210,7 @@ namespace Honeybee.UI
                         Command = item.Value
                     });
                 }
-              
+
             }
             contextMenu.Show();
         });
@@ -213,7 +223,7 @@ namespace Honeybee.UI
                 MessageBox.Show(_control, "Nothing is selected to duplicate!");
                 return;
             }
-           
+
             var dup = selected.Material.Duplicate() as HB.Energy.IMaterial;
             var name = $"{dup.Identifier}_dup";
             dup.Identifier = Guid.NewGuid().ToString().Substring(0, 5);
@@ -277,7 +287,38 @@ namespace Honeybee.UI
         {
             try
             {
-                var inModelData = this._userData.Where(_=>_.IsInModelUserlib).Select(_ => _.Material).ToList();
+                var contextMenu = new ContextMenu();
+
+                // quick construction with simple material
+                contextMenu.Items.Add(
+                      new Eto.Forms.ButtonMenuItem()
+                      {
+                          Text = "Save as a JSON file",
+                          Command = ExportToFileCommand
+                      });
+                contextMenu.Items.Add(
+                    new Eto.Forms.ButtonMenuItem()
+                    {
+                        Text = "Save to User Folder",
+                        ToolTip = "Save to %appdata%\\ladybug_tools\\standards",
+                        Command = ExportToUserFolderCommand
+                    });
+
+                contextMenu.Show();
+
+            }
+            catch (Exception ex)
+            {
+                Dialog_Message.Show(_control, ex);
+            }
+
+        });
+
+        public RelayCommand ExportToFileCommand => new RelayCommand(() =>
+        {
+            try
+            {
+                var inModelData = this._userData.Where(_ => _.IsInModelUserlib).Select(_ => _.Material).ToList();
                 if (!inModelData.Any())
                     throw new ArgumentException("There is no user's custom data found!");
                 var container = new HB.ModelEnergyProperties();
@@ -286,14 +327,14 @@ namespace Honeybee.UI
                 var json = container.ToJson();
 
                 var fd = new Eto.Forms.SaveFileDialog();
-                fd.FileName = $"custom_{System.Guid.NewGuid().ToString().Substring(0,5)}";
+                fd.FileName = $"custom_{System.Guid.NewGuid().ToString().Substring(0, 5)}";
                 fd.Filters.Add(new FileFilter("JSON", new[] { "json" }));
                 var rs = fd.ShowDialog(_control);
                 if (rs != DialogResult.Ok)
                     return;
                 var path = fd.FileName;
                 path = System.IO.Path.ChangeExtension(path, "json");
-           
+
                 System.IO.File.WriteAllText(path, json);
 
                 Dialog_Message.Show(_control, $"{inModelData.Count} custom data were exported!");
@@ -305,9 +346,35 @@ namespace Honeybee.UI
 
         });
 
+        public RelayCommand ExportToUserFolderCommand => new RelayCommand(() =>
+        {
+            try
+            {
+                var inModelData = this._userData.Where(_ => _.IsInModelUserlib).Select(_ => _.Material).ToList();
+                if (!inModelData.Any())
+                    throw new ArgumentException("There is no user's custom data found!");
+                var container = new HB.ModelEnergyProperties();
+                container.AddMaterials(inModelData);
+
+                var engfile = System.IO.Path.Combine(Path.GetTempPath(), "PO_CustomEnergyResources.json");
+                if (File.Exists(engfile))
+                    File.Delete(engfile);
+                System.IO.File.WriteAllText(engfile, container.ToJson());
+
+                var done = HoneybeeSchema.Helper.EnergyLibrary.AddEnergyCustomLib(engfile, out var log);
+                Dialog_Message.Show(_control, log);
+
+            }
+            catch (Exception ex)
+            {
+                Dialog_Message.Show(_control, ex);
+            }
+
+        });
+
     }
 
-    internal class MaterialViewData: ManagerViewDataBase
+    internal class MaterialViewData : ManagerViewDataBase
     {
         public string CType { get; }
         public string RValue { get; }
@@ -350,7 +417,7 @@ namespace Honeybee.UI
                 this.RValue = r < 0 ? "Skylight only" : r.ToString();
                 this.UValue = u < 0 ? "Skylight only" : u.ToString();
             }
-            
+
             if (c is HB.EnergyWindowMaterialSimpleGlazSys win)
             {
                 this.UFactor = Units.CheckThermalUnit(Units.UnitType.UValue, win.UFactor).ToString();
@@ -375,7 +442,7 @@ namespace Honeybee.UI
             else if (UserLibIds.Contains(c.Identifier)) this.Source = "User";
         }
 
-    
+
 
     }
 
