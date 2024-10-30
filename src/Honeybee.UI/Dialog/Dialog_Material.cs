@@ -49,7 +49,7 @@ namespace Honeybee.UI
                             }
                             if (em.Conductivity/em.Thickness <= 200000)
                             {
-                                Dialog_Message.Show(this, $"Material layer \"{em.Identifier}\" does not have sufficient thermal resistance. Either increase the thickness or remove it from the construction.");
+                                Dialog_Message.Show(this, $"Material layer \"{em.Identifier}\" does not have sufficient thermal resistance. Increase the thickness.");
                                 return;
                             }
                         }
