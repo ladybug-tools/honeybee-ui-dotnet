@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HoneybeeSchema;
 using System;
+using System.IO;
 
 namespace Honeybee.UI
 {
@@ -12,7 +13,7 @@ namespace Honeybee.UI
         private HB.ModelProperties _modelProperties { get; set; }
         private static ManagerItemComparer<ProgramTypeViewData> _viewDataComparer = new ManagerItemComparer<ProgramTypeViewData>();
 
-        public ProgramTypeManagerViewModel(HB.ModelProperties libSource, Control control = default):base(control)
+        public ProgramTypeManagerViewModel(HB.ModelProperties libSource, Control control = default) : base(control)
         {
             _modelProperties = libSource;
 
@@ -114,7 +115,7 @@ namespace Honeybee.UI
                 MessageBox.Show(_control, "Nothing is selected to duplicate!");
                 return;
             }
-           
+
             var dup = selected.ProgramType.Duplicate() as HB.ProgramTypeAbridged;
             var name = $"{dup.DisplayName ?? dup.Identifier}_dup";
             dup.Identifier = System.Guid.NewGuid().ToString().Substring(0, 5);
@@ -123,7 +124,7 @@ namespace Honeybee.UI
             var lib = this._modelProperties;
             var dialog = new Honeybee.UI.Dialog_ProgramType(ref lib, dup, editID: true);
             var dialog_rc = dialog.ShowModal(_control);
-          
+
             if (dialog_rc != null)
             {
                 AddUserData(dialog_rc);
@@ -148,7 +149,7 @@ namespace Honeybee.UI
             var lib = this._modelProperties;
             var dialog = new Honeybee.UI.Dialog_ProgramType(ref lib, dup, selected.Locked);
             var dialog_rc = dialog.ShowModal(_control);
-         
+
             if (dialog_rc == null) return;
             ReplaceUserData(selected, dialog_rc);
             ResetDataCollection();
@@ -183,6 +184,37 @@ namespace Honeybee.UI
         {
             try
             {
+                var contextMenu = new ContextMenu();
+
+                // quick construction with simple material
+                contextMenu.Items.Add(
+                      new Eto.Forms.ButtonMenuItem()
+                      {
+                          Text = "Save as a JSON file",
+                          Command = ExportToFileCommand
+                      });
+                contextMenu.Items.Add(
+                    new Eto.Forms.ButtonMenuItem()
+                    {
+                        Text = "Save to User Folder",
+                        ToolTip = "Save to %appdata%\\ladybug_tools\\standards",
+                        Command = ExportToUserFolderCommand
+                    });
+
+                contextMenu.Show();
+
+            }
+            catch (Exception ex)
+            {
+                Dialog_Message.Show(_control, ex);
+            }
+
+        });
+
+        public RelayCommand ExportToFileCommand => new RelayCommand(() =>
+        {
+            try
+            {
                 var inModelData = this._userData.Where(_ => _.IsInModelUserlib).Select(_ => _.ProgramType).ToList();
                 if (!inModelData.Any())
                     throw new ArgumentException("There is no user's custom data found!");
@@ -211,11 +243,37 @@ namespace Honeybee.UI
 
         });
 
+        public RelayCommand ExportToUserFolderCommand => new RelayCommand(() =>
+        {
+            try
+            {
+                var inModelData = this._userData.Where(_ => _.IsInModelUserlib).Select(_ => _.ProgramType).ToList();
+                if (!inModelData.Any())
+                    throw new ArgumentException("There is no user's custom data found!");
+                var container = new HB.ModelEnergyProperties();
+                container.AddProgramTypes(inModelData);
+
+                var engfile = System.IO.Path.Combine(Path.GetTempPath(), "PO_CustomEnergyResources.json");
+                if (File.Exists(engfile))
+                    File.Delete(engfile);
+                System.IO.File.WriteAllText(engfile, container.ToJson());
+
+                var done = HoneybeeSchema.Helper.EnergyLibrary.AddEnergyCustomLib(engfile, out var log);
+                Dialog_Message.Show(_control, log);
+
+            }
+            catch (Exception ex)
+            {
+                Dialog_Message.Show(_control, ex);
+            }
+
+        });
+
     }
 
 
 
-    internal class ProgramTypeViewData: ManagerViewDataBase
+    internal class ProgramTypeViewData : ManagerViewDataBase
     {
         public bool HasPeople { get; }
         public bool HasLighting { get; }

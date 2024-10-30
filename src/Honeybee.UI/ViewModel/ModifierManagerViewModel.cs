@@ -5,16 +5,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
 using HoneybeeSchema;
+using System.IO;
 
 namespace Honeybee.UI
 {
     internal class ModifierManagerViewModel : ManagerBaseViewModel<ModifierViewData>
     {
-      
+
         private HB.ModelRadianceProperties _modelEnergyProperties { get; set; }
         private static ManagerItemComparer<ModifierViewData> _viewDataComparer = new ManagerItemComparer<ModifierViewData>();
 
-        public ModifierManagerViewModel(HB.ModelRadianceProperties libSource, Control control = default):base(control)
+        public ModifierManagerViewModel(HB.ModelRadianceProperties libSource, Control control = default) : base(control)
         {
             _modelEnergyProperties = libSource;
 
@@ -27,7 +28,7 @@ namespace Honeybee.UI
 
         }
 
-      
+
         public void UpdateLibSource()
         {
             var newItems = this._userData.Select(_ => _.Modifier);
@@ -77,7 +78,8 @@ namespace Honeybee.UI
             this._allData = _userData.Concat(_systemData).Distinct(_viewDataComparer).ToList();
             ResetDataCollection();
         }
-        public ICommand AddPlasticCommand => new RelayCommand<HB.Radiance.IModifier>((obj) => {
+        public ICommand AddPlasticCommand => new RelayCommand<HB.Radiance.IModifier>((obj) =>
+        {
 
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"Plastic_{id}";
@@ -85,49 +87,56 @@ namespace Honeybee.UI
 
             AddModifier(newModifier);
         });
-        public ICommand AddGlassCommand => new RelayCommand<HB.Radiance.IModifier>((obj) => {
+        public ICommand AddGlassCommand => new RelayCommand<HB.Radiance.IModifier>((obj) =>
+        {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"Glass_{id}";
             var newModifier = obj as Glass ?? new Glass(id, displayName: name);
 
             AddModifier(newModifier);
         });
-        public ICommand AddBSDFCommand => new RelayCommand<HB.Radiance.IModifier>((obj) => {
+        public ICommand AddBSDFCommand => new RelayCommand<HB.Radiance.IModifier>((obj) =>
+        {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"BSDF_{id}";
-            var newModifier = obj as BSDF ?? new BSDF(id, "Replace with your BSDF data", displayName: name); 
+            var newModifier = obj as BSDF ?? new BSDF(id, "Replace with your BSDF data", displayName: name);
 
             AddModifier(newModifier);
         });
-        public ICommand AddGlowCommand => new RelayCommand<HB.Radiance.IModifier>((obj) => {
+        public ICommand AddGlowCommand => new RelayCommand<HB.Radiance.IModifier>((obj) =>
+        {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"Glow_{id}";
             var newModifier = obj as Glow ?? new Glow(id, displayName: name);
 
             AddModifier(newModifier);
         });
-        public ICommand AddLightCommand => new RelayCommand<HB.Radiance.IModifier>((obj) => {
+        public ICommand AddLightCommand => new RelayCommand<HB.Radiance.IModifier>((obj) =>
+        {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"Light_{id}";
-            var newModifier = obj as Light ?? new Light(id,  displayName: name); 
+            var newModifier = obj as Light ?? new Light(id, displayName: name);
 
             AddModifier(newModifier);
         });
-        public ICommand AddTransCommand => new RelayCommand<HB.Radiance.IModifier>((obj) => {
+        public ICommand AddTransCommand => new RelayCommand<HB.Radiance.IModifier>((obj) =>
+        {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"Trans_{id}";
             var newModifier = obj as Trans ?? new Trans(id, displayName: name);
 
             AddModifier(newModifier);
         });
-        public ICommand AddMetalCommand => new RelayCommand<HB.Radiance.IModifier>((obj) => {
+        public ICommand AddMetalCommand => new RelayCommand<HB.Radiance.IModifier>((obj) =>
+        {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"Metal_{id}";
             var newModifier = obj as Metal ?? new Metal(id, displayName: name);
 
             AddModifier(newModifier);
         });
-        public ICommand AddMirrorCommand => new RelayCommand<HB.Radiance.IModifier>((obj) => {
+        public ICommand AddMirrorCommand => new RelayCommand<HB.Radiance.IModifier>((obj) =>
+        {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"Mirror_{id}";
             var newModifier = obj as Mirror ?? new Mirror(id, displayName: name);
@@ -217,7 +226,7 @@ namespace Honeybee.UI
                 MessageBox.Show(_control, "Nothing is selected to edit!");
                 return;
             }
-          
+
             var dup = selected.Modifier.Duplicate() as HB.Radiance.IModifier;
             HB.Radiance.IModifier dialog_rc = DialogHelper.EditModifier(dup, selected.Locked, _control);
 
@@ -260,6 +269,37 @@ namespace Honeybee.UI
         {
             try
             {
+                var contextMenu = new ContextMenu();
+
+                // quick construction with simple material
+                contextMenu.Items.Add(
+                      new Eto.Forms.ButtonMenuItem()
+                      {
+                          Text = "Save as a JSON file",
+                          Command = ExportToFileCommand
+                      });
+                contextMenu.Items.Add(
+                    new Eto.Forms.ButtonMenuItem()
+                    {
+                        Text = "Save to User Folder",
+                        ToolTip = "Save to %appdata%\\ladybug_tools\\standards",
+                        Command = ExportToUserFolderCommand
+                    });
+
+                contextMenu.Show();
+
+            }
+            catch (Exception ex)
+            {
+                Dialog_Message.Show(_control, ex);
+            }
+
+        });
+
+        public RelayCommand ExportToFileCommand => new RelayCommand(() =>
+        {
+            try
+            {
                 var inModelData = this._userData.Where(_ => _.IsInModelUserlib).Select(_ => _.Modifier).ToList();
                 if (!inModelData.Any())
                     throw new ArgumentException("There is no user's custom data found!");
@@ -288,11 +328,37 @@ namespace Honeybee.UI
 
         });
 
+        public RelayCommand ExportToUserFolderCommand => new RelayCommand(() =>
+        {
+            try
+            {
+                var inModelData = this._userData.Where(_ => _.IsInModelUserlib).Select(_ => _.Modifier).ToList();
+                if (!inModelData.Any())
+                    throw new ArgumentException("There is no user's custom data found!");
+                var container = new HB.ModelRadianceProperties();
+                container.AddModifiers(inModelData);
+
+                var engfile = System.IO.Path.Combine(Path.GetTempPath(), "PO_CustomRadianceResources.json");
+                if (File.Exists(engfile))
+                    File.Delete(engfile);
+                System.IO.File.WriteAllText(engfile, container.ToJson());
+
+                var done = HoneybeeSchema.Helper.EnergyLibrary.AddRadianceCustomLib(engfile, out var log);
+                Dialog_Message.Show(_control, log);
+
+            }
+            catch (Exception ex)
+            {
+                Dialog_Message.Show(_control, ex);
+            }
+
+        });
+
     }
 
 
 
-    internal class ModifierViewData: ManagerViewDataBase
+    internal class ModifierViewData : ManagerViewDataBase
     {
         public string CType { get; }
         public string Reflectance { get; }
@@ -318,12 +384,12 @@ namespace Honeybee.UI
             this.Identifier = c.Identifier;
             this.Name = c.DisplayName ?? c.Identifier;
             this.CType = c.GetType().Name;
-          
+
             this.Modifier = c;
             c.CalVisualValues();
 
-            this.Reflectance = c.Reflectance >= 0 ? Math.Round(c.Reflectance, 5).ToString(): string.Empty;
-            this.Transmittance = c.Transmittance >=0 ? Math.Round(c.Transmittance, 5).ToString(): string.Empty;
+            this.Reflectance = c.Reflectance >= 0 ? Math.Round(c.Reflectance, 5).ToString() : string.Empty;
+            this.Transmittance = c.Transmittance >= 0 ? Math.Round(c.Transmittance, 5).ToString() : string.Empty;
             this.Emittance = c.Emittance >= 0 ? Math.Round(c.Emittance, 5).ToString() : string.Empty;
 
             this.SearchableText = $"{this.Name}_{this.CType}";

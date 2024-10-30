@@ -4,6 +4,7 @@ using HB = HoneybeeSchema;
 using System.Collections.Generic;
 using System.Linq;
 using HoneybeeSchema;
+using System.IO;
 
 namespace Honeybee.UI
 {
@@ -12,7 +13,7 @@ namespace Honeybee.UI
         private HB.ModelRadianceProperties _modelRadianceProperties { get; set; }
         private static ManagerItemComparer<ModifierSetViewData> _viewDataComparer = new ManagerItemComparer<ModifierSetViewData>();
 
-        public ModifierSetManagerViewModel(HB.ModelRadianceProperties libSource, Control control = default):base(control)
+        public ModifierSetManagerViewModel(HB.ModelRadianceProperties libSource, Control control = default) : base(control)
         {
             _modelRadianceProperties = libSource;
 
@@ -159,7 +160,39 @@ namespace Honeybee.UI
             }
         });
 
+
         public RelayCommand ExportCommand => new RelayCommand(() =>
+        {
+            try
+            {
+                var contextMenu = new ContextMenu();
+
+                // quick construction with simple material
+                contextMenu.Items.Add(
+                      new Eto.Forms.ButtonMenuItem()
+                      {
+                          Text = "Save as a JSON file",
+                          Command = ExportToFileCommand
+                      });
+                contextMenu.Items.Add(
+                    new Eto.Forms.ButtonMenuItem()
+                    {
+                        Text = "Save to User Folder",
+                        ToolTip = "Save to %appdata%\\ladybug_tools\\standards",
+                        Command = ExportToUserFolderCommand
+                    });
+
+                contextMenu.Show();
+
+            }
+            catch (Exception ex)
+            {
+                Dialog_Message.Show(_control, ex);
+            }
+
+        });
+
+        public RelayCommand ExportToFileCommand => new RelayCommand(() =>
         {
             try
             {
@@ -191,11 +224,36 @@ namespace Honeybee.UI
 
         });
 
+        public RelayCommand ExportToUserFolderCommand => new RelayCommand(() =>
+        {
+            try
+            {
+                var inModelData = this._userData.Where(_ => _.IsInModelUserlib).Select(_ => _.ModifierSet).ToList();
+                if (!inModelData.Any())
+                    throw new ArgumentException("There is no user's custom data found!");
+                var container = new HB.ModelRadianceProperties();
+                container.AddModifierSets(inModelData);
+
+                var engfile = System.IO.Path.Combine(Path.GetTempPath(), "PO_CustomRadianceResources.json");
+                if (File.Exists(engfile))
+                    File.Delete(engfile);
+                System.IO.File.WriteAllText(engfile, container.ToJson());
+
+                var done = HoneybeeSchema.Helper.EnergyLibrary.AddRadianceCustomLib(engfile, out var log);
+                Dialog_Message.Show(_control, log);
+
+            }
+            catch (Exception ex)
+            {
+                Dialog_Message.Show(_control, ex);
+            }
+
+        });
     }
 
 
 
-    internal class ModifierSetViewData: ManagerViewDataBase
+    internal class ModifierSetViewData : ManagerViewDataBase
     {
         public bool HasWallSet { get; }
         public bool HasApertureSet { get; }
@@ -224,7 +282,7 @@ namespace Honeybee.UI
         {
             this.Identifier = c.Identifier;
             this.Name = c.DisplayName ?? c.Identifier;
-          
+
             this.ModifierSet = c;
             this.HasWallSet = c.WallSet != null;
             this.HasApertureSet = c.ApertureSet != null;

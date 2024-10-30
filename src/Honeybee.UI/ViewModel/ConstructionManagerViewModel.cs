@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
 using HoneybeeSchema;
+using System.IO;
 
 namespace Honeybee.UI
 {
@@ -13,7 +14,7 @@ namespace Honeybee.UI
         private HB.ModelEnergyProperties _modelEnergyProperties { get; set; }
         private static ManagerItemComparer<ConstructionViewData> _viewDataComparer = new ManagerItemComparer<ConstructionViewData>();
 
-        public ConstructionManagerViewModel(HB.ModelEnergyProperties libSource, Control control = default):base(control)
+        public ConstructionManagerViewModel(HB.ModelEnergyProperties libSource, Control control = default) : base(control)
         {
             _modelEnergyProperties = libSource;
 
@@ -70,7 +71,7 @@ namespace Honeybee.UI
             this._modelEnergyProperties.AddConstructions(newItems);
         }
 
-        public List<HB.Energy.IConstruction> GetUserItems(bool selectedOnly) 
+        public List<HB.Energy.IConstruction> GetUserItems(bool selectedOnly)
         {
 
             UpdateLibSource();
@@ -91,7 +92,7 @@ namespace Honeybee.UI
                     var engLib = d.CheckResources(SystemEnergyLib);
                     this._modelEnergyProperties.MergeWith(engLib);
                 }
-               
+
                 itemsToReturn.Add(d.Construction);
             }
             else
@@ -102,10 +103,10 @@ namespace Honeybee.UI
         }
 
 
-     
+
         private void ShowConstructionDialog(HB.Energy.IConstruction c, bool isIDEditable)
         {
-           
+
             var selectedObj = c;
             HB.Energy.IConstruction dialog_rc;
             if (selectedObj is HB.ShadeConstruction shd)
@@ -135,7 +136,8 @@ namespace Honeybee.UI
             }
         }
 
-        public ICommand AddSimpleOpaqueConstructionCommand => new RelayCommand(() => {
+        public ICommand AddSimpleOpaqueConstructionCommand => new RelayCommand(() =>
+        {
             // new simple material
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"Opaque (No Mass) {id}";
@@ -161,7 +163,8 @@ namespace Honeybee.UI
         });
 
 
-        public ICommand AddSimpleWindowConstructionCommand => new RelayCommand(() => {
+        public ICommand AddSimpleWindowConstructionCommand => new RelayCommand(() =>
+        {
 
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"Simple Window {id}";
@@ -185,7 +188,8 @@ namespace Honeybee.UI
         });
 
 
-        public ICommand AddOpaqueConstructionCommand => new RelayCommand(() => {
+        public ICommand AddOpaqueConstructionCommand => new RelayCommand(() =>
+        {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"New Opaque Construction {id}";
             var newConstrucion = new HB.OpaqueConstructionAbridged(id, new List<string>(), name);
@@ -193,16 +197,18 @@ namespace Honeybee.UI
             ShowConstructionDialog(newConstrucion, true);
         });
 
-     
 
-        public ICommand AddWindowConstructionCommand => new RelayCommand(() => {
+
+        public ICommand AddWindowConstructionCommand => new RelayCommand(() =>
+        {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"New Window Construction {id}";
             var newConstrucion = new HB.WindowConstructionAbridged(id, new List<string>(), name);
 
             ShowConstructionDialog(newConstrucion, true);
         });
-        public ICommand AddShadeConstructionCommand => new RelayCommand(() => {
+        public ICommand AddShadeConstructionCommand => new RelayCommand(() =>
+        {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"New Shade Construction {id}";
             var newConstrucion = new HB.ShadeConstruction(id, name);
@@ -210,7 +216,8 @@ namespace Honeybee.UI
             ShowConstructionDialog(newConstrucion, true);
         });
 
-        public ICommand AddAirBoundaryConstructionCommand => new RelayCommand(() => {
+        public ICommand AddAirBoundaryConstructionCommand => new RelayCommand(() =>
+        {
             var id = Guid.NewGuid().ToString().Substring(0, 5);
             var name = $"New AirBoundary Construction {id}";
             var newConstrucion = new HB.AirBoundaryConstructionAbridged(id, name);
@@ -218,7 +225,8 @@ namespace Honeybee.UI
             ShowConstructionDialog(newConstrucion, true);
         });
 
-        public ICommand AddWindowConstructionShadeCommand => new RelayCommand(() => {
+        public ICommand AddWindowConstructionShadeCommand => new RelayCommand(() =>
+        {
             //var id = Guid.NewGuid().ToString();
             //var name = $"New AirBoundary Construction {id.Substring(0, 5)}";
             //var newConstrucion = new HB.WindowConstructionShadeAbridged(name, name);
@@ -282,7 +290,7 @@ namespace Honeybee.UI
                 MessageBox.Show(_control, "Nothing is selected to duplicate!");
                 return;
             }
-           
+
             var dup = selected.Construction.Duplicate() as HB.Energy.IConstruction;
             var name = $"{dup.Identifier}_dup";
             dup.Identifier = Guid.NewGuid().ToString().Substring(0, 5);
@@ -361,6 +369,38 @@ namespace Honeybee.UI
         {
             try
             {
+                var contextMenu = new ContextMenu();
+
+                // quick construction with simple material
+                contextMenu.Items.Add(
+                      new Eto.Forms.ButtonMenuItem()
+                      {
+                          Text = "Save as a JSON file",
+                          Command = ExportToFileCommand
+                      });
+                contextMenu.Items.Add(
+                    new Eto.Forms.ButtonMenuItem()
+                    {
+                        Text = "Save to User Folder",
+                        ToolTip = "Save to %appdata%\\ladybug_tools\\standards",
+                        Command = AddSimpleWindowConstructionCommand
+                    });
+
+                contextMenu.Show();
+
+            }
+            catch (Exception ex)
+            {
+                Dialog_Message.Show(_control, ex);
+            }
+
+        });
+
+
+        public RelayCommand ExportToFileCommand => new RelayCommand(() =>
+        {
+            try
+            {
                 var inModelData = this._userData.Where(_ => _.IsInModelUserlib).Select(_ => _.Construction).ToList();
                 if (!inModelData.Any())
                     throw new ArgumentException("There is no user's custom data found!");
@@ -370,7 +410,7 @@ namespace Honeybee.UI
                 var json = container.ToJson();
 
                 var fd = new Eto.Forms.SaveFileDialog();
-                fd.FileName = $"custom_{System.Guid.NewGuid().ToString().Substring(0,5)}";
+                fd.FileName = $"custom_{System.Guid.NewGuid().ToString().Substring(0, 5)}";
                 fd.Filters.Add(new FileFilter("JSON", new[] { "json" }));
                 var rs = fd.ShowDialog(_control);
                 if (rs != DialogResult.Ok)
@@ -381,6 +421,32 @@ namespace Honeybee.UI
                 System.IO.File.WriteAllText(path, json);
 
                 Dialog_Message.Show(_control, $"{inModelData.Count} custom data were exported!");
+            }
+            catch (Exception ex)
+            {
+                Dialog_Message.Show(_control, ex);
+            }
+
+        });
+
+        public RelayCommand ExportToUserFolderCommand => new RelayCommand(() =>
+        {
+            try
+            {
+                var inModelData = this._userData.Where(_ => _.IsInModelUserlib).Select(_ => _.Construction).ToList();
+                if (!inModelData.Any())
+                    throw new ArgumentException("There is no user's custom data found!");
+                var container = new HB.ModelEnergyProperties();
+                container.AddConstructions(inModelData);
+
+                var engfile = System.IO.Path.Combine(Path.GetTempPath(), "PO_CustomEnergyResources.json");
+                if (File.Exists(engfile))
+                    File.Delete(engfile);
+                System.IO.File.WriteAllText(engfile, container.ToJson());
+
+                var done = HoneybeeSchema.Helper.EnergyLibrary.AddEnergyCustomLib(engfile, out var log);
+                Dialog_Message.Show(_control, log);
+
             }
             catch (Exception ex)
             {
@@ -466,10 +532,10 @@ namespace Honeybee.UI
 
             eng.AddMaterials(mats);
             return eng.DuplicateModelEnergyProperties();
-          
+
         }
 
-       
+
     }
 
 }
