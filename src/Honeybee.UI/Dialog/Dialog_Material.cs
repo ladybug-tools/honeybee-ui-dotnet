@@ -36,32 +36,7 @@ namespace Honeybee.UI
                 locked.Checked = lockedMode;
 
                 var OkButton = new Button { Text = "OK", Enabled = !lockedMode };
-                OkButton.Click += (sender, e) => 
-                { 
-                    if (_hbObj is HoneybeeSchema.EnergyMaterial em)
-                    {
-                        try
-                        {
-                            if (em.Thickness == 0)
-                            {
-                                Dialog_Message.Show(this, $"Material layer \"{em.Identifier}\" cannot have zero thickness.");
-                                return;
-                            }
-                            if (em.Conductivity/em.Thickness <= 200000)
-                            {
-                                Dialog_Message.Show(this, $"Material layer \"{em.Identifier}\" does not have sufficient thermal resistance. Increase the thickness.");
-                                return;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Dialog_Message.Show(this, ex);
-                            return;
-                            //throw;
-                        }
-                    }
-                    OkCommand.Execute(_hbObj); 
-                };
+                OkButton.Click += (sender, e) => OkCommand.Execute(_hbObj);
 
                 AbortButton = new Button { Text = "Cancel" };
                 AbortButton.Click += (sender, e) => Close();
@@ -127,13 +102,13 @@ namespace Honeybee.UI
             name.TextBinding.Bind(() => hbObj.DisplayName, (v) => hbObj.DisplayName = v);
             var nameLabel = new Label() { Text = "Name" };
             var nameDescription = HoneybeeSchema.SummaryAttribute.GetSummary(hbObjType, nameof(hbObj.DisplayName));
-            nameLabel.ToolTip = Utility.NiceDescription( nameDescription);
+            nameLabel.ToolTip = Utility.NiceDescription(nameDescription);
             panel.AddRow(nameLabel, name);
 
             var rUnit = _RValueUnit.displayUnit.ToUnitsNetEnum().GetAbbreviation();
             var uUnit = _UValueUnit.displayUnit.ToUnitsNetEnum().GetAbbreviation();
 
-            var rLabel = new Label() { Text = $"RValue [{rUnit}]" }; 
+            var rLabel = new Label() { Text = $"RValue [{rUnit}]" };
             var uLabel = new Label() { Text = $"UValue [{uUnit}]" };
             _r_value = new TextBox() { Enabled = false, PlaceholderText = "Not available" };
             _u_value = new TextBox() { Enabled = false, PlaceholderText = "Not available" };
@@ -158,7 +133,7 @@ namespace Honeybee.UI
                 {
                     var textBox = new TextBox();
                     textBox.TextBinding.Bind(() => stringvalue, (v) => item.SetValue(hbObj, v));
-                
+
                     panel.AddRow(label, textBox);
                 }
                 else if (value is double numberValue)
@@ -174,11 +149,13 @@ namespace Honeybee.UI
                         var displayUnit = units.displayUnit.ToUnitsNetEnum();
 
                         numberTB.TextBinding.Bind(
-                        () => {
+                        () =>
+                        {
                             var displayValue = Units.ConvertValueWithUnits(numberValue, baseUnit, displayUnit);
                             return displayValue.ToString();
                         },
-                        (v) => {
+                        (v) =>
+                        {
                             Utility.TryParse(v, out var numValue);
                             var baseValue = Units.ConvertValueWithUnits(numValue, displayUnit, baseUnit);
                             item.SetValue(hbObj, baseValue);
@@ -193,7 +170,8 @@ namespace Honeybee.UI
                     {
                         numberTB.TextBinding.Bind(
                         () => numberValue.ToString(),
-                        (v) => {
+                        (v) =>
+                        {
                             Utility.TryParse(v, out var numValue);
                             item.SetValue(hbObj, numValue);
                             CalRValue(hbObj);
@@ -201,19 +179,20 @@ namespace Honeybee.UI
                         );
                         panel.AddRow(label, numberTB);
                     }
-               
+
                 }
                 else if (value is int intValue)
                 {
                     var numberTB = new NumericStepper();
                     numberTB.DecimalPlaces = 0;
                     numberTB.ValueBinding.Bind(
-                        () => intValue, 
-                        (v) => { 
+                        () => intValue,
+                        (v) =>
+                        {
                             item.SetValue(hbObj, v);
                             CalRValue(hbObj);
                         }
-                    ); 
+                    );
                     label.ToolTip = Utility.NiceDescription(description);
                     panel.AddRow(label, numberTB);
                 }
@@ -266,7 +245,7 @@ namespace Honeybee.UI
 
         }
 
-        
+
 
         private static (Enum baseUnit, Enum displayUnit) _RValueUnit => _propertyUnits["RValue"];
         private static (Enum baseUnit, Enum displayUnit) _UValueUnit => _propertyUnits["UValue"];
@@ -304,7 +283,7 @@ namespace Honeybee.UI
             {
                 //throw;
             }
-           
+
         }
     }
 }
