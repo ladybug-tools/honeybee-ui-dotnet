@@ -164,6 +164,13 @@ namespace Honeybee.UI
             set => Set(() => _nextBtnEnabled = value, nameof(NextBtnEnabled));
         }
 
+        private bool _bakeBtnVisible;
+        public bool BakeBtnVisible
+        {
+            get => _bakeBtnVisible;
+            set => Set(() => _bakeBtnVisible = value, nameof(BakeBtnVisible));
+        }
+
         private bool _showBtnEnabled;
         public bool ShowBtnEnabled
         {
@@ -265,6 +272,7 @@ namespace Honeybee.UI
         private HoneybeeSchema.ValidationReport _report;
         private Dialog_Error _control;
         private Action<IEnumerable<HoneybeeSchema.ValidationError>, bool> _showAction;
+        private Action<IEnumerable<HoneybeeSchema.ValidationError>> _bakeAction;
         private Action _rerunValidationAction;
         public ErrorViewModel(
             HoneybeeSchema.ValidationReport report,
@@ -278,11 +286,13 @@ namespace Honeybee.UI
         public void Update(
             HoneybeeSchema.ValidationReport report, 
             Action<IEnumerable<HoneybeeSchema.ValidationError>, bool> showAction,
-            Action reRunValidation = default)
+            Action reRunValidation = default,
+            Action<IEnumerable<HoneybeeSchema.ValidationError>> bakeAction = default)
         {
             _report = report;
             _showAction = showAction;
             _rerunValidationAction = reRunValidation;
+            _bakeAction = bakeAction;
 
             _errors = new List<ErrorData>();
 
@@ -339,6 +349,8 @@ namespace Honeybee.UI
                 this.MoreBtnEnabled = false;
             }
 
+            this.BakeBtnVisible = _bakeAction != null;
+
         }
 
        
@@ -360,7 +372,15 @@ namespace Honeybee.UI
 
         });
 
-      
+
+        public Eto.Forms.RelayCommand BakeCommand => new Eto.Forms.RelayCommand(() =>
+        {
+            if (this.SelectedErrors == null)
+                return;
+
+            var errs = this.SelectedErrors.Select(_ => _.Error).Where(_ => _ != null);
+            _bakeAction?.Invoke(errs);
+        });
 
         public Eto.Forms.RelayCommand ShowCommand => new Eto.Forms.RelayCommand(() =>
         {

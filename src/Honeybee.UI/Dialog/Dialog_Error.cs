@@ -24,9 +24,10 @@ namespace Honeybee.UI
         public void Update(
             HoneybeeSchema.ValidationReport report, 
             Action<IEnumerable<HoneybeeSchema.ValidationError>, bool> showAction = default,
-            Action reRunValidation = default)
+            Action reRunValidation = default,
+            Action<IEnumerable<HoneybeeSchema.ValidationError>> bakeAction = default)
         {
-            this._vm.Update(report, showAction, reRunValidation);
+            this._vm.Update(report, showAction, reRunValidation, bakeAction);
             this._vm.UILoaded();
             this._grid?.ReloadData();
         }
@@ -43,6 +44,7 @@ namespace Honeybee.UI
             var nextBtn = new Button() { Text = ">>"};
             var currentErrorIndex = new Label();
             var preBtn = new Button() { Text = "<<" };
+            var bakeBtn = new Button() { Text = "Bake" };
             var showBtn = new Button() { Text = "Show" };
             var showParentBtn = new Button() { Text = "Show Parent" };
             var moreInfoBtn = new Button() { Text = "More Info" };
@@ -56,12 +58,15 @@ namespace Honeybee.UI
             preBtn.Bind(_ => _.Enabled, _vm, _ => _.PreBtnEnabled);
             moreInfoBtn.Bind(_ => _.Enabled, _vm, _ => _.MoreBtnEnabled);
 
+            bakeBtn.Bind(_ => _.Visible, _vm, _ => _.BakeBtnVisible);
+            bakeBtn.Bind(_ => _.Enabled, _vm, _ => _.ShowBtnEnabled);
             showBtn.Bind(_ => _.Enabled, _vm, _ => _.ShowBtnEnabled);
             showParentBtn.Bind(_ => _.Enabled, _vm, _ => _.ShowParentBtnEnabled);
 
             nextBtn.Command = _vm.NextBtnCommand;
             preBtn.Command = _vm.PreBtnCommand;
             moreInfoBtn.Command = _vm.ErrorLinkCommand;
+            bakeBtn.Command = _vm.BakeCommand;
             showBtn.Command = _vm.ShowCommand;
             showParentBtn.Command = _vm.ShowParentCommand;
             //errorLink.Command = _vm.ErrorLinkCommand;
@@ -75,7 +80,7 @@ namespace Honeybee.UI
             groupLayout.DefaultSpacing = new Eto.Drawing.Size(5, 5);
             groupLayout.DefaultPadding = new Eto.Drawing.Padding(5);
             groupLayout.AddSeparateRow(_grid);
-            groupLayout.AddSeparateRow(preBtn, currentErrorIndex, nextBtn, null, showBtn, showParentBtn, moreInfoBtn);
+            groupLayout.AddSeparateRow(preBtn, currentErrorIndex, nextBtn, null, bakeBtn, showBtn, showParentBtn, moreInfoBtn);
             groupLayout.AddSeparateRow(message);
             group.Content = groupLayout;
 
