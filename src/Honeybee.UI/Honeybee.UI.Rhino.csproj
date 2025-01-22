@@ -4,10 +4,10 @@
 	<Import Project="../../../CommonReferenceRhino.csproj" />
 	<PropertyGroup>
 		<TargetFrameworks Condition="$(Configuration.EndsWith('RH8')) != 'true'">net48</TargetFrameworks>
-		<TargetFrameworks Condition="$(Configuration.EndsWith('RH8'))">net7.0-windows;net48</TargetFrameworks>
+		<TargetFrameworks Condition="$(Configuration.EndsWith('RH8'))">net48;net7.0-windows;net8.0-windows</TargetFrameworks>
 		<Authors>Ladybug Tools</Authors>
 		<Description>UI library build with Eto Forms for editing Honeybee Schema (DotNet) on both Windows and Mac system.</Description>
-		<Copyright>Copyright © 2024 Ladybug Tools LLC</Copyright>
+		<Copyright>Copyright © 2025 Ladybug Tools LLC</Copyright>
 		<Version>0.0.0.64-dev</Version>
 		<Platforms>x64</Platforms>
 		<!-- Ensure only displaying English units in UnitsNet -->
