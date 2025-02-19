@@ -124,12 +124,12 @@ namespace Honeybee.UI.ViewModel
         //* 5 Planisphere[stereographic] projection(s)
         internal static Dictionary<ViewType, string> ViewTypeNames = 
             new Dictionary<ViewType, string>() {
-                { ViewType.v, "Perspective (v)" } ,
-                { ViewType.h, "Hemispherical fisheye (h)" } ,
-                { ViewType.l, "Parallel (l)" } ,
-                { ViewType.c, "Cylindrical panorama (c)" } ,
-                { ViewType.a, "Angular fisheye (a)" } ,
-                { ViewType.s, "Planisphere[stereographic] projection (s)" } ,
+                { ViewType.V, "Perspective (v)" } ,
+                { ViewType.H, "Hemispherical fisheye (h)" } ,
+                { ViewType.L, "Parallel (l)" } ,
+                { ViewType.C, "Cylindrical panorama (c)" } ,
+                { ViewType.A, "Angular fisheye (a)" } ,
+                { ViewType.S, "Planisphere[stereographic] projection (s)" } ,
             };
 
         private DoubleViewModel _hSize;
