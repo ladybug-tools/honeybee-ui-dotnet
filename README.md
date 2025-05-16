@@ -20,7 +20,6 @@ Then include the DLL (under the `bin` folder) in the C# project, and use the nam
 ```csharp
 using HoneybeeSchema;
 using Honeybee.UI;
-
 ```
 
 ## Getting Started

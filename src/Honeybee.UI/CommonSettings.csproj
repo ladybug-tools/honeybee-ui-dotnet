@@ -1,7 +1,7 @@
 ﻿<Project>
 
 	<PropertyGroup Condition="$(Configuration.StartsWith(`Release`))">
-		<Optimization>true</Optimization>
+		<Optimize>true</Optimize>
 		<DebugSymbols>false</DebugSymbols>
 		<DebugType>none</DebugType>
 	</PropertyGroup>
