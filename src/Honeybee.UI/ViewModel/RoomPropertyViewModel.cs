@@ -4,7 +4,6 @@ using HoneybeeSchema.Energy;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Windows.Input;
 
 
@@ -56,6 +55,17 @@ namespace Honeybee.UI.ViewModel
             set {
                 _isStoryVaries = value == ReservedText.Varies; 
                 this.Set(() => _refHBObj.Story = value, nameof(Story)); 
+            }
+        }
+
+        private bool _isZoneVaries;
+        public string Zone
+        {
+            get => _refHBObj.Zone;
+            set
+            {
+                _isZoneVaries = value == ReservedText.Varies;
+                this.Set(() => _refHBObj.Zone = value, nameof(Zone));
             }
         }
 
@@ -288,6 +298,11 @@ namespace Honeybee.UI.ViewModel
             else
                 this.Story = this._refHBObj.Story;
 
+            if (rooms.Select(_ => _.Zone).Distinct().Count() > 1)
+                this.Zone = ReservedText.Varies;
+            else
+                this.Zone = this._refHBObj.Zone;
+
             if (rooms.Select(_ => _.Multiplier).Distinct().Count() > 1)
                 this.MultiplierText = ReservedText.Varies;
             else
@@ -497,6 +512,9 @@ namespace Honeybee.UI.ViewModel
 
                 if (!this._isStoryVaries)
                     item.Story = refObj.Story;
+
+                if (!this._isZoneVaries)
+                    item.Zone = refObj.Zone;
 
                 if (!this._isMultiplierVaries)
                     item.Multiplier = refObj.Multiplier;
