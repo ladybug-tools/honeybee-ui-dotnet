@@ -235,6 +235,13 @@ namespace Honeybee.UI.View
             layout.AddRow(programTypesLabel, pTypeByProgram);
             layout.AddRow(null, programTypesDP);
 
+            // Thermal Zone
+            var zoneLabel = new Label() { Text = "Zone:" };
+            zoneLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(_HBObjType, nameof(_dummy.Zone)));
+
+            var zoneTB = new StringText() { };
+            zoneTB.TextBinding.Bind(vm, (_) => _.Zone);
+            layout.AddRow(zoneLabel, zoneTB);
 
             //Get HVACs
             var hvacLabel = new Label() { Text = "HVAC:" };
