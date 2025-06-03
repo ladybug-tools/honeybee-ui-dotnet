@@ -144,6 +144,13 @@ namespace Honeybee.UI.View
             storyTB.TextBinding.Bind(vm, (_) => _.Story);
             layout.AddRow(storyLabel, storyTB);
 
+            // Thermal Zone
+            var zoneLabel = new Label() { Text = "Zone:" };
+            zoneLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(_HBObjType, nameof(_dummy.Zone)));
+
+            var zoneTB = new StringText() { };
+            zoneTB.TextBinding.Bind(vm, (_) => _.Zone);
+            layout.AddRow(zoneLabel, zoneTB);
 
             var multiplierLabel = new Label() { Text = "Multiplier:" };
             multiplierLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(_HBObjType, nameof(_dummy.Multiplier)));
@@ -235,14 +242,7 @@ namespace Honeybee.UI.View
             layout.AddRow(programTypesLabel, pTypeByProgram);
             layout.AddRow(null, programTypesDP);
 
-            // Thermal Zone
-            var zoneLabel = new Label() { Text = "Zone:" };
-            zoneLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(_HBObjType, nameof(_dummy.Zone)));
-
-            var zoneTB = new StringText() { };
-            zoneTB.TextBinding.Bind(vm, (_) => _.Zone);
-            layout.AddRow(zoneLabel, zoneTB);
-
+        
             //Get HVACs
             var hvacLabel = new Label() { Text = "HVAC:" };
             hvacLabel.ToolTip = Utility.NiceDescription(HoneybeeSchema.SummaryAttribute.GetSummary(typeof(HB.RoomEnergyPropertiesAbridged), nameof(_dummy.Properties.Energy.Hvac)));
