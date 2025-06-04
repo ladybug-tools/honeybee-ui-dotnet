@@ -115,7 +115,9 @@ namespace Honeybee.UI
 
         public static void Show(Control owner, System.Exception error)
         {
-            var msg = error.Message ?? error?.InnerException?.Message;
+            var msg = error.Message ?? error?.InnerException?.Message?? "Check the full error message!";
+            if (msg.Length > 500)
+                msg = "Found an error, please check the details!";
             var fullmsg = error.HelpLink != null ? $"{error.HelpLink}{Environment.NewLine}{error}" : error.ToString();
             Show(owner, msg, fullmsg, "Error", error.HelpLink);
         }
