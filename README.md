@@ -37,4 +37,4 @@ if (dialog_rc != null)
 ### A demo for standalone App:
 
 - [Windows] `src\Honeybee.UI.ConsoleApp\Honeybee.UI.ConsoleApp.csproj`
-- [Mac OS] `src/Honeybee.UI.ConsoleApp/Honeybee.UI.ConsoleAppMac.csproj`
+- [Mac OS] `src/Honeybee.UI.ConsoleApp/Honeybee.UI.ConsoleAppMac.csproj` (not maintained)
