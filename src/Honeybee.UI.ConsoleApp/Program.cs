@@ -185,7 +185,7 @@ namespace Honeybee.UI.ConsoleApp
                     }
                 };
 
-                var view = new HoneybeeSchema.View("id", new List<double>() {1,1,1 }, new List<double>() { 2,2,2}, new List<double>() {0,0,1 }, viewType: ViewType.c);
+                var view = new HoneybeeSchema.View("id", new List<double>() {1,1,1 }, new List<double>() { 2,2,2}, new List<double>() {0,0,1 }, viewType: ViewType.C);
                 var view2 = new HoneybeeSchema.View("id2", new List<double>() { 1, 1, 1 }, new List<double>() { 2, 2, 2 }, new List<double>() { 0, 0, 1 }, hSize: 120, vSize:120);
 
                 var viewPropertybtn = new Button() { Text = "1 view Property" };
