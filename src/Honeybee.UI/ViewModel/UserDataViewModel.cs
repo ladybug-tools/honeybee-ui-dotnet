@@ -19,10 +19,10 @@ namespace Honeybee.UI
         public static List<UserDataItem> FromJObject(object obj)
         {
             var uds = new List<UserDataItem>();
-            Newtonsoft.Json.Linq.JObject jObj = null;
+            LBT.Newtonsoft.Json.Linq.JObject jObj = null;
             if (obj is string) 
-                jObj = Newtonsoft.Json.Linq.JObject.Parse(obj?.ToString());
-            else if (obj is Newtonsoft.Json.Linq.JObject j)
+                jObj = LBT.Newtonsoft.Json.Linq.JObject.Parse(obj?.ToString());
+            else if (obj is LBT.Newtonsoft.Json.Linq.JObject j)
                 jObj = j;
             else if (obj is Dictionary<string, object> dic)
             {
@@ -32,7 +32,7 @@ namespace Honeybee.UI
             if (jObj != null)
             {
                 uds = jObj.Children()
-                   .OfType<Newtonsoft.Json.Linq.JProperty>()
+                   .OfType<LBT.Newtonsoft.Json.Linq.JProperty>()
                    .Where(_=> !_.Name.StartsWith("__")) // hide reserved items, such as "__layer__"
                    .Select(_ => new UserDataItem(_.Name, _.Value.ToString()))
                    .ToList();
@@ -103,7 +103,7 @@ namespace Honeybee.UI
                 this.IsCheckboxChecked = true;
             }
             
-            var allDataList = allUserData.Select(_ => _ is null ? null: Newtonsoft.Json.Linq.JObject.FromObject(_)?.ToString()).Distinct()?.ToList();
+            var allDataList = allUserData.Select(_ => _ is null ? null: LBT.Newtonsoft.Json.Linq.JObject.FromObject(_)?.ToString()).Distinct()?.ToList();
 
             if (allDataList.Count() > 1)
             {

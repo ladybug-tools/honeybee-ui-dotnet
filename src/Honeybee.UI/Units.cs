@@ -363,7 +363,7 @@ namespace Honeybee.UI
         {
             if (CustomUnitSettings == null) return;
             var dic = CustomUnitSettings;
-            var js = Newtonsoft.Json.JsonConvert.SerializeObject(dic);
+            var js = LBT.Newtonsoft.Json.JsonConvert.SerializeObject(dic);
 
             System.IO.File.WriteAllText(UnitSettingFile, js);
 
@@ -378,7 +378,7 @@ namespace Honeybee.UI
             if (System.IO.File.Exists(UnitSettingFile))
             {
                 var json = System.IO.File.ReadAllText(UnitSettingFile);
-                var objs = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, int>>(json);
+                var objs = LBT.Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, int>>(json);
 
                 foreach (var item in refDic)
                 {
