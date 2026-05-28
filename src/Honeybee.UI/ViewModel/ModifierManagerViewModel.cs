@@ -189,9 +189,6 @@ namespace Honeybee.UI
             dup.DisplayName = name;
             switch (dup)
             {
-                case Plastic obj:
-                    AddPlasticCommand.Execute(obj);
-                    break;
                 case Glass obj:
                     AddGlassCommand.Execute(obj);
                     break;
@@ -212,6 +209,9 @@ namespace Honeybee.UI
                     break;
                 case BSDF obj:
                     AddBSDFCommand.Execute(obj);
+                    break;
+                case Plastic obj:
+                    AddPlasticCommand.Execute(obj);
                     break;
                 default:
                     break;

@@ -163,9 +163,6 @@ namespace Honeybee.UI
             HoneybeeSchema.Radiance.IModifier dialog_rc = null;
             switch (dup)
             {
-                case Plastic obj:
-                    dialog_rc = new Dialog_Modifier<Plastic>(obj, locked).ShowModal(parent);
-                    break;
                 case Glass obj:
                     dialog_rc = new Dialog_Modifier<Glass>(obj, locked).ShowModal(parent);
                     break;
@@ -186,6 +183,9 @@ namespace Honeybee.UI
                     break;
                 case BSDF obj:
                     dialog_rc = new Dialog_Modifier<BSDF>(obj, locked).ShowModal(parent);
+                    break;
+                case Plastic obj:
+                    dialog_rc = new Dialog_Modifier<Plastic>(obj, locked).ShowModal(parent);
                     break;
                 default:
                     break;
